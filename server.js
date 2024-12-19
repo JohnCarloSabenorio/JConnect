@@ -6,12 +6,14 @@ dotenv.config({ path: "./config.env" });
 const app = require("./app");
 
 // SETUP MONGOOSE CONNECT
+
 // adds password in the database connection string
 let db = process.env.DATABASE.replace("<db_password>", process.env.DB_PASSWORD);
 mongoose
   .connect(db)
   .then((res) => {
     console.log("Database successfully connected!");
+    console.log(`Host: ${res.connection.host}, DB: ${res.connection.name}`);
   })
   .catch((err) => {
     console.log("Database connection failed!");
@@ -19,7 +21,7 @@ mongoose
   });
 
 // RUN SERVER
-const port = process.env.PORT||3000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server listening at port ${port}...`);
 });
