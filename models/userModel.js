@@ -55,10 +55,18 @@ userSchema.pre(/^find/, function (next) {
 });
 
 userSchema.post(/^find/, function (docs, next) {
-  console.log(`This query took ${Date.now() - this.start} milliseconds to complete!`);
+  console.log(
+    `This query took ${Date.now() - this.start} milliseconds to complete!`
+  );
   console.log(docs);
   next();
 });
 
+// AGGREGATION MIDDLEWARES
+
+userSchema.pre("aggregate", function (next) {
+  console.log(this);
+  next();
+});
 const User = mongoose.model("user", userSchema);
 module.exports = mongoose.model("User", userSchema);
