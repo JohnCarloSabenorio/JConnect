@@ -1,11 +1,25 @@
 const mongoose = require("mongoose");
-
+const validator = require("validator");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+/* 
+^ and $: Ensure the entire string is checked.
+(?=.*[a-z]): At least one lowercase letter.
+(?=.*[A-Z]): At least one uppercase letter.
+(?=.*\d): At least one digit.
+(?=.*[@$!%*?&]): At least one special character.
+[A-Za-z\d@$!%*?&]{8,}: Only allows specified characters, with a minimum length of 8.
+*/
 const userSchema = new mongoose.Schema(
   {
     username: {
       type: String,
       required: [true, "A user must have a username!"],
       unique: true,
+      maxlength: [
+        20,
+        "A username must have less than or equal to 20 characters.",
+      ],
     },
     fname: {
       type: String,
@@ -20,9 +34,52 @@ const userSchema = new mongoose.Schema(
     },
     isAdmin: {
       type: Boolean,
+      default: false,
+    },
+    email: {
+      type: String,
+      required: [true, "A user must have an email!"],
+      unique: true,
+      validate: [validator.isEmail, "Please provide a valid email!"],
+    },
+
+    password: {
+      type: String,
+      required: [true, "A user must have a password!"],
+      minlength: 8,
+      select: false, // This sets password to cannot be queried
+      validate: [
+        validator.isStrongPassword,
+        "User must enter a valid password! ({VALUE} is not a valid password!)",
+      ],
+    },
+    passwordChangedAt: {
+      type: Date,
+    },
+    profilePicture: {
+      type: String,
+    },
+    status: {
+      type: String,
+      enum: ["online", "away", "offline", "busy"],
+    },
+    contacts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    blockedUsers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    lastActiveAt: {
+      type: Date,
+      default: Date.now,
     },
   },
-
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
@@ -30,26 +87,39 @@ const userSchema = new mongoose.Schema(
 );
 
 // VIRTUAL PROPERTIES
-userSchema.virtual("User").get(function () {
-  return `${this.fname} ${this.lname}`;
+userSchema.virtual("fullname").get(function () {
+  return `${this.fname} ${this.mname} ${this.lname}`;
 });
 
 // DOCUMENT MIDDLEWARES
-userSchema.pre("save", function (next) {
-  console.log("User is being saved...");
+
+// Hash password before saving
+userSchema.pre("save", async function (next) {
+  console.log("Saving user...");
+  console.log("User credentials: ", this);
+  const pwordSalt = await bcrypt.genSalt(saltRounds);
+  const pwordHash = await bcrypt.hash(this.password, pwordSalt);
+  const isMatch = await bcrypt.compare(this.password, pwordHash);
+  console.log(isMatch);
+  console.log(`Password salt: ${pwordSalt}`);
+  console.log(`Hashed password: ${pwordHash}`);
+  this.password = pwordHash;
   next();
 });
 
-userSchema.post("save", function (doc, next) {
-  console.log("SAVED DOCUMENT: ", doc);
-  console.log(`${doc.username} is saved!`);
+// Checks if users modified their password
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    console.log("password is modified!");
+    this.passwordChangedAt = Date.now();
+  } else {
+    console.log("password is not modified!");
+  }
   next();
 });
 
 // QUERY MIDDLEWARES
 userSchema.pre(/^find/, function (next) {
-  this.find({ isAdmin: { $ne: true } });
-
   this.start = Date.now();
   next();
 });
@@ -64,9 +134,6 @@ userSchema.post(/^find/, function (docs, next) {
 
 // AGGREGATION MIDDLEWARES
 
-userSchema.pre("aggregate", function (next) {
-  console.log(this);
-  next();
-});
-const User = mongoose.model("user", userSchema);
+// DOCUMENT MIDDLEWARE
+
 module.exports = mongoose.model("User", userSchema);
