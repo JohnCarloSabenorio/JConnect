@@ -81,8 +81,8 @@ const userSchema = new mongoose.Schema(
     },
   },
   {
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    toJSON: { virtuals: false },
+    toObject: { virtuals: false },
   }
 );
 
@@ -96,31 +96,54 @@ userSchema.virtual("fullname").get(function () {
 // Hash password before saving
 userSchema.pre("save", async function (next) {
   console.log("Saving user...");
-  console.log("User credentials: ", this);
-  const pwordSalt = await bcrypt.genSalt(saltRounds);
-  const pwordHash = await bcrypt.hash(this.password, pwordSalt);
-  const isMatch = await bcrypt.compare(this.password, pwordHash);
-  console.log(isMatch);
-  console.log(`Password salt: ${pwordSalt}`);
-  console.log(`Hashed password: ${pwordHash}`);
-  this.password = pwordHash;
+  hashedPass = await hashPassword(this.password);
+  this.password = hashedPass;
+  this.passwordChangedAt = Date.now();
   next();
 });
 
 // Checks if users modified their password
-userSchema.pre("save", async function (next) {
-  if (this.isModified("password")) {
-    console.log("password is modified!");
-    this.passwordChangedAt = Date.now();
-  } else {
-    console.log("password is not modified!");
-  }
-  next();
-});
 
 // QUERY MIDDLEWARES
 userSchema.pre(/^find/, function (next) {
   this.start = Date.now();
+  next();
+});
+
+// Hashes updated password
+userSchema.pre("findOneAndUpdate", async function (next) {
+  console.log("Hashing updated password...");
+  const update = this.getUpdate();
+  if (this.password) {
+    console.log(update);
+    hashedPass = await hashPassword(update.password);
+    update.password = hashedPass;
+    update.passwordChangedAt = Date.now();
+  }
+  next();
+});
+
+// Appends the new unique contacts in the document
+userSchema.pre("findOneAndUpdate", async function (next) {
+  console.log("Appending user contacts...");
+  const update = this.getUpdate();
+
+  if (update.contacts) {
+    // Ensures that the contacts are in an array
+    const newContacts = Array.isArray(update.contacts)
+      ? update.contacts
+      : [update.contacts];
+
+    console.log("New contacts to be added: ", newContacts);
+    // Adds unique values to the contacts
+    this.setUpdate({
+      $addToSet: {
+        contacts: { $each: newContacts },
+      },
+    });
+  }
+
+  console.log("Updated contacts: ", update.contacts);
   next();
 });
 
@@ -132,6 +155,16 @@ userSchema.post(/^find/, function (docs, next) {
   next();
 });
 
+async function hashPassword(psword) {
+  // console.log("User credentials: ", this);
+  const pwordSalt = await bcrypt.genSalt(saltRounds);
+  const pwordHash = await bcrypt.hash(psword, pwordSalt);
+  // const isMatch = await bcrypt.compare(this.password, pwordHash);
+  // console.log(isMatch);
+  console.log(`Password salt: ${pwordSalt}`);
+  console.log(`Hashed password: ${pwordHash}`);
+  return pwordHash;
+}
 // AGGREGATION MIDDLEWARES
 
 // DOCUMENT MIDDLEWARE
