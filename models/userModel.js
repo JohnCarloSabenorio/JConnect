@@ -96,13 +96,15 @@ userSchema.virtual("fullname").get(function () {
 // Hash password before saving
 userSchema.pre("save", async function (next) {
   console.log("Saving user...");
-  hashedPass = await hashPassword(this.password);
-  this.password = hashedPass;
-  this.passwordChangedAt = Date.now();
+
+  if (this.isModified("password")) {
+    hashedPass = await hashPassword(this.password);
+    this.password = hashedPass;
+    this.passwordChangedAt = Date.now();
+  }
+
   next();
 });
-
-// Checks if users modified their password
 
 // QUERY MIDDLEWARES
 userSchema.pre(/^find/, function (next) {
@@ -110,42 +112,7 @@ userSchema.pre(/^find/, function (next) {
   next();
 });
 
-// Hashes updated password
-userSchema.pre("findOneAndUpdate", async function (next) {
-  console.log("Hashing updated password...");
-  const update = this.getUpdate();
-  if (this.password) {
-    console.log(update);
-    hashedPass = await hashPassword(update.password);
-    update.password = hashedPass;
-    update.passwordChangedAt = Date.now();
-  }
-  next();
-});
-
 // Appends the new unique contacts in the document
-userSchema.pre("findOneAndUpdate", async function (next) {
-  console.log("Appending user contacts...");
-  const update = this.getUpdate();
-
-  if (update.contacts) {
-    // Ensures that the contacts are in an array
-    const newContacts = Array.isArray(update.contacts)
-      ? update.contacts
-      : [update.contacts];
-
-    console.log("New contacts to be added: ", newContacts);
-    // Adds unique values to the contacts
-    this.setUpdate({
-      $addToSet: {
-        contacts: { $each: newContacts },
-      },
-    });
-  }
-
-  console.log("Updated contacts: ", update.contacts);
-  next();
-});
 
 userSchema.post(/^find/, function (docs, next) {
   console.log(
@@ -161,7 +128,7 @@ async function hashPassword(psword) {
   const pwordHash = await bcrypt.hash(psword, pwordSalt);
   // const isMatch = await bcrypt.compare(this.password, pwordHash);
   // console.log(isMatch);
-  console.log(`Password salt: ${pwordSalt}`);
+  // console.log(`Password salt: ${pwordSalt}`);
   console.log(`Hashed password: ${pwordHash}`);
   return pwordHash;
 }

@@ -66,10 +66,24 @@ exports.updateUser = async (req, res) => {
       new: true,
       runValidators: true,
     });
+
+    if (!updatedUser) {
+      res.status(404).json({
+        status: "failed",
+        message: "User does not exist!",
+      });
+    }
+
+    updatedUser.set(req.body); // This applies changes to the user document
+    await updatedUser.save();
+
+    const { password, passwordChangedAt, ...userWithoutSensitiveData } =
+      updatedUser.toObject();
+
     res.status(200).json({
       status: "success",
       message: "Successfully updated user!",
-      data: updatedUser,
+      data: userWithoutSensitiveData,
     });
   } catch (err) {
     console.log(`Error: ${err}`);
@@ -103,6 +117,13 @@ exports.deleteUser = async (req, res) => {
 exports.getContacts = async (req, res) => {
   try {
     const userContacts = await User.findById(req.params.id).select("contacts");
+
+    if (!userContacts) {
+      res.status(404).json({
+        status: "failed",
+        message: "Cannot find user contacts!",
+      });
+    }
     console.log("USER CONTACTS:", userContacts);
     res.status(200).json({
       status: "success",
@@ -119,10 +140,32 @@ exports.getContacts = async (req, res) => {
 
 exports.addContact = async (req, res) => {
   try {
-    updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const newContacts = Array.isArray(req.body.contacts)
+      ? req.body.contacts
+      : [req.body.contacts];
+
+    console.log("New contacts to be added: ", newContacts);
+
+    updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $addToSet: {
+          contacts: { $each: newContacts },
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedUser) {
+      res.status(404).json({
+        status: "failed",
+        message: "User does not exist!",
+      });
+    }
+
     res.status(200).json({
       status: "success",
       message: "Successfully added contact!",
@@ -137,4 +180,41 @@ exports.addContact = async (req, res) => {
   }
 };
 
-exports.deleteContact = async (req, res) => {};
+exports.deleteContact = async (req, res) => {
+  try {
+    console.log(req.body);
+    updatedUser = await User.findByIdAndUpdate(req.params.id, {
+      $pull: {
+        contacts: req.body.userId,
+      },
+    });
+    console.log(updatedUser.contacts);
+    res.status(204).json({
+      status: "success",
+      message: "Successfully deleted contact!",
+    });
+  } catch (err) {
+    console.log(`Error: ${err}`);
+
+    res.status(400).json({
+      status: "failed",
+      message: "Error deleting contact",
+    });
+  }
+};
+
+exports.blockContact = async (req, res) => {
+  try {
+    console.log(req.body);
+    res.status(204).json({
+      status: "success",
+      message: "Successfully deleted contact!",
+    });
+  } catch (err) {
+    console.log(`Error: ${err}`);
+    res.status(400).json({
+      status: "failed",
+      message: "Error blocking contact",
+    });
+  }
+};
