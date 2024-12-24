@@ -20,3 +20,7 @@ router
   .patch(controller.addContact)
   .delete(controller.deleteContact);
 module.exports = router;
+
+// Blocks or unblocks a user
+router.route("/contacts/:id/block").patch(controller.blockContact);
+router.route("/contacts/:id/unblock").patch(controller.unblockContact);

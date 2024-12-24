@@ -113,7 +113,6 @@ exports.deleteUser = async (req, res) => {
 };
 
 // USER CONTACT HANDLERS
-
 exports.getContacts = async (req, res) => {
   try {
     const userContacts = await User.findById(req.params.id).select("contacts");
@@ -124,6 +123,7 @@ exports.getContacts = async (req, res) => {
         message: "Cannot find user contacts!",
       });
     }
+
     console.log("USER CONTACTS:", userContacts);
     res.status(200).json({
       status: "success",
@@ -206,15 +206,62 @@ exports.deleteContact = async (req, res) => {
 exports.blockContact = async (req, res) => {
   try {
     console.log(req.body);
-    res.status(204).json({
+
+    await User.findByIdAndUpdate(req.params.id, {
+      $pull: {
+        contacts: req.body.userId,
+      },
+    });
+
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: {
+          blockedUsers: req.body.userId,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+
+    res.status(200).json({
       status: "success",
-      message: "Successfully deleted contact!",
+      message: "Successfully blocked contact!",
+      data: user,
     });
   } catch (err) {
     console.log(`Error: ${err}`);
     res.status(400).json({
       status: "failed",
       message: "Error blocking contact",
+    });
+  }
+};
+
+exports.unblockContact = async (req, res) => {
+  try {
+    console.log(req.body);
+
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $pull: {
+          blockedUsers: req.body.userId,
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json({
+      status: "success",
+      message: "Successfully unblocked contact!",
+      data: user,
+    });
+  } catch (err) {
+    console.log(`Error: ${err}`);
+    res.status(400).json({
+      status: "failed",
+      message: "Error unblocking contact",
     });
   }
 };
