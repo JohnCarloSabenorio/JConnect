@@ -29,5 +29,12 @@ app.get("/", (req, res) => {
 });
 app.use("/jconnect/v1/users", userRouter);
 
+app.all("*", (req, res, next) => {
+  res.status(404).json({
+    status: "failed",
+    message: `Cannot find ${req.originalUrl} on the server!`,
+  });
+});
+
 // EXPORT APPLICATION
 module.exports = app;
