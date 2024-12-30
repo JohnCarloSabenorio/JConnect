@@ -1,267 +1,202 @@
+const AppError = require("../utils/appError");
 const User = require("./../models/userModel");
 const APIFeatures = require("./../utils/apiFeatures");
-
+const catchAsync = require("./../utils/catchAsync");
 // USER HANDLERS
-exports.getAllUsers = async (req, res) => {
-  try {
-    features = new APIFeatures(User.find(), req.query)
-      .filter()
-      .sort()
-      .limitFields();
-    const users = await features.query;
-    res.status(200).json({
-      status: "success",
-      message: "Successfully retrieved all users",
-      data: users,
-    });
-  } catch (err) {
-    console.log(`Error: ${err}`);
-    res.status(200).json({
+exports.getAllUsers = catchAsync(async (req, res) => {
+  features = new APIFeatures(User.find(), req.query)
+    .filter()
+    .sort()
+    .limitFields();
+  const users = await features.query;
+  res.status(200).json({
+    status: "success",
+    message: "Successfully retrieved all users",
+    data: users,
+  });
+});
+
+exports.createUser = catchAsync(async (req, res) => {
+  console.log(req.body);
+  await User.create(req.body);
+  res.status(200).json({
+    status: "success",
+    message: "Successfully created user",
+  });
+});
+
+exports.getUser = catchAsync(async (req, res) => {
+  const user = await User.find(req.params.id);
+
+  if (!user) {
+    return next(
+      new AppError(`No user found with the id of ${req.params.id}`, 404)
+    );
+  }
+
+  console.log(user);
+  res.status(200).json({
+    status: "success",
+    data: user,
+  });
+});
+
+exports.updateUser = catchAsync(async (req, res) => {
+  console.log("Headers:", req.headers); // Logs headers to verify content type
+  console.log("Request body:", req.body); // Logs the parsed body
+  updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!updatedUser) {
+    res.status(404).json({
       status: "failed",
-      message: "Failed to fetch all users!",
+      message: "User does not exist!",
     });
   }
-};
 
-exports.createUser = async (req, res) => {
-  try {
-    console.log(req.body);
-    const users = await User.create(req.body);
-    res.status(200).json({
-      status: "success",
-      message: "Successfully created user",
-      data: users,
-    });
-  } catch (err) {
-    console.log(`Error: ${err}`);
-    res.status(200).json({
-      status: "failed",
-      message: "Failed to create a user!",
-    });
-  }
-};
+  updatedUser.set(req.body); // This applies changes to the user document
+  await updatedUser.save();
 
-exports.getUser = async (req, res) => {
-  try {
-    const user = await User.find(req.params.id);
-    console.log(user);
-    res.status(200).json({
-      status: "success",
-      data: user,
-    });
-  } catch (err) {
-    console.log(`Error: ${err}`);
-    res.status(200).json({
-      status: "failed",
-      message: "Failed to get user!",
-    });
-  }
-};
+  const { password, passwordChangedAt, ...userWithoutSensitiveData } =
+    updatedUser.toObject();
 
-exports.updateUser = async (req, res) => {
-  try {
-    console.log("Headers:", req.headers); // Logs headers to verify content type
-    console.log("Request body:", req.body); // Logs the parsed body
-    updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+  res.status(200).json({
+    status: "success",
+    message: "Successfully updated user!",
+    data: userWithoutSensitiveData,
+  });
+});
 
-    if (!updatedUser) {
-      res.status(404).json({
-        status: "failed",
-        message: "User does not exist!",
-      });
-    }
-
-    updatedUser.set(req.body); // This applies changes to the user document
-    await updatedUser.save();
-
-    const { password, passwordChangedAt, ...userWithoutSensitiveData } =
-      updatedUser.toObject();
-
-    res.status(200).json({
-      status: "success",
-      message: "Successfully updated user!",
-      data: userWithoutSensitiveData,
-    });
-  } catch (err) {
-    console.log(`Error: ${err}`);
-    res.status(400).json({
-      status: "failed",
-      message: "Failed to update user!",
-    });
-  }
-};
-
-exports.deleteUser = async (req, res) => {
-  try {
-    await User.findByIdAndDelete(req.params.id);
-    console.log("User deleted!");
-    res.status(204).json({
-      status: "success",
-      message: "Successfully deleted user!",
-      data: null,
-    });
-  } catch (err) {
-    console.log(`Error: ${err}`);
-    res.status(400).json({
-      status: "failed",
-      message: "Failed to delete user!",
-    });
-  }
-};
+exports.deleteUser = catchAsync(async (req, res) => {
+  await User.findByIdAndDelete(req.params.id);
+  console.log("User deleted!");
+  res.status(204).json({
+    status: "success",
+    message: "Successfully deleted user!",
+    data: null,
+  });
+});
 
 // USER CONTACT HANDLERS
-exports.getContacts = async (req, res) => {
-  try {
-    const userContacts = await User.findById(req.params.id).select("contacts");
+exports.getContacts = catchAsync(async (req, res) => {
+  const userContacts = await User.findById(req.params.id).select("contacts");
 
-    if (!userContacts) {
-      res.status(404).json({
-        status: "failed",
-        message: "Cannot find user contacts!",
-      });
+  if (!userContacts) {
+    return next(
+      new AppError(
+        `Contacts of the user ${req.params.id} cannot be found!`,
+        404
+      )
+    );
+  }
+
+  if (!userContacts) {
+    res.status(404).json({
+      status: "failed",
+      message: "Cannot find user contacts!",
+    });
+  }
+
+  console.log("USER CONTACTS:", userContacts);
+  res.status(200).json({
+    status: "success",
+    data: userContacts,
+  });
+});
+
+exports.addContact = catchAsync(async (req, res) => {
+  const newContacts = Array.isArray(req.body.contacts)
+    ? req.body.contacts
+    : [req.body.contacts];
+
+  console.log("New contacts to be added: ", newContacts);
+
+  updatedUser = await User.findByIdAndUpdate(
+    req.params.id,
+    {
+      $addToSet: {
+        contacts: { $each: newContacts },
+      },
+    },
+    {
+      new: true,
+      runValidators: true,
     }
+  );
 
-    console.log("USER CONTACTS:", userContacts);
-    res.status(200).json({
-      status: "success",
-      data: userContacts,
-    });
-  } catch (err) {
-    console.log(`Error: ${err}`);
-    res.status(200).json({
+  if (!updatedUser) {
+    res.status(404).json({
       status: "failed",
-      message: "Failed to get user contacts!",
+      message: "User does not exist!",
     });
   }
-};
 
-exports.addContact = async (req, res) => {
-  try {
-    const newContacts = Array.isArray(req.body.contacts)
-      ? req.body.contacts
-      : [req.body.contacts];
+  res.status(200).json({
+    status: "success",
+    message: "Successfully added contact!",
+    data: updatedUser.contacts,
+  });
+});
 
-    console.log("New contacts to be added: ", newContacts);
+exports.deleteContact = catchAsync(async (req, res) => {
+  console.log(req.body);
+  updatedUser = await User.findByIdAndUpdate(req.params.id, {
+    $pull: {
+      contacts: req.body.userId,
+    },
+  });
+  console.log(updatedUser.contacts);
+  res.status(204).json({
+    status: "success",
+    message: "Successfully deleted contact!",
+  });
+});
 
-    updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      {
-        $addToSet: {
-          contacts: { $each: newContacts },
-        },
+exports.blockContact = catchAsync(async (req, res) => {
+  console.log(req.body);
+
+  await User.findByIdAndUpdate(req.params.id, {
+    $pull: {
+      contacts: req.body.userId,
+    },
+  });
+
+  const user = await User.findByIdAndUpdate(
+    req.params.id,
+    {
+      $push: {
+        blockedUsers: req.body.userId,
       },
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
-
-    if (!updatedUser) {
-      res.status(404).json({
-        status: "failed",
-        message: "User does not exist!",
-      });
+    },
+    {
+      new: true,
     }
+  );
 
-    res.status(200).json({
-      status: "success",
-      message: "Successfully added contact!",
-      data: updatedUser.contacts,
-    });
-  } catch (err) {
-    console.log(`Error: ${err}`);
-    res.status(400).json({
-      status: "failed",
-      message: "Failed to add contact!",
-    });
-  }
-};
+  res.status(200).json({
+    status: "success",
+    message: "Successfully blocked contact!",
+    data: user,
+  });
+});
 
-exports.deleteContact = async (req, res) => {
-  try {
-    console.log(req.body);
-    updatedUser = await User.findByIdAndUpdate(req.params.id, {
+exports.unblockContact = catchAsync(async (req, res) => {
+  console.log(req.body);
+
+  const user = await User.findByIdAndUpdate(
+    req.params.id,
+    {
       $pull: {
-        contacts: req.body.userId,
+        blockedUsers: req.body.userId,
       },
-    });
-    console.log(updatedUser.contacts);
-    res.status(204).json({
-      status: "success",
-      message: "Successfully deleted contact!",
-    });
-  } catch (err) {
-    console.log(`Error: ${err}`);
-
-    res.status(400).json({
-      status: "failed",
-      message: "Error deleting contact",
-    });
-  }
-};
-
-exports.blockContact = async (req, res) => {
-  try {
-    console.log(req.body);
-
-    await User.findByIdAndUpdate(req.params.id, {
-      $pull: {
-        contacts: req.body.userId,
-      },
-    });
-
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      {
-        $push: {
-          blockedUsers: req.body.userId,
-        },
-      },
-      {
-        new: true,
-      }
-    );
-
-    res.status(200).json({
-      status: "success",
-      message: "Successfully blocked contact!",
-      data: user,
-    });
-  } catch (err) {
-    console.log(`Error: ${err}`);
-    res.status(400).json({
-      status: "failed",
-      message: "Error blocking contact",
-    });
-  }
-};
-
-exports.unblockContact = async (req, res) => {
-  try {
-    console.log(req.body);
-
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      {
-        $pull: {
-          blockedUsers: req.body.userId,
-        },
-      },
-      { new: true }
-    );
-    res.status(200).json({
-      status: "success",
-      message: "Successfully unblocked contact!",
-      data: user,
-    });
-  } catch (err) {
-    console.log(`Error: ${err}`);
-    res.status(400).json({
-      status: "failed",
-      message: "Error unblocking contact",
-    });
-  }
-};
+    },
+    { new: true }
+  );
+  res.status(200).json({
+    status: "success",
+    message: "Successfully unblocked contact!",
+    data: user,
+  });
+});

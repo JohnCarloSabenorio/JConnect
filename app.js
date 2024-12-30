@@ -3,10 +3,10 @@ const express = require("express");
 const morgan = require("morgan");
 // The main application
 const app = express();
-
+const AppError = require("./utils/appError");
+const globalErrorHandler = require("./controllers/errorController");
 // DEFINE ROUTERS
 const userRouter = require("./routes/userRoutes");
-
 // MIDDLEWARES
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev")); // This will log http request information
@@ -24,17 +24,13 @@ app.use((req, res, next) => {
 app.use(express.static(`${__dirname}/public`));
 
 // ROUTES
-app.get("/", (req, res) => {
-  res.send("Successfully called a route!");
-});
 app.use("/jconnect/v1/users", userRouter);
 
 app.all("*", (req, res, next) => {
-  res.status(404).json({
-    status: "failed",
-    message: `Cannot find ${req.originalUrl} on the server!`,
-  });
+  next(new AppError(`Cannot find ${req.originalUrl} on the server!`, 404));
 });
+
+app.use(globalErrorHandler);
 
 // EXPORT APPLICATION
 module.exports = app;
