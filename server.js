@@ -1,12 +1,18 @@
 // REQUIRE PACKAGES
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+
+// CATCHES SYNCHRONOUS ERRORS
+process.on("uncaughtException", (err) => {
+  console.log("UNCAUGHT EXCEPTION! Shutting down the application...");
+  console.log(err.name, err.message);
+  process.exit(1);
+});
 dotenv.config({ path: "./config.env" });
 // REQUIRE APPLICATION
 const app = require("./app");
 
 // SETUP MONGOOSE CONNECT
-
 // adds password in the database connection string
 let db = process.env.DATABASE.replace("<db_password>", process.env.DB_PASSWORD);
 mongoose
@@ -22,6 +28,15 @@ mongoose
 
 // RUN SERVER
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server listening at port ${port}...`);
+});
+
+// SAFETY NET FOR ERRORS
+process.on("unhandledRejection", (err) => {
+  console.log("UNHANDLED REJECTION! Shutting down the application...");
+  console.log(err.name, err.message);
+  server.close(() => {
+    process.exit(1);
+  });
 });

@@ -1,10 +1,18 @@
 const express = require("express");
+
+const authController = require("./../controllers/authController");
 const controller = require("./../controllers/userControlller");
 const multer = require("multer");
 const router = express.Router();
 const upload = multer(); // this is used for multipart/form-data
 
-router.route("/").get(controller.getAllUsers).post(controller.createUser);
+router.route("/signup").post(authController.signup);
+router.route("/login").post(authController.login);
+
+router
+  .route("/")
+  .get(authController.protect, controller.getAllUsers)
+  .post(controller.createUser);
 
 // Modifies a user
 router

@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
-const saltRounds = 10;
 /* 
 ^ and $: Ensure the entire string is checked.
 (?=.*[a-z]): At least one lowercase letter.
@@ -53,6 +52,18 @@ const userSchema = new mongoose.Schema(
         "User must enter a valid password! ({VALUE} is not a valid password!)",
       ],
     },
+
+    passwordConfirm: {
+      type: String,
+      required: [true, "Please confirm your password!"],
+      select: false,
+      validate: {
+        validator: function (el) {
+          return el === this.password;
+        },
+        message: "Your passwords do not match! Please try again.",
+      },
+    },
     passwordChangedAt: {
       type: Date,
     },
@@ -101,6 +112,7 @@ userSchema.pre("save", async function (next) {
     hashedPass = await hashPassword(this.password);
     this.password = hashedPass;
     this.passwordChangedAt = Date.now();
+    this.passwordConfirm = undefined;
   }
 
   next();
@@ -123,18 +135,24 @@ userSchema.post(/^find/, function (docs, next) {
 });
 
 async function hashPassword(psword) {
-  // console.log("User credentials: ", this);
-  const pwordSalt = await bcrypt.genSalt(saltRounds);
-  const pwordHash = await bcrypt.hash(psword, pwordSalt);
-  // const isMatch = await bcrypt.compare(this.password, pwordHash);
-  // console.log(isMatch);
-  // console.log(`Password salt: ${pwordSalt}`);
-  console.log(`Hashed password: ${pwordHash}`);
-  return pwordHash;
+  return await bcrypt.hash(psword, 12);
 }
 // AGGREGATION MIDDLEWARES
 
-// DOCUMENT MIDDLEWARE
+// INSTANCE METHODS
 
+userSchema.methods.correctPassword = async (
+  candidatePassword,
+  userPassword
+) => {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+userSchema.methods.passwordChangedAfter = function(JWTDateIssued){
+  const pwordChangedTime =  this.passwordChangedAt.getTime() / 1000;  
+  return pwordChangedTime > JWTDateIssued;
+};
+
+// DOCUMENT MIDDLEWARE
 const userModel = mongoose.model("User", userSchema);
 module.exports = userModel;
