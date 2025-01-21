@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 /* 
 ^ and $: Ensure the entire string is checked.
 (?=.*[a-z]): At least one lowercase letter.
@@ -31,9 +32,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "A user must have a last name!"],
     },
-    isAdmin: {
-      type: Boolean,
-      default: false,
+    role: {
+      type: String,
+      enum: {
+        values: ["user", "admin"],
+        message: "Invalid user role! The valid roles are: user and admin.",
+      },
+      default: "user",
+      select: false,
     },
     email: {
       type: String,
@@ -66,6 +72,7 @@ const userSchema = new mongoose.Schema(
     },
     passwordChangedAt: {
       type: Date,
+      select: false,
     },
     profilePicture: {
       type: String,
@@ -90,6 +97,14 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+      select: false,
+    },
+
+    passwordResetToken: String,
+    tokenExpirationDate: Date,
   },
   {
     toJSON: { virtuals: false },
@@ -107,17 +122,19 @@ userSchema.virtual("fullname").get(function () {
 // Hash password before saving
 userSchema.pre("save", async function (next) {
   console.log("Saving user...");
-
-  if (this.isModified("password")) {
-    hashedPass = await hashPassword(this.password);
-    this.password = hashedPass;
-    this.passwordChangedAt = Date.now();
-    this.passwordConfirm = undefined;
-  }
-
+  if (!this.isModified("password")) return next();
+  this.password = await hashPassword(this.password, 12);
+  this.passwordConfirm = undefined;
   next();
 });
 
+userSchema.pre("save", function (next) {
+  if (this.isModified || !this.isNew) {
+    console.log("Updating password change at!");
+    this.passwordChangedAt = Date.now() - 1000;
+  }
+  next();
+});
 // QUERY MIDDLEWARES
 userSchema.pre(/^find/, function (next) {
   this.start = Date.now();
@@ -125,7 +142,6 @@ userSchema.pre(/^find/, function (next) {
 });
 
 // Appends the new unique contacts in the document
-
 userSchema.post(/^find/, function (docs, next) {
   console.log(
     `This query took ${Date.now() - this.start} milliseconds to complete!`
@@ -140,7 +156,6 @@ async function hashPassword(psword) {
 // AGGREGATION MIDDLEWARES
 
 // INSTANCE METHODS
-
 userSchema.methods.correctPassword = async (
   candidatePassword,
   userPassword
@@ -148,9 +163,26 @@ userSchema.methods.correctPassword = async (
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
-userSchema.methods.passwordChangedAfter = function(JWTDateIssued){
-  const pwordChangedTime =  this.passwordChangedAt.getTime() / 1000;  
+userSchema.methods.passwordChangedAfter = function (JWTDateIssued) {
+  if (!this.passwordChangedAt) return false;
+  const pwordChangedTime = this.passwordChangedAt.getTime() / 1000;
   return pwordChangedTime > JWTDateIssued;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  // Create random hexadecimal string
+  const resetToken = crypto.randomBytes(64).toString("hex");
+
+  // Encrypt the reset token and store it in database
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  // Set the expiration date of the token
+  this.tokenExpirationDate = Date.now() + 10 * 60 * 1000;
+  // return unencrypted token
+  return resetToken;
 };
 
 // DOCUMENT MIDDLEWARE

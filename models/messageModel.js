@@ -1,6 +1,32 @@
 const mongoose = require("mongoose");
+const { trim } = require("validator");
 
-const messageSchema = new mongoose.Schema({});
+const messageSchema = new mongoose.Schema(
+  {
+    message: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ["deleted", "sent", "updated", "forwarded"],
+      select: false,
+    },
 
-const messageModel = mongoose.model("message", messageSchema);
+    conversation: {
+      type: mongoose.Schema.Types.ObjectId,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const messageModel = mongoose.model("Message", messageSchema);
+
 module.exports = messageModel;

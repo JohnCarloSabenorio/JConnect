@@ -2,17 +2,58 @@ const AppError = require("../utils/appError");
 const User = require("./../models/userModel");
 const APIFeatures = require("./../utils/apiFeatures");
 const catchAsync = require("./../utils/catchAsync");
+const handlerFactory = require("./handlerFactory.js");
 // USER HANDLERS
-exports.getAllUsers = catchAsync(async (req, res) => {
-  features = new APIFeatures(User.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields();
-  const users = await features.query;
+
+exports.updateMe = catchAsync(async (req, res, next) => {
+  // Check if the payload has password and password confirm
+  if (req.body.password || req.body.passwordConfirm)
+    return next(
+      new AppError(
+        "Please use a different endpoint for updating the password!",
+        400
+      )
+    );
+
+  console.log(`this is the body:`, req.body);
+  // If not, update the user
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  console.log("Updated:", updatedUser);
   res.status(200).json({
     status: "success",
-    message: "Successfully retrieved all users",
-    data: users,
+    message: "Information successfully updated!",
+    data: updatedUser,
+  });
+});
+
+exports.getMe = catchAsync(async (req, res, next) => {
+  console.log("CURRENT ID:", req.user.id);
+  const currentUser = await User.findById(req.user.id);
+
+  if (!currentUser) {
+    return next(
+      new AppError(`User not found with the id of: ${req.user.id}`, 404)
+    );
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "User successfully retrieved!",
+    data: currentUser,
+  });
+});
+
+exports.deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, {
+    isActive: false,
+  });
+  res.status(204).json({
+    status: "success",
+    message: "Account successfully deleted!",
   });
 });
 
@@ -22,60 +63,6 @@ exports.createUser = catchAsync(async (req, res) => {
   res.status(200).json({
     status: "success",
     message: "Successfully created user",
-  });
-});
-
-exports.getUser = catchAsync(async (req, res) => {
-  const user = await User.find(req.params.id);
-
-  if (!user) {
-    return next(
-      new AppError(`No user found with the id of ${req.params.id}`, 404)
-    );
-  }
-
-  console.log(user);
-  res.status(200).json({
-    status: "success",
-    data: user,
-  });
-});
-
-exports.updateUser = catchAsync(async (req, res) => {
-  console.log("Headers:", req.headers); // Logs headers to verify content type
-  console.log("Request body:", req.body); // Logs the parsed body
-  updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-
-  if (!updatedUser) {
-    res.status(404).json({
-      status: "failed",
-      message: "User does not exist!",
-    });
-  }
-
-  updatedUser.set(req.body); // This applies changes to the user document
-  await updatedUser.save();
-
-  const { password, passwordChangedAt, ...userWithoutSensitiveData } =
-    updatedUser.toObject();
-
-  res.status(200).json({
-    status: "success",
-    message: "Successfully updated user!",
-    data: userWithoutSensitiveData,
-  });
-});
-
-exports.deleteUser = catchAsync(async (req, res) => {
-  await User.findByIdAndDelete(req.params.id);
-  console.log("User deleted!");
-  res.status(204).json({
-    status: "success",
-    message: "Successfully deleted user!",
-    data: null,
   });
 });
 
@@ -106,7 +93,8 @@ exports.getContacts = catchAsync(async (req, res) => {
   });
 });
 
-exports.addContact = catchAsync(async (req, res) => {
+// NEED REVISION
+exports.updateContacts = catchAsync(async (req, res) => {
   const newContacts = Array.isArray(req.body.contacts)
     ? req.body.contacts
     : [req.body.contacts];
@@ -114,7 +102,7 @@ exports.addContact = catchAsync(async (req, res) => {
   console.log("New contacts to be added: ", newContacts);
 
   updatedUser = await User.findByIdAndUpdate(
-    req.params.id,
+    req.user.id,
     {
       $addToSet: {
         contacts: { $each: newContacts },
@@ -136,7 +124,6 @@ exports.addContact = catchAsync(async (req, res) => {
   res.status(200).json({
     status: "success",
     message: "Successfully added contact!",
-    data: updatedUser.contacts,
   });
 });
 
@@ -200,3 +187,9 @@ exports.unblockContact = catchAsync(async (req, res) => {
     data: user,
   });
 });
+
+// GENERIC HANDLERS
+exports.getAllUsers = handlerFactory.getAll(User);
+exports.getUser = handlerFactory.getOne(User);
+exports.updateUser = handlerFactory.updateOne(User);
+exports.deleteUser = handlerFactory.deleteOne(User);
