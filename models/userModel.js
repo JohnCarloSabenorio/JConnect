@@ -81,18 +81,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["online", "away", "offline", "busy"],
     },
-    contacts: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-    blockedUsers: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
     lastActiveAt: {
       type: Date,
       default: Date.now,
@@ -107,6 +95,7 @@ const userSchema = new mongoose.Schema(
     tokenExpirationDate: Date,
   },
   {
+    timestamps: true,
     toJSON: { virtuals: false },
     toObject: { virtuals: false },
   }

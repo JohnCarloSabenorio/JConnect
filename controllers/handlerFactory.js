@@ -25,7 +25,6 @@ exports.createOne = (Model) =>
 exports.getOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.findById(req.params.id);
-
     if (!doc) {
       return next(
         new AppError(`No document found with the id: ${req.params.id}`, 404)
@@ -41,7 +40,10 @@ exports.getOne = (Model) =>
 // TESTED
 exports.getAll = (Model) =>
   catchAsync(async (req, res) => {
-    features = new APIFeatures(Model.find(), req.query)
+    let filter = {};
+    if (req.body.user) filter.user = req.body.user;
+    
+    features = new APIFeatures(Model.find(filter), req.query)
       .filter()
       .sort()
       .limitFields();

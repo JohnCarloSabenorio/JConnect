@@ -8,6 +8,7 @@ process.on("uncaughtException", (err) => {
   console.log(err.name, err.message);
   process.exit(1);
 });
+
 dotenv.config({ path: "./config.env" });
 // REQUIRE APPLICATION
 const app = require("./app");

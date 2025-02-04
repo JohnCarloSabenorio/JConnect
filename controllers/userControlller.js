@@ -15,7 +15,6 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       )
     );
 
-  console.log(`this is the body:`, req.body);
   // If not, update the user
   const updatedUser = await User.findByIdAndUpdate(req.user.id, req.body, {
     new: true,
@@ -63,128 +62,6 @@ exports.createUser = catchAsync(async (req, res) => {
   res.status(200).json({
     status: "success",
     message: "Successfully created user",
-  });
-});
-
-// USER CONTACT HANDLERS
-exports.getContacts = catchAsync(async (req, res) => {
-  const userContacts = await User.findById(req.params.id).select("contacts");
-
-  if (!userContacts) {
-    return next(
-      new AppError(
-        `Contacts of the user ${req.params.id} cannot be found!`,
-        404
-      )
-    );
-  }
-
-  if (!userContacts) {
-    res.status(404).json({
-      status: "failed",
-      message: "Cannot find user contacts!",
-    });
-  }
-
-  console.log("USER CONTACTS:", userContacts);
-  res.status(200).json({
-    status: "success",
-    data: userContacts,
-  });
-});
-
-// NEED REVISION
-exports.updateContacts = catchAsync(async (req, res) => {
-  const newContacts = Array.isArray(req.body.contacts)
-    ? req.body.contacts
-    : [req.body.contacts];
-
-  console.log("New contacts to be added: ", newContacts);
-
-  updatedUser = await User.findByIdAndUpdate(
-    req.user.id,
-    {
-      $addToSet: {
-        contacts: { $each: newContacts },
-      },
-    },
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
-
-  if (!updatedUser) {
-    res.status(404).json({
-      status: "failed",
-      message: "User does not exist!",
-    });
-  }
-
-  res.status(200).json({
-    status: "success",
-    message: "Successfully added contact!",
-  });
-});
-
-exports.deleteContact = catchAsync(async (req, res) => {
-  console.log(req.body);
-  updatedUser = await User.findByIdAndUpdate(req.params.id, {
-    $pull: {
-      contacts: req.body.userId,
-    },
-  });
-  console.log(updatedUser.contacts);
-  res.status(204).json({
-    status: "success",
-    message: "Successfully deleted contact!",
-  });
-});
-
-exports.blockContact = catchAsync(async (req, res) => {
-  console.log(req.body);
-
-  await User.findByIdAndUpdate(req.params.id, {
-    $pull: {
-      contacts: req.body.userId,
-    },
-  });
-
-  const user = await User.findByIdAndUpdate(
-    req.params.id,
-    {
-      $push: {
-        blockedUsers: req.body.userId,
-      },
-    },
-    {
-      new: true,
-    }
-  );
-
-  res.status(200).json({
-    status: "success",
-    message: "Successfully blocked contact!",
-    data: user,
-  });
-});
-
-exports.unblockContact = catchAsync(async (req, res) => {
-  console.log(req.body);
-
-  const user = await User.findByIdAndUpdate(
-    req.params.id,
-    {
-      $pull: {
-        blockedUsers: req.body.userId,
-      },
-    },
-    { new: true }
-  );
-  res.status(200).json({
-    status: "success",
-    message: "Successfully unblocked contact!",
-    data: user,
   });
 });
 

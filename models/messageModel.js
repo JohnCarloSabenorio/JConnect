@@ -27,6 +27,12 @@ const messageSchema = new mongoose.Schema(
   }
 );
 
+// Document Middlewares
+
+// Query Middlewares
+
+// Methods
+
 const messageModel = mongoose.model("Message", messageSchema);
 
 module.exports = messageModel;

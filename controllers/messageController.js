@@ -11,6 +11,8 @@ exports.initSenderConvo = (req, res, next) => {
 
 exports.sendMessage = handlerFactory.createOne(Message);
 exports.getMessage = handlerFactory.getOne(Message);
-exports.getMessages = handlerFactory.getAll(Message);
+exports.getAllMessages = handlerFactory.getAll(Message);
 exports.updateMessage = handlerFactory.updateOne(Message);
 exports.deleteMessage = handlerFactory.deleteOne(Message);
+
+

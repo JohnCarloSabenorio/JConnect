@@ -3,7 +3,7 @@ const router = express.Router();
 const controller = require("./../controllers/messageController");
 const authController = require("./../controllers/authController");
 
-router.route("/").get(authController.protect, controller.getMessages);
+router.route("/").get(authController.protect, controller.getAllMessages);
 router
   .route("/:convoId")
   .post(

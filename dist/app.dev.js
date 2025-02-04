@@ -1,0 +1,69 @@
+"use strict";
+
+// REQUIRE PACKAGES
+var express = require("express");
+
+var morgan = require("morgan"); // The main application
+
+
+var app = express();
+
+var AppError = require("./utils/appError");
+
+var globalErrorHandler = require("./controllers/errorController"); // DEFINE ROUTERS
+
+
+var userRouter = require("./routes/userRoutes");
+
+var messageRouter = require("./routes/messageRoutes");
+
+var friendRouter = require("./routes/friendRoutes");
+
+var rateLimit = require("express-rate-limit");
+
+var helmet = require("helmet");
+
+var mongoSanitize = require("express-mongo-sanitize");
+
+var xssFilters = require("xss-filters");
+
+var hpp = require("hpp");
+
+var cookieParser = require("cookie-parser"); // GLOBAL MIDDLEWARES
+
+
+app.use(helmet());
+
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev")); // This will log http request information
+}
+
+var limiter = rateLimit.rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 100,
+  message: "Too many requests! Please try again after 1 hour."
+});
+app.use(limiter); // Data sanitization against NoSQL Query injection
+
+app.use(mongoSanitize());
+app.use(express.urlencoded({
+  extended: true
+}));
+app.use(express.json());
+app.use(cookieParser());
+app.use(function (req, res, next) {
+  req.requestTime = new Date().toISOString();
+  console.log("Server request time: " + req.requestTime);
+  next();
+});
+app.use(express["static"]("".concat(__dirname, "/public"))); // ROUTES
+
+app.use("/jconnect/v1/users", userRouter);
+app.use("/jconnect/v1/message", messageRouter);
+app.use("/jconnect/v1/friends", friendRouter);
+app.all("*", function (req, res, next) {
+  next(new AppError("Cannot find ".concat(req.originalUrl, " on the server!"), 404));
+});
+app.use(globalErrorHandler); // EXPORT APPLICATION
+
+module.exports = app;

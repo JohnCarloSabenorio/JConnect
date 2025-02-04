@@ -17,7 +17,6 @@ const createSignToken = (user, statusCode, res) => {
   const token = signToken(user._id);
 
   // Create options for the cookie
-
   const cookieOptions = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
@@ -38,6 +37,7 @@ const createSignToken = (user, statusCode, res) => {
     data: user,
   });
 };
+
 exports.signup = catchAsync(async (req, res, next) => {
   // Create user
 
@@ -225,4 +225,30 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   createSignToken(user, 200, res);
+});
+
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  // 1. Get the decoded cookie
+  const decoded = await promisify(jwt.verify)(
+    req.cookies.jwt,
+    process.env.JWT_SECRET
+  );
+
+  // 2. Check if the user still exists
+  const currentUser = await User.findById(decoded.id);
+
+  if (!currentUser) {
+    next(new AppError("User no longer exists!", 404));
+  }
+
+  // 3. Check if the user changed his/her password
+  if (currentUser.passwordChangedAfter(decoded.iat)) {
+    next(new AppError("User changed his/her password!", 404));
+  }
+
+  // 4. set req.locals.user equal to the currentUser
+  res.locals.user = currentUser;
+
+  // 5. go to the next middleware
+  next();
 });
