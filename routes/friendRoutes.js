@@ -14,13 +14,13 @@ router
   .route("/")
   .get(friendController.setUserBody, friendController.getAllFriends)
   .post(friendController.setUserFriendBody, friendController.addFriend);
+
 router
   .route("/:id")
   .get(friendController.getFriend)
+  .patch(friendController.updateFriend)
   .delete(friendController.deleteFriend);
 
 // Blocks or unblocks a user
-// router.route("/block/:id").patch(friendController.blockUser);
-// router.route("/unblock/:id").patch(friendController.unblockUser);
 
 module.exports = router;

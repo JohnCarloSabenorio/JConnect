@@ -5,7 +5,12 @@ const dotenv = require("dotenv");
 // CATCHES SYNCHRONOUS ERRORS
 process.on("uncaughtException", (err) => {
   console.log("UNCAUGHT EXCEPTION! Shutting down the application...");
-  console.log(err.name, err.message);
+
+  if (process.env.NODE_ENV == "development") {
+    console.log(err);
+  } else {
+    console.log(err.name, err.message);
+  }
   process.exit(1);
 });
 
@@ -36,7 +41,11 @@ const server = app.listen(port, () => {
 // SAFETY NET FOR ERRORS
 process.on("unhandledRejection", (err) => {
   console.log("UNHANDLED REJECTION! Shutting down the application...");
-  console.log(err.name, err.message);
+  if (process.env.NODE_ENV == "development") {
+    console.log(err);
+  } else {
+    console.log(err.name, err.message);
+  }
   server.close(() => {
     process.exit(1);
   });

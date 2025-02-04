@@ -8,7 +8,13 @@ var dotenv = require("dotenv"); // CATCHES SYNCHRONOUS ERRORS
 
 process.on("uncaughtException", function (err) {
   console.log("UNCAUGHT EXCEPTION! Shutting down the application...");
-  console.log(err.name, err.message);
+
+  if (process.env.NODE_ENV == "development") {
+    console.log(err);
+  } else {
+    console.log(err.name, err.message);
+  }
+
   process.exit(1);
 });
 dotenv.config({
@@ -35,7 +41,13 @@ var server = app.listen(port, function () {
 
 process.on("unhandledRejection", function (err) {
   console.log("UNHANDLED REJECTION! Shutting down the application...");
-  console.log(err.name, err.message);
+
+  if (process.env.NODE_ENV == "development") {
+    console.log(err);
+  } else {
+    console.log(err.name, err.message);
+  }
+
   server.close(function () {
     process.exit(1);
   });

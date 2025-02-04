@@ -9,7 +9,7 @@ router
   .post(
     authController.protect,
     controller.initSenderConvo,
-    controller.sendMessage
+    controller.createMessage
   );
 
 router

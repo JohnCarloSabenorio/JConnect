@@ -1,5 +1,8 @@
-const Conversation = require("../models/conversationModel");
-const handleFactory = require("./handlerFactory");
+"use strict";
+
+var Conversation = require("../models/conversationModel");
+
+var handleFactory = require("./handlerFactory");
 
 exports.createConversation = handleFactory.createOne(Conversation);
 exports.getConversation = handleFactory.getOne(Conversation);

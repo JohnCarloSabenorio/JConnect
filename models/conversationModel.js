@@ -7,13 +7,20 @@ const convoSchema = new mongoose.Schema(
     users: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: User,
+        ref: 'User',
+        required: true,
+        validate: {
+          validator: (arr) => {
+            arr.length >= 2 && arr.length <= 10;
+          },
+          message: "{PATH} must be between 2 and 10 users",
+        },
       },
     ],
     messages: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: Message,
+        ref: 'Message',
       },
     ],
     convoName: {

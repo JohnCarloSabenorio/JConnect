@@ -14,7 +14,7 @@ exports.initSenderConvo = function (req, res, next) {
   next();
 };
 
-exports.sendMessage = handlerFactory.createOne(Message);
+exports.createMessage = handlerFactory.createOne(Message);
 exports.getMessage = handlerFactory.getOne(Message);
 exports.getAllMessages = handlerFactory.getAll(Message);
 exports.updateMessage = handlerFactory.updateOne(Message);

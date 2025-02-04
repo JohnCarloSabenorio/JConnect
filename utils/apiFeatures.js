@@ -8,18 +8,18 @@ class APIFeatures {
   filter() {
     try {
       console.log("Query String:", this.queryString);
+      // 1. Converts query string into an object
       let queryObj = { ...this.queryString };
-      console.log("Query Object:", queryObj);
-      console.log("Query object before:", queryObj);
+
+      // 2. Exclude fields that are used for the api features
       const excludedFields = ["page", "sort", "limit", "fields"];
       excludedFields.forEach((field) => delete queryObj[field]);
-      console.log("Query object after:", queryObj);
 
-      // Add $ to gte, gt, lte, and lt
+      // 3. Add $ to gte, gt, lte, and lt in the queries
       let queryStr = JSON.stringify(queryObj);
       queryStr = queryStr.replace(/\b(gte|gt|lte|lt)/g, (match) => `$${match}`);
 
-      // Execute filtered query
+      // 4. Convert the queryString into an object and execute the query
       this.query.find(JSON.parse(queryStr));
     } catch (err) {
       console.log("Failed to filter query!");

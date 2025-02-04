@@ -15,7 +15,10 @@ var friendSchema = mongoose.Schema({
   },
   status: {
     type: String,
-    "enum": ["pending", "accepted", "blocked"],
+    "enum": {
+      values: ["pending", "accepted", "blocked"],
+      message: "{VALUE} is not a valid status. The available statuses are: pending, accepted, and blocked."
+    },
     "default": "pending"
   }
 }, {
