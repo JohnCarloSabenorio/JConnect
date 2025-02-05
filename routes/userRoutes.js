@@ -2,11 +2,15 @@ const express = require("express");
 
 const authController = require("./../controllers/authController");
 const controller = require("./../controllers/userControlller");
+const convoRouter = require("./conversationRoutes");
+
 /* 
 const multer = require("multer");
 const upload = multer(); // this is used for multipart/form-data
 */
 const router = express.Router();
+
+router.use("/convoMember/:userId", convoRouter);
 
 router.route("/signup").post(authController.signup);
 router.route("/login").post(authController.login);
@@ -15,6 +19,9 @@ router.route("/forgotPassword").post(authController.forgotPassword);
 router.route("/resetPassword/:token").patch(authController.resetPassword);
 
 router.use(authController.protect);
+
+router.route("/convo/:userId");
+
 router.route("/updatePassword").patch(authController.updatePassword);
 
 router.route("/").get(controller.getAllUsers).post(controller.createUser);

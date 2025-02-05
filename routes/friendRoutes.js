@@ -12,8 +12,8 @@ const friend = require("../models/friendModel");
 router.use(authController.protect);
 router
   .route("/")
-  .get(friendController.setUserBody, friendController.getAllFriends)
-  .post(friendController.setUserFriendBody, friendController.addFriend);
+  .get(friendController.getAllFriends)
+  .post(friendController.addFriend);
 
 router
   .route("/:id")

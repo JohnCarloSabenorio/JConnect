@@ -20,6 +20,7 @@ const messageSchema = new mongoose.Schema(
 
     conversation: {
       type: mongoose.Schema.Types.ObjectId,
+      required: true,
     },
   },
   {

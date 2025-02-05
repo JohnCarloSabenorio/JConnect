@@ -15,7 +15,7 @@ var friend = require("../models/friendModel"); // router
 
 
 router.use(authController.protect);
-router.route("/").get(friendController.setUserBody, friendController.getAllFriends).post(friendController.setUserFriendBody, friendController.addFriend);
+router.route("/").get(friendController.getAllFriends).post(friendController.addFriend);
 router.route("/:id").get(friendController.getFriend).patch(friendController.updateFriend)["delete"](friendController.deleteFriend); // Blocks or unblocks a user
 
 module.exports = router;

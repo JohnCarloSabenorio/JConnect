@@ -21,7 +21,8 @@ var messageSchema = new mongoose.Schema({
     select: false
   },
   conversation: {
-    type: mongoose.Schema.Types.ObjectId
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
   }
 }, {
   timestamps: true

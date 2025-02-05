@@ -1,9 +1,15 @@
 const express = require("express");
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true }); // mergeParams is needed to pass in parameters from a subrouter.
 const convoController = require("../controllers/conversationController");
 const authController = require("../controllers/authController");
 
+router
+  .route("/addMember/:convoId")
+  .post(convoController.addMember)
+  .delete(convoController.removeMember);
+
+router.use(authController.protect);
 router
   .route("/")
   .get(convoController.getAllConversation)
@@ -14,4 +20,6 @@ router
   .get(convoController.getConversation)
   .patch(convoController.updateConversation)
   .delete(convoController.deleteConversation);
+
+router.route("/");
 module.exports = router;
