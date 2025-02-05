@@ -11,11 +11,13 @@ var convoSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true
-    }] // validate: {
-    //   validator: (arr) => arr.length >= 2 && arr.length <= 10,
-    //   message: "{PATH} must be between 2 and 10 users",
-    // },
-
+    }],
+    validate: {
+      validator: function validator(arr) {
+        return arr.length >= 2 && arr.length <= 10;
+      },
+      message: "{PATH} must be between 2 and 10 users"
+    }
   },
   convoName: {
     type: String,

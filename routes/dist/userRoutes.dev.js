@@ -16,7 +16,7 @@ const upload = multer(); // this is used for multipart/form-data
 
 
 var router = express.Router();
-router.use("/convoMember/:userId", convoRouter);
+router.use("/:userId/conversation", convoRouter);
 router.use("/:friendId/addFriend", friendRouter);
 router.route("/signup").post(authController.signup);
 router.route("/login").post(authController.login);

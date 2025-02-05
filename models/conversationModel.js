@@ -12,10 +12,10 @@ const convoSchema = new mongoose.Schema(
           required: true,
         },
       ],
-      // validate: {
-      //   validator: (arr) => arr.length >= 2 && arr.length <= 10,
-      //   message: "{PATH} must be between 2 and 10 users",
-      // },
+      validate: {
+        validator: (arr) => arr.length >= 2 && arr.length <= 10,
+        message: "{PATH} must be between 2 and 10 users",
+      },
     },
     convoName: {
       type: String,

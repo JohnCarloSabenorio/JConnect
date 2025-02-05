@@ -8,7 +8,7 @@ const messageRouter = require("./messageRoutes");
 router.use("/:convoId/message", messageRouter);
 
 router
-  .route("/addMember/:convoId")
+  .route("/member/:convoId")
   .post(convoController.addMember)
   .delete(convoController.removeMember);
 
