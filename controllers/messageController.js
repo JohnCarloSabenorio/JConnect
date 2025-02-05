@@ -5,7 +5,7 @@ const handlerFactory = require("./handlerFactory");
 
 exports.initSenderConvo = (req, res, next) => {
   req.body.sender = req.user.id;
-  console.log("CONVERSATION ID:", req.params.convoId);
+  req.body.conversation = req.params.convoId;
   next();
 };
 
@@ -14,5 +14,3 @@ exports.getMessage = handlerFactory.getOne(Message);
 exports.getAllMessages = handlerFactory.getAll(Message);
 exports.updateMessage = handlerFactory.updateOne(Message);
 exports.deleteMessage = handlerFactory.deleteOne(Message);
-
-

@@ -41,8 +41,12 @@ exports.getOne = (Model) =>
 exports.getAll = (Model) =>
   catchAsync(async (req, res) => {
     let filter = {};
+
+    console.log("USER TO GET FRIENDS FOR:", req.body.user);
     if (req.body.user) filter.user = req.body.user;
-    
+
+    console.log("FILTER:", filter);
+
     features = new APIFeatures(Model.find(filter), req.query)
       .filter()
       .sort()

@@ -3,6 +3,9 @@ const express = require("express");
 const router = express.Router({ mergeParams: true }); // mergeParams is needed to pass in parameters from a subrouter.
 const convoController = require("../controllers/conversationController");
 const authController = require("../controllers/authController");
+const messageRouter = require("./messageRoutes");
+
+router.use("/:convoId/message", messageRouter);
 
 router
   .route("/addMember/:convoId")

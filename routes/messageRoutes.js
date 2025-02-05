@@ -1,11 +1,15 @@
 const express = require("express");
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const controller = require("./../controllers/messageController");
 const authController = require("./../controllers/authController");
 
-router.route("/").get(authController.protect, controller.getAllMessages);
 router
-  .route("/:convoId")
+  .route("/")
+  .get(
+    authController.protect,
+    controller.initSenderConvo,
+    controller.getAllMessages
+  )
   .post(
     authController.protect,
     controller.initSenderConvo,

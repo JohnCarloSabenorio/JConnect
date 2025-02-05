@@ -1,19 +1,16 @@
 const express = require("express");
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const friendController = require("../controllers/friendController");
 const authController = require("../controllers/authController");
 const friend = require("../models/friendModel");
 
-// router
-//   .route("/")
-//   .get(friendController.getAllFriends)
-//   .patch(friendController.updateFriends);
-
 router.use(authController.protect);
+
+// get all friends need to be improved
 router
   .route("/")
   .get(friendController.getAllFriends)
-  .post(friendController.addFriend);
+  .post(friendController.initUserFriendBody, friendController.createFriend);
 
 router
   .route("/:id")

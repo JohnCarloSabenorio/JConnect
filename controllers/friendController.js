@@ -4,24 +4,16 @@ const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const handlerFactory = require("./handlerFactory");
 
-// exports.setUserBody = (req, res, next) => {
-//   req.body.user = req.params.id;
-//   next();
-// };
-
-// exports.setUserFriendBody = catchAsync(async (req, res, next) => {
-//   req.body.user = req.user.id;
-//   const friend = await User.find({ email: req.body.email });
-
-//   if (!friend || friend.length == 0) {
-//     return next(new AppError("User to befriend cannot be found!", 404));
-//   }
-//   req.body.friend = friend[0]._id;
-//   next();
-// });
+exports.initUserFriendBody = (req, res, next) => {
+  if (req.params.friendId) {
+    req.body.user = req.user.id;
+    req.body.friend = req.params.friendId;
+  }
+  next();
+};
 
 exports.getAllFriends = handlerFactory.getAll(Friend);
-exports.addFriend = handlerFactory.createOne(Friend);
+exports.createFriend = handlerFactory.createOne(Friend);
 exports.getFriend = handlerFactory.getOne(Friend);
 exports.deleteFriend = handlerFactory.deleteOne(Friend);
 exports.updateFriend = handlerFactory.updateOne(Friend);

@@ -10,7 +10,7 @@ var handlerFactory = require("./handlerFactory");
 
 exports.initSenderConvo = function (req, res, next) {
   req.body.sender = req.user.id;
-  console.log("CONVERSATION ID:", req.params.convoId);
+  req.body.conversation = req.params.convoId;
   next();
 };
 

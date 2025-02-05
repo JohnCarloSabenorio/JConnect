@@ -4,6 +4,8 @@ var AppError = require("../utils/appError");
 
 var User = require("./../models/userModel");
 
+var Friend = require("./../models/friendModel.js");
+
 var APIFeatures = require("./../utils/apiFeatures");
 
 var catchAsync = require("./../utils/catchAsync");
@@ -122,6 +124,32 @@ exports.createUser = catchAsync(function _callee4(req, res) {
         case 4:
         case "end":
           return _context4.stop();
+      }
+    }
+  });
+});
+exports.getMyFriends = catchAsync(function _callee5(req, res) {
+  var friends;
+  return regeneratorRuntime.async(function _callee5$(_context5) {
+    while (1) {
+      switch (_context5.prev = _context5.next) {
+        case 0:
+          _context5.next = 2;
+          return regeneratorRuntime.awrap(Friend.find({
+            user: req.user.id
+          }));
+
+        case 2:
+          friends = _context5.sent;
+          res.status(200).json({
+            status: "success",
+            message: "successfully retrived friends of current user",
+            friends: friends
+          });
+
+        case 4:
+        case "end":
+          return _context5.stop();
       }
     }
   });

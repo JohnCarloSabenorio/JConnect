@@ -1,5 +1,6 @@
 const AppError = require("../utils/appError");
 const User = require("./../models/userModel");
+const Friend = require("./../models/friendModel.js");
 const APIFeatures = require("./../utils/apiFeatures");
 const catchAsync = require("./../utils/catchAsync");
 const handlerFactory = require("./handlerFactory.js");
@@ -62,6 +63,18 @@ exports.createUser = catchAsync(async (req, res) => {
   res.status(200).json({
     status: "success",
     message: "Successfully created user",
+  });
+});
+
+exports.getMyFriends = catchAsync(async (req, res) => {
+  const friends = await Friend.find({
+    user: req.user.id,
+  });
+
+  res.status(200).json({
+    status: "success",
+    message: "successfully retrived friends of current user",
+    friends
   });
 });
 
