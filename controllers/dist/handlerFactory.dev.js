@@ -88,14 +88,12 @@ exports.getAll = function (Model) {
         switch (_context3.prev = _context3.next) {
           case 0:
             filter = {};
-            console.log("USER TO GET FRIENDS FOR:", req.body.user);
-            if (req.body.user) filter.user = req.body.user;
             console.log("FILTER:", filter);
             features = new APIFeatures(Model.find(filter), req.query).filter().sort().limitFields();
-            _context3.next = 7;
+            _context3.next = 5;
             return regeneratorRuntime.awrap(features.query);
 
-          case 7:
+          case 5:
             docs = _context3.sent;
             res.status(200).json({
               status: "success",
@@ -103,7 +101,7 @@ exports.getAll = function (Model) {
               data: docs
             });
 
-          case 9:
+          case 7:
           case "end":
             return _context3.stop();
         }

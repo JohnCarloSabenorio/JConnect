@@ -2,12 +2,12 @@ const mongoose = require("mongoose");
 
 const friendSchema = mongoose.Schema(
   {
-    user: {
+    user1: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    friend: {
+    user2: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -29,7 +29,7 @@ const friendSchema = mongoose.Schema(
   }
 );
 
-friendSchema.index({ user: 1, friend: 1 }, { unique: true });
+friendSchema.index({ user1: 1, user2: 1 }, { unique: true });
 
 // QUERY MIDDLEWARE
 

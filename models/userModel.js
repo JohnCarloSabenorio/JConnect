@@ -90,7 +90,6 @@ const userSchema = new mongoose.Schema(
       default: true,
       select: false,
     },
-
     passwordResetToken: String,
     tokenExpirationDate: Date,
   },

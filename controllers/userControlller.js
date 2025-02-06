@@ -66,18 +66,6 @@ exports.createUser = catchAsync(async (req, res) => {
   });
 });
 
-exports.getMyFriends = catchAsync(async (req, res) => {
-  const friends = await Friend.find({
-    user: req.user.id,
-  });
-
-  res.status(200).json({
-    status: "success",
-    message: "successfully retrived friends of current user",
-    friends
-  });
-});
-
 // GENERIC HANDLERS
 exports.getAllUsers = handlerFactory.getAll(User);
 exports.getUser = handlerFactory.getOne(User);

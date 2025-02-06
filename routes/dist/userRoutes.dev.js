@@ -17,7 +17,6 @@ const upload = multer(); // this is used for multipart/form-data
 
 var router = express.Router();
 router.use("/:userId/conversation", convoRouter);
-router.use("/:friendId/addFriend", friendRouter);
 router.route("/signup").post(authController.signup);
 router.route("/login").post(authController.login);
 router.route("/forgotPassword").post(authController.forgotPassword);
@@ -26,7 +25,6 @@ router.use(authController.protect);
 router.route("/convo/:userId");
 router.route("/updatePassword").patch(authController.updatePassword);
 router.route("/").get(controller.getAllUsers).post(controller.createUser);
-router.route("/myFriends").get(controller.getMyFriends);
 router.route("/updateMe").patch(controller.updateMe);
 router.route("/getMe").get(controller.getMe);
 router.route("/deleteMe")["delete"](controller.deleteMe); // Modifies a user

@@ -6,11 +6,10 @@ const friend = require("../models/friendModel");
 
 router.use(authController.protect);
 
-// get all friends need to be improved
 router
   .route("/")
   .get(friendController.getAllFriends)
-  .post(friendController.initUserFriendBody, friendController.createFriend);
+  .post(friendController.createFriend);
 
 router
   .route("/:id")
@@ -18,6 +17,14 @@ router
   .patch(friendController.updateFriend)
   .delete(friendController.deleteFriend);
 
+router
+  .route("/friendRequest/:friendId")
+  .post(friendController.sendFriendRequest);
+
+
+// NEEDS TO BE REVISED IN THE FUTURE
+router.route("/currentUser/allFriends").get(friendController.getMyFriends);
+router.route("/friendRequests/myFriendRequests").get(friendController.getMyFriendRequests);
 // Blocks or unblocks a user
 
 module.exports = router;

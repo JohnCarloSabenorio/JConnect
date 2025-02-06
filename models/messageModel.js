@@ -8,6 +8,7 @@ const messageSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+
     sender: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -17,7 +18,7 @@ const messageSchema = new mongoose.Schema(
       enum: ["deleted", "sent", "updated", "forwarded"],
       select: false,
     },
-
+    images: [String],
     conversation: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

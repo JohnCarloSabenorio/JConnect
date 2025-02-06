@@ -12,6 +12,8 @@ router
   )
   .post(
     authController.protect,
+    controller.uploadImages,
+    controller.resizeImages,
     controller.initSenderConvo,
     controller.createMessage
   );
