@@ -1,0 +1,23 @@
+{
+  "name": "jconnect-forms",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.1.0"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "axios": "^1.7.9",
+    "jconnect-forms": "file:",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^4.0.3"
+  }
+}
