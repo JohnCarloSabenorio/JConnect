@@ -416,3 +416,44 @@ exports.isLoggedIn = catchAsync(function _callee7(req, res, next) {
     }
   });
 });
+exports.isLoggedInBool = catchAsync(function _callee8(req, res, next) {
+  var decoded, currentUser;
+  return regeneratorRuntime.async(function _callee8$(_context8) {
+    while (1) {
+      switch (_context8.prev = _context8.next) {
+        case 0:
+          console.log("WTF?"); // 1. Get the decoded cookie
+
+          _context8.next = 3;
+          return regeneratorRuntime.awrap(promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET));
+
+        case 3:
+          decoded = _context8.sent;
+          _context8.next = 6;
+          return regeneratorRuntime.awrap(User.findById(decoded.id));
+
+        case 6:
+          currentUser = _context8.sent;
+
+          if (!currentUser) {
+            next(new AppError("User no longer exists!", 404));
+          } // 3. Check if the user changed his/her password
+
+
+          if (currentUser.passwordChangedAfter(decoded.iat)) {
+            next(new AppError("User changed his/her password!", 404));
+          }
+
+          res.status(200).json({
+            status: "success",
+            message: "User is logged in",
+            currentUser: currentUser
+          });
+
+        case 10:
+        case "end":
+          return _context8.stop();
+      }
+    }
+  });
+});

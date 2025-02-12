@@ -36,7 +36,8 @@ var cookieParser = require("cookie-parser");
 var cors = require("cors");
 
 var corsOptions = {
-  origin: "http://localhost:5173"
+  origin: "http://localhost:5173",
+  credentials: true
 }; // GLOBAL MIDDLEWARES
 
 app.use(cors(corsOptions));

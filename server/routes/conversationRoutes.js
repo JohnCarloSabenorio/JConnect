@@ -12,11 +12,11 @@ router
   .post(convoController.addMember)
   .delete(convoController.removeMember);
 
-router.use(authController.protect);
 router
   .route("/")
   .get(convoController.getAllConversation)
   .post(convoController.createConversation);
+router.use(authController.protect);
 
 router
   .route("/:id")

@@ -252,3 +252,30 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
   // 5. go to the next middleware
   next();
 });
+
+exports.isLoggedInBool = catchAsync(async (req, res, next) => {
+  console.log("WTF?");
+  // 1. Get the decoded cookie
+  const decoded = await promisify(jwt.verify)(
+    req.cookies.jwt,
+    process.env.JWT_SECRET
+  );
+
+  // 2. Check if the user still exists
+  const currentUser = await User.findById(decoded.id);
+
+  if (!currentUser) {
+    next(new AppError("User no longer exists!", 404));
+  }
+
+  // 3. Check if the user changed his/her password
+  if (currentUser.passwordChangedAfter(decoded.iat)) {
+    next(new AppError("User changed his/her password!", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "User is logged in",
+    currentUser,
+  });
+});
