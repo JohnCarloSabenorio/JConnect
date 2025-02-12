@@ -35,7 +35,7 @@ const limiter = rateLimit.rateLimit({
   message: "Too many requests! Please try again after 1 hour.",
 });
 
-app.use(limiter);
+// app.use(limiter);
 // Data sanitization against NoSQL Query injection
 app.use(mongoSanitize());
 

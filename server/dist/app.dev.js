@@ -51,8 +51,8 @@ var limiter = rateLimit.rateLimit({
   windowMs: 60 * 60 * 1000,
   limit: 100,
   message: "Too many requests! Please try again after 1 hour."
-});
-app.use(limiter); // Data sanitization against NoSQL Query injection
+}); // app.use(limiter);
+// Data sanitization against NoSQL Query injection
 
 app.use(mongoSanitize());
 app.use(express.urlencoded({

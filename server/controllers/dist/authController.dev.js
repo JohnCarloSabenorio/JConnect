@@ -30,7 +30,10 @@ var createSignToken = function createSignToken(user, statusCode, res) {
 
   var cookieOptions = {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
-    httpOnly: true
+    httpOnly: true // sameSite: "None",
+    // domain: "localhost",
+    // path: "/",
+
   }; // If environment is in production, use https
 
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true; // Create the cookie
@@ -39,7 +42,7 @@ var createSignToken = function createSignToken(user, statusCode, res) {
   res.status(statusCode).json({
     status: "success",
     token: token,
-    message: "user successfully created!",
+    message: "user successfully logged in!",
     data: user
   });
 };
@@ -384,15 +387,17 @@ exports.isLoggedIn = catchAsync(function _callee7(req, res, next) {
     while (1) {
       switch (_context7.prev = _context7.next) {
         case 0:
-          _context7.next = 2;
+          // 1. Get the decoded cookie
+          console.log(req);
+          _context7.next = 3;
           return regeneratorRuntime.awrap(promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET));
 
-        case 2:
+        case 3:
           decoded = _context7.sent;
-          _context7.next = 5;
+          _context7.next = 6;
           return regeneratorRuntime.awrap(User.findById(decoded.id));
 
-        case 5:
+        case 6:
           currentUser = _context7.sent;
 
           if (!currentUser) {
@@ -409,7 +414,7 @@ exports.isLoggedIn = catchAsync(function _callee7(req, res, next) {
 
           next();
 
-        case 10:
+        case 11:
         case "end":
           return _context7.stop();
       }
@@ -422,17 +427,15 @@ exports.isLoggedInBool = catchAsync(function _callee8(req, res, next) {
     while (1) {
       switch (_context8.prev = _context8.next) {
         case 0:
-          console.log("WTF?"); // 1. Get the decoded cookie
-
-          _context8.next = 3;
+          _context8.next = 2;
           return regeneratorRuntime.awrap(promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET));
 
-        case 3:
+        case 2:
           decoded = _context8.sent;
-          _context8.next = 6;
+          _context8.next = 5;
           return regeneratorRuntime.awrap(User.findById(decoded.id));
 
-        case 6:
+        case 5:
           currentUser = _context8.sent;
 
           if (!currentUser) {
@@ -450,7 +453,7 @@ exports.isLoggedInBool = catchAsync(function _callee8(req, res, next) {
             currentUser: currentUser
           });
 
-        case 10:
+        case 9:
         case "end":
           return _context8.stop();
       }

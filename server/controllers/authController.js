@@ -22,18 +22,21 @@ const createSignToken = (user, statusCode, res) => {
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
+    // sameSite: "None",
+    // domain: "localhost",
+    // path: "/",
   };
 
   // If environment is in production, use https
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
   // Create the cookie
-  res.cookie("jwt", token, cookieOptions);
 
+  res.cookie("jwt", token, cookieOptions);
   res.status(statusCode).json({
     status: "success",
     token,
-    message: "user successfully created!",
+    message: "user successfully logged in!",
     data: user,
   });
 };
@@ -56,6 +59,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 exports.login = async (req, res, next) => {
   // 1. Check if password or email exists
   const { email, password } = req.body;
+
   if (!email || !password) {
     return next(new AppError("Please provide your email and password!", 400));
   }
@@ -229,6 +233,8 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
   // 1. Get the decoded cookie
+
+  console.log(req);
   const decoded = await promisify(jwt.verify)(
     req.cookies.jwt,
     process.env.JWT_SECRET
@@ -254,7 +260,6 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
 });
 
 exports.isLoggedInBool = catchAsync(async (req, res, next) => {
-  console.log("WTF?");
   // 1. Get the decoded cookie
   const decoded = await promisify(jwt.verify)(
     req.cookies.jwt,
