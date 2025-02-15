@@ -57,13 +57,20 @@ export default class App extends Component {
       <>
         <BrowserRouter>
           <Routes>
-            <Route index element={<Login />} />
+            <Route
+              index
+              element={<Login status={this.state.loggedInStatus} />}
+            />
+            <Route
+              path="/register"
+              status={this.state.loggedInStatus}
+              element={<Register />}
+            />
+            <Route path="/*" element={<NoPage />} />
             <Route
               element={<ProtectedRoutes status={this.state.loggedInStatus} />}
             >
-              <Route path="/register" element={<Register />} />
               <Route path="/chat" element={<Chat />} />
-              <Route path="/*" element={<NoPage />} />
             </Route>
           </Routes>
         </BrowserRouter>

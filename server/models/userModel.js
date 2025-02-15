@@ -21,17 +21,6 @@ const userSchema = new mongoose.Schema(
         "A username must have less than or equal to 20 characters.",
       ],
     },
-    fname: {
-      type: String,
-      required: [true, "A user must have a first name!"],
-    },
-    mname: {
-      type: String,
-    },
-    lname: {
-      type: String,
-      required: [true, "A user must have a last name!"],
-    },
     role: {
       type: String,
       enum: {

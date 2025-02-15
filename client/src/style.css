@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+.active {
+  background: rgb(237, 202, 202);
+  border-radius: 5px;
+  padding: 7px;
+}
+
 .custom-outline {
   -webkit-text-stroke: 0.3px black;
 }

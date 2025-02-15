@@ -53,22 +53,22 @@ exports.signup = catchAsync(function _callee(req, res, next) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          _context.next = 2;
+          // Create user
+          console.log("THE BODY:", req.body);
+          _context.next = 3;
           return regeneratorRuntime.awrap(User.create({
             username: req.body.username,
-            fname: req.body.fname,
-            lname: req.body.lname,
             email: req.body.email,
             password: req.body.password,
             passwordConfirm: req.body.passwordConfirm
           }));
 
-        case 2:
+        case 3:
           newUser = _context.sent;
           // Sign token
           createSignToken(newUser, 200, res);
 
-        case 4:
+        case 5:
         case "end":
           return _context.stop();
       }
@@ -427,15 +427,23 @@ exports.isLoggedInBool = catchAsync(function _callee8(req, res, next) {
     while (1) {
       switch (_context8.prev = _context8.next) {
         case 0:
-          _context8.next = 2;
+          // 1. Get the decoded cookie
+          if (!req.cookies.jwt) {
+            res.status(404).json({
+              status: "failed",
+              message: "JWT token not present"
+            });
+          }
+
+          _context8.next = 3;
           return regeneratorRuntime.awrap(promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET));
 
-        case 2:
+        case 3:
           decoded = _context8.sent;
-          _context8.next = 5;
+          _context8.next = 6;
           return regeneratorRuntime.awrap(User.findById(decoded.id));
 
-        case 5:
+        case 6:
           currentUser = _context8.sent;
 
           if (!currentUser) {
@@ -453,7 +461,7 @@ exports.isLoggedInBool = catchAsync(function _callee8(req, res, next) {
             currentUser: currentUser
           });
 
-        case 9:
+        case 10:
         case "end":
           return _context8.stop();
       }

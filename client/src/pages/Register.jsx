@@ -1,6 +1,24 @@
-export default function Register() {
-  function handleSubmit() {
+import { useState } from "react";
+import { register } from "../api/authenticate.js";
+export default function Register(props) {
+  if (props.status === true) {
+    window.location.assign("/chat");
+  }
+
+  let [username, setUsername] = useState("");
+  let [email, setEmail] = useState("");
+  let [password, setPassword] = useState("");
+  let [passwordConfirm, setPasswordConfirm] = useState("");
+
+  function handleSubmit(e) {
     // handle register form submission here using authenticate.js's register
+    e.preventDefault();
+
+    try {
+      register(username, email, password, passwordConfirm);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
@@ -28,39 +46,62 @@ export default function Register() {
           <div className="flex flex-col w-full p-20 px-24">
             <h1 className="text-5xl font-bold text-green-500">Sign up</h1>
 
-            <form className="flex flex-col mt-12">
+            <form onSubmit={handleSubmit} className="flex flex-col mt-12">
+              <label htmlFor="username">Username</label>
+              <input
+                className="border-black border-1 rounded-sm text-md p-2 bg-gray-50 shadow-md"
+                type="text"
+                name="username"
+                id="username"
+                value={username}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                }}
+              />
               <label htmlFor="email">Email</label>
               <input
                 className="border-black border-1 rounded-sm text-md p-2 bg-gray-50 shadow-md"
+                type="email"
                 name="email"
                 id="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
               />
               <label className="mt-5" htmlFor="password">
                 Password
               </label>
               <input
                 className="border-black border-1 rounded-sm text-md p-2 bg-gray-50 shadow-md"
+                type="password"
                 name="password"
                 id="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
               />
               <label className="mt-5" htmlFor="passwordConfirm">
                 Confirm Password
               </label>
               <input
                 className="border-black border-1 rounded-sm text-md p-2 bg-gray-50 shadow-md"
+                type="password"
                 name="passwordConfirm"
                 id="passwordConfirm"
+                value={passwordConfirm}
+                onChange={(e) => {
+                  setPasswordConfirm(e.target.value);
+                }}
               />
+              <div className="flex flex-col items-center mt-5">
+                <button className="cursor-pointer bg-green-400 uppercase font-semibold tracking-wider border-black rounded-md border-1 py-2 px-10 text-xl mt-5 shadow-md">
+                  Sign Up
+                </button>
+              </div>
             </form>
 
-            <div className="flex flex-col items-center mt-5">
-              <button
-                className="bg-green-400 uppercase font-semibold tracking-wider border-black rounded-md border-1 py-2 px-10 text-xl mt-5 shadow-md"
-                type="button"
-              >
-                Sign Up
-              </button>
-            </div>
             <div className="flex items-center justify-center mt-10">
               <div className="h-0.5 w-full bg-gray-400 mr-5 align-middle"></div>
               <p className="leading-none">or&nbsp;sign&nbsp;up&nbsp;with</p>

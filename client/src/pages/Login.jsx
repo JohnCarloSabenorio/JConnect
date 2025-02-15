@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { login } from "../api/authenticate.js";
-export default function Login() {
+
+export default function Login(props) {
+  if (props.status === true) {
+    window.location.assign("/chat");
+  }
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
 

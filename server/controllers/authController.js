@@ -43,11 +43,9 @@ const createSignToken = (user, statusCode, res) => {
 
 exports.signup = catchAsync(async (req, res, next) => {
   // Create user
-
+  console.log("THE BODY:", req.body);
   const newUser = await User.create({
     username: req.body.username,
-    fname: req.body.fname,
-    lname: req.body.lname,
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
@@ -261,6 +259,12 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
 
 exports.isLoggedInBool = catchAsync(async (req, res, next) => {
   // 1. Get the decoded cookie
+  if (!req.cookies.jwt) {
+    res.status(404).json({
+      status: "failed",
+      message: "JWT token not present",
+    });
+  }
   const decoded = await promisify(jwt.verify)(
     req.cookies.jwt,
     process.env.JWT_SECRET

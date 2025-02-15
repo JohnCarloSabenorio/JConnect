@@ -13,16 +13,17 @@ export async function login(email, password) {
       }
     );
     console.log("User logged in!");
-    return response.data;
+    window.location.assign("/chat");
   } catch (err) {
     console.log(err);
   }
 }
 
-export async function register(email, password, passwordConfirm) {
+export async function register(username, email, password, passwordConfirm) {
   try {
     const response = await axios.post(
       "http://localhost:3000/jconnect/api/v1/users/signup",
+      { username, email, password, passwordConfirm },
       {
         withCredentials: true,
       }
@@ -30,6 +31,17 @@ export async function register(email, password, passwordConfirm) {
 
     console.log("User signed up!");
     console.log(response.data);
+    window.location.assign("/chat");
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function logout() {
+  try {
+    const response = await axios.post(
+      "http://localhost:3000/jconnect/api/v1/users/logout"
+    );
   } catch (err) {
     console.log(err);
   }
