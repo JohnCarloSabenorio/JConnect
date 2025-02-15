@@ -16,9 +16,10 @@ const upload = multer(); // this is used for multipart/form-data
 
 
 var router = express.Router();
-router.use("/:userId/conversation", convoRouter);
 router.route("/signup").post(authController.signup);
 router.route("/login").post(authController.login);
+router.route("/logout").get(authController.logout);
+router.use("/:userId/conversation", convoRouter);
 router.route("/isLoggedIn").get(authController.isLoggedInBool);
 router.route("/forgotPassword").post(authController.forgotPassword);
 router.route("/resetPassword/:token").patch(authController.resetPassword); // router.use(authController.protect);

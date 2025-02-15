@@ -132,6 +132,16 @@ exports.login = function _callee2(req, res, next) {
       }
     }
   });
+};
+
+exports.logout = function (req, res) {
+  res.cookie("jwt", "loggedout", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  });
+  res.status(200).json({
+    status: "success"
+  });
 }; // Restricts the route to only those who are logged in!
 
 
@@ -382,23 +392,34 @@ exports.updatePassword = catchAsync(function _callee6(req, res, next) {
   });
 });
 exports.isLoggedIn = catchAsync(function _callee7(req, res, next) {
-  var decoded, currentUser;
+  var _decoded, currentUser;
+
   return regeneratorRuntime.async(function _callee7$(_context7) {
     while (1) {
       switch (_context7.prev = _context7.next) {
         case 0:
-          // 1. Get the decoded cookie
-          console.log(req);
+          _context7.prev = 0;
           _context7.next = 3;
           return regeneratorRuntime.awrap(promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET));
 
         case 3:
-          decoded = _context7.sent;
-          _context7.next = 6;
-          return regeneratorRuntime.awrap(User.findById(decoded.id));
+          _decoded = _context7.sent;
+          _context7.next = 10;
+          break;
 
         case 6:
+          _context7.prev = 6;
+          _context7.t0 = _context7["catch"](0);
+          console.log("JWT is expired.");
+          next(new AppError("JWT is expired."));
+
+        case 10:
+          _context7.next = 12;
+          return regeneratorRuntime.awrap(User.findById(decoded.id));
+
+        case 12:
           currentUser = _context7.sent;
+          console.log("THE CURRENT USER: ", currentUser);
 
           if (!currentUser) {
             next(new AppError("User no longer exists!", 404));
@@ -414,12 +435,12 @@ exports.isLoggedIn = catchAsync(function _callee7(req, res, next) {
 
           next();
 
-        case 11:
+        case 18:
         case "end":
           return _context7.stop();
       }
     }
-  });
+  }, null, null, [[0, 6]]);
 });
 exports.isLoggedInBool = catchAsync(function _callee8(req, res, next) {
   var decoded, currentUser;
@@ -440,13 +461,17 @@ exports.isLoggedInBool = catchAsync(function _callee8(req, res, next) {
 
         case 3:
           decoded = _context8.sent;
-          _context8.next = 6;
+          console.log("DECODED: ", decoded); // 2. Check if the user still exists
+
+          _context8.next = 7;
           return regeneratorRuntime.awrap(User.findById(decoded.id));
 
-        case 6:
+        case 7:
           currentUser = _context8.sent;
+          console.log("CURRENT USER:", currentUser);
 
           if (!currentUser) {
+            console.log("USER NO LONGER EXISTS");
             next(new AppError("User no longer exists!", 404));
           } // 3. Check if the user changed his/her password
 
@@ -461,7 +486,7 @@ exports.isLoggedInBool = catchAsync(function _callee8(req, res, next) {
             currentUser: currentUser
           });
 
-        case 10:
+        case 12:
         case "end":
           return _context8.stop();
       }

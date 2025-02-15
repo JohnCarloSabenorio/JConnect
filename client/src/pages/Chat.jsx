@@ -1,4 +1,14 @@
+import { logout } from "../api/authenticate.js";
 export default function Chat() {
+  async function handleLogout() {
+    try {
+      await logout();
+
+      window.location.reload();
+    } catch (err) {
+      console.log(err);
+    }
+  }
   return (
     <>
       <div className="flex flex-col h-screen">
@@ -8,11 +18,11 @@ export default function Chat() {
             <h1 className="pb-2 text-4xl text-gray-800 font-bold">JConnect</h1>
           </div>
 
-          <div class="flex gap-5">
+          <div className="flex gap-5">
             <button>Toggle</button>
 
             <button
-              class="group relative border-gray-300 cursor-pointer"
+              className="group relative border-gray-300 cursor-pointer"
               type="button"
             >
               <img
@@ -20,10 +30,10 @@ export default function Chat() {
                 className="rounded-full w-12 h-12"
               />
 
-              <div class="absolute top-full right-0 rounded-lg p-3 bg-gray-50 mt-1  shadow-lg scale-y-0 group-focus:scale-y-100 origin-top duration-100 flex flex-col">
-                <a class="active">Profile</a>
+              <div className="absolute top-full right-0 rounded-lg p-3 bg-gray-50  shadow-lg scale-y-0 group-focus:scale-y-100 origin-top duration-100 flex flex-col">
+                <a className="active">Profile</a>
                 <a>Settings</a>
-                <a>Logout</a>
+                <a onClick={handleLogout}>Logout</a>
               </div>
             </button>
           </div>

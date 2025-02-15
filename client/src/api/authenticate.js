@@ -39,9 +39,14 @@ export async function register(username, email, password, passwordConfirm) {
 
 export async function logout() {
   try {
-    const response = await axios.post(
-      "http://localhost:3000/jconnect/api/v1/users/logout"
+    const response = await axios.get(
+      "http://localhost:3000/jconnect/api/v1/users/logout",
+      {
+        withCredentials: true,
+      }
     );
+
+    console.log(response);
   } catch (err) {
     console.log(err);
   }
