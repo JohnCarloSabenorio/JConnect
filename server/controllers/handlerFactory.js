@@ -1,6 +1,7 @@
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const APIFeatures = require("../utils/apiFeatures");
+const Conversation = require("../models/conversationModel");
 /*
 Create handlers for:
 1. Creating one document
@@ -13,6 +14,20 @@ Create handlers for:
 exports.createOne = (Model) =>
   catchAsync(async (req, res) => {
     const newDoc = await Model.create(req.body);
+
+    // This will update the latest message in the conversation model
+    // ConvoId indicates that the user is sending a message to a conversation
+    if (req.params.convoId) {
+      const updatedConvo = await Conversation.findByIdAndUpdate(
+        req.params.convoId,
+        {
+          latestMessage: req.body.message,
+        },
+        { new: true }
+      );
+
+      console.log("UPDATED CONVERSATION LATEST:", updatedConvo);
+    }
 
     res.status(200).json({
       status: "success",
@@ -42,8 +57,13 @@ exports.getAll = (Model) =>
   catchAsync(async (req, res) => {
     let filter = {};
 
+    console.log(req.cookies);
+    if (req.baseUrl.endsWith("allConvo"))
+      filter = { users: { $in: req.user.id } };
     console.log("FILTER:", filter);
 
+    if (req.params.convoId)
+      Object.assign(filter, { conversation: req.params.convoId });
     features = new APIFeatures(Model.find(filter), req.query)
       .filter()
       .sort()

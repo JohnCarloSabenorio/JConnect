@@ -87,12 +87,20 @@ exports.logout = (req, res) => {
 // Restricts the route to only those who are logged in!
 exports.protect = catchAsync(async (req, res, next) => {
   // 1. Get token and check if it exists
+
   let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    token = req.headers.authorization.split(" ")[1];
+
+
+  // Check the cookie instead of the authorization header in case it is missing (might due to cross origin)
+  if (req.headers.cookie) {
+    token = req.headers.cookie.replace("jwt=", "");
+  } else {
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    }
   }
 
   if (!token) {
@@ -269,7 +277,6 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
 
   // 4. set req.locals.user equal to the currentUser
   res.locals.user = currentUser;
-
   // 5. go to the next middleware
   next();
 });

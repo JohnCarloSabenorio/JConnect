@@ -5,6 +5,8 @@ var AppError = require("../utils/appError");
 var catchAsync = require("../utils/catchAsync");
 
 var APIFeatures = require("../utils/apiFeatures");
+
+var Conversation = require("../models/conversationModel");
 /*
 Create handlers for:
 1. Creating one document
@@ -17,7 +19,7 @@ Create handlers for:
 
 exports.createOne = function (Model) {
   return catchAsync(function _callee(req, res) {
-    var newDoc;
+    var newDoc, updatedConvo;
     return regeneratorRuntime.async(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -27,13 +29,31 @@ exports.createOne = function (Model) {
 
           case 2:
             newDoc = _context.sent;
+
+            if (!req.params.convoId) {
+              _context.next = 8;
+              break;
+            }
+
+            _context.next = 6;
+            return regeneratorRuntime.awrap(Conversation.findByIdAndUpdate(req.params.convoId, {
+              latestMessage: req.body.message
+            }, {
+              "new": true
+            }));
+
+          case 6:
+            updatedConvo = _context.sent;
+            console.log("UPDATED CONVERSATION LATEST:", updatedConvo);
+
+          case 8:
             res.status(200).json({
               status: "success",
               message: "New document successfully created!",
               data: newDoc
             });
 
-          case 4:
+          case 9:
           case "end":
             return _context.stop();
         }
@@ -88,12 +108,21 @@ exports.getAll = function (Model) {
         switch (_context3.prev = _context3.next) {
           case 0:
             filter = {};
+            console.log(req.cookies);
+            if (req.baseUrl.endsWith("allConvo")) filter = {
+              users: {
+                $in: req.user.id
+              }
+            };
             console.log("FILTER:", filter);
+            if (req.params.convoId) Object.assign(filter, {
+              conversation: req.params.convoId
+            });
             features = new APIFeatures(Model.find(filter), req.query).filter().sort().limitFields();
-            _context3.next = 5;
+            _context3.next = 8;
             return regeneratorRuntime.awrap(features.query);
 
-          case 5:
+          case 8:
             docs = _context3.sent;
             res.status(200).json({
               status: "success",
@@ -101,7 +130,7 @@ exports.getAll = function (Model) {
               data: docs
             });
 
-          case 7:
+          case 10:
           case "end":
             return _context3.stop();
         }

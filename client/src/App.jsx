@@ -6,7 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NoPage from "./pages/NoPage";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
-
+import { createContext } from "react";
 export default class App extends Component {
   constructor() {
     super();
@@ -70,7 +70,10 @@ export default class App extends Component {
             <Route
               element={<ProtectedRoutes status={this.state.loggedInStatus} />}
             >
-              <Route path="/chat" element={<Chat />} />
+              <Route
+                path="/chat"
+                element={<Chat currentUser={this.state.user} />}
+              />
             </Route>
           </Routes>
         </BrowserRouter>

@@ -1,5 +1,43 @@
+import { useEffect, useState } from "react";
 import { logout } from "../api/authenticate.js";
-export default function Chat() {
+import {
+  getAllUserConversation,
+  getAllUserMessages,
+} from "../api/conversation.js";
+import Convo from "../components/Convo.jsx";
+import Message from "../components/Message.jsx";
+export default function Chat({ currentUser }) {
+  // RETRIEVE CONVERSATIONS AND DISPLAY IT IN SIDEBAR
+  console.log(currentUser._id);
+  const [allConvo, setAllConvo] = useState(null);
+  const [currentConvo, setCurrentConvo] = useState(null);
+  
+  useEffect(() => {
+    async function getConversations() {
+      const conversations = await getAllUserConversation();
+      setAllConvo(conversations);
+    }
+
+    getConversations();
+    // getUserMessages();
+  }, []);
+  const [convoMessages, setConvoMessages] = useState([]);
+
+  useEffect(() => {
+    console.log("Updated CONVO MESSAGES:", convoMessages);
+  }, [convoMessages]);
+  if (!allConvo) {
+    return <div>Loading...</div>;
+  }
+
+  console.log("ALL CONVERSATION:", allConvo);
+
+  async function getMessages(convoId) {
+    console.log("Conversation ID:", convoId);
+    const messages = await getAllUserMessages(convoId);
+    setConvoMessages(messages);
+  }
+
   async function handleLogout() {
     try {
       await logout();
@@ -90,22 +128,20 @@ export default function Chat() {
                 // style={{ fontFamily: "Arial", "FontAwesome" }}
               />
 
-              <div className="mt-5 flex flex-col gap-2">
-                <div className="bg-white rounded-md flex p-5 shadow-md">
-                  <img
-                    src="/img/icons/male-default.jpg"
-                    className="rounded-full w-12 h-12"
+              {allConvo.map((convo, id) => {
+                return (
+                  <Convo
+                    key={id}
+                    convoId={convo._id}
+                    name={convo.convoName}
+                    msg={convo.latestMessage}
+                    msgCount={"#"}
+                    timeSent={convo.updatedAt}
+                    imageUrl="/img/icons/male-default.jpg"
+                    eventHandler={getMessages}
                   />
-                  <div className="px-3">
-                    <p>John Doe</p>
-                    <p>How about we play or...</p>
-                  </div>
-                  <div>
-                    <p>3:26 PM</p>
-                    <p className="text-right font-bold">22</p>
-                  </div>
-                </div>
-              </div>
+                );
+              })}
             </div>
           </div>
 
@@ -151,7 +187,24 @@ export default function Chat() {
                 </svg>
               </div>
             </div>
-            <div className="flex flex-col p-5">
+
+            {/* CHAT MESSAGES */}
+
+            <div className="bg-blue-200 w-auto flex-grow min-h-[700px] max-h-[500px] overflow-y-scroll">
+              {convoMessages.map((message, i) => {
+                return (
+                  <Message
+                    key={i}
+                    imgUrl="img/icons/male-default.jpg"
+                    message={message.message}
+                    username={message.sender.username}
+                    isCurrentUser={message.sender._id === currentUser._id}
+                    timeSent={message.createdAt}
+                  />
+                );
+              })}
+            </div>
+            {/* <div className="flex flex-col p-5">
               <div className="flex gap-2">
                 <img
                   src="/img/icons/male-default.jpg"
@@ -161,19 +214,8 @@ export default function Chat() {
                   <p className="break-all">This is a sample friend message!</p>
                 </div>
               </div>
-            </div>
+            </div> */}
 
-            <div className="flex flex-col p-5">
-              <div className="ml-auto flex gap-2">
-                <div className="max-w-max bg-blue-400 p-2 rounded-sm">
-                  <p className="break-all">This is a sample user message!</p>
-                </div>
-                <img
-                  src="/img/icons/male-default.jpg"
-                  className="rounded-full w-12 h-12"
-                />
-              </div>
-            </div>
             <div className="flex mt-auto p-3">
               <div>
                 <svg

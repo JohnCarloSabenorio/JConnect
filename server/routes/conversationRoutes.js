@@ -5,7 +5,9 @@ const convoController = require("../controllers/conversationController");
 const authController = require("../controllers/authController");
 const messageRouter = require("./messageRoutes");
 
+
 router.use("/:convoId/message", messageRouter);
+router.use(authController.protect);
 
 router
   .route("/member/:convoId")
@@ -16,7 +18,6 @@ router
   .route("/")
   .get(convoController.getAllConversation)
   .post(convoController.createConversation);
-router.use(authController.protect);
 
 router
   .route("/:id")

@@ -8,7 +8,7 @@ const friendRouter = require("./friendRoutes");
 const multer = require("multer");
 const upload = multer(); // this is used for multipart/form-data
 */
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router.route("/signup").post(authController.signup);
 router.route("/login").post(authController.login);
@@ -19,8 +19,9 @@ router.route("/isLoggedIn").get(authController.isLoggedInBool);
 router.route("/forgotPassword").post(authController.forgotPassword);
 router.route("/resetPassword/:token").patch(authController.resetPassword);
 
-// router.use(authController.protect);
+router.use(authController.protect);
 
+router.use("/allConvo", convoRouter);
 router.route("/convo/:userId");
 
 router.route("/updatePassword").patch(authController.updatePassword);

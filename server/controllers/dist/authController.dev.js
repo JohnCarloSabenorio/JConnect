@@ -152,8 +152,13 @@ exports.protect = catchAsync(function _callee3(req, res, next) {
       switch (_context3.prev = _context3.next) {
         case 0:
           // 1. Get token and check if it exists
-          if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-            token = req.headers.authorization.split(" ")[1];
+          // Check the cookie instead of the authorization header in case it is missing (might due to cross origin)
+          if (req.headers.cookie) {
+            token = req.headers.cookie.replace("jwt=", "");
+          } else {
+            if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+              token = req.headers.authorization.split(" ")[1];
+            }
           }
 
           if (token) {

@@ -25,8 +25,11 @@ var convoSchema = new mongoose.Schema({
   },
   convoImage: {
     type: String,
-    required: true,
     "default": "default-gc.png"
+  },
+  latestMessage: {
+    type: String,
+    "default": ""
   }
 }, {
   timestamps: true

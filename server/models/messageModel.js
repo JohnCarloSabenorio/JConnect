@@ -11,6 +11,7 @@ const messageSchema = new mongoose.Schema(
 
     sender: {
       type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
     status: {
@@ -35,6 +36,13 @@ const messageSchema = new mongoose.Schema(
 
 // Methods
 
+messageSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "sender",
+  });
+
+  next();
+});
 const messageModel = mongoose.model("Message", messageSchema);
 
 module.exports = messageModel;
