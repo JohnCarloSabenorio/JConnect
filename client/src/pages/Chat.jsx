@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { logout } from "../api/authenticate.js";
 import {
   getAllUserConversation,
@@ -6,12 +6,14 @@ import {
 } from "../api/conversation.js";
 import Convo from "../components/Convo.jsx";
 import Message from "../components/Message.jsx";
-export default function Chat({ currentUser }) {
+import { UserContext } from "../App.jsx";
+export default function Chat() {
   // RETRIEVE CONVERSATIONS AND DISPLAY IT IN SIDEBAR
-  console.log(currentUser._id);
+
+  const { loggedInStatus, user } = useContext(UserContext);
   const [allConvo, setAllConvo] = useState(null);
   const [currentConvo, setCurrentConvo] = useState(null);
-  
+
   useEffect(() => {
     async function getConversations() {
       const conversations = await getAllUserConversation();
@@ -198,7 +200,7 @@ export default function Chat({ currentUser }) {
                     imgUrl="img/icons/male-default.jpg"
                     message={message.message}
                     username={message.sender.username}
-                    isCurrentUser={message.sender._id === currentUser._id}
+                    isCurrentUser={message.sender._id === user._id}
                     timeSent={message.createdAt}
                   />
                 );

@@ -1,10 +1,7 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { register } from "../api/authenticate.js";
-export default function Register(props) {
-  if (props.status === true) {
-    window.location.assign("/chat");
-  }
 
+export default function Register() {
   let [username, setUsername] = useState("");
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");

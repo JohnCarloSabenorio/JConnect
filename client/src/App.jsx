@@ -1,12 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import axios from "axios";
-import { useState, useEffect, Component } from "react";
+import { createContext, useState, useEffect, Component } from "react";
 import Chat from "./pages/Chat";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NoPage from "./pages/NoPage";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
-import { createContext } from "react";
+
+export const UserContext = createContext();
 export default class App extends Component {
   constructor() {
     super();
@@ -55,28 +56,23 @@ export default class App extends Component {
     }
     return (
       <>
-        <BrowserRouter>
-          <Routes>
-            <Route
-              index
-              element={<Login status={this.state.loggedInStatus} />}
-            />
-            <Route
-              path="/register"
-              status={this.state.loggedInStatus}
-              element={<Register />}
-            />
-            <Route path="/*" element={<NoPage />} />
-            <Route
-              element={<ProtectedRoutes status={this.state.loggedInStatus} />}
-            >
-              <Route
-                path="/chat"
-                element={<Chat currentUser={this.state.user} />}
-              />
-            </Route>
-          </Routes>
-        </BrowserRouter>
+        <UserContext.Provider
+          value={{
+            loggedInStatus: this.state.loggedInStatus,
+            user: this.state.user,
+          }}
+        >
+          <BrowserRouter>
+            <Routes>
+              <Route path="/*" element={<NoPage />} />
+              <Route element={<ProtectedRoutes />}>
+                <Route index element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/chat" element={<Chat />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </UserContext.Provider>
       </>
     );
   }
