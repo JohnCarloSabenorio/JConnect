@@ -453,25 +453,28 @@ exports.isLoggedInBool = catchAsync(function _callee8(req, res, next) {
     while (1) {
       switch (_context8.prev = _context8.next) {
         case 0:
-          // 1. Get the decoded cookie
-          if (!req.cookies.jwt) {
-            res.status(404).json({
-              status: "failed",
-              message: "JWT token not present"
-            });
+          if (req.cookies.jwt) {
+            _context8.next = 2;
+            break;
           }
 
-          _context8.next = 3;
+          return _context8.abrupt("return", res.status(404).json({
+            status: "failed",
+            message: "JWT token not present"
+          }));
+
+        case 2:
+          _context8.next = 4;
           return regeneratorRuntime.awrap(promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET));
 
-        case 3:
+        case 4:
           decoded = _context8.sent;
           console.log("DECODED: ", decoded); // 2. Check if the user still exists
 
-          _context8.next = 7;
+          _context8.next = 8;
           return regeneratorRuntime.awrap(User.findById(decoded.id));
 
-        case 7:
+        case 8:
           currentUser = _context8.sent;
           console.log("CURRENT USER:", currentUser);
 
@@ -491,7 +494,7 @@ exports.isLoggedInBool = catchAsync(function _callee8(req, res, next) {
             currentUser: currentUser
           });
 
-        case 12:
+        case 13:
         case "end":
           return _context8.stop();
       }

@@ -90,7 +90,6 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   let token;
 
-
   // Check the cookie instead of the authorization header in case it is missing (might due to cross origin)
   if (req.headers.cookie) {
     token = req.headers.cookie.replace("jwt=", "");
@@ -284,7 +283,7 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
 exports.isLoggedInBool = catchAsync(async (req, res, next) => {
   // 1. Get the decoded cookie
   if (!req.cookies.jwt) {
-    res.status(404).json({
+    return res.status(404).json({
       status: "failed",
       message: "JWT token not present",
     });

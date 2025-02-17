@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NoPage from "./pages/NoPage";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
+import ProtectedFormRoutes from "./utils/ProtectedFormRoutes";
 
 export const UserContext = createContext();
 export default class App extends Component {
@@ -29,7 +30,6 @@ export default class App extends Component {
       .then((response) => {
         if (response.status == 200 && response.data.currentUser) {
           console.log("isLoggedIn");
-
           this.setState(
             {
               loggedInStatus: true,
@@ -65,9 +65,11 @@ export default class App extends Component {
           <BrowserRouter>
             <Routes>
               <Route path="/*" element={<NoPage />} />
-              <Route element={<ProtectedRoutes />}>
+              <Route element={<ProtectedFormRoutes />}>
                 <Route index element={<Login />} />
                 <Route path="/register" element={<Register />} />
+              </Route>
+              <Route element={<ProtectedRoutes />}>
                 <Route path="/chat" element={<Chat />} />
               </Route>
             </Routes>
