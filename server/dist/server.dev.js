@@ -3,7 +3,12 @@
 // REQUIRE PACKAGES
 var mongoose = require("mongoose");
 
-var dotenv = require("dotenv"); // CATCHES SYNCHRONOUS ERRORS
+var dotenv = require("dotenv");
+
+var http = require("http");
+
+var _require = require("socket.io"),
+    Server = _require.Server; // CATCHES SYNCHRONOUS ERRORS
 
 
 process.on("uncaughtException", function (err) {
@@ -35,7 +40,21 @@ mongoose.connect(db).then(function (res) {
 }); // RUN SERVER
 
 var port = process.env.PORT || 3000;
-var server = app.listen(port, function () {
+var server = http.createServer(app);
+
+var io = require("socket.io")(server, {
+  cors: {
+    origin: "http://localhost:5173"
+  }
+});
+
+io.on("connection", function (socket) {
+  console.log("A user connected!");
+  socket.on("disconnect", function () {
+    console.log("A user disconnected");
+  });
+});
+server.listen(port, function () {
   console.log("Server listening at port ".concat(port, "..."));
 }); // SAFETY NET FOR ERRORS
 

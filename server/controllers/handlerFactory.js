@@ -57,10 +57,8 @@ exports.getAll = (Model) =>
   catchAsync(async (req, res) => {
     let filter = {};
 
-    console.log(req.cookies);
     if (req.baseUrl.endsWith("allConvo"))
       filter = { users: { $in: req.user.id } };
-    console.log("FILTER:", filter);
 
     if (req.params.convoId)
       Object.assign(filter, { conversation: req.params.convoId });

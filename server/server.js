@@ -1,7 +1,8 @@
 // REQUIRE PACKAGES
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-
+const http = require("http");
+const { Server } = require("socket.io");
 // CATCHES SYNCHRONOUS ERRORS
 process.on("uncaughtException", (err) => {
   console.log("UNCAUGHT EXCEPTION! Shutting down the application...");
@@ -34,7 +35,19 @@ mongoose
 
 // RUN SERVER
 const port = process.env.PORT || 3000;
-const server = app.listen(port, () => {
+
+const server = http.createServer(app);
+const io = require("socket.io")(server, { cors: { origin: "http://localhost:5173" } });
+
+io.on("connection", (socket) => {
+  console.log("A user connected!");
+
+  socket.on("disconnect", () => {
+    console.log("A user disconnected");
+  });
+});
+
+server.listen(port, () => {
   console.log(`Server listening at port ${port}...`);
 });
 

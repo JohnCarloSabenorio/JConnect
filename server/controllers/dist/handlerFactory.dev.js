@@ -108,21 +108,19 @@ exports.getAll = function (Model) {
         switch (_context3.prev = _context3.next) {
           case 0:
             filter = {};
-            console.log(req.cookies);
             if (req.baseUrl.endsWith("allConvo")) filter = {
               users: {
                 $in: req.user.id
               }
             };
-            console.log("FILTER:", filter);
             if (req.params.convoId) Object.assign(filter, {
               conversation: req.params.convoId
             });
             features = new APIFeatures(Model.find(filter), req.query).filter().sort().limitFields();
-            _context3.next = 8;
+            _context3.next = 6;
             return regeneratorRuntime.awrap(features.query);
 
-          case 8:
+          case 6:
             docs = _context3.sent;
             res.status(200).json({
               status: "success",
@@ -130,7 +128,7 @@ exports.getAll = function (Model) {
               data: docs
             });
 
-          case 10:
+          case 8:
           case "end":
             return _context3.stop();
         }

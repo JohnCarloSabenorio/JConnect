@@ -53,9 +53,7 @@ exports.signup = catchAsync(function _callee(req, res, next) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          // Create user
-          console.log("THE BODY:", req.body);
-          _context.next = 3;
+          _context.next = 2;
           return regeneratorRuntime.awrap(User.create({
             username: req.body.username,
             email: req.body.email,
@@ -63,12 +61,12 @@ exports.signup = catchAsync(function _callee(req, res, next) {
             passwordConfirm: req.body.passwordConfirm
           }));
 
-        case 3:
+        case 2:
           newUser = _context.sent;
           // Sign token
           createSignToken(newUser, 200, res);
 
-        case 5:
+        case 4:
         case "end":
           return _context.stop();
       }
@@ -213,8 +211,6 @@ exports.restrictsTo = function () {
   }
 
   return function (req, res, next) {
-    console.log("CURRENT USER LOGGED IN: ", req.user);
-
     if (!roles.includes(req.user.role)) {
       return next(new AppError("You do not have permission to perform this action!", 403));
     }
@@ -254,46 +250,45 @@ exports.forgotPassword = catchAsync(function _callee4(req, res, next) {
           }));
 
         case 8:
-          console.log("RESET TOKEN:", resetToken); // 3. Compose message
-
+          // 3. Compose message
           resetURL = "".concat(req.protocol, "://").concat(req.get("host"), "/jconnect/v1/users/resetPassword/").concat(resetToken);
           message = "Please send a PATCH request to this url: ".concat(resetURL, ". \n if you didn't forget your password, please ignore this message."); // 4. send email
 
-          _context4.prev = 11;
-          _context4.next = 14;
+          _context4.prev = 10;
+          _context4.next = 13;
           return regeneratorRuntime.awrap(sendEmail({
             email: user.email,
             subject: "Test email",
             message: message
           }));
 
-        case 14:
+        case 13:
           res.status(200).json({
             status: "success",
             message: "Password reset token sent to the email of the user!"
           });
-          _context4.next = 24;
+          _context4.next = 23;
           break;
 
-        case 17:
-          _context4.prev = 17;
-          _context4.t0 = _context4["catch"](11);
+        case 16:
+          _context4.prev = 16;
+          _context4.t0 = _context4["catch"](10);
           user.passwordResetToken = undefined;
           user.tokenExpirationDate = undefined;
-          _context4.next = 23;
+          _context4.next = 22;
           return regeneratorRuntime.awrap(user.save({
             validateBeforeSave: false
           }));
 
-        case 23:
+        case 22:
           return _context4.abrupt("return", next(new AppError("Email failed to send! Please try again later.", 500)));
 
-        case 24:
+        case 23:
         case "end":
           return _context4.stop();
       }
     }
-  }, null, null, [[11, 17]]);
+  }, null, null, [[10, 16]]);
 }); // Resets the password of the user
 
 exports.resetPassword = catchAsync(function _callee5(req, res, next) {
@@ -303,10 +298,9 @@ exports.resetPassword = catchAsync(function _callee5(req, res, next) {
       switch (_context5.prev = _context5.next) {
         case 0:
           // 1. hash token so that it matches the one in the db
-          resetToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
-          console.log("HASHED TOKEN:", resetToken); // 2. Get user based on token
+          resetToken = crypto.createHash("sha256").update(req.params.token).digest("hex"); // 2. Get user based on token
 
-          _context5.next = 4;
+          _context5.next = 3;
           return regeneratorRuntime.awrap(User.findOne({
             passwordResetToken: resetToken,
             tokenExpirationDate: {
@@ -314,34 +308,32 @@ exports.resetPassword = catchAsync(function _callee5(req, res, next) {
             }
           }));
 
-        case 4:
+        case 3:
           user = _context5.sent;
-          console.log("USER: ", user); // 3. If token has not expired and there is a user, set the new password
 
           if (user) {
-            _context5.next = 9;
+            _context5.next = 6;
             break;
           }
 
-          console.log("USER DOES NOT EXIST!");
           return _context5.abrupt("return", next(new AppError("The token is invalid or expired!", 404)));
 
-        case 9:
+        case 6:
           user.password = req.body.password;
           user.passwordConfirm = req.body.passwordConfirm;
           user.passwordResetToken = undefined;
           user.tokenExpirationDate = undefined;
-          _context5.next = 15;
+          _context5.next = 12;
           return regeneratorRuntime.awrap(user.save());
 
-        case 15:
+        case 12:
           // 4. Log the user in, send JWT to the client
           res.status(200).json({
             status: "success",
             token: "token"
           });
 
-        case 16:
+        case 13:
         case "end":
           return _context5.stop();
       }
@@ -409,22 +401,20 @@ exports.isLoggedIn = catchAsync(function _callee7(req, res, next) {
 
         case 3:
           _decoded = _context7.sent;
-          _context7.next = 10;
+          _context7.next = 9;
           break;
 
         case 6:
           _context7.prev = 6;
           _context7.t0 = _context7["catch"](0);
-          console.log("JWT is expired.");
           next(new AppError("JWT is expired."));
 
-        case 10:
-          _context7.next = 12;
+        case 9:
+          _context7.next = 11;
           return regeneratorRuntime.awrap(User.findById(decoded.id));
 
-        case 12:
+        case 11:
           currentUser = _context7.sent;
-          console.log("THE CURRENT USER: ", currentUser);
 
           if (!currentUser) {
             next(new AppError("User no longer exists!", 404));
@@ -440,7 +430,7 @@ exports.isLoggedIn = catchAsync(function _callee7(req, res, next) {
 
           next();
 
-        case 18:
+        case 16:
         case "end":
           return _context7.stop();
       }
@@ -454,32 +444,29 @@ exports.isLoggedInBool = catchAsync(function _callee8(req, res, next) {
       switch (_context8.prev = _context8.next) {
         case 0:
           if (req.cookies.jwt) {
-            _context8.next = 2;
+            _context8.next = 3;
             break;
           }
 
+          console.log("HE");
           return _context8.abrupt("return", res.status(404).json({
             status: "failed",
-            message: "JWT token not present"
+            message: "JWT not present!"
           }));
 
-        case 2:
-          _context8.next = 4;
+        case 3:
+          _context8.next = 5;
           return regeneratorRuntime.awrap(promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET));
 
-        case 4:
+        case 5:
           decoded = _context8.sent;
-          console.log("DECODED: ", decoded); // 2. Check if the user still exists
-
           _context8.next = 8;
           return regeneratorRuntime.awrap(User.findById(decoded.id));
 
         case 8:
           currentUser = _context8.sent;
-          console.log("CURRENT USER:", currentUser);
 
           if (!currentUser) {
-            console.log("USER NO LONGER EXISTS");
             next(new AppError("User no longer exists!", 404));
           } // 3. Check if the user changed his/her password
 
@@ -494,7 +481,7 @@ exports.isLoggedInBool = catchAsync(function _callee8(req, res, next) {
             currentUser: currentUser
           });
 
-        case 13:
+        case 12:
         case "end":
           return _context8.stop();
       }

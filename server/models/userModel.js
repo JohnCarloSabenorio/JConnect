@@ -107,7 +107,6 @@ userSchema.pre("save", async function (next) {
 
 userSchema.pre("save", function (next) {
   if (this.isModified || !this.isNew) {
-    console.log("Updating password change at!");
     this.passwordChangedAt = Date.now() - 1000;
   }
   next();
@@ -123,11 +122,11 @@ userSchema.post(/^find/, function (docs, next) {
   console.log(
     `This query took ${Date.now() - this.start} milliseconds to complete!`
   );
-  console.log(docs);
   next();
 });
 
 async function hashPassword(psword) {
+  console.log("Hashing password...");
   return await bcrypt.hash(psword, 12);
 }
 // AGGREGATION MIDDLEWARES

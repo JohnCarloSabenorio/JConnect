@@ -43,7 +43,6 @@ const createSignToken = (user, statusCode, res) => {
 
 exports.signup = catchAsync(async (req, res, next) => {
   // Create user
-  console.log("THE BODY:", req.body);
   const newUser = await User.create({
     username: req.body.username,
     email: req.body.email,
@@ -135,7 +134,6 @@ exports.protect = catchAsync(async (req, res, next) => {
 // Restricts the route according to specific roles
 exports.restrictsTo = (...roles) => {
   return (req, res, next) => {
-    console.log("CURRENT USER LOGGED IN: ", req.user);
     if (!roles.includes(req.user.role)) {
       return next(
         new AppError("You do not have permission to perform this action!", 403)
@@ -156,8 +154,6 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   // 2. Generate token and store encrypted token in the database
   const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
-
-  console.log("RESET TOKEN:", resetToken);
 
   // 3. Compose message
   const resetURL = `${req.protocol}://${req.get(
@@ -195,7 +191,6 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     .createHash("sha256")
     .update(req.params.token)
     .digest("hex");
-  console.log("HASHED TOKEN:", resetToken);
 
   // 2. Get user based on token
   const user = await User.findOne({
@@ -205,11 +200,8 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     },
   });
 
-  console.log("USER: ", user);
-
   // 3. If token has not expired and there is a user, set the new password
   if (!user) {
-    console.log("USER DOES NOT EXIST!");
     return next(new AppError("The token is invalid or expired!", 404));
   }
 
@@ -256,14 +248,11 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
       process.env.JWT_SECRET
     );
   } catch (err) {
-    console.log("JWT is expired.");
     next(new AppError("JWT is expired."));
   }
 
   // 2. Check if the user still exists
   const currentUser = await User.findById(decoded.id);
-
-  console.log("THE CURRENT USER: ", currentUser);
 
   if (!currentUser) {
     next(new AppError("User no longer exists!", 404));
@@ -283,9 +272,10 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
 exports.isLoggedInBool = catchAsync(async (req, res, next) => {
   // 1. Get the decoded cookie
   if (!req.cookies.jwt) {
+    console.log("HE");
     return res.status(404).json({
       status: "failed",
-      message: "JWT token not present",
+      message: "JWT not present!",
     });
   }
   const decoded = await promisify(jwt.verify)(
@@ -293,14 +283,10 @@ exports.isLoggedInBool = catchAsync(async (req, res, next) => {
     process.env.JWT_SECRET
   );
 
-  console.log("DECODED: ", decoded);
   // 2. Check if the user still exists
   const currentUser = await User.findById(decoded.id);
 
-  console.log("CURRENT USER:", currentUser);
-
   if (!currentUser) {
-    console.log("USER NO LONGER EXISTS");
     next(new AppError("User no longer exists!", 404));
   }
 

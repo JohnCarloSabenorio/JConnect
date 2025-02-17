@@ -127,7 +127,6 @@ userSchema.pre("save", function _callee(next) {
 });
 userSchema.pre("save", function (next) {
   if (this.isModified || !this.isNew) {
-    console.log("Updating password change at!");
     this.passwordChangedAt = Date.now() - 1000;
   }
 
@@ -141,7 +140,6 @@ userSchema.pre(/^find/, function (next) {
 
 userSchema.post(/^find/, function (docs, next) {
   console.log("This query took ".concat(Date.now() - this.start, " milliseconds to complete!"));
-  console.log(docs);
   next();
 });
 
@@ -150,13 +148,14 @@ function hashPassword(psword) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
-          _context2.next = 2;
+          console.log("Hashing password...");
+          _context2.next = 3;
           return regeneratorRuntime.awrap(bcrypt.hash(psword, 12));
 
-        case 2:
+        case 3:
           return _context2.abrupt("return", _context2.sent);
 
-        case 3:
+        case 4:
         case "end":
           return _context2.stop();
       }
