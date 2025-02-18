@@ -112,7 +112,8 @@ exports.getAll = function (Model) {
               users: {
                 $in: req.user.id
               }
-            };
+            }; // If convoId is present, the user is creating/sending a message
+
             if (req.params.convoId) Object.assign(filter, {
               conversation: req.params.convoId
             });

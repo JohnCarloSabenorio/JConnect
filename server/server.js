@@ -2,7 +2,18 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const http = require("http");
-const { Server } = require("socket.io");
+const app = require("./app");
+const { LEGAL_TCP_SOCKET_OPTIONS } = require("mongodb");
+const port = process.env.PORT || 3000;
+const server = http.createServer(app);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "http://localhost:5173",
+  },
+});
+
+const ioController = require("./controllers/ioController");
+
 // CATCHES SYNCHRONOUS ERRORS
 process.on("uncaughtException", (err) => {
   console.log("UNCAUGHT EXCEPTION! Shutting down the application...");
@@ -16,8 +27,6 @@ process.on("uncaughtException", (err) => {
 });
 
 dotenv.config({ path: "./config.env" });
-// REQUIRE APPLICATION
-const app = require("./app");
 
 // SETUP MONGOOSE CONNECT
 // adds password in the database connection string
@@ -33,20 +42,21 @@ mongoose
     console.log(`Error: ${err}`);
   });
 
-// RUN SERVER
-const port = process.env.PORT || 3000;
-
-const server = http.createServer(app);
-const io = require("socket.io")(server, { cors: { origin: "http://localhost:5173" } });
-
+// WEBSOCKET CONNECTION AND HANDLERS
 io.on("connection", (socket) => {
   console.log("A user connected!");
 
   socket.on("disconnect", () => {
     console.log("A user disconnected");
   });
+
+  socket.on("chat message", (data) => {
+    app.post("");
+    ioController.sendMessage(io, socket, data);
+  });
 });
 
+// RUN SERVER
 server.listen(port, () => {
   console.log(`Server listening at port ${port}...`);
 });

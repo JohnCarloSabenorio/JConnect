@@ -29,7 +29,8 @@ var friendSchema = mongoose.Schema({
   toObject: {
     virtuals: true
   }
-});
+}); // This makes sure that the combinations of two users are unique
+
 friendSchema.index({
   user1: 1,
   user2: 1

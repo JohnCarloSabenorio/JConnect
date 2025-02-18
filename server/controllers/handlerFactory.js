@@ -60,8 +60,10 @@ exports.getAll = (Model) =>
     if (req.baseUrl.endsWith("allConvo"))
       filter = { users: { $in: req.user.id } };
 
+    // If convoId is present, the user is creating/sending a message
     if (req.params.convoId)
       Object.assign(filter, { conversation: req.params.convoId });
+
     features = new APIFeatures(Model.find(filter), req.query)
       .filter()
       .sort()

@@ -2,9 +2,6 @@
 
 var mongoose = require("mongoose");
 
-var _require = require("validator"),
-    trim = _require.trim;
-
 var messageSchema = new mongoose.Schema({
   message: {
     type: String,
@@ -30,13 +27,13 @@ var messageSchema = new mongoose.Schema({
   timestamps: true
 }); // Document Middlewares
 // Query Middlewares
-// Methods
 
 messageSchema.pre(/^find/, function (next) {
   this.populate({
     path: "sender"
   });
   next();
-});
+}); // Methods
+
 var messageModel = mongoose.model("Message", messageSchema);
 module.exports = messageModel;

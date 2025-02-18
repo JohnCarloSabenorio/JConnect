@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { trim } = require("validator");
 
 const messageSchema = new mongoose.Schema(
   {
@@ -33,9 +32,6 @@ const messageSchema = new mongoose.Schema(
 // Document Middlewares
 
 // Query Middlewares
-
-// Methods
-
 messageSchema.pre(/^find/, function (next) {
   this.populate({
     path: "sender",
@@ -43,6 +39,9 @@ messageSchema.pre(/^find/, function (next) {
 
   next();
 });
+
+// Methods
+
 const messageModel = mongoose.model("Message", messageSchema);
 
 module.exports = messageModel;
