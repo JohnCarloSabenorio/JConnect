@@ -1,13 +1,17 @@
 import { useContext, useState, useEffect } from "react";
 import { login } from "../api/authenticate.js";
-export default function Login(props) {
+import { socket } from "../socket.js";
+import { UserContext } from "../App.jsx";
+
+export default function Login() {
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
-
+  console.log("IS SOCKETED:", socket.connected);
   async function handleSubmit(event) {
     event.preventDefault();
     try {
       await login(email, password);
+      window.location.assign("/chat");
     } catch (err) {
       console.log(err);
     }

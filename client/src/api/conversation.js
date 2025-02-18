@@ -18,9 +18,10 @@ export async function getAllUserConversation() {
 export async function getAllUserMessages(convoId) {
   console.log("Getting user messages...");
 
+  // Retrieve messages by the order of creation
   try {
     const response = await axios.get(
-      `http://localhost:3000/jconnect/api/v1/conversation/${convoId}/message`,
+      `http://localhost:3000/jconnect/api/v1/conversation/${convoId}/message?sort=createdAt`,
       { withCredentials: true }
     );
 
@@ -29,4 +30,8 @@ export async function getAllUserMessages(convoId) {
   } catch (err) {
     console.log(err);
   }
+}
+
+export async function sendMessage(message, convoId) {
+  const response = await axios.post();
 }

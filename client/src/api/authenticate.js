@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { socket } from "../socket";
 export async function login(email, password) {
   try {
     const response = await axios.post(
@@ -12,8 +12,8 @@ export async function login(email, password) {
         withCredentials: true,
       }
     );
+
     console.log("User logged in!");
-    window.location.assign("/chat");
   } catch (err) {
     console.log(err);
   }

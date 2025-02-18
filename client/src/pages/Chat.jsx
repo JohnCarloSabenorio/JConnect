@@ -1,18 +1,21 @@
-import { useContext, useEffect, useState } from "react";
-import { logout } from "../api/authenticate.js";
+import { useContext, useEffect, useState, useRef } from "react";
+import { logout } from "../api/authenticate";
 import {
   getAllUserConversation,
   getAllUserMessages,
-} from "../api/conversation.js";
-import Convo from "../components/Convo.jsx";
-import Message from "../components/Message.jsx";
-import { UserContext } from "../App.jsx";
+} from "../api/conversation";
+import Convo from "../components/Convo";
+import Message from "../components/Message";
+import { UserContext } from "../App";
+import { socket } from "../socket";
+
 export default function Chat() {
   // RETRIEVE CONVERSATIONS AND DISPLAY IT IN SIDEBAR
-
-  const { loggedInStatus, user } = useContext(UserContext);
+  const { loggedInStatus, user, isConnected } = useContext(UserContext);
   const [allConvo, setAllConvo] = useState(null);
   const [currentConvo, setCurrentConvo] = useState(null);
+  const [convoMessages, setConvoMessages] = useState([]);
+  const uiChatRef = useRef(null);
 
   useEffect(() => {
     async function getConversations() {
@@ -21,9 +24,18 @@ export default function Chat() {
     }
 
     getConversations();
+
+    socket.on("chat message", (msg) => {
+      setConvoMessages((prev) => [...prev, msg]);
+      if (msg.sender._id === user._id) {
+        uiChatRef.current?.scrollTo({
+          top: uiChatRef.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    });
     // getUserMessages();
   }, []);
-  const [convoMessages, setConvoMessages] = useState([]);
 
   useEffect(() => {
     console.log("Updated CONVO MESSAGES:", convoMessages);
@@ -37,18 +49,37 @@ export default function Chat() {
   async function getMessages(convoId) {
     console.log("Conversation ID:", convoId);
     const messages = await getAllUserMessages(convoId);
+    setCurrentConvo(convoId);
     setConvoMessages(messages);
   }
 
   async function handleLogout() {
     try {
       await logout();
-
+      // socket.disconnect();
       window.location.reload();
     } catch (err) {
       console.log(err);
     }
   }
+
+  function sendMessage(e) {
+    e.preventDefault();
+    const formEl = e.currentTarget;
+    const formData = new FormData(formEl);
+    const message = formData.get("message");
+
+    if (message) {
+      console.log("Socket connected?", socket.connected);
+
+      socket.emit("chat message", {
+        message: message,
+        sender: user._id,
+        conversation: currentConvo,
+      });
+    }
+  }
+
   return (
     <>
       <div className="flex flex-col h-screen">
@@ -192,8 +223,19 @@ export default function Chat() {
 
             {/* CHAT MESSAGES */}
 
-            <div className="bg-blue-200 w-auto flex-grow min-h-[700px] max-h-[500px] overflow-y-scroll">
+            <div
+              ref={uiChatRef}
+              id="chat-ui"
+              className="bg-blue-200 w-auto flex-grow min-h-[700px] max-h-[500px] overflow-y-scroll"
+            >
               {convoMessages.map((message, i) => {
+                console.log("THE WHOLE MESSAGE:", message);
+                console.log("USER MESSAGE:", message.message);
+                console.log("SENDER ID:", message.sender._id);
+                console.log(
+                  "USER ID IS THE USER?",
+                  message.sender._id === user._id
+                );
                 return (
                   <Message
                     key={i}
@@ -218,7 +260,7 @@ export default function Chat() {
               </div>
             </div> */}
 
-            <div className="flex mt-auto p-3">
+            <form onSubmit={(e) => sendMessage(e)} className="flex mt-auto p-3">
               <div>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -233,6 +275,8 @@ export default function Chat() {
               <input
                 className="flex-grow mx-4 p-2"
                 type="text"
+                name="message"
+                id="message"
                 placeholder="Type your message here..."
               />
               <div className="flex items-center justify-center ml-auto gap-5">
@@ -245,17 +289,19 @@ export default function Chat() {
                 >
                   <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM164.1 325.5C182 346.2 212.6 368 256 368s74-21.8 91.9-42.5c5.8-6.7 15.9-7.4 22.6-1.6s7.4 15.9 1.6 22.6C349.8 372.1 311.1 400 256 400s-93.8-27.9-116.1-53.5c-5.8-6.7-5.1-16.8 1.6-22.6s16.8-5.1 22.6 1.6zM144.4 208a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm192-32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" />
                 </svg>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 512 512"
-                  width="30"
-                  height="30"
-                  fill="black"
-                >
-                  <path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480l0-83.6c0-4 1.5-7.8 4.2-10.8L331.8 202.8c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8 17.7 316.6C7.1 311.3 .3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z" />
-                </svg>
+                <button className="cursor-pointer">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    width="30"
+                    height="30"
+                    fill="black"
+                  >
+                    <path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480l0-83.6c0-4 1.5-7.8 4.2-10.8L331.8 202.8c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8 17.7 316.6C7.1 311.3 .3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z" />
+                  </svg>
+                </button>
               </div>
-            </div>
+            </form>
           </div>
 
           <div className="flex-grow bg-white shadow-md">
@@ -269,6 +315,7 @@ export default function Chat() {
             </div>
             <div className="flex flex-col p-3">
               <h1 className="font-bold mb-5">Chat Info</h1>
+
               <input
                 placeholder="&#xF002; Search in conversation"
                 className="bg-white shadow-md p-1 rounded-full px-3"

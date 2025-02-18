@@ -7,7 +7,7 @@ import Register from "./pages/Register";
 import NoPage from "./pages/NoPage";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import ProtectedFormRoutes from "./utils/ProtectedFormRoutes";
-
+import { socket } from "./socket";
 export const UserContext = createContext();
 export default class App extends Component {
   constructor() {
@@ -16,11 +16,41 @@ export default class App extends Component {
       loggedInStatus: false,
       user: {},
       loading: true,
+      isConnected: socket.connected,
     };
   }
   componentDidMount() {
+    this.socketSetup();
     this.checkLoginStatus();
   }
+
+  componentWillUnmount() {
+    this.socketCleanup();
+  }
+
+  socketSetup() {
+    socket.on("connect", this.onConnect);
+    socket.on("disconnect", this.onDisonnect);
+  }
+  socketCleanup() {
+    socket.off("connect", this.onConnect);
+    socket.off("disconnect", this.onDisonnect);
+  }
+
+  // Socket handlers
+  onConnect = () => {
+    console.log("SOCKET CONNECTED!", socket.connected);
+    this.setState({
+      isConnected: socket.connected,
+    });
+  };
+
+  onDisonnect = () => {
+    console.log("SOCKET DISCONNECTED!");
+    this.setState({
+      isConnected: socket.connected,
+    });
+  };
 
   checkLoginStatus() {
     axios
@@ -30,18 +60,21 @@ export default class App extends Component {
       .then((response) => {
         if (response.status == 200 && response.data.currentUser) {
           console.log("isLoggedIn");
-          this.setState(
-            {
-              loggedInStatus: true,
-              user: response.data.currentUser,
-              loading: false,
-            },
-            () => console.log("Updated State:", this.state)
-          );
+
+          // Enable socket connection if user is logged in
+          socket.connect();
+          this.setState({
+            loggedInStatus: true,
+            user: response.data.currentUser,
+            loading: false,
+          });
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err.response.data.message);
+
+        // Disable socket connection if user is logged in
+        socket.disconnect();
         this.setState({
           loggedInStatus: false,
           user: {},
