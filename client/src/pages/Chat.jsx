@@ -10,7 +10,6 @@ import { UserContext } from "../App";
 import { socket } from "../socket";
 
 export default function Chat() {
-  // RETRIEVE CONVERSATIONS AND DISPLAY IT IN SIDEBAR
   const { loggedInStatus, user, isConnected } = useContext(UserContext);
   const [allConvo, setAllConvo] = useState(null);
   const [currentConvo, setCurrentConvo] = useState(null);
@@ -18,36 +17,48 @@ export default function Chat() {
   const uiChatRef = useRef(null);
 
   useEffect(() => {
-    async function getConversations() {
-      const conversations = await getAllUserConversation();
-      setAllConvo(conversations);
-    }
+    // Get initial conversation list
 
-    getConversations();
+    socket.on("chat message", (data) => {
+      // Messages will be updated if the sent messages is for the current conversation
+      console.log("DATA CONVO ID:", data.convo._id);
+      if (data.convo._id === currentConvo)
+        setConvoMessages((prev) => [...prev, data.msg]);
 
-    socket.on("chat message", (msg) => {
-      setConvoMessages((prev) => [...prev, msg]);
-      if (msg.sender._id === user._id) {
+      // This should scroll down the chat ui if the user is the sender
+      if (data.msg.sender._id === user._id) {
         uiChatRef.current?.scrollTo({
           top: uiChatRef.current.scrollHeight,
           behavior: "smooth",
         });
       }
+
+      // This will get the updated list of conversation (yes, it is not optimal)
+      getConversations();
     });
-    // getUserMessages();
+    getConversations();
   }, []);
 
   useEffect(() => {
-    console.log("Updated CONVO MESSAGES:", convoMessages);
-  }, [convoMessages]);
+    // This will get the initial messages to be displayed (if the currentConvo is null)
+    if (allConvo && currentConvo === null) getMessages(allConvo[0]._id);
+  }, [allConvo]);
+
+  // Adds a loading screen if all conversations are not yet retrieved.
   if (!allConvo) {
     return <div>Loading...</div>;
   }
 
-  console.log("ALL CONVERSATION:", allConvo);
+  // FUNCTIONS
+  // This will get all the conversation for the user
+  async function getConversations() {
+    const conversations = await getAllUserConversation();
+    setAllConvo(conversations);
+  }
 
+  // This will set the initial messages displayed to be the most recent conversation
   async function getMessages(convoId) {
-    console.log("Conversation ID:", convoId);
+    // Join a channel for users in the same conversation
     const messages = await getAllUserMessages(convoId);
     setCurrentConvo(convoId);
     setConvoMessages(messages);
@@ -229,13 +240,6 @@ export default function Chat() {
               className="bg-blue-200 w-auto flex-grow min-h-[700px] max-h-[500px] overflow-y-scroll"
             >
               {convoMessages.map((message, i) => {
-                console.log("THE WHOLE MESSAGE:", message);
-                console.log("USER MESSAGE:", message.message);
-                console.log("SENDER ID:", message.sender._id);
-                console.log(
-                  "USER ID IS THE USER?",
-                  message.sender._id === user._id
-                );
                 return (
                   <Message
                     key={i}

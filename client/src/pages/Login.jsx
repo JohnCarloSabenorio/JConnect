@@ -1,7 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { login } from "../api/authenticate.js";
 import { socket } from "../socket.js";
-import { UserContext } from "../App.jsx";
 
 export default function Login() {
   let [email, setEmail] = useState("");

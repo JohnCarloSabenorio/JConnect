@@ -5,7 +5,7 @@ export async function getAllUserConversation() {
     console.log("Getting all conversations...");
 
     const response = await axios.get(
-      "http://localhost:3000/jconnect/api/v1/users/allConvo",
+      "http://localhost:3000/jconnect/api/v1/users/allConvo?sort=-updatedAt",
       { withCredentials: true }
     );
 

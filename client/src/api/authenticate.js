@@ -1,5 +1,4 @@
 import axios from "axios";
-import { socket } from "../socket";
 export async function login(email, password) {
   try {
     const response = await axios.post(
