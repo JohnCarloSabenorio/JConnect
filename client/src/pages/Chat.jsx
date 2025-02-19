@@ -21,9 +21,7 @@ export default function Chat() {
 
     socket.on("chat message", (data) => {
       // Messages will be updated if the sent messages is for the current conversation
-      console.log("DATA CONVO ID:", data.convo._id);
-      if (data.convo._id === currentConvo)
-        setConvoMessages((prev) => [...prev, data.msg]);
+      setConvoMessages((prev) => [...prev, data.msg]);
 
       // This should scroll down the chat ui if the user is the sender
       if (data.msg.sender._id === user._id) {
