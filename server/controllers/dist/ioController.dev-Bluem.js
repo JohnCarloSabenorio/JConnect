@@ -2,10 +2,8 @@
 
 var Message = require("./../models/messageModel");
 
-var Conversation = require("../models/conversationModel");
-
 exports.sendMessage = function _callee(io, socket, data) {
-  var newMessage, populatedMessage, updatedConvo;
+  var newMessage, populatedMessage;
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -20,22 +18,9 @@ exports.sendMessage = function _callee(io, socket, data) {
 
         case 5:
           populatedMessage = _context.sent;
-          _context.next = 8;
-          return regeneratorRuntime.awrap(Conversation.findByIdAndUpdate(data.conversation, {
-            latestMessage: data.message
-          }, {
-            "new": true
-          }));
+          io.emit("chat message", populatedMessage);
 
-        case 8:
-          updatedConvo = _context.sent;
-          console.log("updatedConvo data:", updatedConvo);
-          io.emit("chat message", {
-            msg: populatedMessage,
-            convo: updatedConvo
-          });
-
-        case 11:
+        case 7:
         case "end":
           return _context.stop();
       }
