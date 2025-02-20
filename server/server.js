@@ -44,6 +44,13 @@ mongoose
 
 // WEBSOCKET CONNECTION AND HANDLERS
 io.on("connection", (socket) => {
+  socket.on("join rooms", (data) => {
+    if (!socket.rooms.has(data)) {
+      socket.join(data);
+    } else {
+      console.log("THE USER IS ALREADY IN THIS ROOM!");
+    }
+  });
   console.log("A user connected!");
 
   socket.on("disconnect", () => {

@@ -30,7 +30,7 @@ exports.sendMessage = function _callee(io, socket, data) {
         case 8:
           updatedConvo = _context.sent;
           console.log("updatedConvo data:", updatedConvo);
-          io.emit("chat message", {
+          io.to(data.conversation).emit("chat message", {
             msg: populatedMessage,
             convo: updatedConvo
           });

@@ -20,7 +20,7 @@ export default function Chat({
   return (
     <div className="flex flex-col p-5">
       <div className={`flex ${isCurrentUser ? "ml-auto mr-15" : "ml-15"}`}>
-        <p>{username}</p>
+        <p className="">{username}</p>
       </div>
       <div className={isCurrentUser ? "ml-auto flex gap-2" : "flex gap-2"}>
         {isCurrentUser ? (
@@ -30,7 +30,7 @@ export default function Chat({
                 <p className="break-all">{message}</p>
               </div>
 
-              <span className="absolute left-0 bottom-full mb-2 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="z-10 absolute left-0 bottom-full mb-2 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity">
                 {formatTime(timeSent)}
               </span>
             </div>

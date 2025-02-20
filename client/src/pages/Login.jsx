@@ -1,11 +1,9 @@
 import { useContext, useState, useEffect } from "react";
 import { login } from "../api/authenticate.js";
-import { socket } from "../socket.js";
 
 export default function Login() {
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
-  console.log("IS SOCKETED:", socket.connected);
   async function handleSubmit(event) {
     event.preventDefault();
     try {

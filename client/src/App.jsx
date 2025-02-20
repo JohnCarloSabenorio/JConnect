@@ -43,6 +43,8 @@ export default class App extends Component {
     this.setState({
       isConnected: socket.connected,
     });
+
+    console.log("current user:", this.state.user);
   };
 
   onDisonnect = () => {

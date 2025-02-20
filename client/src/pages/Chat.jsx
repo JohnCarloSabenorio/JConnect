@@ -8,19 +8,28 @@ import Convo from "../components/Convo";
 import Message from "../components/Message";
 import { UserContext } from "../App";
 import { socket } from "../socket";
-
+import EmojiPicker from "emoji-picker-react";
+import Navbar from "../components/Navbar";
+import Sidebar from "../components/Sidebar";
+import MediaPanel from "../components/MediaPanel";
 export default function Chat() {
   const { loggedInStatus, user, isConnected } = useContext(UserContext);
   const [allConvo, setAllConvo] = useState(null);
   const [currentConvo, setCurrentConvo] = useState(null);
   const [convoMessages, setConvoMessages] = useState([]);
+  const [displayEmoji, setDisplayEmoji] = useState(false);
+  const [message, setMessage] = useState("");
   const uiChatRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     // Get initial conversation list
-
+    console.log("getting convo:");
+    getConversations();
     socket.on("chat message", (data) => {
       // Messages will be updated if the sent messages is for the current conversation
+
+      console.log("THE CONVERSATION UPDATE:", data.convo);
       setConvoMessages((prev) => [...prev, data.msg]);
 
       // This should scroll down the chat ui if the user is the sender
@@ -31,10 +40,16 @@ export default function Chat() {
         });
       }
 
-      // This will get the updated list of conversation (yes, it is not optimal)
-      getConversations();
+      // UPDATES THE CONVERSATION LIST
+      setAllConvo(
+        (prev) =>
+          [
+            ...prev.map((convo) =>
+              convo._id === data.convo._id ? data.convo : convo
+            ),
+          ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)) // Sort by latest updatedAt
+      );
     });
-    getConversations();
   }, []);
 
   useEffect(() => {
@@ -51,6 +66,11 @@ export default function Chat() {
   // This will get all the conversation for the user
   async function getConversations() {
     const conversations = await getAllUserConversation();
+
+    console.log("FIRST COMBO:", conversations[0]);
+
+    console.log("JOINING ROOMS");
+    conversations.forEach((convo) => socket.emit("join rooms", convo._id));
     setAllConvo(conversations);
   }
 
@@ -62,131 +82,45 @@ export default function Chat() {
     setConvoMessages(messages);
   }
 
-  async function handleLogout() {
-    try {
-      await logout();
-      // socket.disconnect();
-      window.location.reload();
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
   function sendMessage(e) {
     e.preventDefault();
-    const formEl = e.currentTarget;
-    const formData = new FormData(formEl);
-    const message = formData.get("message");
-
     if (message) {
       console.log("Socket connected?", socket.connected);
-
       socket.emit("chat message", {
         message: message,
         sender: user._id,
         conversation: currentConvo,
       });
+      setMessage("");
     }
+  }
+
+  function toggleEmojiPicker() {
+    setDisplayEmoji((prev) => !prev);
+  }
+
+  function addEmojiToInput(emoji) {
+    setDisplayEmoji(true);
+    console.log(emoji);
+    setMessage((prev) => prev + emoji.emoji);
+  }
+
+  function handleFileInputClick() {
+    fileInputRef.current.click();
   }
 
   return (
     <>
       <div className="flex flex-col h-screen">
-        {/* Navbar */}
-        <div className="bg-gray-400 shadow-md flex justify-between p-5">
-          <div className="">
-            <h1 className="pb-2 text-4xl text-gray-800 font-bold">JConnect</h1>
-          </div>
+        <Navbar />
 
-          <div className="flex gap-5">
-            <button>Toggle</button>
-
-            <button
-              className="group relative border-gray-300 cursor-pointer"
-              type="button"
-            >
-              <img
-                src="/img/icons/male-default.jpg"
-                className="rounded-full w-12 h-12"
-              />
-
-              <div className="absolute top-full right-0 rounded-lg p-3 bg-gray-50  shadow-lg scale-y-0 group-focus:scale-y-100 origin-top duration-100 flex flex-col">
-                <a className="active">Profile</a>
-                <a>Settings</a>
-                <a onClick={handleLogout}>Logout</a>
-              </div>
-            </button>
-          </div>
-        </div>
-
+        {/* Main Content */}
         <div className="flex flex-grow">
-          <div className="bg-white shadow-md mr-0.3">
-            <div className="flex items-center justify-center gap-8 p-3 bg-white shadow-md">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 512 512"
-                width="30"
-                height="30"
-                fill="black"
-              >
-                <path d="M64 0C28.7 0 0 28.7 0 64L0 352c0 35.3 28.7 64 64 64l96 0 0 80c0 6.1 3.4 11.6 8.8 14.3s11.9 2.1 16.8-1.5L309.3 416 448 416c35.3 0 64-28.7 64-64l0-288c0-35.3-28.7-64-64-64L64 0z" />
-              </svg>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 512 512"
-                width="30"
-                height="30"
-                fill="black"
-              >
-                <path d="M96 0C60.7 0 32 28.7 32 64l0 384c0 35.3 28.7 64 64 64l288 0c35.3 0 64-28.7 64-64l0-384c0-35.3-28.7-64-64-64L96 0zM208 288l64 0c44.2 0 80 35.8 80 80c0 8.8-7.2 16-16 16l-192 0c-8.8 0-16-7.2-16-16c0-44.2 35.8-80 80-80zm-32-96a64 64 0 1 1 128 0 64 64 0 1 1 -128 0zM512 80c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 64c0 8.8 7.2 16 16 16s16-7.2 16-16l0-64zM496 192c-8.8 0-16 7.2-16 16l0 64c0 8.8 7.2 16 16 16s16-7.2 16-16l0-64c0-8.8-7.2-16-16-16zm16 144c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 64c0 8.8 7.2 16 16 16s16-7.2 16-16l0-64z" />
-              </svg>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 640 512"
-                width="30"
-                height="30"
-                fill="black"
-              >
-                <path d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304l91.4 0C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7L29.7 512C13.3 512 0 498.7 0 482.3zM609.3 512l-137.8 0c5.4-9.4 8.6-20.3 8.6-32l0-8c0-60.7-27.1-115.2-69.8-151.8c2.4-.1 4.7-.2 7.1-.2l61.4 0C567.8 320 640 392.2 640 481.3c0 17-13.8 30.7-30.7 30.7zM432 256c-31 0-59-12.6-79.3-32.9C372.4 196.5 384 163.6 384 128c0-26.8-6.6-52.1-18.3-74.3C384.3 40.1 407.2 32 432 32c61.9 0 112 50.1 112 112s-50.1 112-112 112z" />
-              </svg>
+          {/* Sidebar */}
 
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 448 512"
-                width="30"
-                height="30"
-                fill="black"
-              >
-                <path d="M224 0c-17.7 0-32 14.3-32 32l0 19.2C119 66 64 130.6 64 208l0 18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416l384 0c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8l0-18.8c0-77.4-55-142-128-156.8L256 32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3l-64 0-64 0c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z" />
-              </svg>
-            </div>
+          <Sidebar allConvo={allConvo} convoClickHandler={getMessages} />
 
-            <div className="flex flex-col p-5 pt-2">
-              <h1 className="text-3xl font-bold">Chats</h1>
-              <input
-                type="text"
-                className="mt-3 rounded-full p-1 px-2 bg-white shadow-md"
-                placeholder="&#xF002; Search..."
-                // style={{ fontFamily: "Arial", "FontAwesome" }}
-              />
-
-              {allConvo.map((convo, id) => {
-                return (
-                  <Convo
-                    key={id}
-                    convoId={convo._id}
-                    name={convo.convoName}
-                    msg={convo.latestMessage}
-                    msgCount={"#"}
-                    timeSent={convo.updatedAt}
-                    imageUrl="/img/icons/male-default.jpg"
-                    eventHandler={getMessages}
-                  />
-                );
-              })}
-            </div>
-          </div>
-
+          {/* Chat Interface */}
           <div className="flex flex-col w-4xl bg-gray-50">
             <div className="shadow-md flex p-3 gap-5 px-10 bg-white">
               <img
@@ -250,47 +184,64 @@ export default function Chat() {
                 );
               })}
             </div>
-            {/* <div className="flex flex-col p-5">
-              <div className="flex gap-2">
-                <img
-                  src="/img/icons/male-default.jpg"
-                  className="rounded-full w-12 h-12"
-                />
-                <div className="max-w-max bg-green-400 p-2 rounded-sm">
-                  <p className="break-all">This is a sample friend message!</p>
-                </div>
-              </div>
-            </div> */}
 
             <form onSubmit={(e) => sendMessage(e)} className="flex mt-auto p-3">
               <div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 448 512"
-                  width="30"
-                  height="30"
-                  fill="black"
+                <input type="file" ref={fileInputRef} className="hidden" />
+
+                {/* File input button */}
+                <button
+                  type="button"
+                  className="cursor-pointer"
+                  onClick={handleFileInputClick}
                 >
-                  <path d="M364.2 83.8c-24.4-24.4-64-24.4-88.4 0l-184 184c-42.1 42.1-42.1 110.3 0 152.4s110.3 42.1 152.4 0l152-152c10.9-10.9 28.7-10.9 39.6 0s10.9 28.7 0 39.6l-152 152c-64 64-167.6 64-231.6 0s-64-167.6 0-231.6l184-184c46.3-46.3 121.3-46.3 167.6 0s46.3 121.3 0 167.6l-176 176c-28.6 28.6-75 28.6-103.6 0s-28.6-75 0-103.6l144-144c10.9-10.9 28.7-10.9 39.6 0s10.9 28.7 0 39.6l-144 144c-6.7 6.7-6.7 17.7 0 24.4s17.7 6.7 24.4 0l176-176c24.4-24.4 24.4-64 0-88.4z" />
-                </svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                    width="30"
+                    height="30"
+                    fill="black"
+                  >
+                    <path d="M364.2 83.8c-24.4-24.4-64-24.4-88.4 0l-184 184c-42.1 42.1-42.1 110.3 0 152.4s110.3 42.1 152.4 0l152-152c10.9-10.9 28.7-10.9 39.6 0s10.9 28.7 0 39.6l-152 152c-64 64-167.6 64-231.6 0s-64-167.6 0-231.6l184-184c46.3-46.3 121.3-46.3 167.6 0s46.3 121.3 0 167.6l-176 176c-28.6 28.6-75 28.6-103.6 0s-28.6-75 0-103.6l144-144c10.9-10.9 28.7-10.9 39.6 0s10.9 28.7 0 39.6l-144 144c-6.7 6.7-6.7 17.7 0 24.4s17.7 6.7 24.4 0l176-176c24.4-24.4 24.4-64 0-88.4z" />
+                  </svg>
+                </button>
               </div>
               <input
                 className="flex-grow mx-4 p-2"
                 type="text"
                 name="message"
                 id="message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
                 placeholder="Type your message here..."
               />
               <div className="flex items-center justify-center ml-auto gap-5">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 512 512"
-                  width="30"
-                  height="30"
-                  fill="black"
-                >
-                  <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM164.1 325.5C182 346.2 212.6 368 256 368s74-21.8 91.9-42.5c5.8-6.7 15.9-7.4 22.6-1.6s7.4 15.9 1.6 22.6C349.8 372.1 311.1 400 256 400s-93.8-27.9-116.1-53.5c-5.8-6.7-5.1-16.8 1.6-22.6s16.8-5.1 22.6 1.6zM144.4 208a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm192-32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" />
-                </svg>
+                <div className="relative inline-block">
+                  <div
+                    id="emoji-picker"
+                    className={`absolute bottom-full mb-2 left-0 z-10 ${
+                      displayEmoji ? "block" : "hidden"
+                    }`}
+                  >
+                    <EmojiPicker onEmojiClick={addEmojiToInput} />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={toggleEmojiPicker}
+                    className="cursor-pointer"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      width="30"
+                      height="30"
+                      fill="black"
+                    >
+                      <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM164.1 325.5C182 346.2 212.6 368 256 368s74-21.8 91.9-42.5c5.8-6.7 15.9-7.4 22.6-1.6s7.4 15.9 1.6 22.6C349.8 372.1 311.1 400 256 400s-93.8-27.9-116.1-53.5c-5.8-6.7-5.1-16.8 1.6-22.6s16.8-5.1 22.6 1.6zM144.4 208a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm192-32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" />
+                    </svg>
+                  </button>
+                </div>
                 <button className="cursor-pointer">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -306,55 +257,7 @@ export default function Chat() {
             </form>
           </div>
 
-          <div className="flex-grow bg-white shadow-md">
-            <div className="flex flex-col items-center justify-center p-10">
-              <img
-                src="/img/icons/male-default.jpg"
-                className="rounded-full w-30 h-30"
-              />
-              <p className="font-bold">John Doe</p>
-              <p className="text-gray-500">johndoe@gmail.com</p>
-            </div>
-            <div className="flex flex-col p-3">
-              <h1 className="font-bold mb-5">Chat Info</h1>
-
-              <input
-                placeholder="&#xF002; Search in conversation"
-                className="bg-white shadow-md p-1 rounded-full px-3"
-                // style={{ fontFamily: "Arial", "FontAwesome" }}
-              />
-
-              <div className="pt-3">
-                <div className="p-3 flex shadow-md">
-                  <p className="align-middle">Files</p>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 320 512"
-                    width="30"
-                    height="30"
-                    fill="#53575a"
-                    className="ml-auto"
-                  >
-                    <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
-                  </svg>
-                </div>
-                <div className="p-3 flex shadow-md">
-                  <p className="align-middle">Images</p>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 320 512"
-                    width="30"
-                    height="30"
-                    fill="#53575a"
-                    className="ml-auto"
-                  >
-                    <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-            <div></div>
-          </div>
+          <MediaPanel />
         </div>
       </div>
     </>
