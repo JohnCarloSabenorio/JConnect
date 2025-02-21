@@ -1,4 +1,4 @@
-function Convo({
+export default function Convo({
   name,
   msg,
   msgCount,
@@ -24,7 +24,7 @@ function Convo({
       <div
         className="mt-5 flex flex-col gap-2"
         onClick={() => {
-          eventHandler(convoId);
+          eventHandler(convoId, name);
         }}
       >
         <div className="bg-white rounded-md flex p-5 shadow-md cursor-pointer">
@@ -45,4 +45,3 @@ function Convo({
   );
 }
 
-export default Convo;

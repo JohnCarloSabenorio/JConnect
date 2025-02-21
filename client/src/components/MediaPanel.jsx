@@ -1,4 +1,4 @@
-export default function MediaPanel() {
+export default function MediaPanel({ convoName }) {
   return (
     <div className="flex-grow bg-white shadow-md">
       <div className="flex flex-col items-center justify-center p-10">
@@ -6,8 +6,8 @@ export default function MediaPanel() {
           src="/img/icons/male-default.jpg"
           className="rounded-full w-30 h-30"
         />
-        <p className="font-bold">John Doe</p>
-        <p className="text-gray-500">johndoe@gmail.com</p>
+        <p className="font-bold">{convoName}</p>
+        {/* <p className="text-gray-500">johndoe@gmail.com</p> */}
       </div>
       <div className="flex flex-col p-3">
         <h1 className="font-bold mb-5">Chat Info</h1>

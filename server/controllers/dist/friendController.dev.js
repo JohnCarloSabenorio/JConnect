@@ -49,7 +49,7 @@ exports.sendFriendRequest = catchAsync(function _callee(req, res, next) {
   });
 });
 exports.getMyFriends = catchAsync(function _callee2(req, res) {
-  var allMyFriends;
+  var allMyFriends, friend;
   return regeneratorRuntime.async(function _callee2$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
@@ -67,13 +67,31 @@ exports.getMyFriends = catchAsync(function _callee2(req, res) {
 
         case 3:
           allMyFriends = _context2.sent;
+          // Filters out the id of the current user so only the friend id is retrieved
+          friend = allMyFriends.map(function (friend) {
+            friend = friend.toObject();
+
+            if (friend.user1._id.toString() === req.user.id.toString()) {
+              delete friend.user1; // This should replace the key of user2 to 'friend' instead
+
+              friend.friend = friend.user2;
+              delete friend.user2;
+            } else {
+              delete friend.user2; // This should replace the key of user1 to 'friend' instead
+
+              friend.friend = friend.user1;
+              delete friend.user1;
+            }
+
+            return friend;
+          });
           res.status(200).json({
             status: "success",
             message: "All my friends retrieved!",
-            data: allMyFriends
+            data: friend
           });
 
-        case 5:
+        case 6:
         case "end":
           return _context2.stop();
       }

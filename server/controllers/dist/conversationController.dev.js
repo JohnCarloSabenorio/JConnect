@@ -48,8 +48,7 @@ exports.addMember = catchAsync(function _callee(req, res, next) {
     }
   });
 });
-
-exports.removeMember = function _callee2(req, res, next) {
+exports.removeMember = catchAsync(function _callee2(req, res, next) {
   var convo;
   return regeneratorRuntime.async(function _callee2$(_context2) {
     while (1) {
@@ -88,8 +87,44 @@ exports.removeMember = function _callee2(req, res, next) {
       }
     }
   });
-};
+}); // This checking is for a one on one conversation only
 
+exports.checkConvoExists = catchAsync(function _callee3(req, res) {
+  var convo;
+  return regeneratorRuntime.async(function _callee3$(_context3) {
+    while (1) {
+      switch (_context3.prev = _context3.next) {
+        case 0:
+          // Check if conversation exists using id of two users
+          console.log("FRIEND ID:", req.params.friendId);
+          console.log("USER ID:", req.user.id);
+          _context3.next = 4;
+          return regeneratorRuntime.awrap(Conversation.find({
+            users: {
+              $all: [req.params.friendId, req.user.id]
+            },
+            $expr: {
+              $eq: [{
+                $size: "$users"
+              }, 2]
+            }
+          }));
+
+        case 4:
+          convo = _context3.sent;
+          res.status(200).json({
+            status: "success",
+            message: "Conversation exists!",
+            data: convo
+          });
+
+        case 6:
+        case "end":
+          return _context3.stop();
+      }
+    }
+  });
+});
 exports.createConversation = handleFactory.createOne(Conversation);
 exports.getConversation = handleFactory.getOne(Conversation);
 exports.getAllConversation = handleFactory.getAll(Conversation);

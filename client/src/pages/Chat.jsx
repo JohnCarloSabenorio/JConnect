@@ -1,10 +1,9 @@
 import { useContext, useEffect, useState, useRef } from "react";
-import { logout } from "../api/authenticate";
 import {
-  getAllUserConversation,
+  getFriendsConversation,
+  getRecentConversation,
   getAllUserMessages,
 } from "../api/conversation";
-import Convo from "../components/Convo";
 import Message from "../components/Message";
 import { UserContext } from "../App";
 import { socket } from "../socket";
@@ -14,6 +13,7 @@ import Sidebar from "../components/Sidebar";
 import MediaPanel from "../components/MediaPanel";
 export default function Chat() {
   const { loggedInStatus, user, isConnected } = useContext(UserContext);
+  const [convoName, setConvoName] = useState("");
   const [allConvo, setAllConvo] = useState(null);
   const [currentConvo, setCurrentConvo] = useState(null);
   const [convoMessages, setConvoMessages] = useState([]);
@@ -25,11 +25,10 @@ export default function Chat() {
   useEffect(() => {
     // Get initial conversation list
     console.log("getting convo:");
-    getConversations();
+    getRecentConversations();
+    getFriendConversations();
     socket.on("chat message", (data) => {
       // Messages will be updated if the sent messages is for the current conversation
-
-      console.log("THE CONVERSATION UPDATE:", data.convo);
       setConvoMessages((prev) => [...prev, data.msg]);
 
       // This should scroll down the chat ui if the user is the sender
@@ -54,7 +53,9 @@ export default function Chat() {
 
   useEffect(() => {
     // This will get the initial messages to be displayed (if the currentConvo is null)
-    if (allConvo && currentConvo === null) getMessages(allConvo[0]._id);
+    if (allConvo && currentConvo === null) {
+      getMessages(allConvo[0]._id, allConvo[0].convoName);
+    }
   }, [allConvo]);
 
   // Adds a loading screen if all conversations are not yet retrieved.
@@ -64,20 +65,30 @@ export default function Chat() {
 
   // FUNCTIONS
   // This will get all the conversation for the user
-  async function getConversations() {
-    const conversations = await getAllUserConversation();
-
-    console.log("FIRST COMBO:", conversations[0]);
+  async function getRecentConversations() {
+    const conversations = await getRecentConversation();
 
     console.log("JOINING ROOMS");
     conversations.forEach((convo) => socket.emit("join rooms", convo._id));
     setAllConvo(conversations);
   }
 
+  // This will get the friends conversation of a user
+  async function getFriendConversations() {
+    const friendsConvo = await getFriendsConversation();
+
+    console.log("FRIENDS CONVERSATION:", friendsConvo);
+
+    // console.log("JOINING ROOMS");
+    // conversations.forEach((convo) => socket.emit("join rooms", convo._id));
+    // setAllConvo(conversations);
+  }
+
   // This will set the initial messages displayed to be the most recent conversation
-  async function getMessages(convoId) {
+  async function getMessages(convoId, convoName) {
     // Join a channel for users in the same conversation
     const messages = await getAllUserMessages(convoId);
+    setConvoName(convoName);
     setCurrentConvo(convoId);
     setConvoMessages(messages);
   }
@@ -128,7 +139,7 @@ export default function Chat() {
                 className="rounded-full w-12 h-12"
               />
               <div>
-                <p className="font-bold text-md">John Doe</p>
+                <p className="font-bold text-md">{convoName}</p>
                 <p className="text-gray-600">Last active 1 hour ago</p>
               </div>
               <div className="flex gap-5 ml-auto items-center justify-center">
@@ -257,7 +268,7 @@ export default function Chat() {
             </form>
           </div>
 
-          <MediaPanel />
+          <MediaPanel convoName={convoName} />
         </div>
       </div>
     </>

@@ -28,7 +28,7 @@ exports.addMember = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.removeMember = async (req, res, next) => {
+exports.removeMember = catchAsync(async (req, res, next) => {
   const convo = await Conversation.findByIdAndUpdate(
     req.params.convoId,
     {
@@ -51,7 +51,24 @@ exports.removeMember = async (req, res, next) => {
     message: "Successfully added a member in the conversation!",
     data: convo,
   });
-};
+});
+
+// This checking is for a one on one conversation only
+exports.checkConvoExists = catchAsync(async (req, res) => {
+  // Check if conversation exists using id of two users
+  console.log("FRIEND ID:", req.params.friendId);
+  console.log("USER ID:", req.user.id);
+  const convo = await Conversation.find({
+    users: { $all: [req.params.friendId, req.user.id] },
+    $expr: { $eq: [{ $size: "$users" }, 2] },
+  });
+
+  res.status(200).json({
+    status: "success",
+    message: "Conversation exists!",
+    data: convo,
+  });
+});
 
 exports.createConversation = handleFactory.createOne(Conversation);
 exports.getConversation = handleFactory.getOne(Conversation);

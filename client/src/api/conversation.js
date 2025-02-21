@@ -1,19 +1,32 @@
 import axios from "axios";
 
-export async function getAllUserConversation() {
+export async function getRecentConversation() {
   try {
     console.log("Getting all conversations...");
 
     const response = await axios.get(
-      "http://localhost:3000/jconnect/api/v1/users/allConvo?sort=-updatedAt",
+      "/jconnect/api/v1/users/allConvo?sort=-updatedAt",
       { withCredentials: true }
     );
 
-    console.log("CONVERSATION LIST:");
-    console.log(response.data.data);
     return response.data.data;
   } catch (error) {
     console.error("Error fetching conversations:", error);
+  }
+}
+
+export async function getFriendsConversation() {
+  try {
+    console.log("Getting friend conversations...");
+    // Create an api to get friend conversations
+    const response = await axios.get(
+      "/jconnect/api/v1/friends/currentUser/allFriends",
+      { withCredentials: true }
+    );
+
+    return response.data.data;
+  } catch (err) {
+    console.error("Error fetching user conversations:", err);
   }
 }
 
@@ -22,18 +35,18 @@ export async function getAllUserMessages(convoId) {
 
   // Retrieve messages by the order of creation
   try {
+    // Gets the friends of the user
     const response = await axios.get(
-      `http://localhost:3000/jconnect/api/v1/conversation/${convoId}/message?sort=createdAt`,
+      `/jconnect/api/v1/conversation/${convoId}/message?sort=createdAt`,
       { withCredentials: true }
     );
 
-    console.log("The response:", response.data.data);
     return response.data.data;
   } catch (err) {
     console.log(err);
   }
 }
 
-export async function sendMessage(message, convoId) {
-  const response = await axios.post();
+export async function createConversation() {
+  console.log("Creating conversation...");
 }

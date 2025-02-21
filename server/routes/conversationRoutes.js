@@ -5,7 +5,6 @@ const convoController = require("../controllers/conversationController");
 const authController = require("../controllers/authController");
 const messageRouter = require("./messageRoutes");
 
-
 router.use("/:convoId/message", messageRouter);
 router.use(authController.protect);
 

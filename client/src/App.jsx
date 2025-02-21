@@ -8,6 +8,7 @@ import NoPage from "./pages/NoPage";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import ProtectedFormRoutes from "./utils/ProtectedFormRoutes";
 import { socket } from "./socket";
+import { isLoggedIn } from "./api/authenticate";
 export const UserContext = createContext();
 export default class App extends Component {
   constructor() {
@@ -54,35 +55,30 @@ export default class App extends Component {
     });
   };
 
-  checkLoginStatus() {
-    axios
-      .get("http://localhost:3000/jconnect/api/v1/users/isLoggedIn", {
+  async checkLoginStatus() {
+    try {
+      const response = await axios.get("/jconnect/api/v1/users/isLoggedIn", {
         withCredentials: true,
-      })
-      .then((response) => {
-        if (response.status == 200 && response.data.currentUser) {
-          console.log("isLoggedIn");
-
-          // Enable socket connection if user is logged in
-          socket.connect();
-          this.setState({
-            loggedInStatus: true,
-            user: response.data.currentUser,
-            loading: false,
-          });
-        }
-      })
-      .catch((err) => {
-        console.log(err.response.data.message);
-
-        // Disable socket connection if user is logged in
-        socket.disconnect();
-        this.setState({
-          loggedInStatus: false,
-          user: {},
-          loading: false,
-        });
       });
+      console.log("isLoggedIn");
+
+      // Enable socket connection if user is logged in
+      socket.connect();
+      this.setState({
+        loggedInStatus: true,
+        user: response.data.currentUser,
+        loading: false,
+      });
+    } catch (err) {
+      console.log(err.response.data.message);
+      // Disable socket connection if user is logged in
+      socket.disconnect();
+      this.setState({
+        loggedInStatus: false,
+        user: {},
+        loading: false,
+      });
+    }
   }
 
   render() {

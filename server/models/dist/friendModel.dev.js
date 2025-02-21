@@ -38,12 +38,12 @@ friendSchema.index({
   unique: true
 }); // QUERY MIDDLEWARE
 // Populates the friend and user fields
-// friendSchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: "friend user",
-//   });
-//   next();
-// });
 
+friendSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "user1 user2"
+  });
+  next();
+});
 var friend = mongoose.model("Friend", friendSchema);
 module.exports = friend;

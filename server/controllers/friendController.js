@@ -29,10 +29,30 @@ exports.getMyFriends = catchAsync(async (req, res) => {
     status: "accepted",
   });
 
+  // Filters out the id of the current user so only the friend id is retrieved
+  const friend = allMyFriends.map((friend) => {
+    friend = friend.toObject();
+    if (friend.user1._id.toString() === req.user.id.toString()) {
+      delete friend.user1;
+
+      // This should replace the key of user2 to 'friend' instead
+      friend.friend = friend.user2;
+      delete friend.user2;
+    } else {
+      delete friend.user2;
+
+      // This should replace the key of user1 to 'friend' instead
+      friend.friend = friend.user1;
+      delete friend.user1;
+    }
+
+    return friend;
+  });
+
   res.status(200).json({
     status: "success",
     message: "All my friends retrieved!",
-    data: allMyFriends,
+    data: friend,
   });
 });
 
