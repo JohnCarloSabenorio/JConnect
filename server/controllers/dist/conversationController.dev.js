@@ -114,7 +114,6 @@ exports.checkConvoExists = catchAsync(function _callee3(req, res) {
           convo = _context3.sent;
           res.status(200).json({
             status: "success",
-            message: "Conversation exists!",
             data: convo
           });
 

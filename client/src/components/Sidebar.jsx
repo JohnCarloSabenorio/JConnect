@@ -5,15 +5,21 @@ import Groups from "./sidebar_contents/Groups";
 import ArchivedChat from "./sidebar_contents/ArchivedChat";
 import Discover from "./sidebar_contents/Discover";
 
-export default function Sidebar({ allConvo, convoClickHandler }) {
+export default function Sidebar({
+  allConvo,
+  allFriends,
+  convoClickHandler,
+  friendClickHandler,
+}) {
   const [displayedContent, setDisplayedContent] = useState("Recent");
   const [contentTitle, setContentTitle] = useState("Recent");
+  const [currentActiveId, setCurrentActiveId] = useState(null);
 
   function changeDisplayedContent(content) {
     setDisplayedContent(content);
     setContentTitle(content);
-    console.log(contentTitle);
   }
+
   return (
     <div className="flex bg-white shadow-md mr-0.3">
       <div className="flex flex-col items-center justify-evenly gap-8 p-3 bg-white shadow-md">
@@ -110,10 +116,18 @@ export default function Sidebar({ allConvo, convoClickHandler }) {
         {displayedContent === "Recent" ? (
           <RecentChat
             allConvo={allConvo}
+            currentActiveId={currentActiveId}
+            setCurrentActiveId={setCurrentActiveId}
             convoClickHandler={convoClickHandler}
           />
         ) : displayedContent === "Friends" ? (
-          <Friends />
+          <Friends
+            allUserFriends={allFriends}
+            friendClickHandler={friendClickHandler}
+            currentActiveId={currentActiveId}
+            setCurrentActiveId={setCurrentActiveId}
+            changeSidebarContent={changeDisplayedContent}
+          />
         ) : displayedContent === "Groups" ? (
           <Groups />
         ) : displayedContent === "Archived" ? (

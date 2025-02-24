@@ -65,7 +65,6 @@ exports.checkConvoExists = catchAsync(async (req, res) => {
 
   res.status(200).json({
     status: "success",
-    message: "Conversation exists!",
     data: convo,
   });
 });

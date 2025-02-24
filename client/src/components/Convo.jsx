@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 export default function Convo({
   name,
   msg,
@@ -5,8 +6,15 @@ export default function Convo({
   timeSent,
   imageUrl,
   convoId,
+  isActive,
   eventHandler,
+  changeCurrentActive,
 }) {
+  const [bgColor, setBgColor] = useState("bg-white");
+
+  useEffect(() => {
+    setBgColor(isActive ? "bg-green-200" : "bg-white");
+  }, [isActive]);
   const formatTime = (time) => {
     const date = new Date(time);
     let hours = date.getHours();
@@ -25,9 +33,14 @@ export default function Convo({
         className="mt-5 flex flex-col gap-2"
         onClick={() => {
           eventHandler(convoId, name);
+
+          changeCurrentActive(convoId);
+          setBgColor("bg-green-200");
         }}
       >
-        <div className="bg-white rounded-md flex p-5 shadow-md cursor-pointer">
+        <div
+          className={`${bgColor} rounded-md flex p-5 shadow-md cursor-pointer`}
+        >
           <img src={imageUrl} className="rounded-full w-12 h-12" />
           <div className="flex flex-grow">
             <div className="px-3 bg-blue-200 flex-grow">
@@ -44,4 +57,3 @@ export default function Convo({
     </>
   );
 }
-

@@ -11,10 +11,13 @@ import EmojiPicker from "emoji-picker-react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import MediaPanel from "../components/MediaPanel";
+import { getFriends } from "../api/friends";
+import { createConversation, chatWithFriend } from "../api/conversation";
 export default function Chat() {
   const { loggedInStatus, user, isConnected } = useContext(UserContext);
   const [convoName, setConvoName] = useState("");
   const [allConvo, setAllConvo] = useState(null);
+  const [allFriends, setAllFriends] = useState([]);
   const [currentConvo, setCurrentConvo] = useState(null);
   const [convoMessages, setConvoMessages] = useState([]);
   const [displayEmoji, setDisplayEmoji] = useState(false);
@@ -26,6 +29,7 @@ export default function Chat() {
     // Get initial conversation list
     console.log("getting convo:");
     getRecentConversations();
+    getUserFriends();
     getFriendConversations();
     socket.on("chat message", (data) => {
       // Messages will be updated if the sent messages is for the current conversation
@@ -73,21 +77,25 @@ export default function Chat() {
     setAllConvo(conversations);
   }
 
+  // Get friends for the current user
+  async function getUserFriends() {
+    const friends = await getFriends();
+    setAllFriends(friends);
+  }
+
   // This will get the friends conversation of a user
   async function getFriendConversations() {
     const friendsConvo = await getFriendsConversation();
 
     console.log("FRIENDS CONVERSATION:", friendsConvo);
-
-    // console.log("JOINING ROOMS");
-    // conversations.forEach((convo) => socket.emit("join rooms", convo._id));
-    // setAllConvo(conversations);
   }
 
   // This will set the initial messages displayed to be the most recent conversation
   async function getMessages(convoId, convoName) {
     // Join a channel for users in the same conversation
     const messages = await getAllUserMessages(convoId);
+
+    console.log("THE MESSAGES TO BE DISPLAYED:", messages);
     setConvoName(convoName);
     setCurrentConvo(convoId);
     setConvoMessages(messages);
@@ -120,6 +128,28 @@ export default function Chat() {
     fileInputRef.current.click();
   }
 
+  async function chatAFriend(friendId) {
+    const response = await chatWithFriend(friendId);
+
+    try {
+      if (response.length >= 1) {
+        getMessages(response[0]._id, response[0].convoName);
+
+        return response[0]._id;
+      } else {
+        const newConvo = await createConversation(user._id, friendId);
+        console.log("THE NEW CONVO:", newConvo);
+
+        getMessages(newConvo[0]._id, newConvo[0].convoName);
+        setAllConvo((prev) => [newConvo, ...prev]);
+        return newConvo[0]._id;
+        // Create a conversation and set the current conversation with the friend
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
     <>
       <div className="flex flex-col h-screen">
@@ -129,7 +159,12 @@ export default function Chat() {
         <div className="flex flex-grow">
           {/* Sidebar */}
 
-          <Sidebar allConvo={allConvo} convoClickHandler={getMessages} />
+          <Sidebar
+            allConvo={allConvo}
+            allFriends={allFriends}
+            convoClickHandler={getMessages}
+            friendClickHandler={chatAFriend}
+          />
 
           {/* Chat Interface */}
           <div className="flex flex-col w-4xl bg-gray-50">
