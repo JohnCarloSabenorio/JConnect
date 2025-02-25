@@ -3,6 +3,7 @@ import {
   getFriendsConversation,
   getRecentConversation,
   getAllUserMessages,
+  getAllGroupConversation,
 } from "../api/conversation";
 import Message from "../components/Message";
 import { UserContext } from "../App";
@@ -17,11 +18,13 @@ export default function Chat() {
   const { loggedInStatus, user, isConnected } = useContext(UserContext);
   const [convoName, setConvoName] = useState("");
   const [allConvo, setAllConvo] = useState(null);
+  const [allGroupConvo, setAllGroupConvo] = useState(null);
   const [allFriends, setAllFriends] = useState([]);
   const [currentConvo, setCurrentConvo] = useState(null);
   const [convoMessages, setConvoMessages] = useState([]);
   const [displayEmoji, setDisplayEmoji] = useState(false);
   const [message, setMessage] = useState("");
+  const [images, setImages] = useState([]);
   const uiChatRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -35,7 +38,20 @@ export default function Chat() {
       // Messages will be updated if the sent messages is for the current conversation
       setConvoMessages((prev) => [...prev, data.msg]);
 
+      console.log("FULL DATA:", data);
+      console.log("THE MESSAGES:", data.msg);
+      data.images64.forEach((base64, idx) => {
+        console.log(`Image ${idx} Base64:`, base64.slice(0, 50) + "..."); // Log only first 50 characters
+        const blob = base64ToBlob(base64);
+
+        if (blob) {
+          const blobUrl = URL.createObjectURL(blob);
+          console.log("Blob URL:", blobUrl);
+        }
+      });
+
       // This should scroll down the chat ui if the user is the sender
+
       if (data.msg.sender._id === user._id) {
         uiChatRef.current?.scrollTo({
           top: uiChatRef.current.scrollHeight,
@@ -45,6 +61,16 @@ export default function Chat() {
 
       // UPDATES THE CONVERSATION LIST
       setAllConvo(
+        (prev) =>
+          [
+            ...prev.map((convo) =>
+              convo._id === data.convo._id ? data.convo : convo
+            ),
+          ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)) // Sort by latest updatedAt
+      );
+
+      // UPDATES THE GROUP CONVERATION LIST
+      setAllGroupConvo(
         (prev) =>
           [
             ...prev.map((convo) =>
@@ -71,11 +97,24 @@ export default function Chat() {
   // This will get all the conversation for the user
   async function getRecentConversations() {
     const conversations = await getRecentConversation();
+    const groupConversations = [];
 
     console.log("JOINING ROOMS");
-    conversations.forEach((convo) => socket.emit("join rooms", convo._id));
+    conversations.forEach((convo) => {
+      socket.emit("join rooms", convo._id);
+      if (convo.users.length > 2) groupConversations.push(convo);
+    });
+
+    console.log("ALL GROUP CONVERATIONS:", groupConversations);
     setAllConvo(conversations);
+    setAllGroupConvo(groupConversations);
   }
+
+  // async function getGroupConversations() {
+  //   const conversations = await getAllGroupConversation();
+
+  //   console.log("ALL GROUP CONVERSATIONS:", conversations);
+  // }
 
   // Get friends for the current user
   async function getUserFriends() {
@@ -109,6 +148,7 @@ export default function Chat() {
         message: message,
         sender: user._id,
         conversation: currentConvo,
+        images: images,
       });
       setMessage("");
     }
@@ -132,21 +172,79 @@ export default function Chat() {
     const response = await chatWithFriend(friendId);
 
     try {
-      if (response.length >= 1) {
-        getMessages(response[0]._id, response[0].convoName);
+      // This will get the messages using the id of the response, since if the conversation exists, it's in the allConvo array
 
-        return response[0]._id;
-      } else {
+      if (response.length == 0) {
+        // Create a conversation and set the current conversation with the friend
+
         const newConvo = await createConversation(user._id, friendId);
         console.log("THE NEW CONVO:", newConvo);
-
         getMessages(newConvo[0]._id, newConvo[0].convoName);
         setAllConvo((prev) => [newConvo, ...prev]);
         return newConvo[0]._id;
-        // Create a conversation and set the current conversation with the friend
       }
+
+      getMessages(response[0]._id, response[0].convoName);
+
+      return response[0]._id;
     } catch (err) {
       console.log(err);
+    }
+  }
+
+  async function handleImagesChange(e) {
+    const selectedFiles = Array.from(e.target.files);
+    console.log("FILES SELECTED:", selectedFiles);
+
+    const selectedFilesBuffer = [];
+
+    selectedFiles.forEach((image) => {
+      const reader = new FileReader();
+      reader.readAsArrayBuffer(image);
+      reader.onload = () => {
+        selectedFilesBuffer.push(reader.result);
+      };
+    });
+
+    console.log("BUFFER FILES: ", selectedFilesBuffer);
+    setImages(selectedFilesBuffer);
+  }
+
+  function base64ToBlob(base64String) {
+    try {
+      if (!base64String) {
+        throw new Error("Empty base64 string");
+      }
+
+      // Extract MIME type and Base64 content
+      const matches = base64String.match(/^data:(.*?);base64,(.*)$/);
+      if (!matches || matches.length !== 3) {
+        throw new Error("Invalid Base64 format");
+      }
+
+      const mimeType = matches[1];
+      const base64Data = matches[2];
+
+      console.log("Extracted MIME Type:", mimeType); // Debugging
+      console.log(
+        "Extracted Base64 (First 50 chars):",
+        base64Data.slice(0, 50) + "..."
+      );
+
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Uint8Array(byteCharacters.length);
+
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+
+      const blob = new Blob([byteNumbers], { type: mimeType });
+
+      console.log("Generated Blob:", blob);
+      return blob;
+    } catch (error) {
+      console.error("Error converting Base64 to Blob:", error);
+      return null;
     }
   }
 
@@ -161,9 +259,11 @@ export default function Chat() {
 
           <Sidebar
             allConvo={allConvo}
+            allGroups={allGroupConvo}
             allFriends={allFriends}
             convoClickHandler={getMessages}
             friendClickHandler={chatAFriend}
+            groupClickHandler={getMessages}
           />
 
           {/* Chat Interface */}
@@ -218,6 +318,14 @@ export default function Chat() {
               className="bg-blue-200 w-auto flex-grow min-h-[700px] max-h-[500px] overflow-y-scroll"
             >
               {convoMessages.map((message, i) => {
+                if (message.images64) {
+                  console.log("THERE IS BASE64");
+                  console.log(message.images64);
+                } else {
+                  console.log("THERE AINT BASE64");
+                  console.log(message);
+                }
+
                 return (
                   <Message
                     key={i}
@@ -233,7 +341,13 @@ export default function Chat() {
 
             <form onSubmit={(e) => sendMessage(e)} className="flex mt-auto p-3">
               <div>
-                <input type="file" ref={fileInputRef} className="hidden" />
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  onChange={handleImagesChange}
+                  multiple
+                />
 
                 {/* File input button */}
                 <button

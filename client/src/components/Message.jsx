@@ -1,4 +1,4 @@
-export default function Chat({
+export default function Message({
   isCurrentUser,
   imgUrl,
   message,
@@ -19,6 +19,15 @@ export default function Chat({
 
   return (
     <div className="flex flex-col p-5">
+      <div className={`flex ${isCurrentUser ? "ml-auto mr-15" : "ml-15"}`}>
+        {/* {
+          <img
+            src="/img/backgrounds/blue-bg.png"
+            className="rounded-sm w-60 h-60"
+            alt="sent image"
+          />
+        } */}
+      </div>
       <div className={`flex ${isCurrentUser ? "ml-auto mr-15" : "ml-15"}`}>
         <p className="">{username}</p>
       </div>

@@ -8,12 +8,15 @@ import Discover from "./sidebar_contents/Discover";
 export default function Sidebar({
   allConvo,
   allFriends,
+  allGroups,
   convoClickHandler,
   friendClickHandler,
+  groupClickHandler,
 }) {
   const [displayedContent, setDisplayedContent] = useState("Recent");
   const [contentTitle, setContentTitle] = useState("Recent");
-  const [currentActiveId, setCurrentActiveId] = useState(null);
+  const [currentActiveId, setCurrentActiveId] = useState(allConvo[0]._id);
+  const [activeBtn, setActiveBtn] = useState("recent-btn");
 
   function changeDisplayedContent(content) {
     setDisplayedContent(content);
@@ -25,8 +28,16 @@ export default function Sidebar({
       <div className="flex flex-col items-center justify-evenly gap-8 p-3 bg-white shadow-md">
         {/* Recent conversation button */}
         <button
-          onClick={() => changeDisplayedContent("Recent")}
-          className="cursor-pointer"
+          onClick={() => {
+            changeDisplayedContent("Recent");
+            setActiveBtn("recent-btn");
+          }}
+          className={
+            // Remember the space at the end of the first string.. so that the classes don't combine
+            "cursor-pointer " +
+            (activeBtn === "recent-btn" ? "bg-amber-200" : "bg-white")
+          }
+          id="recent-btn"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -43,8 +54,16 @@ export default function Sidebar({
 
         {/* Friends button */}
         <button
-          onClick={(e) => changeDisplayedContent("Friends")}
-          className="cursor-pointer"
+          onClick={(e) => {
+            changeDisplayedContent("Friends");
+            setActiveBtn("friends-btn");
+          }}
+          className={
+            // Remember the space at the end of the first string.. so that the classes don't combine
+            "cursor-pointer " +
+            (activeBtn === "friends-btn" ? "bg-amber-200" : "bg-white")
+          }
+          id="friends-btn"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -59,8 +78,16 @@ export default function Sidebar({
 
         {/* Groups button */}
         <button
-          className="cursor-pointer"
-          onClick={() => changeDisplayedContent("Groups")}
+          onClick={(e) => {
+            changeDisplayedContent("Groups");
+            setActiveBtn("groups-btn");
+          }}
+          className={
+            // Remember the space at the end of the first string.. so that the classes don't combine
+            "cursor-pointer " +
+            (activeBtn === "groups-btn" ? "bg-amber-200" : "bg-white")
+          }
+          id="groups-btn"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -75,8 +102,16 @@ export default function Sidebar({
 
         {/* Archived chats button */}
         <button
-          className="cursor-pointer"
-          onClick={() => changeDisplayedContent("Archived")}
+          onClick={(e) => {
+            changeDisplayedContent("Archived");
+            setActiveBtn("archived-btn");
+          }}
+          className={
+            // Remember the space at the end of the first string.. so that the classes don't combine
+            "cursor-pointer " +
+            (activeBtn === "archived-btn" ? "bg-amber-200" : "bg-white")
+          }
+          id="archived-btn"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -91,8 +126,16 @@ export default function Sidebar({
 
         {/* Discover button */}
         <button
-          className="cursor-pointer"
-          onClick={() => changeDisplayedContent("Discover")}
+          onClick={(e) => {
+            changeDisplayedContent("Discover");
+            setActiveBtn("discover-btn");
+          }}
+          className={
+            // Remember the space at the end of the first string.. so that the classes don't combine
+            "cursor-pointer " +
+            (activeBtn === "discover-btn" ? "bg-amber-200" : "bg-white")
+          }
+          id="discover-btn"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -129,7 +172,12 @@ export default function Sidebar({
             changeSidebarContent={changeDisplayedContent}
           />
         ) : displayedContent === "Groups" ? (
-          <Groups />
+          <Groups
+            allGroupConvo={allGroups}
+            groupClickHandler={groupClickHandler}
+            currentActiveId={currentActiveId}
+            setCurrentActiveId={setCurrentActiveId}
+          />
         ) : displayedContent === "Archived" ? (
           <ArchivedChat />
         ) : displayedContent === "Discover" ? (

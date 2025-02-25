@@ -9,6 +9,8 @@ export default function RecentChat({
   return (
     <>
       {allConvo.map((convo, id) => {
+
+        // Tomorrow, the latest message also needs to be updated
         return (
           <Convo
             key={id}

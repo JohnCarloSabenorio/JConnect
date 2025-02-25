@@ -15,6 +15,21 @@ export async function getRecentConversation() {
   }
 }
 
+export async function getAllGroupConversation() {
+  try {
+    console.log("Getting all group conversations...");
+
+    const response = await axios.get(
+      "/jconnect/api/v1/users/allConvo?minUsers=2&sort=-updatedAt",
+      { withCredentials: true }
+    );
+
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching conversations:", error);
+  }
+}
+
 export async function getFriendsConversation() {
   try {
     console.log("Getting friend conversations...");
@@ -36,11 +51,13 @@ export async function getAllUserMessages(convoId) {
 
   // Retrieve messages by the order of creation
   try {
-    // Gets the friends of the user
+    // Gets the conversation of the user
     const response = await axios.get(
       `/jconnect/api/v1/conversation/${convoId}/message?sort=createdAt`,
       { withCredentials: true }
     );
+
+    
 
     console.log("THE RESOPNSE DATA FOR MUSER MSESAGES", response);
     return response.data.data;
