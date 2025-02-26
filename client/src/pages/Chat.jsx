@@ -24,7 +24,12 @@ export default function Chat() {
   const [convoMessages, setConvoMessages] = useState([]);
   const [displayEmoji, setDisplayEmoji] = useState(false);
   const [message, setMessage] = useState("");
+
+  // This will store the images sent by the user
   const [images, setImages] = useState([]);
+
+  // This will store the images sent in the entire conversation of the user
+  const [mediaImages, setMediaImages] = useState([]);
   const uiChatRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -36,22 +41,10 @@ export default function Chat() {
     getFriendConversations();
     socket.on("chat message", (data) => {
       // Messages will be updated if the sent messages is for the current conversation
+      console.log("THE MESSAGE ACQUIRED AFTER SENDING:", data.msg);
       setConvoMessages((prev) => [...prev, data.msg]);
 
-      console.log("FULL DATA:", data);
-      console.log("THE MESSAGES:", data.msg);
-      data.images64.forEach((base64, idx) => {
-        console.log(`Image ${idx} Base64:`, base64.slice(0, 50) + "..."); // Log only first 50 characters
-        const blob = base64ToBlob(base64);
-
-        if (blob) {
-          const blobUrl = URL.createObjectURL(blob);
-          console.log("Blob URL:", blobUrl);
-        }
-      });
-
-      // This should scroll down the chat ui if the user is the sender
-
+      // This should scroll down the chat ui if the user is the sender (NEEDS TO BE FIXED)
       if (data.msg.sender._id === user._id) {
         uiChatRef.current?.scrollTo({
           top: uiChatRef.current.scrollHeight,
@@ -66,7 +59,7 @@ export default function Chat() {
             ...prev.map((convo) =>
               convo._id === data.convo._id ? data.convo : convo
             ),
-          ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)) // Sort by latest updatedAt
+          ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)) // Sort by latest updated conversation
       );
 
       // UPDATES THE GROUP CONVERATION LIST
@@ -76,7 +69,7 @@ export default function Chat() {
             ...prev.map((convo) =>
               convo._id === data.convo._id ? data.convo : convo
             ),
-          ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)) // Sort by latest updatedAt
+          ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)) // Sort by latest updated group conversation
       );
     });
   }, []);
@@ -87,6 +80,29 @@ export default function Chat() {
       getMessages(allConvo[0]._id, allConvo[0].convoName);
     }
   }, [allConvo]);
+
+  useEffect(() => {
+    const mediaBlobUrls = [];
+
+    if (convoMessages.length > 0) {
+      convoMessages.forEach((message, idx) => {
+        if (message.images64) {
+          message.images64.forEach((base64, idx) => {
+            const blob = base64ToBlob(base64);
+
+            if (blob) {
+              mediaBlobUrls.push(URL.createObjectURL(blob));
+            }
+          });
+        }
+      });
+      setMediaImages(mediaBlobUrls);
+    }
+  }, [convoMessages]);
+
+  useEffect(() => {
+    console.log("MEDIA IMAGES:", mediaImages);
+  }, [mediaImages]);
 
   // Adds a loading screen if all conversations are not yet retrieved.
   if (!allConvo) {
@@ -101,20 +117,16 @@ export default function Chat() {
 
     console.log("JOINING ROOMS");
     conversations.forEach((convo) => {
+      // User will automatically join the rooms for each conversation. (The convo id will be the room number)
       socket.emit("join rooms", convo._id);
+
+      // If there are more than 2 users, add it to the list of group conversations
       if (convo.users.length > 2) groupConversations.push(convo);
     });
 
-    console.log("ALL GROUP CONVERATIONS:", groupConversations);
     setAllConvo(conversations);
     setAllGroupConvo(groupConversations);
   }
-
-  // async function getGroupConversations() {
-  //   const conversations = await getAllGroupConversation();
-
-  //   console.log("ALL GROUP CONVERSATIONS:", conversations);
-  // }
 
   // Get friends for the current user
   async function getUserFriends() {
@@ -122,11 +134,11 @@ export default function Chat() {
     setAllFriends(friends);
   }
 
-  // This will get the friends conversation of a user
+  // This will get the friends conversation of the current user
   async function getFriendConversations() {
     const friendsConvo = await getFriendsConversation();
 
-    console.log("FRIENDS CONVERSATION:", friendsConvo);
+    // console.log("FRIENDS CONVERSATION:", friendsConvo);
   }
 
   // This will set the initial messages displayed to be the most recent conversation
@@ -134,7 +146,6 @@ export default function Chat() {
     // Join a channel for users in the same conversation
     const messages = await getAllUserMessages(convoId);
 
-    console.log("THE MESSAGES TO BE DISPLAYED:", messages);
     setConvoName(convoName);
     setCurrentConvo(convoId);
     setConvoMessages(messages);
@@ -154,31 +165,32 @@ export default function Chat() {
     }
   }
 
+  // Hides/Displays the emoji picker
   function toggleEmojiPicker() {
     setDisplayEmoji((prev) => !prev);
   }
 
+  // Adds the emoji to the message input
   function addEmojiToInput(emoji) {
     setDisplayEmoji(true);
     console.log(emoji);
     setMessage((prev) => prev + emoji.emoji);
   }
 
+  // This will activate the event of the file picker
   function handleFileInputClick() {
     fileInputRef.current.click();
   }
 
   async function chatAFriend(friendId) {
     const response = await chatWithFriend(friendId);
-
     try {
       // This will get the messages using the id of the response, since if the conversation exists, it's in the allConvo array
 
+      // Create a conversation with the friend if no convo exists
       if (response.length == 0) {
-        // Create a conversation and set the current conversation with the friend
-
         const newConvo = await createConversation(user._id, friendId);
-        console.log("THE NEW CONVO:", newConvo);
+        // console.log("THE NEW CONVO:", newConvo);
         getMessages(newConvo[0]._id, newConvo[0].convoName);
         setAllConvo((prev) => [newConvo, ...prev]);
         return newConvo[0]._id;
@@ -193,8 +205,8 @@ export default function Chat() {
   }
 
   async function handleImagesChange(e) {
+    // Get the array of files selected by the user
     const selectedFiles = Array.from(e.target.files);
-    console.log("FILES SELECTED:", selectedFiles);
 
     const selectedFilesBuffer = [];
 
@@ -206,7 +218,7 @@ export default function Chat() {
       };
     });
 
-    console.log("BUFFER FILES: ", selectedFilesBuffer);
+    // console.log("BUFFER FILES: ", selectedFilesBuffer);
     setImages(selectedFilesBuffer);
   }
 
@@ -225,16 +237,18 @@ export default function Chat() {
       const mimeType = matches[1];
       const base64Data = matches[2];
 
-      console.log("Extracted MIME Type:", mimeType); // Debugging
-      console.log(
-        "Extracted Base64 (First 50 chars):",
-        base64Data.slice(0, 50) + "..."
-      );
+      // For debugging purposes
+      // console.log("Extracted MIME Type:", mimeType);
+      // console.log(
+      //   "Extracted Base64 (First 50 chars):",
+      //   base64Data.slice(0, 50) + "..."
+      // );
 
       const byteCharacters = atob(base64Data);
       const byteNumbers = new Uint8Array(byteCharacters.length);
 
       for (let i = 0; i < byteCharacters.length; i++) {
+        // Converts each character into a byte
         byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
 
@@ -250,11 +264,11 @@ export default function Chat() {
 
   return (
     <>
-      <div className="flex flex-col h-screen">
+      <div className="flex flex-col h-screen overflow-hidden">
         <Navbar />
 
         {/* Main Content */}
-        <div className="flex flex-grow">
+        <div className="flex flex-grow min-h-0">
           {/* Sidebar */}
 
           <Sidebar
@@ -267,7 +281,7 @@ export default function Chat() {
           />
 
           {/* Chat Interface */}
-          <div className="flex flex-col w-4xl bg-gray-50">
+          <div className="flex flex-grow flex-col w-4xl  bg-gray-50">
             <div className="shadow-md flex p-3 gap-5 px-10 bg-white">
               <img
                 src="/img/icons/male-default.jpg"
@@ -315,15 +329,18 @@ export default function Chat() {
             <div
               ref={uiChatRef}
               id="chat-ui"
-              className="bg-blue-200 w-auto flex-grow min-h-[700px] max-h-[500px] overflow-y-scroll"
+              className="bg-blue-200 w-auto flex-grow overflow-y-scroll"
             >
               {convoMessages.map((message, i) => {
+                let blobUrls = [];
                 if (message.images64) {
-                  console.log("THERE IS BASE64");
-                  console.log(message.images64);
-                } else {
-                  console.log("THERE AINT BASE64");
-                  console.log(message);
+                  message.images64.forEach((base64, idx) => {
+                    const blob = base64ToBlob(base64);
+
+                    if (blob) {
+                      blobUrls.push(URL.createObjectURL(blob));
+                    }
+                  });
                 }
 
                 return (
@@ -334,6 +351,7 @@ export default function Chat() {
                     username={message.sender.username}
                     isCurrentUser={message.sender._id === user._id}
                     timeSent={message.createdAt}
+                    imagesSent={blobUrls}
                   />
                 );
               })}
@@ -417,7 +435,7 @@ export default function Chat() {
             </form>
           </div>
 
-          <MediaPanel convoName={convoName} />
+          <MediaPanel convoName={convoName} mediaImages={mediaImages} />
         </div>
       </div>
     </>

@@ -2,6 +2,9 @@ const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const APIFeatures = require("../utils/apiFeatures");
 const Conversation = require("../models/conversationModel");
+const path = require("path");
+const fs = require("fs");
+const sharp = require("sharp");
 /*
 Create handlers for:
 1. Creating one document
@@ -60,7 +63,7 @@ exports.getAll = (Model) =>
     if (req.baseUrl.endsWith("allConvo"))
       filter = { users: { $in: req.user.id } };
 
-    // If convoId is present, the user is creating/sending a message
+    // If convoId is present, the user is getting a message
     if (req.params.convoId)
       Object.assign(filter, { conversation: req.params.convoId });
 
@@ -69,10 +72,36 @@ exports.getAll = (Model) =>
       .sort()
       .limitFields();
     const docs = await features.query;
+
+    const docsWithBase = await Promise.all(
+      docs.map(async (doc) => {
+        if (!doc.images || !Array.isArray(doc.images)) {
+          return { ...doc._doc, imageBase64Array: [] }; // Handle missing images
+        }
+
+        const images64 = await Promise.all(
+          doc.images.map(async (filename) => {
+            const imagePath = path.join("public/img/sentImages", filename);
+            console.log("THE IMAGE PATH:", imagePath);
+
+            try {
+              const buffer = await sharp(imagePath).toBuffer();
+              return `data:image/jpeg;base64,${buffer.toString("base64")}`;
+            } catch (error) {
+              console.error("Error processing image:", filename, error);
+              return null; // Handle error gracefully
+            }
+          })
+        );
+
+        return { ...doc._doc, images64 };
+      })
+    );
+
     res.status(200).json({
       status: "success",
       message: "Successfully retrieved all documents",
-      data: docs,
+      data: docsWithBase,
     });
   });
 

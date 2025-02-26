@@ -25,7 +25,7 @@ export default function Sidebar({
 
   return (
     <div className="flex bg-white shadow-md mr-0.3">
-      <div className="flex flex-col items-center justify-evenly gap-8 p-3 bg-white shadow-md">
+      <div className="flex flex-col  justify-evenly px-3 bg-white shadow-md">
         {/* Recent conversation button */}
         <button
           onClick={() => {

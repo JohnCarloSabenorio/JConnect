@@ -4,6 +4,7 @@ export default function Message({
   message,
   username,
   timeSent,
+  imagesSent,
 }) {
   function formatTime(timestamp) {
     const newDate = new Date(timestamp);
@@ -17,16 +18,23 @@ export default function Message({
     return `${day}: ${time}`;
   }
 
+  if (imagesSent) {
+    console.log("THIS MESSAGE HAS IMAGES:", imagesSent);
+  }
+
   return (
     <div className="flex flex-col p-5">
       <div className={`flex ${isCurrentUser ? "ml-auto mr-15" : "ml-15"}`}>
-        {/* {
-          <img
-            src="/img/backgrounds/blue-bg.png"
-            className="rounded-sm w-60 h-60"
-            alt="sent image"
-          />
-        } */}
+        {imagesSent.map((blobUrl, idx) => {
+          return (
+            <img
+              key={idx}
+              src={blobUrl}
+              className="rounded-sm w-60 h-60"
+              alt="sent image"
+            />
+          );
+        })}
       </div>
       <div className={`flex ${isCurrentUser ? "ml-auto mr-15" : "ml-15"}`}>
         <p className="">{username}</p>

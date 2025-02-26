@@ -1,6 +1,11 @@
-export default function MediaPanel({ convoName }) {
+import { useState } from "react";
+export default function MediaPanel({ convoName, mediaImages }) {
+  const [imagesActive, setImagesActive] = useState(false);
+  const [filesActive, setFilesActive] = useState(false);
+  console.log("THE MEDIA IMAGES:", mediaImages);
+
   return (
-    <div className="flex-grow bg-white shadow-md">
+    <div className="shadow-md w-100 h-full overflow-y-scroll">
       <div className="flex flex-col items-center justify-center p-10">
         <img
           src="/img/icons/male-default.jpg"
@@ -19,7 +24,10 @@ export default function MediaPanel({ convoName }) {
         />
 
         <div className="pt-3">
-          <div className="p-3 flex shadow-md">
+          <div
+            className="p-3 flex shadow-md cursor-pointer"
+            onClick={() => setFilesActive((prev) => !prev)}
+          >
             <p className="align-middle">Files</p>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -27,12 +35,21 @@ export default function MediaPanel({ convoName }) {
               width="30"
               height="30"
               fill="#53575a"
-              className="ml-auto"
+              className={`ml-auto transition-transform ${
+                filesActive ? "rotate-180" : "rotate-0"
+              }`}
             >
               <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
             </svg>
           </div>
-          <div className="p-3 flex shadow-md">
+
+          {/* Div for toggling list of images */}
+          <div
+            className="p-3 flex shadow-md cursor-pointer"
+            onClick={() => {
+              setImagesActive((prev) => !prev);
+            }}
+          >
             <p className="align-middle">Images</p>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -40,10 +57,25 @@ export default function MediaPanel({ convoName }) {
               width="30"
               height="30"
               fill="#53575a"
-              className="ml-auto"
+              className={`ml-auto transition-transform ${
+                imagesActive ? "rotate-180" : "rotate-0"
+              }`}
             >
               <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
             </svg>
+          </div>
+          <div
+            className={`grid grid-cols-3 bg-amber-200 ${
+              imagesActive ? "block" : "hidden"
+            }`}
+          >
+            {mediaImages.map((imageBlob, idx) => (
+              <img
+                key={idx}
+                src={imageBlob}
+                className="w-30 h-30 object-cover cursor-pointer"
+              ></img>
+            ))}
           </div>
         </div>
       </div>
