@@ -8,7 +8,11 @@ exports.sendMessage = async (io, socket, data) => {
 
   const filenames = await Promise.all(
     data.images.map(async (img, idx) => {
+
+      console.log("THE IMAGE BRO:", img);
       const buffer = Buffer.from(img);
+
+      console.log("THE BUFFER:", buffer);
 
       const filename = `image-${data.sender}-${Date.now()}-${idx}.jpeg`;
 
@@ -26,7 +30,7 @@ exports.sendMessage = async (io, socket, data) => {
   console.log("THE ARRAY FILENAME:", filenames);
 
   const newMessage = await Message.create({
-    message: data.message,
+    message: data.message ? data.message : "",
     sender: data.sender,
     conversation: data.conversation,
     images: filenames,

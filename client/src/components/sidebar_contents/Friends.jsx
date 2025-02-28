@@ -6,6 +6,7 @@ export default function Friends({
   setCurrentActiveId,
   changeSidebarContent,
   setActiveBtn,
+  searchInput,
 }) {
   return (
     <>
@@ -21,6 +22,7 @@ export default function Friends({
             currentActiveId={currentActiveId}
             setCurrentActiveId={setCurrentActiveId}
             setActiveBtn={setActiveBtn}
+            searchInput={searchInput}
           />
         );
       })}

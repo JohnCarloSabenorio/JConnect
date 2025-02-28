@@ -8,16 +8,19 @@ export default function Friend({
   currentActiveId,
   setCurrentActiveId,
   setActiveBtn,
+  searchInput,
 }) {
   return (
     <>
       <div
-        className="mt-5 flex flex-col gap-2"
+        className={`mt-5 flex flex-col gap-2 ${
+          name.toLowerCase().includes(searchInput) ? "visible" : "hidden"
+        }`}
         onClick={async () => {
           // This will get the conversation id from chatAFriend from chat.jsx
           const convoId = await friendClickHandler(friendId);
-          changeSidebarContent("Recent");
-          setActiveBtn("recent-btn");
+          changeSidebarContent("Directs");
+          setActiveBtn("inbox-btn");
           setCurrentActiveId(convoId);
         }}
       >

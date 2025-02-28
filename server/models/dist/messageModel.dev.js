@@ -5,8 +5,7 @@ var mongoose = require("mongoose");
 var messageSchema = new mongoose.Schema({
   message: {
     type: String,
-    required: true,
-    trim: true
+    "default": ""
   },
   sender: {
     type: mongoose.Schema.Types.ObjectId,

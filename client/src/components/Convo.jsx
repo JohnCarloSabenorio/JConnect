@@ -9,6 +9,7 @@ export default function Convo({
   isActive,
   eventHandler,
   changeCurrentActive,
+  searchInput,
 }) {
   const [bgColor, setBgColor] = useState("bg-white");
 
@@ -30,7 +31,9 @@ export default function Convo({
   return (
     <>
       <div
-        className="mt-5 flex flex-col gap-2"
+        className={`mt-5 flex flex-col gap-2 ${
+          name.toLowerCase().includes(searchInput) ? "visible" : "hidden"
+        }`}
         onClick={() => {
           eventHandler(convoId, name);
 
@@ -45,7 +48,7 @@ export default function Convo({
           <div className="flex flex-grow">
             <div className="px-3  flex-grow">
               <p className="font-bold">{name}</p>
-              <p>{msg}</p>
+              <p>{msg.length > 10 ? msg.slice(0, 19) + "..." : msg}</p>
             </div>
             <div className="ml-auto">
               <p>{formatTime(timeSent)}</p>

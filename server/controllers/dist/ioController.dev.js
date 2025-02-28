@@ -24,18 +24,20 @@ exports.sendMessage = function _callee3(io, socket, data) {
               while (1) {
                 switch (_context.prev = _context.next) {
                   case 0:
+                    console.log("THE IMAGE BRO:", img);
                     buffer = Buffer.from(img);
+                    console.log("THE BUFFER:", buffer);
                     filename = "image-".concat(data.sender, "-").concat(Date.now(), "-").concat(idx, ".jpeg");
-                    _context.next = 4;
+                    _context.next = 6;
                     return regeneratorRuntime.awrap(sharp(buffer).resize(800).toFormat("jpeg").jpeg({
                       quality: 70
                     }).toFile("public/img/sentImages/".concat(filename)));
 
-                  case 4:
+                  case 6:
                     console.log("IMAGE BUFFER:", buffer);
                     return _context.abrupt("return", filename);
 
-                  case 6:
+                  case 8:
                   case "end":
                     return _context.stop();
                 }
@@ -48,7 +50,7 @@ exports.sendMessage = function _callee3(io, socket, data) {
           console.log("THE ARRAY FILENAME:", filenames);
           _context3.next = 6;
           return regeneratorRuntime.awrap(Message.create({
-            message: data.message,
+            message: data.message ? data.message : "",
             sender: data.sender,
             conversation: data.conversation,
             images: filenames

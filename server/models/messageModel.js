@@ -4,8 +4,7 @@ const messageSchema = new mongoose.Schema(
   {
     message: {
       type: String,
-      required: true,
-      trim: true,
+      default: "",
     },
 
     sender: {
