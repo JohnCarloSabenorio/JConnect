@@ -5,6 +5,7 @@ export default function Friends({
   currentActiveId,
   setCurrentActiveId,
   changeSidebarContent,
+  setActiveBtn,
 }) {
   return (
     <>
@@ -19,6 +20,7 @@ export default function Friends({
             changeSidebarContent={changeSidebarContent}
             currentActiveId={currentActiveId}
             setCurrentActiveId={setCurrentActiveId}
+            setActiveBtn={setActiveBtn}
           />
         );
       })}

@@ -59,7 +59,7 @@ export async function getAllUserMessages(convoId) {
 
     
 
-    console.log("THE RESOPNSE DATA FOR MUSER MSESAGES", response);
+    console.log("THE RESPONSE DATA FOR USER MSESAGES", response);
     return response.data.data;
   } catch (err) {
     console.log(err);

@@ -33,8 +33,11 @@ export default function Register() {
               Already have an account?
             </p>
             <button
-              className="bg-green-400 uppercase font-semibold tracking-wider border-black rounded-md border-1 py-2 px-10 text-xl mt-5 shadow-md"
+              className="bg-green-400 cursor-pointer uppercase font-semibold tracking-wider border-black rounded-md border-1 py-2 px-10 text-xl mt-5 shadow-md"
               type="button"
+              onClick={() => {
+                window.location.assign("/");
+              }}
             >
               Sign In Here
             </button>

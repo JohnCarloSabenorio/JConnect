@@ -7,6 +7,7 @@ export default function Friend({
   changeSidebarContent,
   currentActiveId,
   setCurrentActiveId,
+  setActiveBtn,
 }) {
   return (
     <>
@@ -16,13 +17,14 @@ export default function Friend({
           // This will get the conversation id from chatAFriend from chat.jsx
           const convoId = await friendClickHandler(friendId);
           changeSidebarContent("Recent");
+          setActiveBtn("recent-btn");
           setCurrentActiveId(convoId);
         }}
       >
         <div className="bg-white rounded-md flex p-5 shadow-md cursor-pointer">
           <img src={imageUrl} className="rounded-full w-12 h-12" />
           <div className="flex flex-grow">
-            <div className="px-3 bg-blue-200 flex-grow">
+            <div className="px-3  flex-grow">
               <p className="font-bold">{name}</p>
             </div>
           </div>

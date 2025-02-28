@@ -18,50 +18,36 @@ export default function Message({
     return `${day}: ${time}`;
   }
 
-  if (imagesSent) {
-    console.log("THIS MESSAGE HAS IMAGES:", imagesSent);
-  }
-
   return (
     <div className="flex flex-col p-5">
       <div className={`flex ${isCurrentUser ? "ml-auto mr-15" : "ml-15"}`}>
-        {imagesSent.map((blobUrl, idx) => {
-          return (
-            <img
-              key={idx}
-              src={blobUrl}
-              className="rounded-sm w-60 h-60"
-              alt="sent image"
-            />
-          );
-        })}
-      </div>
-      <div className={`flex ${isCurrentUser ? "ml-auto mr-15" : "ml-15"}`}>
-        <p className="">{username}</p>
+        {/* <p className="">{username}</p> */}
       </div>
       <div className={isCurrentUser ? "ml-auto flex gap-2" : "flex gap-2"}>
         {isCurrentUser ? (
           <>
             <div className="relative group">
-              <div className="max-w-max bg-blue-400 p-2 rounded-sm">
-                <p className="break-all">{message}</p>
-              </div>
+              {message !== "" && (
+                <div className="max-w-max bg-blue-400 p-2 rounded-sm">
+                  <p className="break-all">{message}</p>
+                </div>
+              )}
 
               <span className="z- absolute left-0 bottom-full mb-2 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity">
                 {formatTime(timeSent)}
               </span>
             </div>
-            <img
+            {/* <img
               src={imgUrl}
               className="rounded-full w-12 h-12"
               alt="User Image"
-            />
+            /> */}
           </>
         ) : (
           <>
             <img
               src={imgUrl}
-              className="rounded-full w-12 h-12"
+              className="rounded-full w-12 h-12 bg-white"
               alt="User Image"
             />
 
@@ -76,6 +62,22 @@ export default function Message({
             </div>
           </>
         )}
+      </div>
+      <div className={`flex mt-2 ${isCurrentUser ? "ml-auto mr-0" : "ml-0"}`}>
+        <div className=" w-70 gap-0.5 grid grid-cols-[repeat(auto-fit,minmax(70px,1fr))]">
+          {imagesSent.map((blobUrl, idx) => {
+            return (
+              <img
+                key={idx}
+                src={blobUrl}
+                className={`bg-transparent rounded-sm ${
+                  imagesSent.length > 1 ? "aspect-square" : ""
+                }`}
+                alt="sent image"
+              />
+            );
+          })}
+        </div>
       </div>
     </div>
   );
