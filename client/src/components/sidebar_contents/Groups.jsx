@@ -4,7 +4,6 @@ export default function Groups({
   groupClickHandler,
   currentActiveId,
   setCurrentActiveId,
-  searchInput,
 }) {
   return (
     <>
@@ -22,7 +21,6 @@ export default function Groups({
             eventHandler={groupClickHandler}
             isActive={currentActiveId === convo._id}
             changeCurrentActive={setCurrentActiveId}
-            searchInput={searchInput}
           />
         );
       })}

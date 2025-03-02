@@ -4,9 +4,6 @@ export default function Friends({
   friendClickHandler,
   currentActiveId,
   setCurrentActiveId,
-  changeSidebarContent,
-  setActiveBtn,
-  searchInput,
 }) {
   return (
     <>
@@ -18,11 +15,8 @@ export default function Friends({
             key={id}
             imageUrl="/img/icons/male-default.jpg"
             friendClickHandler={friendClickHandler}
-            changeSidebarContent={changeSidebarContent}
             currentActiveId={currentActiveId}
             setCurrentActiveId={setCurrentActiveId}
-            setActiveBtn={setActiveBtn}
-            searchInput={searchInput}
           />
         );
       })}

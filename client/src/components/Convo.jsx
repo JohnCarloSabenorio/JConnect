@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+
+import { changeSidebarSearch } from "../redux/sidebar";
+import { useSelector } from "react-redux";
+
 export default function Convo({
   name,
   msg,
@@ -9,8 +13,8 @@ export default function Convo({
   isActive,
   eventHandler,
   changeCurrentActive,
-  searchInput,
 }) {
+  const { sidebarSearch } = useSelector((state) => state.sidebar);
   const [bgColor, setBgColor] = useState("bg-white");
 
   useEffect(() => {
@@ -32,7 +36,9 @@ export default function Convo({
     <>
       <div
         className={`mt-5 flex flex-col gap-2 ${
-          name.toLowerCase().includes(searchInput) ? "visible" : "hidden"
+          name.toLowerCase().includes(sidebarSearch.toLowerCase())
+            ? "visible"
+            : "hidden"
         }`}
         onClick={() => {
           eventHandler(convoId, name);
