@@ -1,5 +1,9 @@
 import { useState } from "react";
-export default function MediaPanel({ convoName, mediaImages }) {
+import { useSelector } from "react-redux";
+export default function MediaPanel() {
+  const { currentConvoName } = useSelector((state) => state.conversation);
+  const { mediaImages } = useSelector((state) => state.media);
+
   const [imagesActive, setImagesActive] = useState(false);
   const [filesActive, setFilesActive] = useState(false);
   const [customizeActive, setCustomizeActive] = useState(false);
@@ -17,7 +21,7 @@ export default function MediaPanel({ convoName, mediaImages }) {
           src="/img/icons/male-default.jpg"
           className="rounded-full w-30 h-30"
         />
-        <p className="font-bold text-lg">{convoName}</p>
+        <p className="font-bold text-lg">{currentConvoName}</p>
         <p className="text-gray-500 text-center text-sm italic">
           I am a bastard that likes to play games!
         </p>

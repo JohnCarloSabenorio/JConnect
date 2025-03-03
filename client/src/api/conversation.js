@@ -1,17 +1,17 @@
 import axios from "axios";
 
-export async function getRecentConversation() {
+export async function getDirectConversations() {
   try {
-    console.log("Getting all conversations...");
+    console.log("Getting all direct conversations...");
 
     const response = await axios.get(
-      "/jconnect/api/v1/users/allConvo?sort=-updatedAt",
+      "/jconnect/api/v1/users/allConvo?maxUsers=2&sort=-updatedAt",
       { withCredentials: true }
     );
 
     return response.data.data;
   } catch (error) {
-    console.error("Error fetching conversations:", error);
+    console.error("Error fetching direct conversations:", error);
   }
 }
 
@@ -26,7 +26,7 @@ export async function getAllGroupConversation() {
 
     return response.data.data;
   } catch (error) {
-    console.error("Error fetching conversations:", error);
+    console.error("Error fetching group conversations:", error);
   }
 }
 
@@ -56,8 +56,6 @@ export async function getAllUserMessages(convoId) {
       `/jconnect/api/v1/conversation/${convoId}/message?sort=createdAt`,
       { withCredentials: true }
     );
-
-    
 
     console.log("THE RESPONSE DATA FOR USER MSESAGES", response);
     return response.data.data;

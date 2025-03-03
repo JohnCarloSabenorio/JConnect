@@ -17,9 +17,6 @@ import {
 import { toggleDarkMode } from "../redux/isDarkMode";
 
 export default function Sidebar({
-  allConvo,
-  allFriends,
-  allGroups,
   convoClickHandler,
   friendClickHandler,
   groupClickHandler,
@@ -36,9 +33,10 @@ export default function Sidebar({
   } = useSelector((state) => state.sidebar);
 
   const { isDarkMode } = useSelector((state) => state.isDarkMode);
+  const { allUserConvo } = useSelector((state) => state.conversation);
 
   // const [isDarkMode, setIsDarkMode] = useState(false);
-  const [currentActiveId, setCurrentActiveId] = useState(allConvo[0]._id);
+  const [currentActiveId, setCurrentActiveId] = useState(allUserConvo[0]._id);
 
   const sideOptionStyle = " p-3 rounded-full cursor-pointer ";
   const activeColor = "bg-blue-800";
@@ -245,21 +243,18 @@ export default function Sidebar({
         />
         {sidebarContent === "directs" ? (
           <Inbox
-            allConvo={allConvo}
             currentActiveId={currentActiveId}
             setCurrentActiveId={setCurrentActiveId}
             convoClickHandler={convoClickHandler}
           />
         ) : sidebarContent === "Friends" ? (
           <Friends
-            allUserFriends={allFriends}
             friendClickHandler={friendClickHandler}
             currentActiveId={currentActiveId}
             setCurrentActiveId={setCurrentActiveId}
           />
         ) : sidebarContent === "groups" ? (
           <Groups
-            allGroupConvo={allGroups}
             groupClickHandler={groupClickHandler}
             currentActiveId={currentActiveId}
             setCurrentActiveId={setCurrentActiveId}

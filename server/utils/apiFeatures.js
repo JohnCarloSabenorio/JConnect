@@ -25,9 +25,16 @@ class APIFeatures {
       let parsedQuery = JSON.parse(queryStr);
 
       // Handle filtering based on the length of `users` array
+      console.log("THE QUERY STRINGS:");
+      console.log(queryStr);
       if (parsedQuery.minUsers !== undefined) {
         parsedQuery = {
           $expr: { $gt: [{ $size: "$users" }, Number(parsedQuery.minUsers)] },
+        };
+      }
+      else if (parsedQuery.maxUsers !== undefined) {
+        parsedQuery = {
+          $expr: { $eq: [{ $size: "$users" }, Number(parsedQuery.maxUsers)] },
         };
       }
 

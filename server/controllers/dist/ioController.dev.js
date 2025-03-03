@@ -79,16 +79,16 @@ exports.sendMessage = function _callee3(io, socket, data) {
               while (1) {
                 switch (_context2.prev = _context2.next) {
                   case 0:
-                    imagePath = path.join("public/img/sentImages", filename);
-                    console.log("THE IMAGE PATH:", imagePath);
-                    _context2.next = 4;
+                    imagePath = path.join("public/img/sentImages", filename); // console.log("THE IMAGE PATH:", imagePath);
+
+                    _context2.next = 3;
                     return regeneratorRuntime.awrap(sharp(imagePath).toBuffer());
 
-                  case 4:
+                  case 3:
                     buffer = _context2.sent;
                     return _context2.abrupt("return", "data:image/jpeg;base64,".concat(buffer.toString("base64")));
 
-                  case 6:
+                  case 5:
                   case "end":
                     return _context2.stop();
                 }

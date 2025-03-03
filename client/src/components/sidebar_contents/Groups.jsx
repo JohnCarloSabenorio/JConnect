@@ -1,13 +1,16 @@
 import Convo from "../Convo";
+import { useSelector } from "react-redux";
 export default function Groups({
-  allGroupConvo,
   groupClickHandler,
   currentActiveId,
   setCurrentActiveId,
 }) {
+  const { allUserGroupConvo } = useSelector((state) => state.conversation);
+
+  console.log("ALL USER GROUP CONVO:", allUserGroupConvo);
   return (
     <>
-      {allGroupConvo.map((convo, id) => {
+      {allUserGroupConvo.map((convo, id) => {
         return (
           <Convo
             key={id}

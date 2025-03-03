@@ -1,15 +1,15 @@
 import { useState, useRef } from "react";
 import Convo from "../Convo";
+import { useSelector } from "react-redux";
 export default function Inbox({
-  allConvo,
   convoClickHandler,
   currentActiveId,
   setCurrentActiveId,
-  searchInput,
 }) {
+  const { allUserConvo } = useSelector((state) => state.conversation);
   return (
     <>
-      {allConvo.map((convo, id) => {
+      {allUserConvo.map((convo, id) => {
         // Tomorrow, the latest message also needs to be updated
         return (
           <Convo

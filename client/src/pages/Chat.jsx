@@ -1,12 +1,13 @@
 import { useContext, useEffect, useState, useRef } from "react";
 import {
   getFriendsConversation,
-  getRecentConversation,
+  getDirectConversations,
   getAllUserMessages,
   getAllGroupConversation,
 } from "../api/conversation";
 import Message from "../components/Message";
 import { UserContext } from "../App";
+import { useSelector, useDispatch } from "react-redux";
 import { socket } from "../socket";
 import EmojiPicker from "emoji-picker-react";
 import Navbar from "../components/Navbar";
@@ -14,22 +15,45 @@ import Sidebar from "../components/Sidebar";
 import MediaPanel from "../components/MediaPanel";
 import { getFriends } from "../api/friends";
 import { createConversation, chatWithFriend } from "../api/conversation";
+import {
+  setActiveConversation,
+  setCurrentConvoName,
+  setActiveConvo,
+  initDirectsAndGroups,
+  updateAGroupConvo,
+  addANewConvo,
+  updateAConvo,
+} from "../redux/conversation";
+
+import {
+  initDisplayedMessages,
+  updateDisplayedMessages,
+} from "../redux/message";
+
+import { setAllFriends } from "../redux/friend";
+
+import { setMediaImages } from "../redux/media";
+
 export default function Chat() {
+  const dispatch = useDispatch();
+  // REDUX STATES
+  const { currentConvoName, allUserConvo, activeConvo } = useSelector(
+    (state) => state.conversation
+  );
+  const { displayedMessages } = useSelector((state) => state.message);
+
+  const { mediaImages } = useSelector((state) => state.media);
+
+  // USE SSATES
   const { loggedInStatus, user, isConnected } = useContext(UserContext);
-  const [convoName, setConvoName] = useState("");
-  const [allConvo, setAllConvo] = useState(null);
-  const [allGroupConvo, setAllGroupConvo] = useState(null);
-  const [allFriends, setAllFriends] = useState([]);
-  const [currentConvo, setCurrentConvo] = useState(null);
-  const [convoMessages, setConvoMessages] = useState([]);
-  const [displayEmoji, setDisplayEmoji] = useState(false);
-  const [message, setMessage] = useState("");
   const [fileInputKey, setFileInputKey] = useState(Date.now()); // Unique key for input reset
+  const [displayEmoji, setDisplayEmoji] = useState(false);
   // This will store the images sent by the user
   const [images, setImages] = useState([]);
 
+  const [message, setMessage] = useState("");
+
   // This will store the images sent in the entire conversation of the user
-  const [mediaImages, setMediaImages] = useState([]);
   const uiChatRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -42,46 +66,33 @@ export default function Chat() {
     socket.on("chat message", (data) => {
       // Messages will be updated if the sent messages is for the current conversation
       console.log("THE MESSAGE ACQUIRED AFTER SENDING:", data.msg);
-      setConvoMessages((prev) => [...prev, data.msg]);
+      dispatch(updateDisplayedMessages(data.msg));
 
       setImages([]);
       setFileInputKey(Date.now());
       // This should scroll down the chat ui if the user is the sender (NEEDS TO BE FIXED)
 
       // UPDATES THE CONVERSATION LIST
-      setAllConvo(
-        (prev) =>
-          [
-            ...prev.map((convo) =>
-              convo._id === data.convo._id ? data.convo : convo
-            ),
-          ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)) // Sort by latest updated conversation
-      );
+
+      dispatch(updateAConvo(data));
 
       // UPDATES THE GROUP CONVERATION LIST
-      setAllGroupConvo(
-        (prev) =>
-          [
-            ...prev.map((convo) =>
-              convo._id === data.convo._id ? data.convo : convo
-            ),
-          ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)) // Sort by latest updated group conversation
-      );
+      dispatch(updateAGroupConvo(data));
     });
   }, []);
 
   useEffect(() => {
     // This will get the initial messages to be displayed (if the currentConvo is null)
-    if (allConvo && currentConvo === null) {
-      getMessages(allConvo[0]._id, allConvo[0].convoName);
+    if (allUserConvo && activeConvo === null) {
+      getMessages(allUserConvo[0]._id, allUserConvo[0].convoName);
     }
-  }, [allConvo]);
+  }, [allUserConvo]);
 
   useEffect(() => {
     const mediaBlobUrls = [];
 
-    if (convoMessages.length > 0) {
-      convoMessages.forEach((message, idx) => {
+    if (displayedMessages.length > 0) {
+      displayedMessages.forEach((message, idx) => {
         if (message.images64) {
           message.images64.forEach((base64, idx) => {
             const blob = base64ToBlob(base64);
@@ -92,7 +103,7 @@ export default function Chat() {
           });
         }
       });
-      setMediaImages(mediaBlobUrls);
+      dispatch(setMediaImages(mediaBlobUrls));
     }
 
     uiChatRef.current?.scrollTo({
@@ -100,7 +111,7 @@ export default function Chat() {
     });
 
     setImages([]);
-  }, [convoMessages]);
+  }, [displayedMessages]);
 
   useEffect(() => {
     // console.log("MEDIA IMAGES:", mediaImages);
@@ -110,33 +121,33 @@ export default function Chat() {
   }, [images]);
 
   // Adds a loading screen if all conversations are not yet retrieved.
-  if (!allConvo) {
+  if (!allUserConvo) {
     return <div>Loading...</div>;
   }
 
   // FUNCTIONS
   // This will get all the conversation for the user
   async function getRecentConversations() {
-    const conversations = await getRecentConversation();
-    const groupConversations = [];
+    const conversations = await getDirectConversations();
+    const groupConversations = await getAllGroupConversation();
 
     console.log("JOINING ROOMS");
     conversations.forEach((convo) => {
-      // User will automatically join the rooms for each conversation. (The convo id will be the room number)
+      // User will automatically join the rooms for each direct conversation. (The convo id will be the room number)
       socket.emit("join rooms", convo._id);
-
-      // If there are more than 2 users, add it to the list of group conversations
-      if (convo.users.length > 2) groupConversations.push(convo);
+    });
+    groupConversations.forEach((convo) => {
+      // User will automatically join the rooms for each group conversation. (The convo id will be the room number)
+      socket.emit("join rooms", convo._id);
     });
 
-    setAllConvo(conversations);
-    setAllGroupConvo(groupConversations);
+    dispatch(initDirectsAndGroups([conversations, groupConversations]));
   }
 
   // Get friends for the current user
   async function getUserFriends() {
     const friends = await getFriends();
-    setAllFriends(friends);
+    dispatch(setAllFriends(friends));
   }
 
   // This will get the friends conversation of the current user
@@ -150,10 +161,10 @@ export default function Chat() {
   async function getMessages(convoId, convoName) {
     // Join a channel for users in the same conversation
     const messages = await getAllUserMessages(convoId);
-
-    setConvoName(convoName);
-    setCurrentConvo(convoId);
-    setConvoMessages(messages);
+    dispatch(setActiveConversation(convoName, convoId));
+    // dispatch(setCurrentConvoName(convoName));
+    // dispatch(setActiveConvo(convoId));
+    dispatch(initDisplayedMessages(messages));
   }
 
   function sendMessage(e) {
@@ -164,7 +175,7 @@ export default function Chat() {
     socket.emit("chat message", {
       message: message,
       sender: user._id,
-      conversation: currentConvo,
+      conversation: activeConvo,
       images: images,
     });
     setMessage("");
@@ -190,14 +201,14 @@ export default function Chat() {
   async function chatAFriend(friendId) {
     const response = await chatWithFriend(friendId);
     try {
-      // This will get the messages using the id of the response, since if the conversation exists, it's in the allConvo array
+      // This will get the messages using the id of the response, since if the conversation exists, it's in the allUserConvo array
 
       // Create a conversation with the friend if no convo exists
       if (response.length == 0) {
         const newConvo = await createConversation(user._id, friendId);
         // console.log("THE NEW CONVO:", newConvo);
         getMessages(newConvo[0]._id, newConvo[0].convoName);
-        setAllConvo((prev) => [newConvo, ...prev]);
+        dispatch(addANewConvo(newConvo));
         return newConvo[0]._id;
       }
 
@@ -291,9 +302,6 @@ export default function Chat() {
           {/* Sidebar */}
 
           <Sidebar
-            allConvo={allConvo}
-            allGroups={allGroupConvo}
-            allFriends={allFriends}
             convoClickHandler={getMessages}
             friendClickHandler={chatAFriend}
             groupClickHandler={getMessages}
@@ -307,7 +315,7 @@ export default function Chat() {
                 className="rounded-full w-12 h-12"
               />
               <div>
-                <p className="font-bold text-md">{convoName}</p>
+                <p className="font-bold text-md">{currentConvoName}</p>
                 <p className="text-gray-600">Last active 1 hour ago</p>
               </div>
               <div className="flex gap-5 ml-auto items-center justify-center">
@@ -356,7 +364,7 @@ export default function Chat() {
               id="chat-ui"
               className="bg-gray-50 flex-grow overflow-y-scroll overflow-x-hidden"
             >
-              {convoMessages.map((message, i) => {
+              {displayedMessages.map((message, i) => {
                 let blobUrls = [];
                 if (message.images64) {
                   message.images64.forEach((base64, idx) => {
@@ -497,7 +505,7 @@ export default function Chat() {
             </div>
           </div>
 
-          <MediaPanel convoName={convoName} mediaImages={mediaImages} />
+          <MediaPanel />
         </div>
       </div>
     </>

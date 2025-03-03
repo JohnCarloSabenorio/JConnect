@@ -159,28 +159,28 @@ exports.getAll = function (Model) {
                           while (1) {
                             switch (_context3.prev = _context3.next) {
                               case 0:
-                                imagePath = path.join("public/img/sentImages", filename);
-                                console.log("THE IMAGE PATH:", imagePath);
-                                _context3.prev = 2;
-                                _context3.next = 5;
+                                imagePath = path.join("public/img/sentImages", filename); // console.log("THE IMAGE PATH:", imagePath);
+
+                                _context3.prev = 1;
+                                _context3.next = 4;
                                 return regeneratorRuntime.awrap(sharp(imagePath).toBuffer());
 
-                              case 5:
+                              case 4:
                                 buffer = _context3.sent;
                                 return _context3.abrupt("return", "data:image/jpeg;base64,".concat(buffer.toString("base64")));
 
-                              case 9:
-                                _context3.prev = 9;
-                                _context3.t0 = _context3["catch"](2);
+                              case 8:
+                                _context3.prev = 8;
+                                _context3.t0 = _context3["catch"](1);
                                 console.error("Error processing image:", filename, _context3.t0);
                                 return _context3.abrupt("return", null);
 
-                              case 13:
+                              case 12:
                               case "end":
                                 return _context3.stop();
                             }
                           }
-                        }, null, null, [[2, 9]]);
+                        }, null, null, [[1, 8]]);
                       })));
 
                     case 4:

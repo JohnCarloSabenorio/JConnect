@@ -1,13 +1,7 @@
 import { chatWithFriend } from "../api/conversation";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import {
-  updateSidebar,
-  changeSidebarTitle,
-  changeSidebarContent,
-  changeSidebarBtn,
-  changeActiveInbox,
-} from "../redux/sidebar";
+import { updateSidebar, changeActiveInbox } from "../redux/sidebar";
 export default function Friend({
   friendId,
   name,

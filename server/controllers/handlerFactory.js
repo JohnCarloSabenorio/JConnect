@@ -82,7 +82,7 @@ exports.getAll = (Model) =>
         const images64 = await Promise.all(
           doc.images.map(async (filename) => {
             const imagePath = path.join("public/img/sentImages", filename);
-            console.log("THE IMAGE PATH:", imagePath);
+            // console.log("THE IMAGE PATH:", imagePath);
 
             try {
               const buffer = await sharp(imagePath).toBuffer();

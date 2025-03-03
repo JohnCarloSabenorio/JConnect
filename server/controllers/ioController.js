@@ -52,7 +52,7 @@ exports.sendMessage = async (io, socket, data) => {
     populatedMessage.images.map(async (filename) => {
       const imagePath = path.join("public/img/sentImages", filename);
 
-      console.log("THE IMAGE PATH:", imagePath);
+      // console.log("THE IMAGE PATH:", imagePath);
       const buffer = await sharp(imagePath).toBuffer();
       return `data:image/jpeg;base64,${buffer.toString("base64")}`;
     })
