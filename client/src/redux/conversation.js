@@ -5,13 +5,16 @@ const conversationSlice = createSlice({
   initialState: {
     currentConvoName: "",
     activeConvo: null,
+    activeConvoIsGroup: false,
     allUserConvo: null,
     allUserGroupConvo: null,
+    activeDirectUser: null,
+    userIsFriend: true,
   },
   reducers: {
     setActiveConversation: (state, action) => {
-
       console.log("THE ACTIVE CONVO PAYLOAD:", action.payload);
+
       state.currentConvoName = action.payload[0];
       state.activeConvo = action.payload[1];
     },
@@ -20,6 +23,23 @@ const conversationSlice = createSlice({
     },
     setActiveConvo: (state, action) => {
       state.activeConvo = action.payload;
+      console.log("ACTIVE CONVERSATION:");
+      console.log(action.payload);
+    },
+
+    setActiveDirectUser: (state, action) => {
+      console.log("ACTIVE DIRECT FRIEND:", action.payload);
+      state.activeDirectUser = action.payload;
+    },
+
+    setUserIsFriend: (state, action) => {
+      state.userIsFriend = action.payload;
+    },
+
+    setActiveConvoIsGroup: (state, action) => {
+      state.activeConvoIsGroup = action.payload;
+      state.userIsFriend = false;
+      state.activeDirectUser = null;
     },
 
     initDirectsAndGroups: (state, action) => {
@@ -59,6 +79,9 @@ export const {
   setActiveConversation,
   setCurrentConvoName,
   setActiveConvo,
+  setActiveConvoIsGroup,
+  setActiveDirectUser,
+  setUserIsFriend,
   initDirectsAndGroups,
   initAllUserConvo,
   initAllUserGroupConvo,

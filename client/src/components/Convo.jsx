@@ -1,8 +1,15 @@
 import { useState, useEffect } from "react";
 
 import { changeSidebarSearch } from "../redux/sidebar";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setActiveConvoIsGroup,
+  setActiveDirectUser,
+  setUserIsFriend,
+} from "../redux/conversation";
 
+import { useContext } from "react";
+import { UserContext } from "../App";
 export default function Convo({
   name,
   msg,
@@ -12,14 +19,19 @@ export default function Convo({
   convoId,
   isActive,
   eventHandler,
+  isGroup,
   changeCurrentActive,
+  friendId,
 }) {
+  const { loggedInStatus, user, isConnected } = useContext(UserContext);
   const { sidebarSearch } = useSelector((state) => state.sidebar);
+  const dispatch = useDispatch();
   const [bgColor, setBgColor] = useState("bg-white");
 
   useEffect(() => {
     setBgColor(isActive ? "bg-green-200" : "bg-white");
   }, [isActive]);
+
   const formatTime = (time) => {
     const date = new Date(time);
     let hours = date.getHours();
@@ -42,8 +54,13 @@ export default function Convo({
         }`}
         onClick={() => {
           eventHandler(convoId, name);
-
           changeCurrentActive(convoId);
+          dispatch(setActiveConvoIsGroup(isGroup));
+          if (friendId) {
+            dispatch(setActiveDirectUser(friendId));
+            dispatch(setUserIsFriend(true));
+          }
+
           setBgColor("bg-green-200");
         }}
       >

@@ -20,7 +20,8 @@ router.route("/:id").get(friendController.getFriend).patch(friendController.upda
 router.route("/friendRequest/:friendId").post(friendController.sendFriendRequest); // NEEDS TO BE REVISED IN THE FUTURE
 
 router.route("/currentUser/allFriends").get(friendController.getMyFriends);
-router.route("/friendRequests/myFriendRequests").get(friendController.getMyFriendRequests); // Checks if a conversation exists with a friend
+router.route("/friendRequests/myFriendRequests").get(friendController.getMyFriendRequests);
+router.get("/isFriend/:id", friendController.isFriend); // Checks if a conversation exists with a friend
 
 router.use("/checkConvo/:friendId", convoController.checkConvoExists); // Blocks or unblocks a user
 

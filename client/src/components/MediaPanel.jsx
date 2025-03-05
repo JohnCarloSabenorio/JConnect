@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 export default function MediaPanel() {
-  const { currentConvoName } = useSelector((state) => state.conversation);
+  const { currentConvoName, activeConvoIsGroup, userIsFriend } = useSelector(
+    (state) => state.conversation
+  );
   const { mediaImages } = useSelector((state) => state.media);
 
   const [imagesActive, setImagesActive] = useState(false);
   const [filesActive, setFilesActive] = useState(false);
   const [customizeActive, setCustomizeActive] = useState(false);
   const [chatInfoActive, setChatinfoActive] = useState(false);
+  const [membersActive, setMembersActive] = useState(false);
 
   const [isMuted, setIsMuted] = useState(false);
-  const [isFriend, setIsFriend] = useState(false);
   const [isGroup, setIsGroup] = useState(false);
 
   // console.log("THE MEDIA IMAGES:", mediaImages);
@@ -58,7 +60,11 @@ export default function MediaPanel() {
           </button>
 
           {/* Block button */}
-          <button className="cursor-pointer shadow-lg p-2 text-sm flex justify-center items-center rounded-full">
+          <button
+            className={`${
+              activeConvoIsGroup ? "hidden" : "block"
+            } cursor-pointer shadow-lg p-2 text-sm flex justify-center items-center rounded-full`}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 -960 960 960"
@@ -98,12 +104,14 @@ export default function MediaPanel() {
 
           {/* Unfriend button */}
           <button
-            onClick={(e) => setIsFriend((prev) => !prev)}
+            // onClick={(e) => setIsFriend((prev) => !prev)}
             className={`cursor-pointer shadow-md p-2 text-sm ${
-              isFriend ? "bg-red-400" : "bg-blue-400"
+              userIsFriend ? "bg-red-400" : "bg-blue-400"
+            } ${
+              activeConvoIsGroup ? "hidden" : "block"
             } text-white flex justify-center items-center rounded-full`}
           >
-            {isFriend ? (
+            {userIsFriend ? (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 -960 960 960"
@@ -167,6 +175,27 @@ export default function MediaPanel() {
               <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
             </svg>
           </div>
+
+          {/* Group members list */}
+          <div
+            className={`p-3 flex shadow-md cursor-pointer ${activeConvoIsGroup ? "block" : "hidden"}`}
+            onClick={() => setMembersActive((prev) => !prev)}
+          >
+            <p className="align-middle">Members</p>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 320 512"
+              width="30"
+              height="30"
+              fill="#53575a"
+              className={`ml-auto transition-transform ${
+                membersActive ? "rotate-180" : "rotate-0"
+              }`}
+            >
+              <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
+            </svg>
+          </div>
+
           <div
             className="p-3 flex shadow-md cursor-pointer"
             onClick={() => setCustomizeActive((prev) => !prev)}

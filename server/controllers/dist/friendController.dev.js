@@ -125,24 +125,68 @@ exports.getMyFriendRequests = catchAsync(function _callee3(req, res, next) {
     }
   });
 });
-exports.getSentRequests = catchAsync(function _callee4(req, res, next) {
+exports.isFriend = catchAsync(function _callee4(req, res) {
+  var friend;
   return regeneratorRuntime.async(function _callee4$(_context4) {
     while (1) {
       switch (_context4.prev = _context4.next) {
         case 0:
+          if (req.params.id === req.user.id) {
+            res.status(200).json({
+              status: "success",
+              isFriend: false
+            });
+          }
+
+          _context4.next = 3;
+          return regeneratorRuntime.awrap(Friend.findOne({
+            $or: [{
+              $and: [{
+                user1: req.params.id
+              }, {
+                user2: req.user.id
+              }]
+            }, {
+              $and: [{
+                user1: req.user.id
+              }, {
+                user2: req.params.id
+              }]
+            }]
+          }));
+
+        case 3:
+          friend = _context4.sent;
+          res.status(200).json({
+            status: "success",
+            isFriend: friend ? true : false
+          });
+
+        case 5:
         case "end":
           return _context4.stop();
       }
     }
   });
 });
-exports.getBlockedFriends = catchAsync(function _callee5(req, res, next) {
+exports.getSentRequests = catchAsync(function _callee5(req, res, next) {
   return regeneratorRuntime.async(function _callee5$(_context5) {
     while (1) {
       switch (_context5.prev = _context5.next) {
         case 0:
         case "end":
           return _context5.stop();
+      }
+    }
+  });
+});
+exports.getBlockedFriends = catchAsync(function _callee6(req, res, next) {
+  return regeneratorRuntime.async(function _callee6$(_context6) {
+    while (1) {
+      switch (_context6.prev = _context6.next) {
+        case 0:
+        case "end":
+          return _context6.stop();
       }
     }
   });

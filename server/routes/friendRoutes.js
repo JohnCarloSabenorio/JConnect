@@ -28,6 +28,7 @@ router
   .route("/friendRequests/myFriendRequests")
   .get(friendController.getMyFriendRequests);
 
+router.get("/isFriend/:id", friendController.isFriend);
 // Checks if a conversation exists with a friend
 router.use("/checkConvo/:friendId", convoController.checkConvoExists);
 

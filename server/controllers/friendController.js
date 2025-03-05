@@ -68,6 +68,28 @@ exports.getMyFriendRequests = catchAsync(async (req, res, next) => {
     data: friendRequests,
   });
 });
+
+exports.isFriend = catchAsync(async (req, res) => {
+  if (req.params.id === req.user.id) {
+    res.status(200).json({
+      status: "success",
+      isFriend: false,
+    });
+  }
+
+  const friend = await Friend.findOne({
+    $or: [
+      { $and: [{ user1: req.params.id }, { user2: req.user.id }] },
+      { $and: [{ user1: req.user.id }, { user2: req.params.id }] },
+    ],
+  });
+
+  res.status(200).json({
+    status: "success",
+    isFriend: friend ? true : false,
+  });
+});
+
 exports.getSentRequests = catchAsync(async (req, res, next) => {});
 exports.getBlockedFriends = catchAsync(async (req, res, next) => {});
 

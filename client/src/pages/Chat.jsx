@@ -65,7 +65,6 @@ export default function Chat() {
     console.log("getting convo:");
     getRecentConversations();
     getUserFriends();
-    getFriendConversations();
     socket.on("chat message", (data) => {
       // Messages will be updated if the sent messages is for the current conversation
       console.log("THE MESSAGE ACQUIRED AFTER SENDING:", data.msg);
@@ -151,13 +150,6 @@ export default function Chat() {
   async function getUserFriends() {
     const friends = await getFriends();
     dispatch(setAllFriends(friends));
-  }
-
-  // This will get the friends conversation of the current user
-  async function getFriendConversations() {
-    const friendsConvo = await getFriendsConversation();
-
-    // console.log("FRIENDS CONVERSATION:", friendsConvo);
   }
 
   // This will set the initial messages displayed to be the most recent conversation

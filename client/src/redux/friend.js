@@ -9,6 +9,8 @@ const friendsSlice = createSlice({
 
   reducers: {
     setAllFriends: (state, action) => {
+      console.log("ALL FRIENDS:");
+      console.log(action.payload);
       state.allFriends = action.payload;
     },
   },

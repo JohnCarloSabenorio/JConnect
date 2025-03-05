@@ -120,30 +120,39 @@ exports.getAll = function (Model) {
         switch (_context5.prev = _context5.next) {
           case 0:
             filter = {};
-            if (req.baseUrl.endsWith("allConvo")) filter = {
-              users: {
-                $in: req.user.id
-              }
-            }; // If convoId is present, the user is getting a message
+            console.log("ENDS WITH ALL CONVO:", req.baseUrl.endsWith("allConvo"));
+
+            if (req.baseUrl.endsWith("allConvo")) {
+              filter = {
+                users: {
+                  $in: req.user.id
+                }
+              };
+            }
+
+            console.log("THE QUERY:", req.query); // If convoId is present, the user is getting a message
 
             if (req.params.convoId) Object.assign(filter, {
               conversation: req.params.convoId
             });
             features = new APIFeatures(Model.find(filter), req.query).filter().sort().limitFields();
-            _context5.next = 6;
+            _context5.next = 8;
             return regeneratorRuntime.awrap(features.query);
 
-          case 6:
+          case 8:
             docs = _context5.sent;
-            _context5.next = 9;
+            _context5.next = 11;
             return regeneratorRuntime.awrap(Promise.all(docs.map(function _callee4(doc) {
               var images64;
               return regeneratorRuntime.async(function _callee4$(_context4) {
                 while (1) {
                   switch (_context4.prev = _context4.next) {
                     case 0:
+                      // doc.users = doc.users.filter(user => user._id.toString() === req.user.id);
+                      console.log("THE DOC:", doc);
+
                       if (!(!doc.images || !Array.isArray(doc.images))) {
-                        _context4.next = 2;
+                        _context4.next = 3;
                         break;
                       }
 
@@ -151,8 +160,8 @@ exports.getAll = function (Model) {
                         imageBase64Array: []
                       }));
 
-                    case 2:
-                      _context4.next = 4;
+                    case 3:
+                      _context4.next = 5;
                       return regeneratorRuntime.awrap(Promise.all(doc.images.map(function _callee3(filename) {
                         var imagePath, buffer;
                         return regeneratorRuntime.async(function _callee3$(_context3) {
@@ -183,13 +192,13 @@ exports.getAll = function (Model) {
                         }, null, null, [[1, 8]]);
                       })));
 
-                    case 4:
+                    case 5:
                       images64 = _context4.sent;
                       return _context4.abrupt("return", _objectSpread({}, doc._doc, {
                         images64: images64
                       }));
 
-                    case 6:
+                    case 7:
                     case "end":
                       return _context4.stop();
                   }
@@ -197,7 +206,7 @@ exports.getAll = function (Model) {
               });
             })));
 
-          case 9:
+          case 11:
             docsWithBase = _context5.sent;
             res.status(200).json({
               status: "success",
@@ -205,7 +214,7 @@ exports.getAll = function (Model) {
               data: docsWithBase
             });
 
-          case 11:
+          case 13:
           case "end":
             return _context5.stop();
         }

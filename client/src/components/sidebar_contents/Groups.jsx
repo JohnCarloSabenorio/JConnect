@@ -7,7 +7,6 @@ export default function Groups({
 }) {
   const { allUserGroupConvo } = useSelector((state) => state.conversation);
 
-  console.log("ALL USER GROUP CONVO:", allUserGroupConvo);
   return (
     <>
       {allUserGroupConvo.map((convo, id) => {
@@ -24,6 +23,7 @@ export default function Groups({
             eventHandler={groupClickHandler}
             isActive={currentActiveId === convo._id}
             changeCurrentActive={setCurrentActiveId}
+            isGroup={convo.users.length > 2}
           />
         );
       })}

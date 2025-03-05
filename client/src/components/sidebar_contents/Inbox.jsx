@@ -1,16 +1,30 @@
 import { useState, useRef } from "react";
 import Convo from "../Convo";
 import { useSelector } from "react-redux";
+import { useContext } from "react";
+import { UserContext } from "../../App";
+
 export default function Inbox({
   convoClickHandler,
   currentActiveId,
   setCurrentActiveId,
 }) {
+  const { loggedInStatus, user, isConnected } = useContext(UserContext);
   const { allUserConvo } = useSelector((state) => state.conversation);
   return (
     <>
       {allUserConvo.map((convo, id) => {
+        let friend = null;
+        if (convo.users.length < 3) {
+          friend = convo.users.find(
+            (u) => u._id.toString() !== user._id.toString()
+          );
+
+          console.log("THE FRIEND:", friend);
+        }
         // Tomorrow, the latest message also needs to be updated
+
+        console.log("CONVERSATION:", convo);
         return (
           <Convo
             key={id}
@@ -24,6 +38,8 @@ export default function Inbox({
             eventHandler={convoClickHandler}
             isActive={currentActiveId === convo._id}
             changeCurrentActive={setCurrentActiveId}
+            isGroup={convo.users.length > 2}
+            friendId={friend._id}
           />
         );
       })}

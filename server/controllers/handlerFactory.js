@@ -60,9 +60,12 @@ exports.getAll = (Model) =>
   catchAsync(async (req, res) => {
     let filter = {};
 
-    if (req.baseUrl.endsWith("allConvo"))
+    console.log("ENDS WITH ALL CONVO:", req.baseUrl.endsWith("allConvo"));
+    if (req.baseUrl.endsWith("allConvo")) {
       filter = { users: { $in: req.user.id } };
+    }
 
+    console.log("THE QUERY:", req.query);
     // If convoId is present, the user is getting a message
     if (req.params.convoId)
       Object.assign(filter, { conversation: req.params.convoId });
@@ -75,6 +78,8 @@ exports.getAll = (Model) =>
 
     const docsWithBase = await Promise.all(
       docs.map(async (doc) => {
+        // doc.users = doc.users.filter(user => user._id.toString() === req.user.id);
+        console.log("THE DOC:", doc);
         if (!doc.images || !Array.isArray(doc.images)) {
           return { ...doc._doc, imageBase64Array: [] }; // Handle missing images
         }

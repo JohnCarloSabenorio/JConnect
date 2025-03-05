@@ -2,6 +2,12 @@ import { chatWithFriend } from "../api/conversation";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { updateSidebar, changeActiveInbox } from "../redux/sidebar";
+import { UserContext } from "../App";
+import { useContext } from "react";
+import {
+  setActiveConvoIsGroup,
+  setActiveDirectUser,
+} from "../redux/conversation";
 export default function Friend({
   friendId,
   name,
@@ -10,7 +16,9 @@ export default function Friend({
   currentActiveId,
   setCurrentActiveId,
 }) {
+  const { loggedInStatus, user, isConnected } = useContext(UserContext);
   const { sidebarSearch } = useSelector((state) => state.sidebar);
+  const { activeConvoIsGroup } = useSelector((state) => state.conversation);
   const dispatch = useDispatch();
   return (
     <>
@@ -23,8 +31,9 @@ export default function Friend({
         onClick={async () => {
           // This will get the conversation id from chatAFriend from chat.jsx
           const convoId = await friendClickHandler(friendId);
-
+          dispatch(setActiveConvoIsGroup(false));
           dispatch(changeActiveInbox("direct"));
+          dispatch(setActiveDirectUser(friendId));
           dispatch(
             updateSidebar({
               sidebarTitle: "inbox",
