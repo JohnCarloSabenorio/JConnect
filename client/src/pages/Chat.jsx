@@ -10,6 +10,7 @@ import { UserContext } from "../App";
 import { useSelector, useDispatch } from "react-redux";
 import { socket } from "../socket";
 import EmojiPicker from "emoji-picker-react";
+import { Emoji } from "emoji-picker-react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import MediaPanel from "../components/MediaPanel";
@@ -48,6 +49,8 @@ export default function Chat() {
   const { loggedInStatus, user, isConnected } = useContext(UserContext);
   const [fileInputKey, setFileInputKey] = useState(Date.now()); // Unique key for input reset
   const [displayEmoji, setDisplayEmoji] = useState(false);
+  const [defaultEmoji, setDefaultEmoji] = useState("");
+
   // This will store the images sent by the user
   const [images, setImages] = useState([]);
 
@@ -161,7 +164,7 @@ export default function Chat() {
   async function getMessages(convoId, convoName) {
     // Join a channel for users in the same conversation
     const messages = await getAllUserMessages(convoId);
-    dispatch(setActiveConversation(convoName, convoId));
+    dispatch(setActiveConversation([convoName, convoId]));
     // dispatch(setCurrentConvoName(convoName));
     // dispatch(setActiveConvo(convoId));
     dispatch(initDisplayedMessages(messages));
@@ -189,7 +192,7 @@ export default function Chat() {
   // Adds the emoji to the message input
   function addEmojiToInput(emoji) {
     setDisplayEmoji(true);
-    console.log(emoji);
+    console.log("THE EMOJI: ", emoji);
     setMessage((prev) => prev + emoji.emoji);
   }
 
@@ -472,6 +475,7 @@ export default function Chat() {
                     </div>
 
                     <div className="flex gap-1">
+                      {/* <Emoji unified="1f423" size="25" /> */}
                       <button
                         type="button"
                         onClick={toggleEmojiPicker}
