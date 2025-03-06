@@ -7,6 +7,7 @@ import { useContext } from "react";
 import {
   setActiveConvoIsGroup,
   setActiveDirectUser,
+  setUserIsFriend,
 } from "../redux/conversation";
 export default function Friend({
   friendId,
@@ -34,6 +35,7 @@ export default function Friend({
           dispatch(setActiveConvoIsGroup(false));
           dispatch(changeActiveInbox("direct"));
           dispatch(setActiveDirectUser(friendId));
+          dispatch(setUserIsFriend(true));
           dispatch(
             updateSidebar({
               sidebarTitle: "inbox",

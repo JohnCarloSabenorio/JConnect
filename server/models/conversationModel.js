@@ -25,6 +25,12 @@ const convoSchema = new mongoose.Schema(
       type: String,
       default: "default-gc.png",
     },
+    status: {
+      type: String,
+      enum: {
+        values: ["active", "archived"],
+      },
+    },
 
     latestMessage: {
       type: String,

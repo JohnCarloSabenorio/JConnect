@@ -85,7 +85,7 @@ export default function Chat() {
 
   useEffect(() => {
     // This will get the initial messages to be displayed (if the currentConvo is null)
-    if (allUserConvo && activeConvo === null) {
+    if (allUserConvo && activeConvo === null && allUserConvo.length > 0) {
       getMessages(allUserConvo[0]._id, allUserConvo[0].convoName);
     }
   }, [allUserConvo]);

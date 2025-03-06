@@ -7,6 +7,7 @@ const conversationSlice = createSlice({
     activeConvo: null,
     activeConvoIsGroup: false,
     allUserConvo: null,
+    activeConvoMembers: null,
     allUserGroupConvo: null,
     activeDirectUser: null,
     userIsFriend: true,
@@ -21,10 +22,15 @@ const conversationSlice = createSlice({
     setCurrentConvoName: (state, action) => {
       state.currentConvoName = action.payload;
     },
+
     setActiveConvo: (state, action) => {
       state.activeConvo = action.payload;
       console.log("ACTIVE CONVERSATION:");
       console.log(action.payload);
+    },
+
+    setActiveConvoMembers: (state, action) => {
+      state.activeConvoMembers = action.payload;
     },
 
     setActiveDirectUser: (state, action) => {
@@ -86,6 +92,7 @@ export const {
   initAllUserConvo,
   initAllUserGroupConvo,
   updateAGroupConvo,
+  setActiveConvoMembers,
   addANewConvo,
   updateAConvo,
 } = conversationSlice.actions;

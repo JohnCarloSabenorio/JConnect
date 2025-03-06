@@ -2,6 +2,7 @@ const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const APIFeatures = require("../utils/apiFeatures");
 const Conversation = require("../models/conversationModel");
+const UserConversation = require("../models/userConversationModel");
 const path = require("path");
 const fs = require("fs");
 const sharp = require("sharp");
@@ -30,6 +31,20 @@ exports.createOne = (Model) =>
       );
 
       console.log("UPDATED CONVERSATION LATEST:", updatedConvo);
+    }
+
+    if (Model === Conversation) {
+      console.log("USER IS CREATING A CONVERSATION: ", req.body);
+
+      await Promise.all(
+        req.body.users.map(async (user) => {
+          return await UserConversation.create({
+            user: user,
+            conversation: newDoc._id,
+            isGroup: newDoc.users.length > 2,
+          });
+        })
+      );
     }
 
     res.status(200).json({

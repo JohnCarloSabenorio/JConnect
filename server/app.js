@@ -10,6 +10,8 @@ const userRouter = require("./routes/userRoutes");
 const messageRouter = require("./routes/messageRoutes");
 const friendRouter = require("./routes/friendRoutes");
 const convoRouter = require("./routes/conversationRoutes");
+const userConvoRouter = require("./routes/userConversationRoutes");
+
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
@@ -56,6 +58,7 @@ app.use("/jconnect/api/v1/users", userRouter);
 app.use("/jconnect/api/v1/message", messageRouter);
 app.use("/jconnect/api/v1/friends", friendRouter);
 app.use("/jconnect/api/v1/conversation", convoRouter);
+app.use("/jconnect/api/v1/user-conversation", userConvoRouter);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Cannot find ${req.originalUrl} on the server!`, 404));

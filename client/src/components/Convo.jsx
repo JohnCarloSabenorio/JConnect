@@ -6,6 +6,7 @@ import {
   setActiveConvoIsGroup,
   setActiveDirectUser,
   setUserIsFriend,
+  setActiveConvoMembers,
 } from "../redux/conversation";
 
 import { useContext } from "react";
@@ -22,8 +23,10 @@ export default function Convo({
   isGroup,
   changeCurrentActive,
   friendId,
+  convoData,
 }) {
   const { loggedInStatus, user, isConnected } = useContext(UserContext);
+  const { activeConvoMembers } = useSelector((state) => state.conversation);
   const { sidebarSearch } = useSelector((state) => state.sidebar);
   const dispatch = useDispatch();
   const [bgColor, setBgColor] = useState("bg-white");
@@ -31,6 +34,10 @@ export default function Convo({
   useEffect(() => {
     setBgColor(isActive ? "bg-green-200" : "bg-white");
   }, [isActive]);
+
+  useEffect(() => {
+    console.log("MEMBES FOR THE GROUP:", activeConvoMembers);
+  }, [activeConvoMembers]);
 
   const formatTime = (time) => {
     const date = new Date(time);
@@ -56,6 +63,9 @@ export default function Convo({
           eventHandler(convoId, name);
           changeCurrentActive(convoId);
           dispatch(setActiveConvoIsGroup(isGroup));
+          if (isGroup) {
+            dispatch(setActiveConvoMembers(convoData.users));
+          }
           if (friendId) {
             dispatch(setActiveDirectUser(friendId));
             dispatch(setUserIsFriend(true));

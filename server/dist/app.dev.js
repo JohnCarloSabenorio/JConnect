@@ -21,6 +21,8 @@ var friendRouter = require("./routes/friendRoutes");
 
 var convoRouter = require("./routes/conversationRoutes");
 
+var userConvoRouter = require("./routes/userConversationRoutes");
+
 var rateLimit = require("express-rate-limit");
 
 var helmet = require("helmet");
@@ -71,6 +73,7 @@ app.use("/jconnect/api/v1/users", userRouter);
 app.use("/jconnect/api/v1/message", messageRouter);
 app.use("/jconnect/api/v1/friends", friendRouter);
 app.use("/jconnect/api/v1/conversation", convoRouter);
+app.use("/jconnect/api/v1/user-conversation", userConvoRouter);
 app.all("*", function (req, res, next) {
   next(new AppError("Cannot find ".concat(req.originalUrl, " on the server!"), 404));
 });

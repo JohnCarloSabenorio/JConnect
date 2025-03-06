@@ -10,6 +10,7 @@ export default function Groups({
   return (
     <>
       {allUserGroupConvo.map((convo, id) => {
+        console.log("THE CONVORATION:", convo);
         return (
           <Convo
             key={id}
@@ -24,6 +25,7 @@ export default function Groups({
             isActive={currentActiveId === convo._id}
             changeCurrentActive={setCurrentActiveId}
             isGroup={convo.users.length > 2}
+            convoData={convo}
           />
         );
       })}

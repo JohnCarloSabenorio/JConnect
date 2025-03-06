@@ -36,7 +36,10 @@ export default function Sidebar({
   const { allUserConvo } = useSelector((state) => state.conversation);
 
   // const [isDarkMode, setIsDarkMode] = useState(false);
-  const [currentActiveId, setCurrentActiveId] = useState(allUserConvo[0]._id);
+
+  const [currentActiveId, setCurrentActiveId] = useState(
+    allUserConvo.length > 0 ? allUserConvo[0]._id : null
+  );
 
   const sideOptionStyle = " p-3 rounded-full cursor-pointer ";
   const activeColor = "bg-blue-800";
