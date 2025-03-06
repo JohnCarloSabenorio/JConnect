@@ -1,4 +1,3 @@
-import { useState, useRef } from "react";
 import Convo from "../Convo";
 import { useSelector } from "react-redux";
 import { useContext } from "react";
@@ -15,13 +14,18 @@ export default function Inbox({
     <>
       {allUserConvo.map((convo, id) => {
         let friend = null;
-        if (convo.users.length < 3) {
-          friend = convo.users.find(
-            (u) => u._id.toString() !== user._id.toString()
-          );
+        friend = convo.users.find(
+          (u) => u._id.toString() !== user._id.toString()
+        );
 
-          console.log("THE FRIEND:", friend);
-        }
+        // if (convo.users.length < 3) {
+        //   console.log("THE DIRECT CONVO:", convo);
+        //   friend = convo.users.find(
+        //     (u) => u._id.toString() !== user._id.toString()
+        //   );
+
+        //   console.log("THE FRIEND:", friend);
+        // }
         // Tomorrow, the latest message also needs to be updated
 
         console.log("CONVERSATION:", convo);

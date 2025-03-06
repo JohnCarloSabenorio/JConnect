@@ -17,7 +17,7 @@ Create handlers for:
 
 exports.createOne = (Model) =>
   catchAsync(async (req, res) => {
-    const newDoc = await Model.create(req.body);
+    let newDoc = await Model.create(req.body);
 
     // This will update the latest message in the conversation model
     // ConvoId indicates that the user is sending a message to a conversation
@@ -34,6 +34,7 @@ exports.createOne = (Model) =>
     }
 
     if (Model === Conversation) {
+      newDoc = await Conversation.findById(newDoc._id).populate("users");
       console.log("USER IS CREATING A CONVERSATION: ", req.body);
 
       await Promise.all(
@@ -78,6 +79,11 @@ exports.getAll = (Model) =>
     console.log("ENDS WITH ALL CONVO:", req.baseUrl.endsWith("allConvo"));
     if (req.baseUrl.endsWith("allConvo")) {
       filter = { users: { $in: req.user.id } };
+    }
+
+    // If the request came from user-conversation model, filter it with the user's id
+    if (Model === UserConversation) {
+      filter = { user: req.user.id };
     }
 
     console.log("THE QUERY:", req.query);
@@ -150,6 +156,9 @@ exports.updateOne = (Model) =>
 // TEST 4
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
+    if (Model === Conversation) {
+      await UserConversation.deleteMany({ conversation: req.params.id });
+    }
     const doc = await Model.findByIdAndDelete(req.params.id);
 
     if (!doc) {

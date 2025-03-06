@@ -20,6 +20,7 @@ export default function Sidebar({
   convoClickHandler,
   friendClickHandler,
   groupClickHandler,
+  archivedClickHandler,
 }) {
   const dispatch = useDispatch();
 
@@ -263,7 +264,11 @@ export default function Sidebar({
             setCurrentActiveId={setCurrentActiveId}
           />
         ) : sidebarContent === "Archived" ? (
-          <ArchivedChat />
+          <ArchivedChat
+            archivedClickHandler={archivedClickHandler}
+            currentActiveId={currentActiveId}
+            setCurrentActiveId={setCurrentActiveId}
+          />
         ) : sidebarContent === "Discover" ? (
           <Discover />
         ) : (

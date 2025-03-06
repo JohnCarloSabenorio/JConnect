@@ -9,6 +9,7 @@ const conversationSlice = createSlice({
     allUserConvo: null,
     activeConvoMembers: null,
     allUserGroupConvo: null,
+    allUserArchivedConvo: null,
     activeDirectUser: null,
     userIsFriend: true,
   },
@@ -54,7 +55,9 @@ const conversationSlice = createSlice({
       state.allUserGroupConvo = action.payload[1];
     },
     initAllUserConvo: (state, action) => {
-      state.allUserConvo = action.payload;
+      state.allUserConvo = action.payload[0];
+      state.allUserGroupConvo = action.payload[1];
+      state.allUserArchivedConvo = action.payload[2];
     },
     initAllUserGroupConvo: (state, action) => {
       state.allUserGroupConvo = action.payload;
@@ -70,6 +73,7 @@ const conversationSlice = createSlice({
     addANewConvo: (state, action) => {
       state.allUserConvo = [action.payload, ...state.allUserConvo];
     },
+
     updateAConvo: (state, action) => {
       // this will find the existing conversation and update it with the new one
       state.allUserConvo = [

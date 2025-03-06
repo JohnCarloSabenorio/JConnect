@@ -46,6 +46,7 @@ const convoSchema = new mongoose.Schema(
 
 // QUERY MIDDLEWARES
 
+
 convoSchema.pre(/^find/, function (next) {
   this.populate({
     path: "users",

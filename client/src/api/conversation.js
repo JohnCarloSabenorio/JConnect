@@ -5,11 +5,29 @@ export async function getDirectConversations() {
     console.log("Getting all direct conversations...");
 
     const response = await axios.get(
-      "/jconnect/api/v1/users/allConvo?maxUsers=2&sort=-updatedAt",
+      "/jconnect/api/v1/user-conversation?isGroup=false&status=active",
       { withCredentials: true }
     );
 
-    return response.data.data;
+    const allDirects = response.data.data;
+    return allDirects;
+  } catch (error) {
+    console.error("Error fetching direct conversations:", error);
+  }
+}
+
+export async function getArchivedConversations() {
+  try {
+    console.log("Getting all archived conversations...");
+
+    const response = await axios.get(
+      "/jconnect/api/v1/user-conversation?status=archived",
+      { withCredentials: true }
+    );
+
+    const allArchived = response.data.data;
+
+    return allArchived;
   } catch (error) {
     console.error("Error fetching direct conversations:", error);
   }
@@ -20,11 +38,12 @@ export async function getAllGroupConversation() {
     console.log("Getting all group conversations...");
 
     const response = await axios.get(
-      "/jconnect/api/v1/users/allConvo?minUsers=2&sort=-updatedAt",
+      "/jconnect/api/v1/user-conversation?isGroup=true&status=active",
       { withCredentials: true }
     );
 
-    return response.data.data;
+    const allGroups = response.data.data;
+    return allGroups;
   } catch (error) {
     console.error("Error fetching group conversations:", error);
   }
@@ -85,7 +104,9 @@ export async function createConversation(userId, friendId) {
 }
 
 export async function chatWithFriend(friendId) {
-  // Check if the user has an existing conversation with a friend
+  // Check if the user has an existing conversation with a f
+  //
+  // riend
   try {
     const response = await axios.get(
       `jconnect/api/v1/friends/checkConvo/${friendId}/checkConvoExists`,

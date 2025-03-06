@@ -21,6 +21,7 @@ export default function Convo({
   isActive,
   eventHandler,
   isGroup,
+  isArchived,
   changeCurrentActive,
   friendId,
   convoData,

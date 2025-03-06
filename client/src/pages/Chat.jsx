@@ -2,6 +2,7 @@ import { useContext, useEffect, useState, useRef } from "react";
 import {
   getFriendsConversation,
   getDirectConversations,
+  getArchivedConversations,
   getAllUserMessages,
   getAllGroupConversation,
 } from "../api/conversation";
@@ -21,6 +22,7 @@ import {
   setCurrentConvoName,
   setActiveConvo,
   initDirectsAndGroups,
+  initAllUserConvo,
   updateAGroupConvo,
   addANewConvo,
   updateAConvo,
@@ -63,7 +65,7 @@ export default function Chat() {
   useEffect(() => {
     // Get initial conversation list
     console.log("getting convo:");
-    getRecentConversations();
+    getUserConversations();
     getUserFriends();
     socket.on("chat message", (data) => {
       // Messages will be updated if the sent messages is for the current conversation
@@ -129,21 +131,48 @@ export default function Chat() {
 
   // FUNCTIONS
   // This will get all the conversation for the user
-  async function getRecentConversations() {
-    const conversations = await getDirectConversations();
-    const groupConversations = await getAllGroupConversation();
+  async function getUserConversations() {
+    // Direct conversations
+    const directData = await getDirectConversations();
+    let conversations = [];
+    directData.forEach((data) => conversations.push(data.conversation));
 
+    // Group conversations
+    const groupData = await getAllGroupConversation();
+    let groupConversations = [];
+    groupData.forEach((data) => groupConversations.push(data.conversation));
+
+    // Archived conversations
+
+    const archivedData = await getArchivedConversations();
+    let archivedConversations = [];
+    archivedData.forEach((data) =>
+      archivedConversations.push(data.conversation)
+    );
+
+    // Join rooms to all conversation  (The convo id will be the room number)
     console.log("JOINING ROOMS");
     conversations.forEach((convo) => {
-      // User will automatically join the rooms for each direct conversation. (The convo id will be the room number)
+      // User will automatically join the rooms for each direct conversation.
       socket.emit("join rooms", convo._id);
     });
     groupConversations.forEach((convo) => {
-      // User will automatically join the rooms for each group conversation. (The convo id will be the room number)
+      // User will automatically join the rooms for each group conversation.
       socket.emit("join rooms", convo._id);
     });
 
-    dispatch(initDirectsAndGroups([conversations, groupConversations]));
+    archivedConversations.forEach((convo) => {
+      // User will automatically join the rooms for each archived conversation.
+      socket.emit("join rooms", convo._id);
+    });
+
+    dispatch(
+      initAllUserConvo([
+        conversations,
+        groupConversations,
+        archivedConversations,
+      ])
+    );
   }
 
   // Get friends for the current user
@@ -164,6 +193,8 @@ export default function Chat() {
 
   function sendMessage(e) {
     e.preventDefault();
+
+    // IN THE IOCONTROLLER, CHECK IF THE CONVERSATION IS ARCHIVED, IF SO, MOVE IT TO ACTIVE AGAIN
 
     if (message == "" && images.length == 0) return;
     console.log("Socket connected?", socket.connected);
@@ -195,24 +226,22 @@ export default function Chat() {
 
   async function chatAFriend(friendId) {
     const response = await chatWithFriend(friendId);
-    try {
-      // This will get the messages using the id of the response, since if the conversation exists, it's in the allUserConvo array
+    // This will get the messages using the id of the response, since if the conversation exists, it's in the allUserConvo array
+    // Create a conversation with the friend if no convo exists
+    if (response.length == 0) {
+      const newConvo = await createConversation(user._id, friendId);
+      // console.log("THE NEW CONVO:", newConvo);
+      console.log("NO EXISTING CONVO... ADDING ONE RIGHT NOW!");
+      console.log("THE NEW CONVERSATION:", newConvo);
 
-      // Create a conversation with the friend if no convo exists
-      if (response.length == 0) {
-        const newConvo = await createConversation(user._id, friendId);
-        // console.log("THE NEW CONVO:", newConvo);
-        getMessages(newConvo[0]._id, newConvo[0].convoName);
-        dispatch(addANewConvo(newConvo));
-        return newConvo[0]._id;
-      }
-
-      getMessages(response[0]._id, response[0].convoName);
-
-      return response[0]._id;
-    } catch (err) {
-      console.log(err);
+      getMessages(newConvo._id, newConvo.convoName);
+      dispatch(addANewConvo(newConvo));
+      return newConvo._id;
     }
+
+    getMessages(response[0]._id, response[0].convoName);
+
+    return response[0]._id;
   }
 
   async function handleImagesChange(e) {
@@ -300,6 +329,7 @@ export default function Chat() {
             convoClickHandler={getMessages}
             friendClickHandler={chatAFriend}
             groupClickHandler={getMessages}
+            archivedClickHandler={getMessages}
           />
 
           {/* Chat Interface */}
