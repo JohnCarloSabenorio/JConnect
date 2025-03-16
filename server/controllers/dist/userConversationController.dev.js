@@ -65,7 +65,7 @@ exports.getUserConvoStatus = catchASync(function _callee2(req, res) {
     }
   });
 });
-exports.archiveConversation = catchAsync(function _callee3(req, res) {
+exports.archiveConversation = catchAsync(function _callee3(req, res, next) {
   var archivedConvo;
   return regeneratorRuntime.async(function _callee3$(_context3) {
     while (1) {
@@ -99,6 +99,43 @@ exports.archiveConversation = catchAsync(function _callee3(req, res) {
         case 7:
         case "end":
           return _context3.stop();
+      }
+    }
+  });
+});
+exports.unarchiveConversation = catchASync(function _callee4(req, res, next) {
+  var unarchivedConvo;
+  return regeneratorRuntime.async(function _callee4$(_context4) {
+    while (1) {
+      switch (_context4.prev = _context4.next) {
+        case 0:
+          _context4.next = 2;
+          return regeneratorRuntime.awrap(UserConversation.findOneAndUpdate({
+            user: req.user.id,
+            conversation: req.params.id
+          }, {
+            status: "active"
+          }));
+
+        case 2:
+          unarchivedConvo = _context4.sent;
+
+          if (unarchivedConvo) {
+            _context4.next = 5;
+            break;
+          }
+
+          return _context4.abrupt("return", next(new AppError("Failed to restore archived conversation!", 400)));
+
+        case 5:
+          res.status(200).json({
+            status: "success",
+            unarchivedConvo: unarchivedConvo
+          });
+
+        case 6:
+        case "end":
+          return _context4.stop();
       }
     }
   });

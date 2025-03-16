@@ -15,7 +15,9 @@ router
   .patch(controller.updateUserConversation)
   .delete(controller.deleteUserConversation);
 
-router.post("/archive/:id", controller.archiveConversation);
+router.patch("/archive/:id", controller.archiveConversation);
+router.patch("/unarchive/:id", controller.unarchiveConversation);
+
 router.get("/isArchived/:id", controller.userConvoIsArchived);
 router.get("/getStatus/:id", controller.getUserConvoStatus);
 module.exports = router;

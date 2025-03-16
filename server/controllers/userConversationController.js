@@ -33,7 +33,7 @@ exports.getUserConvoStatus = catchASync(async (req, res) => {
   });
 });
 
-exports.archiveConversation = catchAsync(async (req, res) => {
+exports.archiveConversation = catchAsync(async (req, res, next) => {
   const archivedConvo = await UserConversation.findOneAndUpdate(
     {
       user: req.user.id,
@@ -52,6 +52,27 @@ exports.archiveConversation = catchAsync(async (req, res) => {
   res.status(200).json({
     status: "success",
     archivedConvo,
+  });
+});
+
+exports.unarchiveConversation = catchASync(async (req, res, next) => {
+  const unarchivedConvo = await UserConversation.findOneAndUpdate(
+    {
+      user: req.user.id,
+      conversation: req.params.id,
+    },
+    {
+      status: "active",
+    }
+  );
+  
+  if (!unarchivedConvo) {
+    return next(new AppError("Failed to restore archived conversation!", 400));
+  }
+
+  res.status(200).json({
+    status: "success",
+    unarchivedConvo,
   });
 });
 
