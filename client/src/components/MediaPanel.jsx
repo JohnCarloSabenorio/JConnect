@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
-export default function MediaPanel() {
+import { useSelector, useDispatch } from "react-redux";
+import { setIsHidden } from "../redux/overlay";
+export default function MediaPanel({ getUserConversations }) {
   const { currentConvoName, activeConvoIsGroup, userIsFriend } = useSelector(
     (state) => state.conversation
   );
+  const dispatch = useDispatch();
   const { mediaImages } = useSelector((state) => state.media);
-  const { activeConvoMembers } = useSelector((state) => state.conversation);
+  const { activeConvoMembers, activeConvoIsArchived } = useSelector(
+    (state) => state.conversation
+  );
 
   const [imagesActive, setImagesActive] = useState(false);
   const [filesActive, setFilesActive] = useState(false);
@@ -18,7 +22,7 @@ export default function MediaPanel() {
 
   // console.log("THE MEDIA IMAGES:", mediaImages);
 
-  console.log("MEDIA PANEL CONVO MEMBERS:", activeConvoMembers);
+  // console.log("MEDIA PANEL CONVO MEMBERS:", activeConvoMembers);
   return (
     <div className="border-0.5 w-100 h-full overflow-y-scroll">
       <div className="flex flex-col items-center justify-center p-10 pb-5">
@@ -79,16 +83,31 @@ export default function MediaPanel() {
           </button>
 
           {/* Archive Button */}
-          <button className="cursor-pointer shadow-lg p-2 text-sm flex justify-center items-center rounded-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 -960 960 960"
-              width="25"
-              height="25"
-              fill="black"
-            >
-              <path d="m480-240 160-160-56-56-64 64v-168h-80v168l-64-64-56 56 160 160ZM200-640v440h560v-440H200Zm0 520q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v499q0 33-23.5 56.5T760-120H200Zm16-600h528l-34-40H250l-34 40Zm264 300Z" />
-            </svg>
+          <button
+            onClick={() => dispatch(setIsHidden())}
+            className="cursor-pointer shadow-lg p-2 text-sm flex justify-center items-center rounded-full"
+          >
+            {activeConvoIsArchived ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 -960 960 960"
+                width="25"
+                height="25"
+                fill="black"
+              >
+                <path d="M480-560 320-400l56 56 64-64v168h80v-168l64 64 56-56-160-160Zm-280-80v440h560v-440H200Zm0 520q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v499q0 33-23.5 56.5T760-120H200Zm16-600h528l-34-40H250l-34 40Zm264 300Z" />
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 -960 960 960"
+                width="25"
+                height="25"
+                fill="black"
+              >
+                <path d="m480-240 160-160-56-56-64 64v-168h-80v168l-64-64-56 56 160 160ZM200-640v440h560v-440H200Zm0 520q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v499q0 33-23.5 56.5T760-120H200Zm16-600h528l-34-40H250l-34 40Zm264 300Z" />
+              </svg>
+            )}
           </button>
 
           {/* Delete Button */}

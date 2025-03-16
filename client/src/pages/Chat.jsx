@@ -17,12 +17,10 @@ import Sidebar from "../components/Sidebar";
 import MediaPanel from "../components/MediaPanel";
 import { getFriends } from "../api/friends";
 import { createConversation, chatWithFriend } from "../api/conversation";
+import Overlay from "../components/Overlay";
 import {
   setActiveConversation,
-  setCurrentConvoName,
-  setActiveConvo,
-  initDirectsAndGroups,
-  initAllUserConvo,
+  initAllDirectConvo,
   updateAGroupConvo,
   addANewConvo,
   updateAConvo,
@@ -40,15 +38,18 @@ import { setMediaImages } from "../redux/media";
 export default function Chat() {
   const dispatch = useDispatch();
   // REDUX STATES
-  const { currentConvoName, allUserConvo, activeConvo } = useSelector(
-    (state) => state.conversation
-  );
+  const {
+    currentConvoName,
+    allDirectConvo,
+    activeConvo,
+    activeConvoIsArchived,
+  } = useSelector((state) => state.conversation);
   const { displayedMessages } = useSelector((state) => state.message);
 
   const { mediaImages } = useSelector((state) => state.media);
 
   // USE SSATES
-  const { loggedInStatus, user, isConnected } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const [fileInputKey, setFileInputKey] = useState(Date.now()); // Unique key for input reset
   const [displayEmoji, setDisplayEmoji] = useState(false);
   const [defaultEmoji, setDefaultEmoji] = useState("");
@@ -64,12 +65,12 @@ export default function Chat() {
 
   useEffect(() => {
     // Get initial conversation list
-    console.log("getting convo:");
+    // console.log("getting convo:");
     getUserConversations();
     getUserFriends();
     socket.on("chat message", (data) => {
       // Messages will be updated if the sent messages is for the current conversation
-      console.log("THE MESSAGE ACQUIRED AFTER SENDING:", data.msg);
+      // console.log("THE MESSAGE ACQUIRED AFTER SENDING:", data.msg);
       dispatch(updateDisplayedMessages(data.msg));
 
       setImages([]);
@@ -87,10 +88,10 @@ export default function Chat() {
 
   useEffect(() => {
     // This will get the initial messages to be displayed (if the currentConvo is null)
-    if (allUserConvo && activeConvo === null && allUserConvo.length > 0) {
-      getMessages(allUserConvo[0]._id, allUserConvo[0].convoName);
+    if (allDirectConvo && activeConvo === null && allDirectConvo.length > 0) {
+      getMessages(allDirectConvo[0]._id, allDirectConvo[0].convoName);
     }
-  }, [allUserConvo]);
+  }, [allDirectConvo]);
 
   useEffect(() => {
     const mediaBlobUrls = [];
@@ -121,11 +122,11 @@ export default function Chat() {
     // console.log("MEDIA IMAGES:", mediaImages);
   }, [mediaImages]);
   useEffect(() => {
-    console.log("IMAGES TO BE SENT:", images);
+    // console.log("IMAGES TO BE SENT:", images);
   }, [images]);
 
   // Adds a loading screen if all conversations are not yet retrieved.
-  if (!allUserConvo) {
+  if (!allDirectConvo) {
     return <div>Loading...</div>;
   }
 
@@ -135,23 +136,30 @@ export default function Chat() {
     // Direct conversations
     const directData = await getDirectConversations();
     let conversations = [];
-    directData.forEach((data) => conversations.push(data.conversation));
+    directData.forEach((data) => {
+      data.conversation.userConvoId = data._id;
+      conversations.push(data.conversation);
+    });
 
     // Group conversations
     const groupData = await getAllGroupConversation();
     let groupConversations = [];
-    groupData.forEach((data) => groupConversations.push(data.conversation));
+    groupData.forEach((data) => {
+      data.conversation.userConvoId = data._id;
+      groupConversations.push(data.conversation);
+    });
 
     // Archived conversations
 
     const archivedData = await getArchivedConversations();
     let archivedConversations = [];
-    archivedData.forEach((data) =>
-      archivedConversations.push(data.conversation)
-    );
+    archivedData.forEach((data) => {
+      data.conversation.userConvoId = data._id;
+      archivedConversations.push(data.conversation);
+    });
 
     // Join rooms to all conversation  (The convo id will be the room number)
-    console.log("JOINING ROOMS");
+    // console.log("JOINING ROOMS");
     conversations.forEach((convo) => {
       // User will automatically join the rooms for each direct conversation.
       socket.emit("join rooms", convo._id);
@@ -167,7 +175,7 @@ export default function Chat() {
     });
 
     dispatch(
-      initAllUserConvo([
+      initAllDirectConvo([
         conversations,
         groupConversations,
         archivedConversations,
@@ -182,22 +190,21 @@ export default function Chat() {
   }
 
   // This will set the initial messages displayed to be the most recent conversation
-  async function getMessages(convoId, convoName) {
+  async function getMessages(convoId, convoName, userConvoId) {
     // Join a channel for users in the same conversation
     const messages = await getAllUserMessages(convoId);
-    dispatch(setActiveConversation([convoName, convoId]));
-    // dispatch(setCurrentConvoName(convoName));
-    // dispatch(setActiveConvo(convoId));
+    dispatch(setActiveConversation([convoName, convoId, userConvoId]));
     dispatch(initDisplayedMessages(messages));
   }
 
   function sendMessage(e) {
     e.preventDefault();
 
+    // console.log("SENDING MESSAGE!");
     // IN THE IOCONTROLLER, CHECK IF THE CONVERSATION IS ARCHIVED, IF SO, MOVE IT TO ACTIVE AGAIN
 
     if (message == "" && images.length == 0) return;
-    console.log("Socket connected?", socket.connected);
+    // console.log("Socket connected?", socket.connected);
     socket.emit("chat message", {
       message: message,
       sender: user._id,
@@ -215,7 +222,7 @@ export default function Chat() {
   // Adds the emoji to the message input
   function addEmojiToInput(emoji) {
     setDisplayEmoji(true);
-    console.log("THE EMOJI: ", emoji);
+    // console.log("THE EMOJI: ", emoji);
     setMessage((prev) => prev + emoji.emoji);
   }
 
@@ -225,21 +232,24 @@ export default function Chat() {
   }
 
   async function chatAFriend(friendId) {
+    // console.log("THE FRIEND ID:", friendId);
     const response = await chatWithFriend(friendId);
-    // This will get the messages using the id of the response, since if the conversation exists, it's in the allUserConvo array
+
+    // console.log("CHAT A FRIEND RESPONSE:", response);
+    // This will get the messages using the id of the response, since if the conversation exists, it's in the allDirectConvo array
     // Create a conversation with the friend if no convo exists
     if (response.length == 0) {
       const newConvo = await createConversation(user._id, friendId);
-      // console.log("THE NEW CONVO:", newConvo);
-      console.log("NO EXISTING CONVO... ADDING ONE RIGHT NOW!");
-      console.log("THE NEW CONVERSATION:", newConvo);
-
-      getMessages(newConvo._id, newConvo.convoName);
+      getMessages(newConvo._id, newConvo.convoName, response[0].userConvoId);
       dispatch(addANewConvo(newConvo));
       return newConvo._id;
     }
 
-    getMessages(response[0]._id, response[0].convoName);
+    getMessages(
+      response[0]._id,
+      response[0].convoName,
+      response[0].userConvoId
+    );
 
     return response[0]._id;
   }
@@ -312,7 +322,7 @@ export default function Chat() {
   }
 
   function removeImage(idx) {
-    console.log("image removed!");
+    // console.log("image removed!");
     setImages((prev) => prev.filter((_, index) => index !== idx));
   }
 
@@ -322,15 +332,12 @@ export default function Chat() {
         <Navbar />
 
         {/* Main Content */}
-        <div className="flex flex-grow min-h-0">
+        <div className="flex flex-grow min-h-0 relative">
+          <Overlay />
+
           {/* Sidebar */}
 
-          <Sidebar
-            convoClickHandler={getMessages}
-            friendClickHandler={chatAFriend}
-            groupClickHandler={getMessages}
-            archivedClickHandler={getMessages}
-          />
+          <Sidebar getMessages={getMessages} chatAFriend={chatAFriend} />
 
           {/* Chat Interface */}
           <div className="flex flex-grow flex-col w-4xl  bg-gray-50">
@@ -449,89 +456,100 @@ export default function Chat() {
                 onSubmit={(e) => sendMessage(e)}
                 className="flex mt-auto p-3 bg-white border-t-0.5 border-gray-500"
               >
-                <div>
-                  <input
-                    key={fileInputKey}
-                    type="file"
-                    ref={fileInputRef}
-                    accept="image/*"
-                    onChange={handleImagesChange}
-                    multiple
-                    hidden
-                  />
-                </div>
-                {/* File input button */}
-                <button
-                  type="button"
-                  className="cursor-pointer"
-                  onClick={handleFileInputClick}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 -960 960 960"
-                    width="30"
-                    height="30"
-                    fill="black"
-                  >
-                    <path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-370h80v370q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-390h80v390Z" />
-                  </svg>
-                </button>
-                <input
-                  className="flex-grow mx-4 p-2 ml-0"
-                  type="text"
-                  name="message"
-                  id="message"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Type your message here..."
-                />
-                <div className="flex items-center justify-center ml-auto gap-5">
-                  <div className="relative inline-block">
-                    <div
-                      id="emoji-picker"
-                      className={`absolute bottom-full mb-2 left-0 z-10 ${
-                        displayEmoji ? "block" : "hidden"
-                      }`}
-                    >
-                      <EmojiPicker onEmojiClick={addEmojiToInput} />
-                    </div>
-
-                    <div className="flex gap-1">
-                      {/* <Emoji unified="1f423" size="25" /> */}
-                      <button
-                        type="button"
-                        onClick={toggleEmojiPicker}
-                        className="cursor-pointer"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 -960 960 960"
-                          width="30"
-                          height="30"
-                          fill="black"
-                        >
-                          <path d="M620-520q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Zm-280 0q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm140 260q68 0 123.5-38.5T684-400h-66q-22 37-58.5 58.5T480-320q-43 0-79.5-21.5T342-400h-66q25 63 80.5 101.5T480-260Zm0 180q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 320q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Z" />
-                        </svg>
-                      </button>
-                      <button className="cursor-pointer">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 -960 960 960"
-                          width="30"
-                          height="30"
-                          fill="black"
-                        >
-                          <path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z" />
-                        </svg>
-                      </button>
-                    </div>
+                {activeConvoIsArchived ? (
+                  <div className="flex justify-center items-center w-full">
+                    <p className="text-gray-600">
+                      This conversation has been archived and is no longer
+                      accessible.
+                    </p>
                   </div>
-                </div>
+                ) : (
+                  <>
+                    <div>
+                      <input
+                        key={fileInputKey}
+                        type="file"
+                        ref={fileInputRef}
+                        accept="image/*"
+                        onChange={handleImagesChange}
+                        multiple
+                        hidden
+                      />
+                    </div>
+                    {/* File input button */}
+                    <button
+                      type="button"
+                      className="cursor-pointer"
+                      onClick={handleFileInputClick}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 -960 960 960"
+                        width="30"
+                        height="30"
+                        fill="black"
+                      >
+                        <path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-370h80v370q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-390h80v390Z" />
+                      </svg>
+                    </button>
+                    <input
+                      className="flex-grow mx-4 p-2 ml-0"
+                      type="text"
+                      name="message"
+                      id="message"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="Type your message here..."
+                    />
+                    <div className="flex items-center justify-center ml-auto gap-5">
+                      <div className="relative inline-block">
+                        <div
+                          id="emoji-picker"
+                          className={`absolute bottom-full mb-2 left-0 z-10 ${
+                            displayEmoji ? "block" : "hidden"
+                          }`}
+                        >
+                          <EmojiPicker onEmojiClick={addEmojiToInput} />
+                        </div>
+
+                        <div className="flex gap-1">
+                          {/* <Emoji unified="1f423" size="25" /> */}
+                          <button
+                            type="button"
+                            onClick={toggleEmojiPicker}
+                            className="cursor-pointer"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 -960 960 960"
+                              width="30"
+                              height="30"
+                              fill="black"
+                            >
+                              <path d="M620-520q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Zm-280 0q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm140 260q68 0 123.5-38.5T684-400h-66q-22 37-58.5 58.5T480-320q-43 0-79.5-21.5T342-400h-66q25 63 80.5 101.5T480-260Zm0 180q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 320q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Z" />
+                            </svg>
+                          </button>
+                          <button className="cursor-pointer">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 -960 960 960"
+                              width="30"
+                              height="30"
+                              fill="black"
+                            >
+                              <path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
               </form>
             </div>
           </div>
 
-          <MediaPanel />
+          <MediaPanel getUserConversations={getUserConversations} />
         </div>
       </div>
     </>

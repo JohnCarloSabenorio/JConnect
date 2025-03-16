@@ -1,4 +1,4 @@
-import { chatWithFriend } from "../api/conversation";
+import { chatWithFriend, convoIsArchived } from "../api/conversation";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { updateSidebar, changeActiveInbox } from "../redux/sidebar";
@@ -14,8 +14,6 @@ export default function Friend({
   name,
   imageUrl,
   friendClickHandler,
-  currentActiveId,
-  setCurrentActiveId,
 }) {
   const { loggedInStatus, user, isConnected } = useContext(UserContext);
   const { sidebarSearch } = useSelector((state) => state.sidebar);
@@ -32,19 +30,22 @@ export default function Friend({
         onClick={async () => {
           // This will get the conversation id from chatAFriend from chat.jsx
           const convoId = await friendClickHandler(friendId);
+
+          const isArchived = await convoIsArchived(convoId);
+          console.log("IS THE CONVERSATION ARCHIVED?", isArchived);
           dispatch(setActiveConvoIsGroup(false));
           dispatch(changeActiveInbox("direct"));
           dispatch(setActiveDirectUser(friendId));
           dispatch(setUserIsFriend(true));
+
+          // This may be refactored after other statuses are implemented (blocked, deleted, etc...)
           dispatch(
             updateSidebar({
-              sidebarTitle: "inbox",
-              sidebarContent: "directs",
-              sidebarBtn: "inbox-btn",
+              sidebarTitle: isArchived ? "archived" : "inbox",
+              sidebarContent: isArchived ? "Archived" : "directs",
+              sidebarBtn: isArchived ? "archived-btn" : "inbox-btn",
             })
           );
-
-          setCurrentActiveId(convoId);
         }}
       >
         <div className="bg-white rounded-md flex p-5 shadow-md cursor-pointer">

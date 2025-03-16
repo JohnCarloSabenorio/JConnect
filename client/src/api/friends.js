@@ -34,10 +34,11 @@ export async function getFriend() {
 export async function isFriend(userId) {
   try {
     // Check if the user is a friend
-
     const response = await axios.get(
       `jconnect/api/v1/friends/isFriend/${userId}`
     );
+
+    return response.data.isFriend;
   } catch (err) {
     console.log(err);
   }

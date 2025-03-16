@@ -8,6 +8,8 @@ var controller = require("./../controllers/userControlller");
 
 var convoRouter = require("./conversationRoutes");
 
+var userConvoRouter = require("./userConversationRoutes");
+
 var friendRouter = require("./friendRoutes");
 /* 
 const multer = require("multer");

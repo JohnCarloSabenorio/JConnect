@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const controller = require("../controllers/userConversationController");
 const authController = require("../controllers/authController");
 
@@ -15,4 +15,7 @@ router
   .patch(controller.updateUserConversation)
   .delete(controller.deleteUserConversation);
 
+router.post("/archive/:id", controller.archiveConversation);
+router.get("/isArchived/:id", controller.userConvoIsArchived);
+router.get("/getStatus/:id", controller.getUserConvoStatus);
 module.exports = router;

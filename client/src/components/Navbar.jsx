@@ -20,7 +20,7 @@ export default function Navbar() {
         </h1>
       </div>
 
-      <div className="flex gap-4 items-center mr-2">
+      <div className="flex gap-4 items-center mr-2 z-10">
         {/* Notification button */}
         <button className="relative cursor-pointer">
           <svg

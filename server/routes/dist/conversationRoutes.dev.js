@@ -12,8 +12,11 @@ var authController = require("../controllers/authController");
 
 var messageRouter = require("./messageRoutes");
 
+var userConvoRouter = require("./userConversationRoutes");
+
 router.use("/:convoId/message", messageRouter);
 router.use(authController.protect);
+router.use("/userConvo", userConvoRouter);
 router.route("/member/:convoId").post(convoController.addMember)["delete"](convoController.removeMember);
 router.route("/").get(convoController.getAllConversation).post(convoController.createConversation);
 router.route("/:id").get(convoController.getConversation).patch(convoController.updateConversation)["delete"](convoController.deleteConversation);

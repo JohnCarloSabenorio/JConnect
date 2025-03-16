@@ -1,16 +1,12 @@
 import Convo from "../Convo";
 import { useSelector } from "react-redux";
-export default function Groups({
-  groupClickHandler,
-  currentActiveId,
-  setCurrentActiveId,
-}) {
+export default function Groups({ getMessages }) {
   const { allUserGroupConvo } = useSelector((state) => state.conversation);
 
   return (
     <>
       {allUserGroupConvo.map((convo, id) => {
-        console.log("THE CONVORATION:", convo);
+        // console.log("THE CONVORATION:", convo);
         return (
           <Convo
             key={id}
@@ -21,9 +17,7 @@ export default function Groups({
             msgCount={"#"}
             timeSent={convo.updatedAt}
             imageUrl="/img/icons/male-default.jpg"
-            eventHandler={groupClickHandler}
-            isActive={currentActiveId === convo._id}
-            changeCurrentActive={setCurrentActiveId}
+            getMessages={getMessages}
             isGroup={convo.users.length > 2}
             convoData={convo}
           />

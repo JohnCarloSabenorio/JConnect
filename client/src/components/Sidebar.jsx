@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Inbox from "./sidebar_contents/Inbox";
+import Directs from "./sidebar_contents/Directs";
 import Friends from "./sidebar_contents/Friends";
 import Groups from "./sidebar_contents/Groups";
 import ArchivedChat from "./sidebar_contents/ArchivedChat";
@@ -16,12 +16,7 @@ import {
 
 import { toggleDarkMode } from "../redux/isDarkMode";
 
-export default function Sidebar({
-  convoClickHandler,
-  friendClickHandler,
-  groupClickHandler,
-  archivedClickHandler,
-}) {
+export default function Sidebar({ getMessages, chatAFriend }) {
   const dispatch = useDispatch();
 
   // STATES
@@ -34,19 +29,17 @@ export default function Sidebar({
   } = useSelector((state) => state.sidebar);
 
   const { isDarkMode } = useSelector((state) => state.isDarkMode);
-  const { allUserConvo } = useSelector((state) => state.conversation);
-
-  // const [isDarkMode, setIsDarkMode] = useState(false);
+  const { allDirectConvo } = useSelector((state) => state.conversation);
 
   const [currentActiveId, setCurrentActiveId] = useState(
-    allUserConvo.length > 0 ? allUserConvo[0]._id : null
+    allDirectConvo.length > 0 ? allDirectConvo[0]._id : null
   );
 
   const sideOptionStyle = " p-3 rounded-full cursor-pointer ";
   const activeColor = "bg-blue-800";
 
   useEffect(() => {
-    console.log("the current search input: ", sidebarSearch);
+    // console.log("the current search input: ", sidebarSearch);
   }, [sidebarSearch]);
 
   return (
@@ -246,29 +239,13 @@ export default function Sidebar({
           // style={{ fontFamily: "Arial", "FontAwesome" }}
         />
         {sidebarContent === "directs" ? (
-          <Inbox
-            currentActiveId={currentActiveId}
-            setCurrentActiveId={setCurrentActiveId}
-            convoClickHandler={convoClickHandler}
-          />
+          <Directs getMessages={getMessages} />
         ) : sidebarContent === "Friends" ? (
-          <Friends
-            friendClickHandler={friendClickHandler}
-            currentActiveId={currentActiveId}
-            setCurrentActiveId={setCurrentActiveId}
-          />
+          <Friends friendClickHandler={chatAFriend} />
         ) : sidebarContent === "groups" ? (
-          <Groups
-            groupClickHandler={groupClickHandler}
-            currentActiveId={currentActiveId}
-            setCurrentActiveId={setCurrentActiveId}
-          />
+          <Groups getMessages={getMessages} />
         ) : sidebarContent === "Archived" ? (
-          <ArchivedChat
-            archivedClickHandler={archivedClickHandler}
-            currentActiveId={currentActiveId}
-            setCurrentActiveId={setCurrentActiveId}
-          />
+          <ArchivedChat getMessages={getMessages} />
         ) : sidebarContent === "Discover" ? (
           <Discover />
         ) : (

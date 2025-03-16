@@ -7,6 +7,7 @@ export default function Friends({
   setCurrentActiveId,
 }) {
   const { allFriends } = useSelector((state) => state.friends);
+  // console.log("ALL THE USER FRIENDS:", allFriends);
 
   return (
     <>
@@ -18,8 +19,6 @@ export default function Friends({
             key={id}
             imageUrl="/img/icons/male-default.jpg"
             friendClickHandler={friendClickHandler}
-            currentActiveId={currentActiveId}
-            setCurrentActiveId={setCurrentActiveId}
           />
         );
       })}

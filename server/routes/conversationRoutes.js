@@ -4,9 +4,12 @@ const router = express.Router({ mergeParams: true }); // mergeParams is needed t
 const convoController = require("../controllers/conversationController");
 const authController = require("../controllers/authController");
 const messageRouter = require("./messageRoutes");
+const userConvoRouter = require("./userConversationRoutes");
 
 router.use("/:convoId/message", messageRouter);
 router.use(authController.protect);
+
+router.use("/userConvo", userConvoRouter);
 
 router
   .route("/member/:convoId")
