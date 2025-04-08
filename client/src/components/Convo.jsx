@@ -5,25 +5,9 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   setActiveConvoIsGroup,
   setActiveDirectUser,
-  setUserIsFriend,
   setActiveConvoMembers,
   setActiveConvoIsArchived,
 } from "../redux/conversation";
-
-import { useContext } from "react";
-import { UserContext } from "../App";
-
-/* 
-THINGS TO REFACTOR
-USE REDUX TO MANAGE THE FOLLOWING: 
-
-
-1. isActive & isArchived (Try checking the state of the conversation)
-2. Check if the user is a group
-3. Changing the current active conversation
-4.
-
-*/
 
 export default function Convo({
   getMessages,
@@ -31,8 +15,6 @@ export default function Convo({
   convoData,
   isArchived,
 }) {
-  // const { loggedInStatus, user, isConnected } = useContext(UserContext);
-
   const { activeConvoMembers, activeConvo } = useSelector(
     (state) => state.conversation
   );
@@ -44,9 +26,7 @@ export default function Convo({
     setBgColor(activeConvo === convoData._id ? "bg-green-200" : "bg-white");
   }, [activeConvo]);
 
-  useEffect(() => {
-    // console.log("MEMBES FOR THE GROUP:", activeConvoMembers);
-  }, [activeConvoMembers]);
+  useEffect(() => {}, [activeConvoMembers]);
 
   const formatTime = (time) => {
     const date = new Date(time);
@@ -61,6 +41,7 @@ export default function Convo({
   };
 
   const chatmateIsFriend = (chatmateId) => async (dispatch) => {
+    // Check if the person the user is having a conversation with is on his/her friends list
     try {
       const isAFriend = await isFriend(chatmateId);
 
@@ -73,10 +54,12 @@ export default function Convo({
     }
   };
 
+  // CHATS DISPLAYED IN THE SIDEBAR
   return (
     <>
       <div
         className={`mt-5 flex flex-col gap-2 ${
+          // This will control the visibility of the chat based on the user's search query in the sidebar.
           convoData.convoName
             .toLowerCase()
             .includes(sidebarSearch.toLowerCase())
@@ -91,9 +74,6 @@ export default function Convo({
           );
 
           dispatch(setActiveConvoIsArchived(isArchived ?? false));
-
-          // console.log("CONVERSATION DATA:", convoData);
-          // Updates the active conversation
 
           // Checks if the conversation is a group chat or not
           dispatch(setActiveConvoIsGroup(convoData.users.length > 2));

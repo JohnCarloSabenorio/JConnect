@@ -44,34 +44,37 @@ export default function Chat() {
     activeConvo,
     activeConvoIsArchived,
   } = useSelector((state) => state.conversation);
+
+  // This will get the messages to be displayed from the message slice
   const { displayedMessages } = useSelector((state) => state.message);
 
+  // This will get all the images to be displayed from the media slice
   const { mediaImages } = useSelector((state) => state.media);
 
-  // USE SSATES
+  // USE STATES
   const { user } = useContext(UserContext);
   const [fileInputKey, setFileInputKey] = useState(Date.now()); // Unique key for input reset
   const [displayEmoji, setDisplayEmoji] = useState(false);
-  const [defaultEmoji, setDefaultEmoji] = useState("");
 
-  // This will store the images sent by the user
+  // This will store the images to be sent by the user
   const [images, setImages] = useState([]);
 
+  // This will store the message to be sent by the user
   const [message, setMessage] = useState("");
 
-  // This will store the images sent in the entire conversation of the user
   const uiChatRef = useRef(null);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     // Get initial conversation list
-    // console.log("getting convo:");
     getUserConversations();
+
+    // Get the freinds of the current user
     getUserFriends();
-    getNonFriends();
+
+    // getNonFriends();
     socket.on("chat message", (data) => {
       // Messages will be updated if the sent messages is for the current conversation
-      // console.log("THE MESSAGE ACQUIRED AFTER SENDING:", data.msg);
       dispatch(updateDisplayedMessages(data.msg));
 
       setImages([]);
@@ -190,10 +193,10 @@ export default function Chat() {
     dispatch(setAllFriends(friends));
   }
 
-  async function getNonFriends() {
-    const nonFriends = await getNonUserFriends();
-    dispatch(setAllNonFriends(nonFriends));
-  }
+  // async function getNonFriends() {
+  //   const nonFriends = await getNonUserFriends();
+  //   dispatch(setAllNonFriends(nonFriends));
+  // }
 
   // This will set the initial messages displayed to be the most recent conversation
   async function getMessages(convoId, convoName, userConvoId) {
@@ -260,7 +263,6 @@ export default function Chat() {
     return response[0]._id;
   }
 
-  async function chatWithUser(userId) {}
   async function handleImagesChange(e) {
     // Get the array of files selected by the user
     const selectedFiles = Array.from(e.target.files);
@@ -556,7 +558,7 @@ export default function Chat() {
             </div>
           </div>
 
-          <MediaPanel getUserConversations={getUserConversations} />
+          <MediaPanel />
         </div>
       </div>
     </>

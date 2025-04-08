@@ -7,6 +7,7 @@ import friendsReducer from "./friend";
 import messageReducer from "./message";
 import mediaReducer from "./media";
 import overlayReducer from "./overlay";
+import userReducer from "./user";
 export default configureStore({
   reducer: {
     sidebar: sidebarReducer,
@@ -16,6 +17,7 @@ export default configureStore({
     message: messageReducer,
     media: mediaReducer,
     overlay: overlayReducer,
+    user: userReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });

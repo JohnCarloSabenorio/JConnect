@@ -1,3 +1,4 @@
+import { getAllUsers } from "../api/user";
 import { useState, useEffect } from "react";
 import Directs from "./sidebar_contents/Directs";
 import Friends from "./sidebar_contents/Friends";
@@ -15,6 +16,7 @@ import {
 } from "../redux/sidebar";
 
 import { toggleDarkMode } from "../redux/isDarkMode";
+import { setAllUsers } from "../redux/user";
 
 export default function Sidebar({ getMessages, chatAFriend }) {
   const dispatch = useDispatch();
@@ -31,6 +33,8 @@ export default function Sidebar({ getMessages, chatAFriend }) {
   const { isDarkMode } = useSelector((state) => state.isDarkMode);
   const { allDirectConvo } = useSelector((state) => state.conversation);
 
+  const { allUsers } = useSelector((state) => state.user);
+
   const [currentActiveId, setCurrentActiveId] = useState(
     allDirectConvo.length > 0 ? allDirectConvo[0]._id : null
   );
@@ -38,9 +42,24 @@ export default function Sidebar({ getMessages, chatAFriend }) {
   const sideOptionStyle = " p-3 rounded-full cursor-pointer ";
   const activeColor = "bg-blue-800";
 
+  // Get all users
+  useEffect(() => {
+    fetchAllUsers();
+  }, []);
+
   useEffect(() => {
     // console.log("the current search input: ", sidebarSearch);
   }, [sidebarSearch]);
+
+  async function fetchAllUsers() {
+    try {
+      const allFetchedUsers = await getAllUsers();
+
+      dispatch(setAllUsers(allFetchedUsers));
+    } catch (err) {
+      console.log("Error fetching all users:", err);
+    }
+  }
 
   return (
     <div className="flex bg-white shadow-md mr-0.3">
@@ -194,7 +213,7 @@ export default function Sidebar({ getMessages, chatAFriend }) {
           </svg>
         </button>
       </div>
-      <div className="flex flex-col p-5 pt-2 min-w-50 w-100">
+      <div className="flex flex-col p-5 pt-2 min-w-50 w-100 overflow-y-scroll">
         <h1 className="text-4xl font-bold mt-3">
           {sidebarTitle[0].toUpperCase() + sidebarTitle.slice(1)}
         </h1>
