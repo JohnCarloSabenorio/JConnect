@@ -3,8 +3,7 @@
 var mongoose = require("mongoose");
 
 var _require = require("sharp"),
-    bool = _require.bool; // Create conversation schema
-
+    bool = _require.bool;
 
 var userConvoSchema = mongoose.Schema({
   user: {
@@ -35,8 +34,7 @@ userConvoSchema.pre(/^find/, function (next) {
     path: "conversation"
   });
   next();
-});
-userConvoSchema.virt; // This makes sure that the combinations of the user and conversation are unique
+}); // This makes sure that the combinations of the user and conversation are unique
 
 userConvoSchema.index({
   user: 1,

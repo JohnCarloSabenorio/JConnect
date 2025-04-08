@@ -9,9 +9,6 @@ var http = require("http");
 
 var app = require("./app");
 
-var _require = require("mongodb"),
-    LEGAL_TCP_SOCKET_OPTIONS = _require.LEGAL_TCP_SOCKET_OPTIONS;
-
 var port = process.env.PORT || 3000;
 var server = http.createServer(app);
 
@@ -34,13 +31,15 @@ process.on("uncaughtException", function (err) {
   }
 
   process.exit(1);
-});
+}); // Configures the path for environment variables
+
 dotenv.config({
   path: "./config.env"
 }); // SETUP MONGOOSE CONNECT
-// adds password in the database connection string
+// Adds password in the database connection string
 
-var db = process.env.DATABASE.replace("<db_password>", process.env.DB_PASSWORD);
+var db = process.env.DATABASE.replace("<db_password>", process.env.DB_PASSWORD); // Connects to the MongoDB database
+
 mongoose.connect(db).then(function (res) {
   console.log("Database successfully connected!");
   console.log("Host: ".concat(res.connection.host, ", DB: ").concat(res.connection.name));
@@ -50,17 +49,20 @@ mongoose.connect(db).then(function (res) {
 }); // WEBSOCKET CONNECTION AND HANDLERS
 
 io.on("connection", function (socket) {
+  console.log("A user connected!"); // Creates a room for every conversation the user is part of
+
   socket.on("join rooms", function (data) {
     if (!socket.rooms.has(data)) {
       socket.join(data);
     } else {
       console.log("THE USER IS ALREADY IN THIS ROOM!");
     }
-  });
-  console.log("A user connected!");
+  }); // Disconnects the user
+
   socket.on("disconnect", function () {
     console.log("A user disconnected");
-  });
+  }); // Sends real-time messages
+
   socket.on("chat message", function (data) {
     app.post("");
     ioController.sendMessage(io, socket, data);

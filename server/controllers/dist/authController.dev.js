@@ -15,7 +15,8 @@ var bcrypt = require("bcrypt");
 
 var sendEmail = require("./../utils/email");
 
-var crypto = require("crypto");
+var crypto = require("crypto"); // Generates a JWT
+
 
 var signToken = function signToken(id) {
   return jwt.sign({
@@ -29,14 +30,15 @@ var createSignToken = function createSignToken(user, statusCode, res) {
   var token = signToken(user._id); // Create options for the cookie
 
   var cookieOptions = {
-    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 // 24 Hours
+    ),
     httpOnly: true // sameSite: "None",
     // domain: "localhost",
     // path: "/",
 
   }; // If environment is in production, use https
 
-  if (process.env.NODE_ENV === "production") cookieOptions.secure = true; // Create the cookie
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true; // Stores the JWT token in a cookie
 
   res.cookie("jwt", token, cookieOptions);
   res.status(statusCode).json({
@@ -63,7 +65,7 @@ exports.signup = catchAsync(function _callee(req, res, next) {
 
         case 2:
           newUser = _context.sent;
-          // Sign token
+          // Sign token (This will log the user in after signing up)
           createSignToken(newUser, 200, res);
 
         case 4:
@@ -150,14 +152,15 @@ exports.protect = catchAsync(function _callee3(req, res, next) {
       switch (_context3.prev = _context3.next) {
         case 0:
           // 1. Get token and check if it exists
-          // Check the cookie instead of the authorization header in case it is missing (might due to cross origin)
+          // Check the cookie instead of the authorization header in case it is missing (might be due to cross origin restrictions)
           if (req.headers.cookie) {
             token = req.headers.cookie.replace("jwt=", "");
           } else {
             if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
               token = req.headers.authorization.split(" ")[1];
             }
-          }
+          } // If the JWT does not exist, then the user is not logged in
+
 
           if (token) {
             _context3.next = 3;

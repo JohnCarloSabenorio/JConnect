@@ -12,6 +12,8 @@ router
   .get(friendController.getAllFriends)
   .post(friendController.createFriend);
 
+router.get("/non-friends", friendController.getNonFriendUsers);
+
 router
   .route("/:id")
   .get(friendController.getFriend)

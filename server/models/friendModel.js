@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+// REMOVE THIS SCHEMA
+
 const friendSchema = mongoose.Schema(
   {
     user1: {
@@ -12,6 +14,8 @@ const friendSchema = mongoose.Schema(
       ref: "User",
       required: true,
     },
+
+    // Remove the status
     status: {
       type: String,
       enum: {
@@ -22,6 +26,7 @@ const friendSchema = mongoose.Schema(
       default: "pending",
     },
   },
+
   {
     timestamps: true,
     toJSON: { virtuals: true },

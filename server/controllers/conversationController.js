@@ -3,6 +3,7 @@ const handleFactory = require("./handlerFactory");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
+// Add a person to an existing conversation
 exports.addMember = catchAsync(async (req, res, next) => {
   const convo = await Conversation.findByIdAndUpdate(
     req.params.convoId,
@@ -17,6 +18,7 @@ exports.addMember = catchAsync(async (req, res, next) => {
     }
   );
 
+  // Return an error if the conversation does not exist
   if (!convo) {
     return next(new AppError("The conversation does not exist!", 404));
   }
@@ -28,6 +30,7 @@ exports.addMember = catchAsync(async (req, res, next) => {
   });
 });
 
+// Remove a person from an existing conversation
 exports.removeMember = catchAsync(async (req, res, next) => {
   const convo = await Conversation.findByIdAndUpdate(
     req.params.convoId,
@@ -42,6 +45,7 @@ exports.removeMember = catchAsync(async (req, res, next) => {
     }
   );
 
+  // Return an error if the conversation does not exist
   if (!convo) {
     return next(new AppError("The conversation does not exist!", 404));
   }
@@ -56,8 +60,6 @@ exports.removeMember = catchAsync(async (req, res, next) => {
 // This checking is for a one on one conversation only
 exports.checkConvoExists = catchAsync(async (req, res) => {
   // Check if conversation exists using id of two users
-  console.log("FRIEND ID:", req.params.friendId);
-  console.log("USER ID:", req.user.id);
   const convo = await Conversation.find({
     users: { $all: [req.params.friendId, req.user.id] },
     $expr: { $eq: [{ $size: "$users" }, 2] },
@@ -69,6 +71,8 @@ exports.checkConvoExists = catchAsync(async (req, res) => {
   });
 });
 
+
+// GENERIC HANDLERS
 exports.createConversation = handleFactory.createOne(Conversation);
 exports.getConversation = handleFactory.getOne(Conversation);
 exports.getAllConversation = handleFactory.getAll(Conversation);

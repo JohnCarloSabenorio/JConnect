@@ -31,8 +31,7 @@ class APIFeatures {
         parsedQuery = {
           $expr: { $gt: [{ $size: "$users" }, Number(parsedQuery.minUsers)] },
         };
-      }
-      else if (parsedQuery.maxUsers !== undefined) {
+      } else if (parsedQuery.maxUsers !== undefined) {
         parsedQuery = {
           $expr: { $eq: [{ $size: "$users" }, Number(parsedQuery.maxUsers)] },
         };

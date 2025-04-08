@@ -39,10 +39,12 @@ var cors = require("cors");
 
 var corsOptions = {
   origin: "http://localhost:5173",
-  credentials: true
+  credentials: true // Allows cookies, HTTP auth, or client-side SSL certificates
+
 }; // GLOBAL MIDDLEWARES
 
-app.use(cors(corsOptions));
+app.use(cors(corsOptions)); // Provides protection for common web vulnerabilities (XSS, clickjacking, sniffing attacks, etc...)
+
 app.use(helmet());
 
 if (process.env.NODE_ENV === "development") {
@@ -51,32 +53,42 @@ if (process.env.NODE_ENV === "development") {
 
 var limiter = rateLimit.rateLimit({
   windowMs: 60 * 60 * 1000,
+  // Number of requests will be counted per hour
   limit: 100,
+  // Maximum of 100 requests per hour
   message: "Too many requests! Please try again after 1 hour."
 }); // app.use(limiter);
-// Data sanitization against NoSQL Query injection
+// Prevents NoSQL injection attacks
 
-app.use(mongoSanitize());
+app.use(mongoSanitize()); // Removes $ and . characters
+// Parses URL-encoded form data from POST requests
+
 app.use(express.urlencoded({
   extended: true
-}));
-app.use(express.json());
+})); // extended : true allows nested objects
+// Parses JSON data from requests
+
+app.use(express.json()); // Parses cookie headers
+
 app.use(cookieParser());
 app.use(function (req, res, next) {
   req.requestTime = new Date().toISOString();
   console.log("Server request time: " + req.requestTime);
   next();
-});
+}); // This will set the default directory for static files
+
 app.use(express["static"]("".concat(__dirname, "/public"))); // ROUTES
 
 app.use("/jconnect/api/v1/users", userRouter);
 app.use("/jconnect/api/v1/message", messageRouter);
 app.use("/jconnect/api/v1/friends", friendRouter);
 app.use("/jconnect/api/v1/conversation", convoRouter);
-app.use("/jconnect/api/v1/user-conversation", userConvoRouter);
+app.use("/jconnect/api/v1/user-conversation", userConvoRouter); // This will handle undefined routes
+
 app.all("*", function (req, res, next) {
   next(new AppError("Cannot find ".concat(req.originalUrl, " on the server!"), 404));
-});
+}); // Catches all errors in the application
+
 app.use(globalErrorHandler); // EXPORT APPLICATION
 
 module.exports = app;

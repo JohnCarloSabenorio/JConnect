@@ -8,7 +8,8 @@ var catchAsync = require("../utils/catchAsync");
 
 var catchASync = require("../utils/catchAsync");
 
-var handlerFactory = require("./handlerFactory");
+var handlerFactory = require("./handlerFactory"); // Check if the conversation of the user is archived
+
 
 exports.userConvoIsArchived = catchASync(function _callee(req, res) {
   var userConvo;
@@ -37,7 +38,8 @@ exports.userConvoIsArchived = catchASync(function _callee(req, res) {
       }
     }
   });
-});
+}); // Get the current status of a conversation
+
 exports.getUserConvoStatus = catchASync(function _callee2(req, res) {
   var userConvo;
   return regeneratorRuntime.async(function _callee2$(_context2) {
@@ -64,7 +66,8 @@ exports.getUserConvoStatus = catchASync(function _callee2(req, res) {
       }
     }
   });
-});
+}); // Archive an existing conversation
+
 exports.archiveConversation = catchAsync(function _callee3(req, res, next) {
   var archivedConvo;
   return regeneratorRuntime.async(function _callee3$(_context3) {
@@ -102,7 +105,8 @@ exports.archiveConversation = catchAsync(function _callee3(req, res, next) {
       }
     }
   });
-});
+}); // Unarchive an existing conversation
+
 exports.unarchiveConversation = catchASync(function _callee4(req, res, next) {
   var unarchivedConvo;
   return regeneratorRuntime.async(function _callee4$(_context4) {
@@ -139,7 +143,8 @@ exports.unarchiveConversation = catchASync(function _callee4(req, res, next) {
       }
     }
   });
-});
+}); // GENERIC HANDLERS
+
 exports.createUserConversation = handlerFactory.createOne(UserConversation);
 exports.getAllUserConversation = handlerFactory.getAll(UserConversation);
 exports.getUserConversation = handlerFactory.getOne(UserConversation);

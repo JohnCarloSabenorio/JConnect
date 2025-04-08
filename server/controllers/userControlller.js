@@ -6,6 +6,7 @@ const catchAsync = require("./../utils/catchAsync");
 const handlerFactory = require("./handlerFactory.js");
 // USER HANDLERS
 
+// Update the data of the current user
 exports.updateMe = catchAsync(async (req, res, next) => {
   // Check if the payload has password and password confirm
   if (req.body.password || req.body.passwordConfirm)
@@ -16,7 +17,6 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       )
     );
 
-  // If not, update the user
   const updatedUser = await User.findByIdAndUpdate(req.user.id, req.body, {
     new: true,
     runValidators: true,
@@ -30,6 +30,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
+// Get the data of the current user
 exports.getMe = catchAsync(async (req, res, next) => {
   console.log("CURRENT ID:", req.user.id);
   const currentUser = await User.findById(req.user.id);
@@ -47,6 +48,7 @@ exports.getMe = catchAsync(async (req, res, next) => {
   });
 });
 
+// Delete the current user
 exports.deleteMe = catchAsync(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, {
     isActive: false,
@@ -57,6 +59,7 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
+// Create a new user
 exports.createUser = catchAsync(async (req, res) => {
   console.log(req.body);
   await User.create(req.body);

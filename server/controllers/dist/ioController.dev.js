@@ -47,7 +47,8 @@ exports.sendMessage = function _callee3(io, socket, data) {
 
         case 2:
           filenames = _context3.sent;
-          console.log("THE ARRAY FILENAME:", filenames);
+          console.log("THE ARRAY FILENAME:", filenames); // Create a new message in the databaseho
+
           _context3.next = 6;
           return regeneratorRuntime.awrap(Message.create({
             message: data.message ? data.message : "",

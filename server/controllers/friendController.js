@@ -1,11 +1,13 @@
+const friend = require("../models/friendModel");
 const Friend = require("../models/friendModel");
 const User = require("../models/userModel");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const handlerFactory = require("./handlerFactory");
 
-// Needs to be revised, instead of adding id in the params, it needs to be an email, then use the email to query for the user2 for its id
-// Note: It is not recommended to expose user id in the api, instead, add the email of the user in the body
+// REFACTOR THE FRIEND CONTROLLER AS CONTACT
+
+// (Remove this)
 exports.sendFriendRequest = catchAsync(async (req, res, next) => {
   const friendRequest = await Friend.create({
     user1: req.user.id,
@@ -22,6 +24,7 @@ exports.sendFriendRequest = catchAsync(async (req, res, next) => {
   });
 });
 
+// Refactor to "getMyContacts"
 exports.getMyFriends = catchAsync(async (req, res) => {
   console.log("getting all my friends");
   const allMyFriends = await Friend.find({
@@ -56,6 +59,7 @@ exports.getMyFriends = catchAsync(async (req, res) => {
   });
 });
 
+// No need to get friend requests
 exports.getMyFriendRequests = catchAsync(async (req, res, next) => {
   const friendRequests = await Friend.find({
     user2: req.user.id,
@@ -69,6 +73,7 @@ exports.getMyFriendRequests = catchAsync(async (req, res, next) => {
   });
 });
 
+// No need to check if the user is a friend
 exports.isFriend = catchAsync(async (req, res) => {
   if (req.params.id === req.user.id) {
     res.status(200).json({
@@ -90,9 +95,35 @@ exports.isFriend = catchAsync(async (req, res) => {
   });
 });
 
-exports.getSentRequests = catchAsync(async (req, res, next) => {});
+// Refactor to "getBlockedUsers"
 exports.getBlockedFriends = catchAsync(async (req, res, next) => {});
 
+// Get strangers
+exports.getNonFriendUsers = catchAsync(async (req, res) => {
+  // Get list of friends of the current user
+  const friends = await Friend.find({
+    $or: [{ user1: req.user.id }, { user2: req.user.id }],
+    status: "accepted",
+  });
+
+  // Filter the ids of the friends
+  const friendIds = friends.map((friend) =>
+    friend.user1._id == req.user.id ? friend.user2._id : friend.user1._id
+  );
+
+  // Get non-friend users
+  const nonFriends = await User.find({
+    _id: { $nin: [...friendIds, req.user.id] },
+  });
+
+  res.status(200).json({
+    status: "success",
+    message: "Successfully retrieved non-friend users.",
+    nonFriends,
+  });
+});
+
+// GENERIC HANDLERS
 exports.getAllFriends = handlerFactory.getAll(Friend);
 exports.createFriend = handlerFactory.createOne(Friend);
 exports.getFriend = handlerFactory.getOne(Friend);

@@ -6,7 +6,8 @@ var handleFactory = require("./handlerFactory");
 
 var catchAsync = require("../utils/catchAsync");
 
-var AppError = require("../utils/appError");
+var AppError = require("../utils/appError"); // Add a person to an existing conversation
+
 
 exports.addMember = catchAsync(function _callee(req, res, next) {
   var convo;
@@ -47,7 +48,8 @@ exports.addMember = catchAsync(function _callee(req, res, next) {
       }
     }
   });
-});
+}); // Remove a person from an existing conversation
+
 exports.removeMember = catchAsync(function _callee2(req, res, next) {
   var convo;
   return regeneratorRuntime.async(function _callee2$(_context2) {
@@ -95,10 +97,7 @@ exports.checkConvoExists = catchAsync(function _callee3(req, res) {
     while (1) {
       switch (_context3.prev = _context3.next) {
         case 0:
-          // Check if conversation exists using id of two users
-          console.log("FRIEND ID:", req.params.friendId);
-          console.log("USER ID:", req.user.id);
-          _context3.next = 4;
+          _context3.next = 2;
           return regeneratorRuntime.awrap(Conversation.find({
             users: {
               $all: [req.params.friendId, req.user.id]
@@ -110,20 +109,21 @@ exports.checkConvoExists = catchAsync(function _callee3(req, res) {
             }
           }));
 
-        case 4:
+        case 2:
           convo = _context3.sent;
           res.status(200).json({
             status: "success",
             data: convo
           });
 
-        case 6:
+        case 4:
         case "end":
           return _context3.stop();
       }
     }
   });
-});
+}); // GENERIC HANDLERS
+
 exports.createConversation = handleFactory.createOne(Conversation);
 exports.getConversation = handleFactory.getOne(Conversation);
 exports.getAllConversation = handleFactory.getAll(Conversation);

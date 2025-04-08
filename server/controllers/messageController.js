@@ -6,6 +6,7 @@ const multer = require("multer"); // For handling form data
 const sharp = require("sharp"); // For saving and manipulating images
 const multerstorage = multer.memoryStorage();
 
+// For now, messages wil only accept images as file inputs
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image")) {
     cb(null, true);
@@ -25,7 +26,10 @@ exports.initSenderConvo = (req, res, next) => {
   next();
 };
 
+// Upload images
 exports.uploadImages = upload.fields([{ name: "images", maxCount: 3 }]);
+
+// Resize images (try to refcator it so that the resolution of the iamge remains the same)
 exports.resizeImages = catchAsync(async (req, res, next) => {
   // Check if image exists in the request
   console.log("THE FILES:", req.file);
@@ -49,6 +53,7 @@ exports.resizeImages = catchAsync(async (req, res, next) => {
   next();
 });
 
+// GENERIC HANDLERS
 exports.createMessage = handlerFactory.createOne(Message);
 exports.getMessage = handlerFactory.getOne(Message);
 exports.getAllMessages = handlerFactory.getAll(Message);

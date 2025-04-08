@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 const sendEmail = require("./../utils/email");
 const crypto = require("crypto");
 
+// Generates a JWT
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -15,11 +16,10 @@ const signToken = (id) => {
 
 const createSignToken = (user, statusCode, res) => {
   const token = signToken(user._id);
-
   // Create options for the cookie
   const cookieOptions = {
     expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 // 24 Hours
     ),
     httpOnly: true,
     // sameSite: "None",
@@ -30,8 +30,7 @@ const createSignToken = (user, statusCode, res) => {
   // If environment is in production, use https
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
-  // Create the cookie
-
+  // Stores the JWT token in a cookie
   res.cookie("jwt", token, cookieOptions);
   res.status(statusCode).json({
     status: "success",
@@ -49,7 +48,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
   });
-  // Sign token
+
+  // Sign token (This will log the user in after signing up)
   createSignToken(newUser, 200, res);
 });
 
@@ -64,7 +64,6 @@ exports.login = async (req, res, next) => {
   // 2. Check if user exists or if the password is correct.
   const user = await User.findOne({ email }).select("+password");
 
-  // bcrypt.compare is dependent on the user existing and may cause runtime error if done in a variable.
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError("Invalid email or password", 401));
   }
@@ -86,10 +85,9 @@ exports.logout = (req, res) => {
 // Restricts the route to only those who are logged in!
 exports.protect = catchAsync(async (req, res, next) => {
   // 1. Get token and check if it exists
-
   let token;
 
-  // Check the cookie instead of the authorization header in case it is missing (might due to cross origin)
+  // Check the cookie instead of the authorization header in case it is missing (might be due to cross origin restrictions)
   if (req.headers.cookie) {
     token = req.headers.cookie.replace("jwt=", "");
   } else {
@@ -101,6 +99,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     }
   }
 
+  // If the JWT does not exist, then the user is not logged in
   if (!token) {
     return next(
       new AppError("You are not logged in! Please log in to get access.", 401)

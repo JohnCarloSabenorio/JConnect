@@ -6,9 +6,9 @@ const path = require("path");
 exports.sendMessage = async (io, socket, data) => {
   // Data should have the: message, sender id, and conversation id
 
+  // Remove this in the future (Images should be sent in db not via socket)
   const filenames = await Promise.all(
     data.images.map(async (img, idx) => {
-
       console.log("THE IMAGE BRO:", img);
       const buffer = Buffer.from(img);
 
@@ -29,6 +29,7 @@ exports.sendMessage = async (io, socket, data) => {
 
   console.log("THE ARRAY FILENAME:", filenames);
 
+  // Create a new message in the databaseho
   const newMessage = await Message.create({
     message: data.message ? data.message : "",
     sender: data.sender,
@@ -36,10 +37,12 @@ exports.sendMessage = async (io, socket, data) => {
     images: filenames,
   });
 
+  // Populate the data of the sender
   const populatedMessage = await Message.findById(newMessage._id).populate(
     "sender"
   );
 
+  // Update the latest message of the conversation
   const updatedConvo = await Conversation.findByIdAndUpdate(
     data.conversation,
     {
@@ -48,6 +51,7 @@ exports.sendMessage = async (io, socket, data) => {
     { new: true }
   );
 
+  
   const imageBase64Array = await Promise.all(
     populatedMessage.images.map(async (filename) => {
       const imagePath = path.join("public/img/sentImages", filename);

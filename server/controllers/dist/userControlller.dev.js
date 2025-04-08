@@ -11,6 +11,7 @@ var APIFeatures = require("./../utils/apiFeatures");
 var catchAsync = require("./../utils/catchAsync");
 
 var handlerFactory = require("./handlerFactory.js"); // USER HANDLERS
+// Update the data of the current user
 
 
 exports.updateMe = catchAsync(function _callee(req, res, next) {
@@ -48,7 +49,8 @@ exports.updateMe = catchAsync(function _callee(req, res, next) {
       }
     }
   });
-});
+}); // Get the data of the current user
+
 exports.getMe = catchAsync(function _callee2(req, res, next) {
   var currentUser;
   return regeneratorRuntime.async(function _callee2$(_context2) {
@@ -82,7 +84,8 @@ exports.getMe = catchAsync(function _callee2(req, res, next) {
       }
     }
   });
-});
+}); // Delete the current user
+
 exports.deleteMe = catchAsync(function _callee3(req, res, next) {
   return regeneratorRuntime.async(function _callee3$(_context3) {
     while (1) {
@@ -105,7 +108,8 @@ exports.deleteMe = catchAsync(function _callee3(req, res, next) {
       }
     }
   });
-});
+}); // Create a new user
+
 exports.createUser = catchAsync(function _callee4(req, res) {
   return regeneratorRuntime.async(function _callee4$(_context4) {
     while (1) {

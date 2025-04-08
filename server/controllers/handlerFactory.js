@@ -7,7 +7,7 @@ const path = require("path");
 const fs = require("fs");
 const sharp = require("sharp");
 /*
-Create handlers for:
+Create generic handlers for:
 1. Creating one document
 2. Getting one document
 3. Getting all documents
@@ -55,7 +55,6 @@ exports.createOne = (Model) =>
     });
   });
 
-// TESTED
 exports.getOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.findById(req.params.id);
@@ -71,7 +70,6 @@ exports.getOne = (Model) =>
     });
   });
 
-// TESTED
 exports.getAll = (Model) =>
   catchAsync(async (req, res) => {
     let filter = {};
@@ -131,7 +129,6 @@ exports.getAll = (Model) =>
     });
   });
 
-// TEST 3
 exports.updateOne = (Model) =>
   catchAsync(async (req, res) => {
     console.log("USER MESSAGE:", req.body.message);
@@ -153,7 +150,6 @@ exports.updateOne = (Model) =>
     });
   });
 
-// TEST 4
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
     if (Model === Conversation) {

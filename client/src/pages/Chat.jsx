@@ -15,7 +15,7 @@ import { Emoji } from "emoji-picker-react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import MediaPanel from "../components/MediaPanel";
-import { getFriends } from "../api/friends";
+import { getFriends, getNonUserFriends } from "../api/friends";
 import { createConversation, chatWithFriend } from "../api/conversation";
 import Overlay from "../components/Overlay";
 import {
@@ -31,7 +31,7 @@ import {
   updateDisplayedMessages,
 } from "../redux/message";
 
-import { setAllFriends } from "../redux/friend";
+import { setAllFriends, setAllNonFriends } from "../redux/friend";
 
 import { setMediaImages } from "../redux/media";
 
@@ -68,6 +68,7 @@ export default function Chat() {
     // console.log("getting convo:");
     getUserConversations();
     getUserFriends();
+    getNonFriends();
     socket.on("chat message", (data) => {
       // Messages will be updated if the sent messages is for the current conversation
       // console.log("THE MESSAGE ACQUIRED AFTER SENDING:", data.msg);
@@ -189,6 +190,11 @@ export default function Chat() {
     dispatch(setAllFriends(friends));
   }
 
+  async function getNonFriends() {
+    const nonFriends = await getNonUserFriends();
+    dispatch(setAllNonFriends(nonFriends));
+  }
+
   // This will set the initial messages displayed to be the most recent conversation
   async function getMessages(convoId, convoName, userConvoId) {
     // Join a channel for users in the same conversation
@@ -254,6 +260,7 @@ export default function Chat() {
     return response[0]._id;
   }
 
+  async function chatWithUser(userId) {}
   async function handleImagesChange(e) {
     // Get the array of files selected by the user
     const selectedFiles = Array.from(e.target.files);

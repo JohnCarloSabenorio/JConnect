@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 const { bool } = require("sharp");
 
-// Create conversation schema
-
 const userConvoSchema = mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   conversation: {
@@ -32,8 +30,6 @@ userConvoSchema.pre(/^find/, function (next) {
   });
   next();
 });
-
-userConvoSchema.virt;
 
 // This makes sure that the combinations of the user and conversation are unique
 userConvoSchema.index({ user: 1, conversation: 1 }, { unique: true });

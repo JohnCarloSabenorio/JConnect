@@ -15,6 +15,18 @@ export async function getFriends() {
   }
 }
 
+export async function getNonUserFriends() {
+  try {
+    const response = await axios.get("jconnect/api/v1/friends/non-friends", {
+      withCredentials: true,
+    });
+
+    return response.data.nonFriends;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 export async function getFriend() {
   try {
     // Get friends

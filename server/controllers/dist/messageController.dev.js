@@ -14,7 +14,7 @@ var multer = require("multer"); // For handling form data
 var sharp = require("sharp"); // For saving and manipulating images
 
 
-var multerstorage = multer.memoryStorage();
+var multerstorage = multer.memoryStorage(); // For now, messages wil only accept images as file inputs
 
 var multerFilter = function multerFilter(req, file, cb) {
   if (file.mimetype.startsWith("image")) {
@@ -33,12 +33,14 @@ exports.initSenderConvo = function (req, res, next) {
   req.body.sender = req.user.id;
   req.body.conversation = req.params.convoId;
   next();
-};
+}; // Upload images
+
 
 exports.uploadImages = upload.fields([{
   name: "images",
   maxCount: 3
-}]);
+}]); // Resize images (try to refcator it so that the resolution of the iamge remains the same)
+
 exports.resizeImages = catchAsync(function _callee2(req, res, next) {
   return regeneratorRuntime.async(function _callee2$(_context2) {
     while (1) {
@@ -90,7 +92,8 @@ exports.resizeImages = catchAsync(function _callee2(req, res, next) {
       }
     }
   });
-});
+}); // GENERIC HANDLERS
+
 exports.createMessage = handlerFactory.createOne(Message);
 exports.getMessage = handlerFactory.getOne(Message);
 exports.getAllMessages = handlerFactory.getAll(Message);

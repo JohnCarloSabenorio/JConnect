@@ -1,5 +1,15 @@
 "use strict";
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+var friend = require("../models/friendModel");
+
 var Friend = require("../models/friendModel");
 
 var User = require("../models/userModel");
@@ -8,8 +18,8 @@ var AppError = require("../utils/appError");
 
 var catchAsync = require("../utils/catchAsync");
 
-var handlerFactory = require("./handlerFactory"); // Needs to be revised, instead of adding id in the params, it needs to be an email, then use the email to query for the user2 for its id
-// Note: It is not recommended to expose user id in the api, instead, add the email of the user in the body
+var handlerFactory = require("./handlerFactory"); // REFACTOR THE FRIEND CONTROLLER AS CONTACT
+// (Remove this)
 
 
 exports.sendFriendRequest = catchAsync(function _callee(req, res, next) {
@@ -47,7 +57,8 @@ exports.sendFriendRequest = catchAsync(function _callee(req, res, next) {
       }
     }
   });
-});
+}); // Refactor to "getMyContacts"
+
 exports.getMyFriends = catchAsync(function _callee2(req, res) {
   var allMyFriends, friend;
   return regeneratorRuntime.async(function _callee2$(_context2) {
@@ -97,7 +108,8 @@ exports.getMyFriends = catchAsync(function _callee2(req, res) {
       }
     }
   });
-});
+}); // No need to get friend requests
+
 exports.getMyFriendRequests = catchAsync(function _callee3(req, res, next) {
   var friendRequests;
   return regeneratorRuntime.async(function _callee3$(_context3) {
@@ -124,7 +136,8 @@ exports.getMyFriendRequests = catchAsync(function _callee3(req, res, next) {
       }
     }
   });
-});
+}); // No need to check if the user is a friend
+
 exports.isFriend = catchAsync(function _callee4(req, res) {
   var friend;
   return regeneratorRuntime.async(function _callee4$(_context4) {
@@ -168,8 +181,9 @@ exports.isFriend = catchAsync(function _callee4(req, res) {
       }
     }
   });
-});
-exports.getSentRequests = catchAsync(function _callee5(req, res, next) {
+}); // Refactor to "getBlockedUsers"
+
+exports.getBlockedFriends = catchAsync(function _callee5(req, res, next) {
   return regeneratorRuntime.async(function _callee5$(_context5) {
     while (1) {
       switch (_context5.prev = _context5.next) {
@@ -179,18 +193,54 @@ exports.getSentRequests = catchAsync(function _callee5(req, res, next) {
       }
     }
   });
-});
-exports.getBlockedFriends = catchAsync(function _callee6(req, res, next) {
+}); // Get strangers
+
+exports.getNonFriendUsers = catchAsync(function _callee6(req, res) {
+  var friends, friendIds, nonFriends;
   return regeneratorRuntime.async(function _callee6$(_context6) {
     while (1) {
       switch (_context6.prev = _context6.next) {
         case 0:
+          _context6.next = 2;
+          return regeneratorRuntime.awrap(Friend.find({
+            $or: [{
+              user1: req.user.id
+            }, {
+              user2: req.user.id
+            }],
+            status: "accepted"
+          }));
+
+        case 2:
+          friends = _context6.sent;
+          // Filter the ids of the friends
+          friendIds = friends.map(function (friend) {
+            return friend.user1._id == req.user.id ? friend.user2._id : friend.user1._id;
+          }); // Get non-friend users
+
+          _context6.next = 6;
+          return regeneratorRuntime.awrap(User.find({
+            _id: {
+              $nin: [].concat(_toConsumableArray(friendIds), [req.user.id])
+            }
+          }));
+
+        case 6:
+          nonFriends = _context6.sent;
+          res.status(200).json({
+            status: "success",
+            message: "Successfully retrieved non-friend users.",
+            nonFriends: nonFriends
+          });
+
+        case 8:
         case "end":
           return _context6.stop();
       }
     }
   });
-});
+}); // GENERIC HANDLERS
+
 exports.getAllFriends = handlerFactory.getAll(Friend);
 exports.createFriend = handlerFactory.createOne(Friend);
 exports.getFriend = handlerFactory.getOne(Friend);

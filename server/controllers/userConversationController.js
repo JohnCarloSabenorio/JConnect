@@ -4,6 +4,7 @@ const catchAsync = require("../utils/catchAsync");
 const catchASync = require("../utils/catchAsync");
 const handlerFactory = require("./handlerFactory");
 
+// Check if the conversation of the user is archived
 exports.userConvoIsArchived = catchASync(async (req, res) => {
   // Find the user conversation using the id in params
   const userConvo = await UserConversation.find({
@@ -19,6 +20,7 @@ exports.userConvoIsArchived = catchASync(async (req, res) => {
   });
 });
 
+// Get the current status of a conversation
 exports.getUserConvoStatus = catchASync(async (req, res) => {
   // Find the user conversation using the id in params
   const userConvo = await UserConversation.find({
@@ -33,6 +35,7 @@ exports.getUserConvoStatus = catchASync(async (req, res) => {
   });
 });
 
+// Archive an existing conversation
 exports.archiveConversation = catchAsync(async (req, res, next) => {
   const archivedConvo = await UserConversation.findOneAndUpdate(
     {
@@ -55,6 +58,7 @@ exports.archiveConversation = catchAsync(async (req, res, next) => {
   });
 });
 
+// Unarchive an existing conversation
 exports.unarchiveConversation = catchASync(async (req, res, next) => {
   const unarchivedConvo = await UserConversation.findOneAndUpdate(
     {
@@ -65,7 +69,7 @@ exports.unarchiveConversation = catchASync(async (req, res, next) => {
       status: "active",
     }
   );
-  
+
   if (!unarchivedConvo) {
     return next(new AppError("Failed to restore archived conversation!", 400));
   }
@@ -76,6 +80,7 @@ exports.unarchiveConversation = catchASync(async (req, res, next) => {
   });
 });
 
+// GENERIC HANDLERS
 exports.createUserConversation = handlerFactory.createOne(UserConversation);
 exports.getAllUserConversation = handlerFactory.getAll(UserConversation);
 exports.getUserConversation = handlerFactory.getOne(UserConversation);

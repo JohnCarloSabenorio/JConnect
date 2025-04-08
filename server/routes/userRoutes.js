@@ -3,17 +3,14 @@ const express = require("express");
 const authController = require("./../controllers/authController");
 const controller = require("./../controllers/userControlller");
 const convoRouter = require("./conversationRoutes");
-const userConvoRouter = require("./userConversationRoutes");
-const friendRouter = require("./friendRoutes");
-/* 
-const multer = require("multer");
-const upload = multer(); // this is used for multipart/form-data
-*/
+
 const router = express.Router({ mergeParams: true });
 
 router.route("/signup").post(authController.signup);
 router.route("/login").post(authController.login);
 router.route("/logout").get(authController.logout);
+
+// User conversation api with the id of a user
 router.use("/:userId/conversation", convoRouter);
 
 router.route("/isLoggedIn").get(authController.isLoggedInBool);

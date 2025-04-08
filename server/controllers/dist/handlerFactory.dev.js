@@ -22,7 +22,7 @@ var fs = require("fs");
 
 var sharp = require("sharp");
 /*
-Create handlers for:
+Create generic handlers for:
 1. Creating one document
 2. Getting one document
 3. Getting all documents
@@ -110,8 +110,7 @@ exports.createOne = function (Model) {
       }
     });
   });
-}; // TESTED
-
+};
 
 exports.getOne = function (Model) {
   return catchAsync(function _callee3(req, res, next) {
@@ -147,8 +146,7 @@ exports.getOne = function (Model) {
       }
     });
   });
-}; // TESTED
-
+};
 
 exports.getAll = function (Model) {
   return catchAsync(function _callee6(req, res) {
@@ -266,8 +264,7 @@ exports.getAll = function (Model) {
       }
     });
   });
-}; // TEST 3
-
+};
 
 exports.updateOne = function (Model) {
   return catchAsync(function _callee7(req, res) {
@@ -307,8 +304,7 @@ exports.updateOne = function (Model) {
       }
     });
   });
-}; // TEST 4
-
+};
 
 exports.deleteOne = function (Model) {
   return catchAsync(function _callee8(req, res, next) {

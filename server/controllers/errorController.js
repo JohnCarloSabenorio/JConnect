@@ -1,5 +1,5 @@
-// Create function for sending error for development
 const AppError = require("./../utils/appError");
+
 // Create a function to handle cast errors
 const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}`;
@@ -20,9 +20,11 @@ const handleValidationErrorDB = (err) => {
   return new AppError(message, 400);
 };
 
+// Invalid JWT (Possibly tampered or is not signed with the server's JWT Secret)
 const handleJWTError = () =>
   new AppError("Invalid token. Please try again!", 401);
 
+// Expired token
 const handleTokenExpiredError = () =>
   new AppError("Your session has expired! Please log in again.", 401);
 const sendErrorDev = (err, res) => {
@@ -33,6 +35,7 @@ const sendErrorDev = (err, res) => {
     stack: err.stack,
   });
 };
+
 // Create function for sending error for production
 const sendErrorProd = (err, res) => {
   if (err.isOperational) {
@@ -54,9 +57,13 @@ module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "Error";
 
+  // This will send detailed error messages if the server is in development
   if (process.env.NODE_ENV.trim() == "development") {
     sendErrorDev(err, res);
-  } else if (process.env.NODE_ENV.trim() == "production") {
+  }
+
+  // This will send generic error messages if the server is in production
+  else if (process.env.NODE_ENV.trim() == "production") {
     let error = { ...err };
     // handle cast errors
     if (err.name === "CastError") error = handleCastErrorDB(err);

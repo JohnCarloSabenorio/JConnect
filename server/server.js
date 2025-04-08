@@ -3,9 +3,11 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const http = require("http");
 const app = require("./app");
-const { LEGAL_TCP_SOCKET_OPTIONS } = require("mongodb");
+
 const port = process.env.PORT || 3000;
+
 const server = http.createServer(app);
+
 const io = require("socket.io")(server, {
   cors: {
     origin: "http://localhost:5173",
@@ -26,11 +28,15 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
+// Configures the path for environment variables
 dotenv.config({ path: "./config.env" });
 
 // SETUP MONGOOSE CONNECT
-// adds password in the database connection string
+
+// Adds password in the database connection string
 let db = process.env.DATABASE.replace("<db_password>", process.env.DB_PASSWORD);
+
+// Connects to the MongoDB database
 mongoose
   .connect(db)
   .then((res) => {
@@ -44,6 +50,9 @@ mongoose
 
 // WEBSOCKET CONNECTION AND HANDLERS
 io.on("connection", (socket) => {
+  console.log("A user connected!");
+
+  // Creates a room for every conversation the user is part of
   socket.on("join rooms", (data) => {
     if (!socket.rooms.has(data)) {
       socket.join(data);
@@ -51,12 +60,13 @@ io.on("connection", (socket) => {
       console.log("THE USER IS ALREADY IN THIS ROOM!");
     }
   });
-  console.log("A user connected!");
 
+  // Disconnects the user
   socket.on("disconnect", () => {
     console.log("A user disconnected");
   });
 
+  // Sends real-time messages
   socket.on("chat message", (data) => {
     app.post("");
     ioController.sendMessage(io, socket, data);

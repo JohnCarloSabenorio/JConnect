@@ -9,12 +9,7 @@ import {
   setActiveDirectUser,
   setUserIsFriend,
 } from "../redux/conversation";
-export default function Friend({
-  friendId,
-  name,
-  imageUrl,
-  friendClickHandler,
-}) {
+export default function User({ userId, name, imageUrl, chatAFriend }) {
   const { loggedInStatus, user, isConnected } = useContext(UserContext);
   const { sidebarSearch } = useSelector((state) => state.sidebar);
   const { activeConvoIsGroup } = useSelector((state) => state.conversation);
@@ -29,13 +24,13 @@ export default function Friend({
         }`}
         onClick={async () => {
           // This will get the conversation id from chatAFriend from chat.jsx
-          const convoId = await friendClickHandler(friendId);
+          const convoId = await chatAFriend(userId);
 
           const isArchived = await convoIsArchived(convoId);
-          console.log("IS THE CONVERSATION ARCHIVED?", isArchived);
+
           dispatch(setActiveConvoIsGroup(false));
           dispatch(changeActiveInbox("direct"));
-          dispatch(setActiveDirectUser(friendId));
+          dispatch(setActiveDirectUser(userId));
           dispatch(setUserIsFriend(true));
 
           // This may be refactored after other statuses are implemented (blocked, deleted, etc...)

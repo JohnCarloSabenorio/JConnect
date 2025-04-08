@@ -241,7 +241,7 @@ export default function Sidebar({ getMessages, chatAFriend }) {
         {sidebarContent === "directs" ? (
           <Directs getMessages={getMessages} />
         ) : sidebarContent === "Friends" ? (
-          <Friends friendClickHandler={chatAFriend} />
+          <Friends chatAFriend={chatAFriend} />
         ) : sidebarContent === "groups" ? (
           <Groups getMessages={getMessages} />
         ) : sidebarContent === "Archived" ? (

@@ -1,8 +1,8 @@
-import Friend from "../Friend";
+import User from "../User";
 import { useSelector } from "react-redux";
 export default function Friends({
   allUserFriends,
-  friendClickHandler,
+  chatAFriend,
   currentActiveId,
   setCurrentActiveId,
 }) {
@@ -13,12 +13,12 @@ export default function Friends({
     <>
       {allFriends.map((friend, id) => {
         return (
-          <Friend
-            friendId={friend.friend._id}
+          <User
+            userId={friend.friend._id}
             name={friend.friend.username}
             key={id}
             imageUrl="/img/icons/male-default.jpg"
-            friendClickHandler={friendClickHandler}
+            chatAFriend={chatAFriend}
           />
         );
       })}

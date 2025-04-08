@@ -1,6 +1,7 @@
 "use strict";
 
-var mongoose = require("mongoose");
+var mongoose = require("mongoose"); // REMOVE THIS SCHEMA
+
 
 var friendSchema = mongoose.Schema({
   user1: {
@@ -13,6 +14,7 @@ var friendSchema = mongoose.Schema({
     ref: "User",
     required: true
   },
+  // Remove the status
   status: {
     type: String,
     "enum": {

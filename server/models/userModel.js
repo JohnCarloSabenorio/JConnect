@@ -136,6 +136,7 @@ userSchema.methods.correctPassword = async (
   candidatePassword,
   userPassword
 ) => {
+  // bcrypt.compare is dependent on the user existing and may cause runtime error if done in a variable.
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
