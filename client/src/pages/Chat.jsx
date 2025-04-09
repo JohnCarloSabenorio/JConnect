@@ -15,6 +15,7 @@ import { Emoji } from "emoji-picker-react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import MediaPanel from "../components/MediaPanel";
+import ProfileOverlay from "../components/ProfileOverlay";
 import { getFriends, getNonUserFriends } from "../api/friends";
 import { createConversation, chatWithFriend } from "../api/conversation";
 import Overlay from "../components/Overlay";
@@ -300,13 +301,6 @@ export default function Chat() {
       const mimeType = matches[1];
       const base64Data = matches[2];
 
-      // For debugging purposes
-      // console.log("Extracted MIME Type:", mimeType);
-      // console.log(
-      //   "Extracted Base64 (First 50 chars):",
-      //   base64Data.slice(0, 50) + "..."
-      // );
-
       const byteCharacters = atob(base64Data);
       const byteNumbers = new Uint8Array(byteCharacters.length);
 
@@ -338,8 +332,8 @@ export default function Chat() {
   return (
     <>
       <div className="flex flex-col h-screen overflow-hidden">
+        <ProfileOverlay />
         <Navbar />
-
         {/* Main Content */}
         <div className="flex flex-grow min-h-0 relative">
           <Overlay />
