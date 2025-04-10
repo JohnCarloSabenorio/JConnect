@@ -8,6 +8,8 @@ import messageReducer from "./message";
 import mediaReducer from "./media";
 import overlayReducer from "./overlay";
 import userReducer from "./user";
+import profileOverlayReducer from "./profile_overlay";
+
 export default configureStore({
   reducer: {
     sidebar: sidebarReducer,
@@ -18,6 +20,7 @@ export default configureStore({
     media: mediaReducer,
     overlay: overlayReducer,
     user: userReducer,
+    profileOverlay: profileOverlayReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });

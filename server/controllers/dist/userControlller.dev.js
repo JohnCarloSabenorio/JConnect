@@ -111,6 +111,7 @@ exports.deleteMe = catchAsync(function _callee3(req, res, next) {
 }); // Create a new user
 
 exports.createUser = catchAsync(function _callee4(req, res) {
+  var user;
   return regeneratorRuntime.async(function _callee4$(_context4) {
     while (1) {
       switch (_context4.prev = _context4.next) {
@@ -120,12 +121,14 @@ exports.createUser = catchAsync(function _callee4(req, res) {
           return regeneratorRuntime.awrap(User.create(req.body));
 
         case 3:
+          user = _context4.sent;
           res.status(200).json({
             status: "success",
-            message: "Successfully created user"
+            message: "Successfully created user",
+            user: user
           });
 
-        case 4:
+        case 5:
         case "end":
           return _context4.stop();
       }

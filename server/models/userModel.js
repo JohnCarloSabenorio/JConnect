@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const { match } = require("assert");
 /* 
 ^ and $: Ensure the entire string is checked.
 (?=.*[a-z]): At least one lowercase letter.
@@ -59,6 +60,16 @@ const userSchema = new mongoose.Schema(
         message: "Your passwords do not match! Please try again.",
       },
     },
+
+    phone_number: {
+      type: String,
+      match: [/^\+?[0-9]{10,15}$/, "Please enter a valid phone number."],
+    },
+
+    location: {
+      type: String,
+    },
+
     passwordChangedAt: {
       type: Date,
       select: false,
@@ -68,6 +79,7 @@ const userSchema = new mongoose.Schema(
     },
     status: {
       type: String,
+      default: "offline",
       enum: ["online", "away", "offline", "busy"],
     },
     lastActiveAt: {
@@ -95,6 +107,20 @@ userSchema.virtual("fullname").get(function () {
 });
 
 // DOCUMENT MIDDLEWARES
+
+// Removes unnecessary fields when creating a user
+userSchema.set("toJSON", {
+  transform: function (doc, ret) {
+    delete ret.password;
+    delete ret.role;
+    delete ret.status;
+    delete ret.isActive;
+    delete ret.lastActiveAt;
+    delete ret.updatedAt;
+    delete ret.passwordChangedAt;
+    return ret;
+  },
+});
 
 // Hash password before saving
 userSchema.pre("save", async function (next) {

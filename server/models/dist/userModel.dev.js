@@ -7,6 +7,9 @@ var validator = require("validator");
 var bcrypt = require("bcrypt");
 
 var crypto = require("crypto");
+
+var _require = require("assert"),
+    match = _require.match;
 /* 
 ^ and $: Ensure the entire string is checked.
 (?=.*[a-z]): At least one lowercase letter.
@@ -58,6 +61,13 @@ var userSchema = new mongoose.Schema({
       message: "Your passwords do not match! Please try again."
     }
   },
+  phone_number: {
+    type: String,
+    match: [/^\+?[0-9]{10,15}$/, "Please enter a valid phone number."]
+  },
+  location: {
+    type: String
+  },
   passwordChangedAt: {
     type: Date,
     select: false
@@ -67,6 +77,7 @@ var userSchema = new mongoose.Schema({
   },
   status: {
     type: String,
+    "default": "offline",
     "enum": ["online", "away", "offline", "busy"]
   },
   lastActiveAt: {
@@ -93,7 +104,20 @@ var userSchema = new mongoose.Schema({
 userSchema.virtual("fullname").get(function () {
   return "".concat(this.fname, " ").concat(this.mname, " ").concat(this.lname);
 }); // DOCUMENT MIDDLEWARES
-// Hash password before saving
+// Removes unnecessary fields when creating a user
+
+userSchema.set("toJSON", {
+  transform: function transform(doc, ret) {
+    delete ret.password;
+    delete ret.role;
+    delete ret.status;
+    delete ret.isActive;
+    delete ret.lastActiveAt;
+    delete ret.updatedAt;
+    delete ret.passwordChangedAt;
+    return ret;
+  }
+}); // Hash password before saving
 
 userSchema.pre("save", function _callee(next) {
   return regeneratorRuntime.async(function _callee$(_context) {
