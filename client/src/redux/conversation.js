@@ -21,7 +21,6 @@ const conversationSlice = createSlice({
       console.log("THE ACTIVE CONVO PAYLOAD:", action.payload);
       state.currentConvoName = action.payload[0];
       state.activeConvo = action.payload[1];
-      state.activeUserConvo = action.payload[2];
     },
     setCurrentConvoName: (state, action) => {
       state.currentConvoName = action.payload;

@@ -27,5 +27,7 @@ router
   .patch(convoController.updateConversation)
   .delete(convoController.deleteConversation);
 
+router.get("/find-convo-with-user/:userId", convoController.checkConvoExists);
+
 router.route("/");
 module.exports = router;

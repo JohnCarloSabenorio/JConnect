@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import Convo from "../Convo";
+import ConversationCard from "../ConversationCard";
 import { useContext } from "react";
 import { UserContext } from "../../App";
 import { archiveConversation } from "../../api/conversation";
@@ -23,7 +23,7 @@ export default function ArchivedChat({ getMessages }) {
         }
 
         return (
-          <Convo
+          <ConversationCard
             key={id}
             ref={convo._id}
             convoId={convo._id}

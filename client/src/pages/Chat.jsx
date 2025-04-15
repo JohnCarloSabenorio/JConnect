@@ -17,7 +17,7 @@ import Sidebar from "../components/Sidebar";
 import MediaPanel from "../components/MediaPanel";
 import ProfileOverlay from "../components/ProfileOverlay";
 import { getFriends, getNonUserFriends } from "../api/friends";
-import { createConversation, chatWithFriend } from "../api/conversation";
+import { createConversation, findConvoWithUser } from "../api/conversation";
 import Overlay from "../components/Overlay";
 import {
   setActiveConversation,
@@ -200,10 +200,10 @@ export default function Chat() {
   // }
 
   // This will set the initial messages displayed to be the most recent conversation
-  async function getMessages(convoId, convoName, userConvoId) {
+  async function getMessages(convoId, convoName) {
     // Join a channel for users in the same conversation
     const messages = await getAllUserMessages(convoId);
-    dispatch(setActiveConversation([convoName, convoId, userConvoId]));
+    dispatch(setActiveConversation([convoName, convoId]));
     dispatch(initDisplayedMessages(messages));
   }
 
@@ -243,14 +243,14 @@ export default function Chat() {
 
   async function chatAFriend(friendId) {
     // console.log("THE FRIEND ID:", friendId);
-    const response = await chatWithFriend(friendId);
+    const response = await findConvoWithUser(friendId);
 
     // console.log("CHAT A FRIEND RESPONSE:", response);
     // This will get the messages using the id of the response, since if the conversation exists, it's in the allDirectConvo array
     // Create a conversation with the friend if no convo exists
     if (response.length == 0) {
       const newConvo = await createConversation(user._id, friendId);
-      getMessages(newConvo._id, newConvo.convoName, response[0].userConvoId);
+      getMessages(newConvo._id, newConvo.convoName, response.userConvoId);
       dispatch(addANewConvo(newConvo));
       return newConvo._id;
     }

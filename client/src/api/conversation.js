@@ -103,19 +103,19 @@ export async function createConversation(userId, friendId) {
   }
 }
 
-export async function chatWithFriend(friendId) {
+export async function findConvoWithUser(userId) {
   // Check if the user has an existing conversation with a f
   //
   // riend
   try {
     const response = await axios.get(
-      `jconnect/api/v1/friends/checkConvo/${friendId}/checkConvoExists`,
+      `jconnect/api/v1/conversation/find-convo-with-user/${userId}`,
       {
         withCredentials: true,
       }
     );
 
-    return response.data.data;
+    return response.data.data[0];
   } catch (err) {
     // console.log("Failed to chat with friend:", err);
   }

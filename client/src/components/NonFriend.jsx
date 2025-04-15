@@ -1,4 +1,4 @@
-import { chatWithFriend, convoIsArchived } from "../api/conversation";
+import { findConvoWithUser, convoIsArchived } from "../api/conversation";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { updateSidebar, changeActiveInbox } from "../redux/sidebar";

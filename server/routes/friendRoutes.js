@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
-const convoRouter = require("./conversationRoutes");
 
 const friendController = require("../controllers/friendController");
 const authController = require("../controllers/authController");

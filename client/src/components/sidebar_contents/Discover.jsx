@@ -1,4 +1,4 @@
-import User from "../User";
+import UserCard from "../UserCard";
 import { useSelector, useDispatch } from "react-redux";
 
 export default function Discover() {
@@ -8,12 +8,12 @@ export default function Discover() {
     <>
       {allUsers.map((user, id) => {
         return (
-          <User
+          <UserCard
             userId={user._id}
             name={user.username}
             key={id}
             imageUrl="/img/icons/male-default.jpg"
-          ></User>
+          ></UserCard>
         );
       })}
     </>

@@ -61,7 +61,7 @@ exports.removeMember = catchAsync(async (req, res, next) => {
 exports.checkConvoExists = catchAsync(async (req, res) => {
   // Check if conversation exists using id of two users
   const convo = await Conversation.find({
-    users: { $all: [req.params.friendId, req.user.id] },
+    users: { $all: [req.params.userId, req.user.id] },
     $expr: { $eq: [{ $size: "$users" }, 2] },
   });
 
@@ -70,7 +70,6 @@ exports.checkConvoExists = catchAsync(async (req, res) => {
     data: convo,
   });
 });
-
 
 // GENERIC HANDLERS
 exports.createConversation = handleFactory.createOne(Conversation);

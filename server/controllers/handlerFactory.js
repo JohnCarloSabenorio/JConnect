@@ -153,6 +153,7 @@ exports.updateOne = (Model) =>
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
     if (Model === Conversation) {
+      // Change this (user must only delete his/her record of the conversation)
       await UserConversation.deleteMany({ conversation: req.params.id });
     }
     const doc = await Model.findByIdAndDelete(req.params.id);

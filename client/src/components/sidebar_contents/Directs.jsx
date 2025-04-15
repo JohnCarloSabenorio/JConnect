@@ -1,4 +1,4 @@
-import Convo from "../Convo";
+import ConversationCard from "../ConversationCard";
 import { useSelector } from "react-redux";
 import { useContext } from "react";
 import { UserContext } from "../../App";
@@ -19,7 +19,7 @@ export default function Directs({ getMessages }) {
         // THINGS
 
         return (
-          <Convo
+          <ConversationCard
             key={id}
             ref={convo._id}
             getMessages={getMessages}

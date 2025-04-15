@@ -1,4 +1,4 @@
-import User from "../User";
+import UserCard from "../UserCard";
 import { useSelector } from "react-redux";
 export default function Friends({
   allUserFriends,
@@ -13,7 +13,7 @@ export default function Friends({
     <>
       {allFriends.map((friend, id) => {
         return (
-          <User
+          <UserCard
             userId={friend.friend._id}
             name={friend.friend.username}
             key={id}
