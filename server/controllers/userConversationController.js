@@ -80,6 +80,20 @@ exports.unarchiveConversation = catchASync(async (req, res, next) => {
   });
 });
 
+exports.getConversationName = catchASync(async (req, res, next) => {
+  const conversation = await UserConversation.find({
+    user: req.user.id,
+    conversation: req.params.convoId,
+  });
+
+  console.log("THE CONVERSATION:", conversation);
+
+  res.status(200).json({
+    status: "success",
+    message: "Conversation name successfully retrieved!",
+  });
+});
+
 // GENERIC HANDLERS
 exports.createUserConversation = handlerFactory.createOne(UserConversation);
 exports.getAllUserConversation = handlerFactory.getAll(UserConversation);

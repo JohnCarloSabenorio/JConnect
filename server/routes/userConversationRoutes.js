@@ -20,4 +20,6 @@ router.patch("/unarchive/:id", controller.unarchiveConversation);
 
 router.get("/isArchived/:id", controller.userConvoIsArchived);
 router.get("/getStatus/:id", controller.getUserConvoStatus);
+router.get("/conversation-name/:convoId", controller.getConversationName);
+
 module.exports = router;

@@ -8,6 +8,9 @@ const userConvoSchema = mongoose.Schema({
     ref: "Conversation",
     required: true,
   },
+  conversationName: {
+    type: String,
+  },
   status: {
     type: String,
     enum: ["active", "archived", "muted"],

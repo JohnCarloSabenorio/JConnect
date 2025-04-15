@@ -1,5 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import { hideProfileOverlay } from "../redux/profile_overlay";
+import { socket } from "../socket";
 import { updateSidebar } from "../redux/sidebar";
 import {
   createConversation,
@@ -125,6 +126,8 @@ export default function ProfileOverlay() {
                 userConversation = newConversation;
               }
 
+              // Join room in the user conversation
+              socket.emit("join rooms", userConversation._id);
               // Get the list of messages of the new conversation
               getMessages(userConversation._id, userConversation.convoName);
 

@@ -124,7 +124,7 @@ const conversationSlice = createSlice({
       console.log("THE PAKING PAYLOAD:", action.payload);
       state.allUserGroupConvo = action.payload[1];
     },
-    initAllDirectConvo: (state, action) => {
+    initAllUserConversation: (state, action) => {
       state.allDirectConvo = action.payload[0];
       state.allUserGroupConvo = action.payload[1];
       state.allUserArchivedConvo = action.payload[2];
@@ -166,7 +166,7 @@ export const {
   setActiveDirectUser,
   setUserIsFriend,
   initDirectsAndGroups,
-  initAllDirectConvo,
+  initAllUserConversation,
   initAllUserGroupConvo,
   updateAGroupConvo,
   setActiveConvoMembers,

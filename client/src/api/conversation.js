@@ -10,6 +10,8 @@ export async function getDirectConversations() {
     );
 
     const allDirects = response.data.data;
+
+    console.log("ALL DIRECTS:", response.data);
     return allDirects;
   } catch (error) {
     console.error("Error fetching direct conversations:", error);

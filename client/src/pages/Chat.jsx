@@ -21,7 +21,7 @@ import { createConversation, findConvoWithUser } from "../api/conversation";
 import Overlay from "../components/Overlay";
 import {
   setActiveConversation,
-  initAllDirectConvo,
+  initAllUserConversation,
   updateAGroupConvo,
   addANewConvo,
   updateAConvo,
@@ -180,7 +180,7 @@ export default function Chat() {
     });
 
     dispatch(
-      initAllDirectConvo([
+      initAllUserConversation([
         conversations,
         groupConversations,
         archivedConversations,
