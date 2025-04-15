@@ -2,6 +2,12 @@ import { chatWithFriend, convoIsArchived } from "../api/conversation";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { updateSidebar, changeActiveInbox } from "../redux/sidebar";
+
+import { setDisplayedUser } from "../redux/profile_overlay";
+
+import { getUser } from "../redux/user";
+
+import { showProfileOverlay } from "../redux/profile_overlay";
 import { UserContext } from "../App";
 import { useContext } from "react";
 import {
@@ -11,8 +17,11 @@ import {
 } from "../redux/conversation";
 export default function User({ userId, name, imageUrl, chatAFriend }) {
   const { loggedInStatus, user, isConnected } = useContext(UserContext);
+
+  const { allUsers } = useSelector((state) => state.user);
   const { sidebarSearch } = useSelector((state) => state.sidebar);
   const { activeConvoIsGroup } = useSelector((state) => state.conversation);
+
   const dispatch = useDispatch();
   return (
     <>
@@ -23,23 +32,9 @@ export default function User({ userId, name, imageUrl, chatAFriend }) {
             : "hidden"
         }`}
         onClick={async () => {
-          // This will get the conversation id from chatAFriend from chat.jsx
-          const convoId = await chatAFriend(userId);
-
-          const isArchived = await convoIsArchived(convoId);
-
-          dispatch(setActiveConvoIsGroup(false));
-          dispatch(changeActiveInbox("direct"));
-          dispatch(setActiveDirectUser(userId));
-          dispatch(setUserIsFriend(true));
-
-          // This may be refactored after other statuses are implemented (blocked, deleted, etc...)
+          dispatch(showProfileOverlay());
           dispatch(
-            updateSidebar({
-              sidebarTitle: isArchived ? "archived" : "inbox",
-              sidebarContent: isArchived ? "Archived" : "directs",
-              sidebarBtn: isArchived ? "archived-btn" : "inbox-btn",
-            })
+            setDisplayedUser(allUsers.find((user) => user._id === userId))
           );
         }}
       >

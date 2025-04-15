@@ -54,7 +54,6 @@ export default function Sidebar({ getMessages, chatAFriend }) {
   async function fetchAllUsers() {
     try {
       const allFetchedUsers = await getAllUsers();
-
       dispatch(setAllUsers(allFetchedUsers));
     } catch (err) {
       console.log("Error fetching all users:", err);
