@@ -37,26 +37,26 @@ export default function ProfileOverlay() {
               Username
             </label>
             <h1 id="user-name" className="break-words whitespace-normal">
-              {displayedUser.username}
+              {displayedUser?.username}
             </h1>
             <label className="font-bold" htmlFor="user-email">
               Email
             </label>
             <p className="break-words whitespace-normal">
-              {displayedUser.email}
+              {displayedUser?.email}
             </p>
             <label className="font-bold" htmlFor="user-number">
               Phone Number
             </label>
             <p id="user-number" className="break-words whitespace-normal">
-              {displayedUser.phone_number ?? "-"}
+              {displayedUser?.phone_number ?? "-"}
             </p>
 
             <label className="font-bold" htmlFor="user-location">
               Location
             </label>
             <p id="user-location" className="break-words whitespace-normal">
-              {displayedUser.location ?? "-"}
+              {displayedUser?.location ?? "-"}
             </p>
             <label className="font-bold" htmlFor="user-status">
               Status
@@ -65,7 +65,7 @@ export default function ProfileOverlay() {
               id="user-status"
               className="break-words whitespace-normal font-bold text-gray-700"
             >
-              {displayedUser.status}
+              {displayedUser?.status}
             </p>
           </div>
         </div>
