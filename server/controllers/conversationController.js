@@ -1,4 +1,6 @@
 const Conversation = require("../models/conversationModel");
+const UserConversation = require("../models/userConversationModel");
+const User = require("../models/userModel");
 const handleFactory = require("./handlerFactory");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
@@ -71,8 +73,67 @@ exports.checkConvoExists = catchAsync(async (req, res) => {
   });
 });
 
+exports.createConversation = catchAsync(async (req, res) => {
+  // Create a new conversation
+  let newDoc = await Conversation.create(req.body);
+
+  // Populate the user data
+  newDoc = await Conversation.findById(newDoc._id).populate("users");
+
+  // Check if the conversation is a group or not
+  if (req.body.users.length === 2) {
+    const usersFromDB = await User.find({ _id: { $in: req.body.users } });
+
+    // Map users to their original order
+    const usersMap = new Map(
+      usersFromDB.map((user) => [user._id.toString(), user])
+    );
+    const [user1, user2] = req.body.users.map((id) =>
+      usersMap.get(id.toString())
+    );
+
+    // Create user-conversation
+    const newUserConversation = await UserConversation.create([
+      {
+        user: user1._id,
+        conversation: newDoc._id,
+        conversationName: user2.username,
+      },
+      {
+        user: user2._id,
+        conversation: newDoc._id,
+        conversationName: user1.username,
+      },
+    ]);
+
+    console.log(newUserConversation);
+
+    currentUserNewConvo = await newUserConversation
+      .find((convo) => convo.user.toString() === req.user.id)
+      .populate("conversation");
+
+    console.log("CURRENT USER ID:", req.user.id);
+    console.log("NEW CONVERSATION OF CURRENT USER:", currentUserNewConvo);
+
+    return res.status(200).json({
+      status: "success",
+      message: "New document successfully created!",
+      data: currentUserNewConvo,
+    });
+  } else {
+    await Promise.all(
+      req.body.users.map(async (user) => {
+        return await UserConversation.create({
+          user: user,
+          conversation: newDoc._id,
+          isGroup: true,
+        });
+      })
+    );
+  }
+});
+
 // GENERIC HANDLERS
-exports.createConversation = handleFactory.createOne(Conversation);
 exports.getConversation = handleFactory.getOne(Conversation);
 exports.getAllConversation = handleFactory.getAll(Conversation);
 exports.updateConversation = handleFactory.updateOne(Conversation);

@@ -111,43 +111,54 @@ export default function ProfileOverlay() {
           <button
             className="bg-blue-300 text-white font-bold rounded-sm px-3 py-2 cursor-pointer"
             onClick={async () => {
-              // Check if there is an existing conversation with this user
-              let userConversation = await findConvoWithUser(displayedUser._id);
-
-              // Get messages if conversation exists, else create one
-              if (userConversation == null) {
-                const newConversation = await createConversation(
-                  user._id,
+              try {
+                let userConversation = await findConvoWithUser(
                   displayedUser._id
                 );
 
-                // Add the new conversation to the sidebar list
-                dispatch(addANewConvo(newConversation));
-                userConversation = newConversation;
+                const isNew = userConversation == null;
+
+                if (isNew) {
+                  userConversation = await createConversation(
+                    user._id,
+                    displayedUser._id
+                  );
+                  dispatch(addANewConvo(userConversation));
+                }
+
+                const { conversation, conversationName, status } =
+                  userConversation;
+
+                // Join socket room
+                socket.emit("join rooms", conversation._id);
+
+                // Fetch messages
+                getMessages(conversation._id, conversationName);
+
+                // Determine sidebar mode
+                const isArchived = status === "archived";
+
+                dispatch(
+                  updateSidebar({
+                    sidebarTitle: isArchived ? "archived" : "inbox",
+                    sidebarContent: isArchived ? "Archived" : "directs",
+                    sidebarBtn: isArchived ? "archived-btn" : "inbox-btn",
+                  })
+                );
+
+                dispatch(setActiveDirectUser(displayedUser._id));
+                dispatch(setUserIsFriend(false));
+                dispatch(setActiveConvoIsGroup(false));
+                dispatch(changeActiveInbox("direct"));
+                dispatch(hideProfileOverlay());
+                console.log(
+                  isNew
+                    ? "Created new conversation and joined room"
+                    : "Joined existing conversation"
+                );
+              } catch (error) {
+                console.error("Failed to handle conversation click:", error);
               }
-
-              // Join room in the user conversation
-              socket.emit("join rooms", userConversation._id);
-              // Get the list of messages of the new conversation
-              getMessages(userConversation._id, userConversation.convoName);
-
-              // Check if the conversation is archived
-              const isArchived = await convoIsArchived(userConversation._id);
-
-              // Update the sidebar
-              dispatch(
-                updateSidebar({
-                  sidebarTitle: isArchived ? "archived" : "inbox",
-                  sidebarContent: isArchived ? "Archived" : "directs",
-                  sidebarBtn: isArchived ? "archived-btn" : "inbox-btn",
-                })
-              );
-
-              dispatch(setActiveConvoIsGroup(false));
-              dispatch(changeActiveInbox("direct"));
-              dispatch(setActiveDirectUser(displayedUser._id));
-              dispatch(hideProfileOverlay());
-              dispatch(setUserIsFriend(false));
             }}
           >
             Chat Now!
@@ -157,36 +168,3 @@ export default function ProfileOverlay() {
     </div>
   );
 }
-
-// This will get the conversation id from chatAFriend from chat.jsx
-// const convoId = await friendClickHandler(friendId);
-// const isArchived = await convoIsArchived(convoId);
-// console.log("IS THE CONVERSATION ARCHIVED?", isArchived);
-// dispatch(setActiveConvoIsGroup(false));
-// dispatch(changeActiveInbox("direct"));
-// dispatch(setActiveDirectUser(friendId));
-// dispatch(setUserIsFriend(true));
-// // This may be refactored after other statuses are implemented (blocked, deleted, etc...)
-
-// async function chatAFriend(friendId) {
-//   // console.log("THE FRIEND ID:", friendId);
-//   const response = await findConvoWithUser(friendId);
-
-//   // console.log("CHAT A FRIEND RESPONSE:", response);
-//   // This will get the messages using the id of the response, since if the conversation exists, it's in the allDirectConvo array
-//   // Create a conversation with the friend if no convo exists
-//   if (response.length == 0) {
-//     const newConvo = await createConversation(user._id, friendId);
-//     getMessages(newConvo._id, newConvo.convoName, response[0].userConvoId);
-//     dispatch(addANewConvo(newConvo));
-//     return newConvo._id;
-//   }
-
-//   getMessages(
-//     response[0]._id,
-//     response[0].convoName,
-//     response[0].userConvoId
-//   );
-
-//   return response[0]._id;
-// }

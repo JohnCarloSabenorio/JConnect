@@ -10,9 +10,9 @@ export default function Directs({ getMessages }) {
   // console.log("THESE ARE THE DIRECT CONVERSATIONS:", allDirectConvo);
   return (
     <>
-      {allDirectConvo.map((convo, id) => {
+      {allDirectConvo.map((data, id) => {
         let chatmate = null;
-        chatmate = convo.users.find(
+        chatmate = data.conversation.users.find(
           (u) => u._id.toString() !== user._id.toString()
         );
 
@@ -21,11 +21,11 @@ export default function Directs({ getMessages }) {
         return (
           <ConversationCard
             key={id}
-            ref={convo._id}
+            ref={data._id}
             getMessages={getMessages}
             isGroup={false}
             chatmateId={chatmate._id}
-            convoData={convo}
+            userConversation={data}
             directArrayId={id}
           />
         );

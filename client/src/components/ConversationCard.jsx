@@ -12,7 +12,7 @@ import {
 export default function ConversationCard({
   getMessages,
   chatmateId,
-  convoData,
+  userConversation,
   isArchived,
 }) {
   const { activeConvoMembers, activeConvo } = useSelector(
@@ -20,11 +20,8 @@ export default function ConversationCard({
   );
   const { sidebarSearch } = useSelector((state) => state.sidebar);
   const dispatch = useDispatch();
-  const [bgColor, setBgColor] = useState("bg-white");
 
-  useEffect(() => {
-    setBgColor(activeConvo === convoData._id ? "bg-green-200" : "bg-white");
-  }, [activeConvo]);
+  const isActive = activeConvo === userConversation.conversation._id;
 
   useEffect(() => {}, [activeConvoMembers]);
 
@@ -60,7 +57,7 @@ export default function ConversationCard({
       <div
         className={`mt-5 flex flex-col gap-2 ${
           // This will control the visibility of the chat based on the user's search query in the sidebar.
-          convoData.convoName
+          userConversation.conversationName
             .toLowerCase()
             .includes(sidebarSearch.toLowerCase())
             ? "visible"
@@ -68,18 +65,22 @@ export default function ConversationCard({
         }`}
         onClick={() => {
           getMessages(
-            convoData._id,
-            convoData.convoName,
-            convoData.userConvoId
+            userConversation.conversation._id,
+            userConversation.conversationName
           );
 
           dispatch(setActiveConvoIsArchived(isArchived ?? false));
 
           // Checks if the conversation is a group chat or not
-          dispatch(setActiveConvoIsGroup(convoData.users.length > 2));
+
+          dispatch(
+            setActiveConvoIsGroup(
+              userConversation.conversation.users.length > 2
+            )
+          );
 
           // Updates the member list of the conversation to be displayed in the media panel
-          dispatch(setActiveConvoMembers(convoData?.users ?? []));
+          dispatch(setActiveConvoMembers(userConversation?.users ?? []));
 
           if (chatmateId) {
             // Updates the active chatmate
@@ -87,12 +88,11 @@ export default function ConversationCard({
             // Checks if the chatmate is a user's friend
             dispatch(chatmateIsFriend(chatmateId));
           }
-          setBgColor("bg-green-200");
         }}
       >
         <div
           className={`${
-            convoData._id == activeConvo ? "bg-green-200" : "bg-white"
+            isActive ? "bg-green-200" : "bg-white"
           } rounded-md flex p-5 shadow-md cursor-pointer`}
         >
           <img
@@ -101,15 +101,16 @@ export default function ConversationCard({
           />
           <div className="flex flex-grow">
             <div className="px-3  flex-grow">
-              <p className="font-bold">{convoData.convoName}</p>
+              <p className="font-bold">{userConversation.conversationName}</p>
               <p>
-                {convoData.latestMessage.length > 10
-                  ? convoData.latestMessage.slice(0, 19) + "..."
-                  : convoData.latestMessage}
+                {userConversation.conversation.latestMessage.length > 10
+                  ? userConversation.conversation.latestMessage.slice(0, 19) +
+                    "..."
+                  : userConversation.conversation.latestMessage}
               </p>
             </div>
             <div className="ml-auto">
-              <p>{formatTime(convoData.updatedAt)}</p>
+              <p>{formatTime(userConversation.conversation.updatedAt)}</p>
               <p className="text-right font-bold">#</p>
             </div>
           </div>

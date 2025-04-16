@@ -98,7 +98,7 @@ export async function createConversation(userId, friendId) {
       }
     );
 
-    // console.log("A CONVO HAS BEEN CREATED!");
+    console.log("A CONVO HAS BEEN CREATED!", response);
     return response.data.data;
   } catch (err) {
     // console.log("Failed to chat with friend:", err);
@@ -111,15 +111,20 @@ export async function findConvoWithUser(userId) {
   // riend
   try {
     const response = await axios.get(
-      `jconnect/api/v1/conversation/find-convo-with-user/${userId}`,
+      `jconnect/api/v1/user-conversation/get-convo-with-user/${userId}`,
       {
         withCredentials: true,
       }
     );
 
-    return response.data.data[0];
+    console.log(
+      "THE USER CONVERSATION RECORD OF THE CURRENT:",
+      response.data.data
+    );
+
+    return response.data.data;
   } catch (err) {
-    // console.log("Failed to chat with friend:", err);
+    console.log("Failed to find conversation with user:", err);
   }
 }
 

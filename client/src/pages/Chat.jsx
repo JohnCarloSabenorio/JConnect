@@ -94,14 +94,17 @@ export default function Chat() {
   useEffect(() => {
     // This will get the initial messages to be displayed (if the currentConvo is null)
     if (allDirectConvo && activeConvo === null && allDirectConvo.length > 0) {
-      getMessages(allDirectConvo[0]._id, allDirectConvo[0].convoName);
+      getMessages(
+        allDirectConvo[0].conversation._id,
+        allDirectConvo[0].conversationName
+      );
     }
   }, [allDirectConvo]);
 
   useEffect(() => {
     const mediaBlobUrls = [];
 
-    if (displayedMessages.length > 0) {
+    if (displayedMessages?.length > 0) {
       displayedMessages.forEach((message, idx) => {
         if (message.images64) {
           message.images64.forEach((base64, idx) => {
@@ -140,11 +143,13 @@ export default function Chat() {
   async function getUserConversations() {
     // Direct conversations
     const directData = await getDirectConversations();
-    let conversations = [];
+    let directConversations = [];
     directData.forEach((data) => {
       data.conversation.userConvoId = data._id;
-      conversations.push(data.conversation);
+      directConversations.push(data);
     });
+
+    console.log("ALL DIRECT CONVERSATIONS:", directConversations);
 
     // Group conversations
     const groupData = await getAllGroupConversation();
@@ -165,7 +170,7 @@ export default function Chat() {
 
     // Join rooms to all conversation  (The convo id will be the room number)
     // console.log("JOINING ROOMS");
-    conversations.forEach((convo) => {
+    directConversations.forEach((convo) => {
       // User will automatically join the rooms for each direct conversation.
       socket.emit("join rooms", convo._id);
     });
@@ -181,7 +186,7 @@ export default function Chat() {
 
     dispatch(
       initAllUserConversation([
-        conversations,
+        directConversations,
         groupConversations,
         archivedConversations,
       ])
@@ -250,7 +255,7 @@ export default function Chat() {
     // Create a conversation with the friend if no convo exists
     if (response.length == 0) {
       const newConvo = await createConversation(user._id, friendId);
-      getMessages(newConvo._id, newConvo.convoName, response.userConvoId);
+      getMessages(newConvo._id, newConvo.convoName);
       dispatch(addANewConvo(newConvo));
       return newConvo._id;
     }
@@ -399,7 +404,7 @@ export default function Chat() {
               id="chat-ui"
               className="bg-gray-50 flex-grow overflow-y-scroll overflow-x-hidden"
             >
-              {displayedMessages.map((message, i) => {
+              {displayedMessages?.map((message, i) => {
                 let blobUrls = [];
                 if (message.images64) {
                   message.images64.forEach((base64, idx) => {

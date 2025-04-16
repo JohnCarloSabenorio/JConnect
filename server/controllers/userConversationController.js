@@ -1,4 +1,5 @@
 const UserConversation = require("../models/userConversationModel");
+const Conversation = require("../models/conversationModel");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const catchASync = require("../utils/catchAsync");
@@ -91,6 +92,34 @@ exports.getConversationName = catchASync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     message: "Conversation name successfully retrieved!",
+  });
+});
+
+exports.getConversationWithUser = catchAsync(async (req, res, next) => {
+  console.log("GETTING user conversation record...");
+
+  console.log("THE FCKIN USER:", req.params.userId);
+  // Check if conversation exists using id of two users
+  const convo = await Conversation.findOne({
+    users: { $all: [req.params.userId, req.user.id] },
+    $expr: { $eq: [{ $size: "$users" }, 2] },
+  });
+
+  let userConversation = null;
+
+  // Get the user conversation record that matches the current user and conversation
+  if (convo) {
+    userConversation = await UserConversation.findOne({
+      user: req.user.id,
+      conversation: convo._id,
+    }).populate("conversation");
+  }
+  console.log("THE USER CONVERSATION:", userConversation);
+
+  res.status(200).json({
+    status: "success",
+    message: "User conversation record successfully retrieved!",
+    data: userConversation,
   });
 });
 
