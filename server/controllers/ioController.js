@@ -1,11 +1,13 @@
 const Message = require("./../models/messageModel");
 const Conversation = require("../models/conversationModel");
+const UserConversation = require("../models/userConversationModel");
 const sharp = require("sharp"); // For saving and manipulating images
 const fs = require("fs");
 const path = require("path");
 exports.sendMessage = async (io, socket, data) => {
   // Data should have the: message, sender id, and conversation id
 
+  console.log("Sent data:", data);
   // Remove this in the future (Images should be sent in db not via socket)
   const filenames = await Promise.all(
     data.images.map(async (img, idx) => {
@@ -29,29 +31,29 @@ exports.sendMessage = async (io, socket, data) => {
 
   console.log("THE ARRAY FILENAME:", filenames);
 
-  // Create a new message in the databaseho
   const newMessage = await Message.create({
-    message: data.message ? data.message : "",
+    message: data.message || "",
     sender: data.sender,
     conversation: data.conversation,
     images: filenames,
   });
 
-  // Populate the data of the sender
-  const populatedMessage = await Message.findById(newMessage._id).populate(
-    "sender"
-  );
+  // 2. Update the conversation AND get the updated version in one step
+  const [populatedMessage, updatedConvo, userConversation] = await Promise.all([
+    Message.findById(newMessage._id).populate("sender"), // populate sender
+    Conversation.findByIdAndUpdate(
+      data.conversation,
+      { latestMessage: data.message },
+      { new: true }
+    ),
+    UserConversation.findOne({
+      user: data.sender,
+      conversation: data.conversation,
+    }),
+  ]);
 
-  // Update the latest message of the conversation
-  const updatedConvo = await Conversation.findByIdAndUpdate(
-    data.conversation,
-    {
-      latestMessage: data.message,
-    },
-    { new: true }
-  );
+  console.log("The user conversation of the sent message:", userConversation);
 
-  
   const imageBase64Array = await Promise.all(
     populatedMessage.images.map(async (filename) => {
       const imagePath = path.join("public/img/sentImages", filename);
@@ -69,8 +71,12 @@ exports.sendMessage = async (io, socket, data) => {
 
   console.log("POPPU WITH IMAGE64:", populatedMessage);
 
-  io.to(data.conversation).emit("chat message", {
+  console.log("The updated conversation:", updatedConvo);
+
+  console.log("SENDING MESSAGE TO ROOM:", userConversation._id.toString());
+
+  io.to(userConversation._id.toString()).emit("chat message", {
     msg: messageObject,
-    convo: updatedConvo,
+    convo: userConversation,
   });
 };

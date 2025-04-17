@@ -56,6 +56,7 @@ io.on("connection", (socket) => {
   socket.on("join rooms", (data) => {
     if (!socket.rooms.has(data)) {
       socket.join(data);
+      console.log(`Socket ${socket.id} joined room ${data}`);
     } else {
       console.log("THE USER IS ALREADY IN THIS ROOM!");
     }
@@ -68,7 +69,6 @@ io.on("connection", (socket) => {
 
   // Sends real-time messages
   socket.on("chat message", (data) => {
-    app.post("");
     ioController.sendMessage(io, socket, data);
   });
 });

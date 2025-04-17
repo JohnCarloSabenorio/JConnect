@@ -76,6 +76,8 @@ export default function Chat() {
     // getNonFriends();
     socket.on("chat message", (data) => {
       // Messages will be updated if the sent messages is for the current conversation
+
+      console.log("SENT MESSAGE DATA:", data);
       dispatch(updateDisplayedMessages(data.msg));
 
       setImages([]);
@@ -89,6 +91,10 @@ export default function Chat() {
       // UPDATES THE GROUP CONVERATION LIST
       dispatch(updateAGroupConvo(data));
     });
+
+    // return () => {
+    //   socket.off("chat message"); // Clean up on unmount
+    // };
   }, []);
 
   useEffect(() => {
@@ -172,6 +178,9 @@ export default function Chat() {
     // console.log("JOINING ROOMS");
     directConversations.forEach((convo) => {
       // User will automatically join the rooms for each direct conversation.
+
+      console.log("COVO DATA:", convo);
+      console.log("JOINING ROOM:", convo._id);
       socket.emit("join rooms", convo._id);
     });
     groupConversations.forEach((convo) => {
@@ -220,6 +229,8 @@ export default function Chat() {
 
     if (message == "" && images.length == 0) return;
     // console.log("Socket connected?", socket.connected);
+
+    console.log("Active conversation to send message to:", activeConvo);
     socket.emit("chat message", {
       message: message,
       sender: user._id,

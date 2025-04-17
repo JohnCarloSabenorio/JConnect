@@ -121,7 +121,6 @@ const conversationSlice = createSlice({
 
     initDirectsAndGroups: (state, action) => {
       state.allDirectConvo = action.payload[0];
-      console.log("THE PAKING PAYLOAD:", action.payload);
       state.allUserGroupConvo = action.payload[1];
     },
     initAllUserConversation: (state, action) => {
@@ -134,8 +133,10 @@ const conversationSlice = createSlice({
     },
     updateAGroupConvo: (state, action) => {
       state.allUserGroupConvo = [
-        ...state.allUserGroupConvo.map((convo) =>
-          convo._id === action.payload.convo._id ? action.payload.convo : convo
+        ...state.allUserGroupConvo.map((userConversation) =>
+          userConversation._id === action.payload.convo._id
+            ? action.payload.convo
+            : userConversation
         ),
       ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
     },
@@ -147,10 +148,12 @@ const conversationSlice = createSlice({
     updateAConvo: (state, action) => {
       // this will find the existing conversation and update it with the new one
       state.allDirectConvo = [
-        ...state.allDirectConvo.map((convo) =>
-          convo._id === action.payload.convo._id ? action.payload.convo : convo
+        ...state.allDirectConvo.map((userConversation) =>
+          userConversation._id === action.payload.convo._id
+            ? action.payload.convo
+            : userConversation
         ),
-      ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+      ].sort((a, b) => new Date(b.conversation.updatedAt) - new Date(a.conversation.updatedAt));
     },
   },
 });
