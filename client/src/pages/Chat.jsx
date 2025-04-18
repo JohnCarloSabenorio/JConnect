@@ -171,7 +171,7 @@ export default function Chat() {
     let archivedConversations = [];
     archivedData.forEach((data) => {
       data.conversation.userConvoId = data._id;
-      archivedConversations.push(data.conversation);
+      archivedConversations.push(data);
     });
 
     // Join rooms to all conversation  (The convo id will be the room number)

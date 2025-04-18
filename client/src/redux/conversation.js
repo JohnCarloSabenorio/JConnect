@@ -35,38 +35,42 @@ const conversationSlice = createSlice({
     filterArchivedConvo: (state, action) => {
       // Removes the archived direct conversation
       if (state.activeConvoIsGroup) {
-        state.allUserGroupConvo = state.allUserGroupConvo.filter((convo) => {
-          if (convo._id === action.payload) {
-            state.allUserArchivedConvo.push(convo);
-            console.log("THE ARCHIVED GROUP CONVO:", convo);
+        state.allUserGroupConvo = state.allUserGroupConvo.filter(
+          (userConversation) => {
             // If the convoId matches, exclude it in the group conversation list
-            return false;
-          }
+            if (userConversation.conversation._id === action.payload) {
+              state.allUserArchivedConvo.push(userConversation);
+              console.log("THE ARCHIVED GROUP CONVO:", userConversation);
+              return false;
+            }
 
-          // If it doesn't match, keep the conversation in the group conversation list
-          return true;
-        });
+            // If it doesn't match, keep the conversation in the group conversation list
+            return true;
+          }
+        );
       } else {
-        state.allDirectConvo = state.allDirectConvo.filter((convo) => {
-          if (convo._id === action.payload) {
-            state.allUserArchivedConvo.push(convo);
-
+        state.allDirectConvo = state.allDirectConvo.filter(
+          (userConversation) => {
             // If the convoId matches, exclude it in the direct conversation list
-            return false;
-          }
+            if (userConversation.conversation._id === action.payload) {
+              state.allUserArchivedConvo.push(userConversation);
 
-          // If it doesn't match, keep the conversation in the direct conversation list
-          return true;
-        });
+              return false;
+            }
+
+            // If it doesn't match, keep the conversation in the direct conversation list
+            return true;
+          }
+        );
       }
     },
     filterRestoredConvo: (state, action) => {
       if (state.activeConvoIsGroup) {
         state.allUserArchivedConvo = state.allUserArchivedConvo.filter(
-          (convo) => {
-            if (convo._id === action.payload) {
-              state.allUserGroupConvo.push(convo);
-              console.log("THE RESTORED GROUP CONVO:", convo);
+          (userConversation) => {
+            if (userConversation.conversation._id === action.payload) {
+              state.allUserGroupConvo.push(userConversation);
+              console.log("THE RESTORED GROUP CONVO:", userConversation);
               // If the convoId matches, add it in the group conversation list
               return false;
             }
@@ -77,9 +81,9 @@ const conversationSlice = createSlice({
         );
       } else {
         state.allUserArchivedConvo = state.allUserArchivedConvo.filter(
-          (convo) => {
-            if (convo._id === action.payload) {
-              state.allDirectConvo.push(convo);
+          (userConversation) => {
+            if (userConversation.conversation._id === action.payload) {
+              state.allDirectConvo.push(userConversation);
               // If the convoId matches, add it in the direct conversation list
               return false;
             }
@@ -153,7 +157,11 @@ const conversationSlice = createSlice({
             ? action.payload.convo
             : userConversation
         ),
-      ].sort((a, b) => new Date(b.conversation.updatedAt) - new Date(a.conversation.updatedAt));
+      ].sort(
+        (a, b) =>
+          new Date(b.conversation.updatedAt) -
+          new Date(a.conversation.updatedAt)
+      );
     },
   },
 });

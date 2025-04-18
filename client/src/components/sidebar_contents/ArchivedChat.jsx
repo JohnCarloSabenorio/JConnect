@@ -9,15 +9,13 @@ export default function ArchivedChat({ getMessages }) {
     (state) => state.conversation
   );
 
-  // console.log("ARCHIVEC CONVERSATIONS TO DISPLAY:", allUserArchivedConvo);
-
   return (
     <>
-      {allUserArchivedConvo.map((convo, id) => {
+      {allUserArchivedConvo.map((userConversation, id) => {
         let chatmate = null;
 
-        if (convo.users.length === 2) {
-          chatmate = convo.users.find(
+        if (userConversation.conversation.users.length === 2) {
+          chatmate = userConversation.conversation.users.find(
             (u) => u._id.toString() !== user._id.toString()
           );
         }
@@ -25,17 +23,12 @@ export default function ArchivedChat({ getMessages }) {
         return (
           <ConversationCard
             key={id}
-            ref={convo._id}
-            convoId={convo._id}
-            name={convo.convoName}
-            msg={convo.latestMessage}
-            msgCount={"#"}
-            timeSent={convo.updatedAt}
-            imageUrl="/img/icons/male-default.jpg"
+            ref={userConversation._id}
             getMessages={getMessages}
-            convoData={convo}
-            chatmateId={chatmate?._id}
-            isArchived={true}
+            isGroup={false}
+            chatmateId={chatmate._id}
+            userConversation={userConversation}
+            directArrayId={id}
           />
         );
       })}

@@ -7,7 +7,11 @@ import {
 import {
   filterArchivedConvo,
   filterRestoredConvo,
+  setActiveConversation,
+  setActiveConvoIsArchived,
 } from "../redux/conversation";
+
+import { updateSidebar } from "../redux/sidebar";
 
 export default function OverlayModal() {
   const { activeConvo, activeConvoIsArchived } = useSelector(
@@ -15,14 +19,38 @@ export default function OverlayModal() {
   );
   const dispatch = useDispatch();
 
+  // Archive the user conversation record of the current user
   function archiveConvo(convoId) {
+    console.log("ARCHIVING CONVERSATION:", convoId);
     dispatch(filterArchivedConvo(convoId));
+    dispatch(setActiveConvoIsArchived(true));
     archiveConversation(convoId);
+
+    dispatch(
+      updateSidebar({
+        sidebarTitle: "archived",
+        sidebarContent: "Archived",
+        sidebarBtn: "archived-btn",
+      })
+    );
   }
 
+  // Unarchive the user conversation record of the current user
   function unarchiveConvo(convoId) {
     dispatch(filterRestoredConvo(convoId));
+    dispatch(setActiveConvoIsArchived(false));
     unarchiveConversation(convoId);
+
+    dispatch(
+      updateSidebar({
+        sidebarTitle: "inbox",
+        sidebarContent: "directs",
+        sidebarBtn: "inbox-btn",
+      })
+    );
+
+    // dispatch(changeActiveInbox("direct"));
+    // dispatch(hideProfileOverlay());
   }
 
   return (

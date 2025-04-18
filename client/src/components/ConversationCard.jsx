@@ -21,6 +21,8 @@ export default function ConversationCard({
   const { sidebarSearch } = useSelector((state) => state.sidebar);
   const dispatch = useDispatch();
 
+  console.log("USER CONVERSATION ARCHIVED:", userConversation);
+
   const isActive = activeConvo === userConversation.conversation._id;
 
   useEffect(() => {}, [activeConvoMembers]);
@@ -69,7 +71,9 @@ export default function ConversationCard({
             userConversation.conversationName
           );
 
-          dispatch(setActiveConvoIsArchived(isArchived ?? false));
+          dispatch(
+            setActiveConvoIsArchived(userConversation.status == "archived")
+          );
 
           // Checks if the conversation is a group chat or not
 

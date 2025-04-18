@@ -130,7 +130,7 @@ export default function ProfileOverlay() {
                   userConversation;
 
                 // Join socket room
-                socket.emit("join rooms", conversation._id);
+                socket.emit("join rooms", userConversation._id);
 
                 // Fetch messages
                 getMessages(conversation._id, conversationName);
