@@ -5,24 +5,49 @@ export default function Groups({ getMessages }) {
 
   return (
     <>
-      {allUserGroupConvo.map((convo, id) => {
+      {allUserGroupConvo.map((data, id) => {
         // console.log("THE CONVORATION:", convo);
+
+        console.log(" THE GROUP CONVO:", data);
+        
         return (
           <ConversationCard
             key={id}
-            ref={convo._id}
-            convoId={convo._id}
-            name={convo.convoName}
-            msg={convo.latestMessage}
-            msgCount={"#"}
-            timeSent={convo.updatedAt}
-            imageUrl="/img/icons/male-default.jpg"
+            ref={data._id}
             getMessages={getMessages}
-            isGroup={convo.users.length > 2}
-            convoData={convo}
+            isGroup={true}
+            userConversation={data}
+            directArrayId={id}
           />
         );
       })}
     </>
   );
 }
+
+/* 
+  return (
+    <>
+      {allDirectConvo.map((data, id) => {
+        let chatmate = null;
+        chatmate = data.conversation.users.find(
+          (u) => u._id.toString() !== user._id.toString()
+        );
+
+        // THINGS
+
+        return (
+          <ConversationCard
+            key={id}
+            ref={data._id}
+            getMessages={getMessages}
+            isGroup={false}
+            chatmateId={chatmate._id}
+            userConversation={data}
+            directArrayId={id}
+          />
+        );
+      })}
+    </>
+  );
+*/

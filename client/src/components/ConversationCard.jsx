@@ -23,6 +23,7 @@ export default function ConversationCard({
 
   console.log("USER CONVERSATION ARCHIVED:", userConversation);
 
+  console.log("THE USER CONVERSATION:", userConversation);
   const isActive = activeConvo === userConversation.conversation._id;
 
   useEffect(() => {}, [activeConvoMembers]);

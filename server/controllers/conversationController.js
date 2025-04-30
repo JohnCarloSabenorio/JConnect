@@ -74,62 +74,73 @@ exports.checkConvoExists = catchAsync(async (req, res) => {
 });
 
 exports.createConversation = catchAsync(async (req, res) => {
+  console.log("Creating Conversation");
   // Create a new conversation
-  let newDoc = await Conversation.create(req.body);
+  let newConversation = await Conversation.create(req.body);
 
   // Populate the user data
-  newDoc = await Conversation.findById(newDoc._id).populate("users");
+  newConversation = await Conversation.findById(newConversation._id).populate(
+    "users"
+  );
 
   // Check if the conversation is a group or not
-  if (req.body.users.length === 2) {
-    const usersFromDB = await User.find({ _id: { $in: req.body.users } });
+  const usersFromDB = await User.find({ _id: { $in: req.body.users } });
 
-    // Map users to their original order
-    const usersMap = new Map(
-      usersFromDB.map((user) => [user._id.toString(), user])
+  // Create user-conversation
+
+  // Check if it is a group conversation or not
+  if (newConversation.users.length > 2) {
+    // Create Group Name using first three usernames
+    const newGroupName = `${usersFromDB[0].username}, ${usersFromDB[1].username}, ${usersFromDB[2].username},...`;
+
+    // Create an array containing objects of new group conversations
+    const newGroupUserConversationData = usersFromDB.map((user) => {
+      return {
+        user: user._id,
+        conversation: newConversation._id,
+        conversationName: newGroupName,
+        isGroup: true,
+      };
+    });
+
+    // Create new user conversation documents
+    const newUserConversation = await UserConversation.create(
+      newGroupUserConversationData
     );
-    const [user1, user2] = req.body.users.map((id) =>
-      usersMap.get(id.toString())
-    );
 
-    // Create user-conversation
-    const newUserConversation = await UserConversation.create([
-      {
-        user: user1._id,
-        conversation: newDoc._id,
-        conversationName: user2.username,
-      },
-      {
-        user: user2._id,
-        conversation: newDoc._id,
-        conversationName: user1.username,
-      },
-    ]);
-
-    console.log(newUserConversation);
-
+    // Find the document of the current user
     currentUserNewConvo = await newUserConversation
-      .find((convo) => convo.user.toString() === req.user.id)
+      .find((convo) => convo.user.toString() === "67a18fc157b4f802490ce204") // replace this with req.user.id
       .populate("conversation");
-
-    console.log("CURRENT USER ID:", req.user.id);
-    console.log("NEW CONVERSATION OF CURRENT USER:", currentUserNewConvo);
 
     return res.status(200).json({
       status: "success",
-      message: "New document successfully created!",
+      message: "New conversation successfully created!",
       data: currentUserNewConvo,
     });
   } else {
-    await Promise.all(
-      req.body.users.map(async (user) => {
-        return await UserConversation.create({
-          user: user,
-          conversation: newDoc._id,
-          isGroup: true,
-        });
-      })
-    );
+    const newDirectUserConversations = await UserConversation.create([
+      {
+        user: usersFromDB[0]._id,
+        conversation: newConversation._id,
+        conversationName: usersFromDB[1].username,
+      },
+      {
+        user: usersFromDB[1]._id,
+        conversation: newConversation._id,
+        conversationName: usersFromDB[0].username,
+      },
+    ]);
+
+    currentUserNewConvo = await newDirectUserConversations
+      .find((convo) => convo.user.toString() === "67a18fc157b4f802490ce204")
+      .populate("conversation");
+
+    return res.status(200).json({
+      status: "success",
+      message: "New conversation successfully created!",
+      data: currentUserNewConvo,
+    });
   }
 });
 

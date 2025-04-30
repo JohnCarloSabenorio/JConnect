@@ -75,7 +75,7 @@ exports.sendMessage = async (io, socket, data) => {
 
   console.log("SENDING MESSAGE TO ROOM:", userConversation._id.toString());
 
-  io.to(userConversation._id.toString()).emit("chat message", {
+  io.to(userConversation.conversation._id.toString()).emit("chat message", {
     msg: messageObject,
     convo: userConversation,
   });

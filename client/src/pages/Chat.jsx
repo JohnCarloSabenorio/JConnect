@@ -77,7 +77,7 @@ export default function Chat() {
     socket.on("chat message", (data) => {
       // Messages will be updated if the sent messages is for the current conversation
 
-      console.log("SENT MESSAGE DATA:", data);
+      console.log("MESSAGE DATA RECEIVED MOTHER DUCKER:", data);
       dispatch(updateDisplayedMessages(data.msg));
 
       setImages([]);
@@ -155,14 +155,14 @@ export default function Chat() {
       directConversations.push(data);
     });
 
-    console.log("ALL DIRECT CONVERSATIONS:", directConversations);
+    // console.log("ALL DIRECT CONVERSATIONS:", directConversations);
 
     // Group conversations
     const groupData = await getAllGroupConversation();
     let groupConversations = [];
     groupData.forEach((data) => {
       data.conversation.userConvoId = data._id;
-      groupConversations.push(data.conversation);
+      groupConversations.push(data);
     });
 
     // Archived conversations
@@ -176,21 +176,19 @@ export default function Chat() {
 
     // Join rooms to all conversation  (The convo id will be the room number)
     // console.log("JOINING ROOMS");
-    directConversations.forEach((convo) => {
+    directConversations.forEach((data) => {
       // User will automatically join the rooms for each direct conversation.
-
-      console.log("COVO DATA:", convo);
-      console.log("JOINING ROOM:", convo._id);
-      socket.emit("join rooms", convo._id);
+      socket.emit("join rooms", data.conversation._id);
     });
-    groupConversations.forEach((convo) => {
+
+    groupConversations.forEach((data) => {
       // User will automatically join the rooms for each group conversation.
-      socket.emit("join rooms", convo._id);
+      socket.emit("join rooms", data.conversation._id);
     });
 
-    archivedConversations.forEach((convo) => {
+    archivedConversations.forEach((data) => {
       // User will automatically join the rooms for each archived conversation.
-      socket.emit("join rooms", convo._id);
+      socket.emit("join rooms", data.conversation._id);
     });
 
     dispatch(
@@ -475,95 +473,86 @@ export default function Chat() {
                 onSubmit={(e) => sendMessage(e)}
                 className="flex mt-auto p-3 bg-white border-t-0.5 border-gray-500"
               >
-                {activeConvoIsArchived ? (
-                  <div className="flex justify-center items-center w-full">
-                    <p className="text-gray-600">
-                      This conversation has been archived and is no longer
-                      accessible.
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    <div>
-                      <input
-                        key={fileInputKey}
-                        type="file"
-                        ref={fileInputRef}
-                        accept="image/*"
-                        onChange={handleImagesChange}
-                        multiple
-                        hidden
-                      />
-                    </div>
-                    {/* File input button */}
-                    <button
-                      type="button"
-                      className="cursor-pointer"
-                      onClick={handleFileInputClick}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 -960 960 960"
-                        width="30"
-                        height="30"
-                        fill="black"
-                      >
-                        <path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-370h80v370q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-390h80v390Z" />
-                      </svg>
-                    </button>
+                <>
+                  <div>
                     <input
-                      className="flex-grow mx-4 p-2 ml-0"
-                      type="text"
-                      name="message"
-                      id="message"
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      placeholder="Type your message here..."
+                      key={fileInputKey}
+                      type="file"
+                      ref={fileInputRef}
+                      accept="image/*"
+                      onChange={handleImagesChange}
+                      multiple
+                      hidden
                     />
-                    <div className="flex items-center justify-center ml-auto gap-5">
-                      <div className="relative inline-block">
-                        <div
-                          id="emoji-picker"
-                          className={`absolute bottom-full mb-2 left-0 z-10 ${
-                            displayEmoji ? "block" : "hidden"
-                          }`}
-                        >
-                          <EmojiPicker onEmojiClick={addEmojiToInput} />
-                        </div>
+                  </div>
+                  {/* File input button */}
+                  <button
+                    type="button"
+                    className="cursor-pointer"
+                    onClick={handleFileInputClick}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 -960 960 960"
+                      width="30"
+                      height="30"
+                      fill="black"
+                    >
+                      <path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-370h80v370q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-390h80v390Z" />
+                    </svg>
+                  </button>
+                  <input
+                    className="flex-grow mx-4 p-2 ml-0"
+                    type="text"
+                    name="message"
+                    id="message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Type your message here..."
+                  />
+                  <div className="flex items-center justify-center ml-auto gap-5">
+                    <div className="relative inline-block">
+                      <div
+                        id="emoji-picker"
+                        className={`absolute bottom-full mb-2 left-0 z-10 ${
+                          displayEmoji ? "block" : "hidden"
+                        }`}
+                      >
+                        <EmojiPicker onEmojiClick={addEmojiToInput} />
+                      </div>
 
-                        <div className="flex gap-1">
-                          {/* <Emoji unified="1f423" size="25" /> */}
-                          <button
-                            type="button"
-                            onClick={toggleEmojiPicker}
-                            className="cursor-pointer"
+                      <div className="flex gap-1">
+                        {/* <Emoji unified="1f423" size="25" /> */}
+                        <button
+                          type="button"
+                          onClick={toggleEmojiPicker}
+                          className="cursor-pointer"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 -960 960 960"
+                            width="30"
+                            height="30"
+                            fill="black"
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 -960 960 960"
-                              width="30"
-                              height="30"
-                              fill="black"
-                            >
-                              <path d="M620-520q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Zm-280 0q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm140 260q68 0 123.5-38.5T684-400h-66q-22 37-58.5 58.5T480-320q-43 0-79.5-21.5T342-400h-66q25 63 80.5 101.5T480-260Zm0 180q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 320q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Z" />
-                            </svg>
-                          </button>
-                          <button className="cursor-pointer">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 -960 960 960"
-                              width="30"
-                              height="30"
-                              fill="black"
-                            >
-                              <path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z" />
-                            </svg>
-                          </button>
-                        </div>
+                            <path d="M620-520q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Zm-280 0q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm140 260q68 0 123.5-38.5T684-400h-66q-22 37-58.5 58.5T480-320q-43 0-79.5-21.5T342-400h-66q25 63 80.5 101.5T480-260Zm0 180q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 320q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Z" />
+                          </svg>
+                        </button>
+                        <button className="cursor-pointer">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 -960 960 960"
+                            width="30"
+                            height="30"
+                            fill="black"
+                          >
+                            <path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z" />
+                          </svg>
+                        </button>
                       </div>
                     </div>
-                  </>
-                )}
+                  </div>
+                </>
               </form>
             </div>
           </div>
