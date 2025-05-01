@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { hideProfileOverlay } from "../redux/profile_overlay";
 import { socket } from "../socket";
-import { updateSidebar } from "../redux/sidebar";
+import { setConvoViewMode, updateSidebar } from "../redux/sidebar";
 import {
   createConversation,
   findConvoWithUser,
@@ -151,6 +151,7 @@ export default function ProfileOverlay() {
                 dispatch(setActiveConvoIsGroup(false));
                 dispatch(changeActiveInbox("direct"));
                 dispatch(hideProfileOverlay());
+                dispatch(setConvoViewMode(0));
                 console.log(
                   isNew
                     ? "Created new conversation and joined room"
