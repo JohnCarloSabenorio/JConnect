@@ -9,7 +9,7 @@ const conversationSlice = createSlice({
     activeConvoArrayId: null,
     activeConvoIsGroup: false,
     activeConvoIsArchived: false,
-    allDirectConvo: null,
+    allInboxConversation: null,
     activeConvoMembers: null,
     allUserGroupConvo: null,
     allUserArchivedConvo: null,
@@ -34,64 +34,32 @@ const conversationSlice = createSlice({
 
     filterArchivedConvo: (state, action) => {
       // Removes the archived direct conversation
-      if (state.activeConvoIsGroup) {
-        state.allUserGroupConvo = state.allUserGroupConvo.filter(
-          (userConversation) => {
-            // If the convoId matches, exclude it in the group conversation list
-            if (userConversation.conversation._id === action.payload) {
-              state.allUserArchivedConvo.push(userConversation);
-              console.log("THE ARCHIVED GROUP CONVO:", userConversation);
-              return false;
-            }
+      state.allInboxConversation = state.allInboxConversation.filter(
+        (userConversation) => {
+          // If the convoId matches, exclude it in the direct conversation list
+          if (userConversation.conversation._id === action.payload) {
+            state.allUserArchivedConvo.push(userConversation);
 
-            // If it doesn't match, keep the conversation in the group conversation list
-            return true;
+            return false;
           }
-        );
-      } else {
-        state.allDirectConvo = state.allDirectConvo.filter(
-          (userConversation) => {
-            // If the convoId matches, exclude it in the direct conversation list
-            if (userConversation.conversation._id === action.payload) {
-              state.allUserArchivedConvo.push(userConversation);
 
-              return false;
-            }
-
-            // If it doesn't match, keep the conversation in the direct conversation list
-            return true;
-          }
-        );
-      }
+          // If it doesn't match, keep the conversation in the direct conversation list
+          return true;
+        }
+      );
     },
     filterRestoredConvo: (state, action) => {
-      if (state.activeConvoIsGroup) {
-        state.allUserArchivedConvo = state.allUserArchivedConvo.filter(
-          (userConversation) => {
-            if (userConversation.conversation._id === action.payload) {
-              state.allUserGroupConvo.push(userConversation);
-              console.log("THE RESTORED GROUP CONVO:", userConversation);
-              // If the convoId matches, add it in the group conversation list
-              return false;
-            }
-
-            // If it doesn't match, keep the conversation in the archived conversation list
-            return true;
+      state.allUserArchivedConvo = state.allUserArchivedConvo.filter(
+        (userConversation) => {
+          if (userConversation.conversation._id === action.payload) {
+            state.allInboxConversation.push(userConversation);
+            // If the convoId matches, add it in the direct conversation list
+            return false;
           }
-        );
-      } else {
-        state.allUserArchivedConvo = state.allUserArchivedConvo.filter(
-          (userConversation) => {
-            if (userConversation.conversation._id === action.payload) {
-              state.allDirectConvo.push(userConversation);
-              // If the convoId matches, add it in the direct conversation list
-              return false;
-            }
-            // If it doesn't match, keep the conversation in the archived conversation list
-            return true;
-          }
-        );
-      }
+          // If it doesn't match, keep the conversation in the archived conversation list
+          return true;
+        }
+      );
     },
     setActiveConvoArrayId: (state, action) => {
       state.activeConvoArrayId = action.payload;
@@ -124,11 +92,11 @@ const conversationSlice = createSlice({
     },
 
     initDirectsAndGroups: (state, action) => {
-      state.allDirectConvo = action.payload[0];
+      state.allInboxConversation = action.payload[0];
       state.allUserGroupConvo = action.payload[1];
     },
     initAllUserConversation: (state, action) => {
-      state.allDirectConvo = action.payload[0];
+      state.allInboxConversation = action.payload[0];
       state.allUserGroupConvo = action.payload[1];
       state.allUserArchivedConvo = action.payload[2];
     },
@@ -146,13 +114,16 @@ const conversationSlice = createSlice({
     },
 
     addANewConvo: (state, action) => {
-      state.allDirectConvo = [action.payload, ...state.allDirectConvo];
+      state.allInboxConversation = [
+        action.payload,
+        ...state.allInboxConversation,
+      ];
     },
 
     updateAConvo: (state, action) => {
       // this will find the existing conversation and update it with the new one
-      state.allDirectConvo = [
-        ...state.allDirectConvo.map((userConversation) =>
+      state.allInboxConversation = [
+        ...state.allInboxConversation.map((userConversation) =>
           userConversation._id === action.payload.convo._id
             ? action.payload.convo
             : userConversation

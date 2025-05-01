@@ -3,31 +3,16 @@ import ConversationCard from "../ConversationCard";
 import { useContext } from "react";
 import { UserContext } from "../../App";
 import { archiveConversation } from "../../api/conversation";
-import { setConvoViewMode } from "../../redux/sidebar";
-export default function ArchivedChat({ getMessages }) {
+export default function ArchivedGroups({ getMessages }) {
   const { user } = useContext(UserContext);
-  const { allUserArchivedConvo, active } = useSelector(
-    (state) => state.conversation
-  );
-
-  const { convoViewMode } = useSelector((state) => state.sidebar);
-  let filteredConversations;
-  if (convoViewMode === 0) {
-    filteredConversations = allUserArchivedConvo.filter(
-      (uc) => uc.conversation.users.length === 2
-    );
-  } else {
-    filteredConversations = allUserArchivedConvo.filter(
-      (uc) => uc.conversation.users.length > 2
-    );
-  }
+  const { allUserArchivedConvo } = useSelector((state) => state.conversation);
 
   return (
     <>
-      {filteredConversations.map((userConversation, id) => {
+      {allUserArchivedConvo.map((userConversation, id) => {
         let chatmate = null;
 
-        if (userConversation.conversation.users.length === 2) {
+        if (userConversation.conversation.users.length > 2) {
           chatmate = userConversation.conversation.users.find(
             (u) => u._id.toString() !== user._id.toString()
           );

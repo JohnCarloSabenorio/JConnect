@@ -3,24 +3,17 @@ import ConversationCard from "../ConversationCard";
 import { useContext } from "react";
 import { UserContext } from "../../App";
 import { archiveConversation } from "../../api/conversation";
-import { setConvoViewMode } from "../../redux/sidebar";
-export default function ArchivedChat({ getMessages }) {
+export default function ArchivedDirects({ getMessages }) {
   const { user } = useContext(UserContext);
   const { allUserArchivedConvo, active } = useSelector(
     (state) => state.conversation
   );
 
-  const { convoViewMode } = useSelector((state) => state.sidebar);
-  let filteredConversations;
-  if (convoViewMode === 0) {
-    filteredConversations = allUserArchivedConvo.filter(
-      (uc) => uc.conversation.users.length === 2
-    );
-  } else {
-    filteredConversations = allUserArchivedConvo.filter(
-      (uc) => uc.conversation.users.length > 2
-    );
-  }
+
+  
+  const filteredConversations = allUserArchivedConvo.filter(
+    (uc) => uc.conversation.users.length === 2
+  );
 
   return (
     <>
@@ -48,3 +41,5 @@ export default function ArchivedChat({ getMessages }) {
     </>
   );
 }
+
+

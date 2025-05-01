@@ -7,15 +7,19 @@ const sidebarSlice = createSlice({
   name: "sidebar",
   initialState: {
     sidebarTitle: "inbox",
-    sidebarContent: "directs",
+    sidebarContent: "inbox",
     sidebarBtn: "inbox-btn",
     sidebarSearch: "",
-    activeInbox: "direct",
+    activeInbox: "inbox",
+    convoViewMode: 0, // 0 for directs, 1 for groups
   },
 
   reducers: {
     changeSidebarTitle: (state, action) => {
       state.sidebarTitle = action.payload;
+    },
+    setConvoViewMode: (state, action) => {
+      state.convoViewMode = action.payload;
     },
     changeSidebarContent: (state, action) => {
       state.sidebarContent = action.payload;
@@ -49,6 +53,7 @@ export const {
   changeActiveInbox,
   changeSidebarBtn,
   changeSidebarSearch,
+  setConvoViewMode,
 } = sidebarSlice.actions;
 
 export default sidebarSlice.reducer;

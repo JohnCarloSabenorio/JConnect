@@ -11,13 +11,14 @@ import {
   setActiveConvoIsArchived,
 } from "../redux/conversation";
 
-import { updateSidebar } from "../redux/sidebar";
+import { setConvoViewMode, updateSidebar } from "../redux/sidebar";
 
 export default function OverlayModal() {
-  const { activeConvo, activeConvoIsArchived } = useSelector(
-    (state) => state.conversation
-  );
+  const { activeConvo, activeConvoIsArchived, activeConvoIsGroup } =
+    useSelector((state) => state.conversation);
   const dispatch = useDispatch();
+
+  console.log("CONVERSATION IS GROUP?", activeConvoIsGroup);
 
   // Archive the user conversation record of the current user
   function archiveConvo(convoId) {
@@ -25,11 +26,12 @@ export default function OverlayModal() {
     dispatch(filterArchivedConvo(convoId));
     dispatch(setActiveConvoIsArchived(true));
     archiveConversation(convoId);
+    dispatch(setConvoViewMode(activeConvoIsGroup ? 1 : 0));
 
     dispatch(
       updateSidebar({
         sidebarTitle: "archived",
-        sidebarContent: "Archived",
+        sidebarContent: "archived",
         sidebarBtn: "archived-btn",
       })
     );
@@ -40,11 +42,12 @@ export default function OverlayModal() {
     dispatch(filterRestoredConvo(convoId));
     dispatch(setActiveConvoIsArchived(false));
     unarchiveConversation(convoId);
+    dispatch(setConvoViewMode(activeConvoIsGroup ? 1 : 0));
 
     dispatch(
       updateSidebar({
         sidebarTitle: "inbox",
-        sidebarContent: "directs",
+        sidebarContent: "inbox",
         sidebarBtn: "inbox-btn",
       })
     );

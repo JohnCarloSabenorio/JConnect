@@ -3,17 +3,27 @@ import { useSelector } from "react-redux";
 import { useContext } from "react";
 import { UserContext } from "../../App";
 
-export default function Directs({ getMessages }) {
+export default function Inbox({ getMessages }) {
   const { loggedInStatus, user, isConnected } = useContext(UserContext);
   const { allInboxConversation } = useSelector((state) => state.conversation);
+  const { convoViewMode } = useSelector((state) => state.sidebar);
 
-  // console.log("THESE ARE THE DIRECT CONVERSATIONS:", allInboxConversation);
+  let filteredConversations;
+  if (convoViewMode === 0) {
+    filteredConversations = allInboxConversation.filter(
+      (uc) => uc.conversation.users.length === 2
+    );
+  } else {
+    filteredConversations = allInboxConversation.filter(
+      (uc) => uc.conversation.users.length > 2
+    );
+  }
+
   return (
     <>
-      {allInboxConversation.map((data, id) => {
+      {filteredConversations.map((data, id) => {
         let chatmate = null;
 
-        console.log("DIRECT CONVERSATION:", data);
         chatmate = data.conversation.users.find(
           (u) => u._id.toString() !== user._id.toString()
         );
@@ -25,7 +35,7 @@ export default function Directs({ getMessages }) {
             key={id}
             ref={data._id}
             getMessages={getMessages}
-            isGroup={false}
+            isGroup={data.conversation.users.length > 2}
             chatmateId={chatmate._id}
             userConversation={data}
             directArrayId={id}

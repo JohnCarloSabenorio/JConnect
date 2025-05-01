@@ -141,7 +141,7 @@ export default function ProfileOverlay() {
                 dispatch(
                   updateSidebar({
                     sidebarTitle: isArchived ? "archived" : "inbox",
-                    sidebarContent: isArchived ? "Archived" : "directs",
+                    sidebarContent: isArchived ? "archived" : "inbox",
                     sidebarBtn: isArchived ? "archived-btn" : "inbox-btn",
                   })
                 );

@@ -2,6 +2,8 @@ import { getAllUsers } from "../api/user";
 import { useState, useEffect } from "react";
 import Directs from "./sidebar_contents/Directs";
 import Friends from "./sidebar_contents/Friends";
+import ArchivedGroups from "./sidebar_contents/ArchivedGroups";
+import Inbox from "./sidebar_contents/Inbox";
 import Groups from "./sidebar_contents/Groups";
 import ArchivedChat from "./sidebar_contents/ArchivedChat";
 import Discover from "./sidebar_contents/Discover";
@@ -13,6 +15,7 @@ import {
   changeSidebarBtn,
   changeActiveInbox,
   changeSidebarSearch,
+  setConvoViewMode,
 } from "../redux/sidebar";
 
 import { toggleDarkMode } from "../redux/isDarkMode";
@@ -28,15 +31,16 @@ export default function Sidebar({ getMessages, chatAFriend }) {
     sidebarBtn,
     activeInbox,
     sidebarSearch,
+    convoViewMode,
   } = useSelector((state) => state.sidebar);
 
   const { isDarkMode } = useSelector((state) => state.isDarkMode);
-  const { allDirectConvo } = useSelector((state) => state.conversation);
+  const { allInboxConversation } = useSelector((state) => state.conversation);
 
   const { allUsers } = useSelector((state) => state.user);
 
   const [currentActiveId, setCurrentActiveId] = useState(
-    allDirectConvo.length > 0 ? allDirectConvo[0]._id : null
+    allInboxConversation.length > 0 ? allInboxConversation[0]._id : null
   );
 
   const sideOptionStyle = " p-3 rounded-full cursor-pointer ";
@@ -69,7 +73,7 @@ export default function Sidebar({ getMessages, chatAFriend }) {
             dispatch(
               updateSidebar({
                 sidebarTitle: "inbox",
-                sidebarContent: "directs",
+                sidebarContent: "inbox",
                 sidebarBtn: "inbox-btn",
               })
             );
@@ -98,7 +102,7 @@ export default function Sidebar({ getMessages, chatAFriend }) {
             dispatch(
               updateSidebar({
                 sidebarTitle: "friends",
-                sidebarContent: "Friends",
+                sidebarContent: "friends",
                 sidebarBtn: "friends-btn",
               })
             );
@@ -127,7 +131,7 @@ export default function Sidebar({ getMessages, chatAFriend }) {
             dispatch(
               updateSidebar({
                 sidebarTitle: "archived",
-                sidebarContent: "Archived",
+                sidebarContent: "archived",
                 sidebarBtn: "archived-btn",
               })
             );
@@ -156,7 +160,7 @@ export default function Sidebar({ getMessages, chatAFriend }) {
             dispatch(
               updateSidebar({
                 sidebarTitle: "discover",
-                sidebarContent: "Discover",
+                sidebarContent: "discover",
                 sidebarBtn: "discover-btn",
               })
             );
@@ -219,29 +223,27 @@ export default function Sidebar({ getMessages, chatAFriend }) {
 
         <div
           className={`flex ${
-            sidebarContent === "directs" || sidebarContent === "groups"
+            sidebarContent === "inbox" || sidebarContent === "archived"
               ? "block"
               : "hidden"
           }`}
         >
           <div
             onClick={() => {
-              dispatch(changeSidebarContent("directs"));
-              dispatch(changeActiveInbox("direct"));
+              dispatch(setConvoViewMode(0));
             }}
             className={`cursor-pointer flex-grow text-center p-2 shadow-md ${
-              activeInbox == "direct" ? "bg-gray-200" : "bg-white"
+              convoViewMode == 0 ? "bg-gray-200" : "bg-white"
             }`}
           >
             Directs
           </div>
           <div
             onClick={() => {
-              dispatch(changeSidebarContent("groups"));
-              dispatch(changeActiveInbox("group"));
+              dispatch(setConvoViewMode(1));
             }}
             className={`cursor-pointer flex-grow text-center p-2 shadow-md ${
-              activeInbox == "group" ? "bg-gray-200" : "bg-white"
+              convoViewMode == 1 ? "bg-gray-200" : "bg-white"
             }`}
           >
             Groups
@@ -256,15 +258,15 @@ export default function Sidebar({ getMessages, chatAFriend }) {
           }}
           // style={{ fontFamily: "Arial", "FontAwesome" }}
         />
-        {sidebarContent === "directs" ? (
-          <Directs getMessages={getMessages} />
-        ) : sidebarContent === "Friends" ? (
+        {sidebarContent === "inbox" ? (
+          <Inbox getMessages={getMessages} />
+        ) : sidebarContent === "friends" ? (
           <Friends chatAFriend={chatAFriend} />
         ) : sidebarContent === "groups" ? (
           <Groups getMessages={getMessages} />
-        ) : sidebarContent === "Archived" ? (
+        ) : sidebarContent === "archived" ? (
           <ArchivedChat getMessages={getMessages} />
-        ) : sidebarContent === "Discover" ? (
+        ) : sidebarContent === "discover" ? (
           <Discover />
         ) : (
           <p>brother...</p>

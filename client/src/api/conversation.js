@@ -1,11 +1,11 @@
 import axios from "axios";
 
-export async function getDirectConversations() {
+export async function getAllConversations() {
   try {
     // console.log("Getting all direct conversations...");
 
     const response = await axios.get(
-      "/jconnect/api/v1/user-conversation?isGroup=false&status=active",
+      "/jconnect/api/v1/user-conversation?status=active",
       { withCredentials: true }
     );
 

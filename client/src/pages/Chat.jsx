@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState, useRef } from "react";
 import {
   getFriendsConversation,
-  getDirectConversations,
+  getAllConversations,
   getArchivedConversations,
   getAllUserMessages,
   getAllGroupConversation,
@@ -41,7 +41,7 @@ export default function Chat() {
   // REDUX STATES
   const {
     currentConvoName,
-    allDirectConvo,
+    allInboxConversation,
     activeConvo,
     activeConvoIsArchived,
   } = useSelector((state) => state.conversation);
@@ -99,13 +99,13 @@ export default function Chat() {
 
   useEffect(() => {
     // This will get the initial messages to be displayed (if the currentConvo is null)
-    if (allDirectConvo && activeConvo === null && allDirectConvo.length > 0) {
+    if (allInboxConversation && activeConvo === null && allInboxConversation.length > 0) {
       getMessages(
-        allDirectConvo[0].conversation._id,
-        allDirectConvo[0].conversationName
+        allInboxConversation[0].conversation._id,
+        allInboxConversation[0].conversationName
       );
     }
-  }, [allDirectConvo]);
+  }, [allInboxConversation]);
 
   useEffect(() => {
     const mediaBlobUrls = [];
@@ -140,7 +140,7 @@ export default function Chat() {
   }, [images]);
 
   // Adds a loading screen if all conversations are not yet retrieved.
-  if (!allDirectConvo) {
+  if (!allInboxConversation) {
     return <div>Loading...</div>;
   }
 
@@ -148,11 +148,11 @@ export default function Chat() {
   // This will get all the conversation for the user
   async function getUserConversations() {
     // Direct conversations
-    const directData = await getDirectConversations();
-    let directConversations = [];
-    directData.forEach((data) => {
+    const allConversationData = await getAllConversations();
+    let allConversation = [];
+    allConversationData.forEach((data) => {
       data.conversation.userConvoId = data._id;
-      directConversations.push(data);
+      allConversation.push(data);
     });
 
     // console.log("ALL DIRECT CONVERSATIONS:", directConversations);
@@ -176,7 +176,7 @@ export default function Chat() {
 
     // Join rooms to all conversation  (The convo id will be the room number)
     // console.log("JOINING ROOMS");
-    directConversations.forEach((data) => {
+    allConversation.forEach((data) => {
       // User will automatically join the rooms for each direct conversation.
       socket.emit("join rooms", data.conversation._id);
     });
@@ -193,7 +193,7 @@ export default function Chat() {
 
     dispatch(
       initAllUserConversation([
-        directConversations,
+        allConversation,
         groupConversations,
         archivedConversations,
       ])
@@ -260,7 +260,7 @@ export default function Chat() {
     const response = await findConvoWithUser(friendId);
 
     // console.log("CHAT A FRIEND RESPONSE:", response);
-    // This will get the messages using the id of the response, since if the conversation exists, it's in the allDirectConvo array
+    // This will get the messages using the id of the response, since if the conversation exists, it's in the allInboxConversation array
     // Create a conversation with the friend if no convo exists
     if (response.length == 0) {
       const newConvo = await createConversation(user._id, friendId);
