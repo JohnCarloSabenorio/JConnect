@@ -54,11 +54,12 @@ io.on("connection", (socket) => {
 
   // Creates a room for every conversation the user is part of
   socket.on("join rooms", (data) => {
+    // Check if the user is already in the room
     if (!socket.rooms.has(data)) {
       socket.join(data);
       console.log(`Socket ${socket.id} joined room ${data}`);
     } else {
-      console.log("THE USER IS ALREADY IN THIS ROOM!");
+      console.log("The user is already in the room!");
     }
   });
 

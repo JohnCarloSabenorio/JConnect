@@ -5,12 +5,13 @@ const morgan = require("morgan");
 const app = express();
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
-// DEFINE ROUTERS
+// DEFINED ROUTERS
 const userRouter = require("./routes/userRoutes");
 const messageRouter = require("./routes/messageRoutes");
 const friendRouter = require("./routes/friendRoutes");
 const convoRouter = require("./routes/conversationRoutes");
 const userConvoRouter = require("./routes/userConversationRoutes");
+
 
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
@@ -54,6 +55,7 @@ app.use(express.json());
 
 // Parses cookie headers
 app.use(cookieParser());
+
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();

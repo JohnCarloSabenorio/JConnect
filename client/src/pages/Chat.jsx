@@ -7,6 +7,7 @@ import {
   getAllGroupConversation,
 } from "../api/conversation";
 import Message from "../components/Message";
+import UnfriendOverlay from "../components/UnfriendOverlay";
 import { UserContext } from "../App";
 import { useSelector, useDispatch } from "react-redux";
 import { socket } from "../socket";
@@ -99,7 +100,11 @@ export default function Chat() {
 
   useEffect(() => {
     // This will get the initial messages to be displayed (if the currentConvo is null)
-    if (allInboxConversation && activeConvo === null && allInboxConversation.length > 0) {
+    if (
+      allInboxConversation &&
+      activeConvo === null &&
+      allInboxConversation.length > 0
+    ) {
       getMessages(
         allInboxConversation[0].conversation._id,
         allInboxConversation[0].conversationName
@@ -345,6 +350,7 @@ export default function Chat() {
 
   return (
     <>
+      <UnfriendOverlay />
       <div className="flex flex-col h-screen overflow-hidden">
         <ProfileOverlay />
         <Navbar />
