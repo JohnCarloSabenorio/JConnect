@@ -350,7 +350,7 @@ export default function Chat() {
 
   return (
     <>
-      <UnfriendOverlay />
+      {/* <UnfriendOverlay /> */}
       <div className="flex flex-col h-screen overflow-hidden">
         <ProfileOverlay />
         <Navbar />

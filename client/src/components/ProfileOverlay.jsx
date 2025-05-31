@@ -52,12 +52,108 @@ export default function ProfileOverlay() {
       </svg>
 
       {/* Profile Modal */}
-      <div className="bg-white max-w-2xl rounded-md overflow-hidden p-5">
-        <div className="bg-white flex gap-5">
-          <div>
-            <img src="/img/avatar.png" className="" alt="profile-img"></img>
+      <div className="bg-white rounded-md overflow-hidden w-7xl">
+        {/* Profile Banner */}
+        <div className="w-full h-60 bg-red-400"></div>
+        <div className="bg-white flex gap-5 p-5">
+          <div className="w-40 relative ml-5">
+            <div className="bg-pink-400 absolute rounded-full bottom-1">
+              <img
+                src="/img/avatar.png"
+                className="w-40"
+                alt="profile-img"
+              ></img>
+            </div>
           </div>
-          <div className="grid grid-cols-2 gap-3 bg-green-100 p-3 border-green-500 border-1 shadow-md rounded-lg">
+          <div className="text-xl">
+            <p>John Carlo Sabenorio</p>
+            <p>69 Friends</p>
+          </div>
+          <div className="flex gap-2 ml-auto mr-5">
+            <button className="bg-blue-300 text-white font-bold rounded-sm px-3 py-2 cursor-pointer">
+              Add Friend
+            </button>
+            <button
+              className="bg-blue-300 text-white font-bold rounded-sm px-3 py-2 cursor-pointer"
+              onClick={async () => {
+                try {
+                  let userConversation = await findConvoWithUser(
+                    displayedUser._id
+                  );
+
+                  const isNew = userConversation == null;
+
+                  if (isNew) {
+                    userConversation = await createConversation(
+                      user._id,
+                      displayedUser._id
+                    );
+                    dispatch(addANewConvo(userConversation));
+                  }
+
+                  const { conversation, conversationName, status } =
+                    userConversation;
+
+                  // Join socket room
+                  socket.emit("join rooms", userConversation._id);
+
+                  // Fetch messages
+                  getMessages(conversation._id, conversationName);
+
+                  // Determine sidebar mode
+                  const isArchived = status === "archived";
+
+                  dispatch(
+                    updateSidebar({
+                      sidebarTitle: isArchived ? "archived" : "inbox",
+                      sidebarContent: isArchived ? "archived" : "inbox",
+                      sidebarBtn: isArchived ? "archived-btn" : "inbox-btn",
+                    })
+                  );
+
+                  dispatch(setActiveDirectUser(displayedUser._id));
+                  dispatch(setUserIsFriend(false));
+                  dispatch(setActiveConvoIsGroup(false));
+                  dispatch(changeActiveInbox("direct"));
+                  dispatch(hideProfileOverlay());
+                  dispatch(setConvoViewMode(0));
+                  console.log(
+                    isNew
+                      ? "Created new conversation and joined room"
+                      : "Joined existing conversation"
+                  );
+                } catch (error) {
+                  console.error("Failed to handle conversation click:", error);
+                }
+              }}
+            >
+              Chat Now!
+            </button>
+          </div>
+        </div>
+        {/* <div className="bg-white flex">
+          <div className="mt-5 bg-blue-100 p-3 rounded-lg border-1 border-blue-800 shadow-md">
+            <h1 className="font-bold">Bio</h1>
+            <p className="text-pretty">
+              Web developer with a passion for building interactive
+              applications. Specializing in JavaScript, React, and Node.js.
+              Always looking for ways to improve user experience and write
+              clean, scalable code. Currently learning AI and exploring new
+              technologies!
+            </p>
+          </div>
+        </div> */}
+        <div className="mt-5 text-align-center  p-5 min-h-50 m-5 ">
+          <h3 className="font-bold">About Me</h3>
+          <p className="p-3 min-h-50 text-gray-700 bg-gray-100">bio...</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+{
+  /* <div className="grid grid-cols-2 gap-3 bg-green-100 p-3 border-green-500 border-1 shadow-md rounded-lg">
             <label className="font-bold" htmlFor="user-name">
               Username
             </label>
@@ -92,80 +188,5 @@ export default function ProfileOverlay() {
             >
               {displayedUser?.status}
             </p>
-          </div>
-        </div>
-        <div className="bg-white flex">
-          <div className="mt-5 bg-blue-100 p-3 rounded-lg border-1 border-blue-800 shadow-md">
-            <h1 className="font-bold">Bio</h1>
-            <p className="text-pretty">
-              Web developer with a passion for building interactive
-              applications. Specializing in JavaScript, React, and Node.js.
-              Always looking for ways to improve user experience and write
-              clean, scalable code. Currently learning AI and exploring new
-              technologies!
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-5 text-align-center">
-          <button
-            className="bg-blue-300 text-white font-bold rounded-sm px-3 py-2 cursor-pointer"
-            onClick={async () => {
-              try {
-                let userConversation = await findConvoWithUser(
-                  displayedUser._id
-                );
-
-                const isNew = userConversation == null;
-
-                if (isNew) {
-                  userConversation = await createConversation(
-                    user._id,
-                    displayedUser._id
-                  );
-                  dispatch(addANewConvo(userConversation));
-                }
-
-                const { conversation, conversationName, status } =
-                  userConversation;
-
-                // Join socket room
-                socket.emit("join rooms", userConversation._id);
-
-                // Fetch messages
-                getMessages(conversation._id, conversationName);
-
-                // Determine sidebar mode
-                const isArchived = status === "archived";
-
-                dispatch(
-                  updateSidebar({
-                    sidebarTitle: isArchived ? "archived" : "inbox",
-                    sidebarContent: isArchived ? "archived" : "inbox",
-                    sidebarBtn: isArchived ? "archived-btn" : "inbox-btn",
-                  })
-                );
-
-                dispatch(setActiveDirectUser(displayedUser._id));
-                dispatch(setUserIsFriend(false));
-                dispatch(setActiveConvoIsGroup(false));
-                dispatch(changeActiveInbox("direct"));
-                dispatch(hideProfileOverlay());
-                dispatch(setConvoViewMode(0));
-                console.log(
-                  isNew
-                    ? "Created new conversation and joined room"
-                    : "Joined existing conversation"
-                );
-              } catch (error) {
-                console.error("Failed to handle conversation click:", error);
-              }
-            }}
-          >
-            Chat Now!
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+          </div> */
 }
