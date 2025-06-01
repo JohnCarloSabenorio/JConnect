@@ -36,7 +36,7 @@ export default function ProfileOverlay() {
 
   return (
     <div
-      className={`absolute w-full h-full z-20 bg-black/70  justify-center items-center flex-col ${
+      className={`absolute w-full h-full z-50 bg-black/70  justify-center items-center flex-col ${
         isDisplayed ? "flex" : "hidden"
       }`}
     >
@@ -70,11 +70,11 @@ export default function ProfileOverlay() {
             <p>69 Friends</p>
           </div>
           <div className="flex gap-2 ml-auto mr-5">
-            <button className="bg-blue-300 text-white font-bold rounded-sm px-3 py-2 cursor-pointer">
+            <button className="bg-blue-300 text-white font-bold rounded-sm px-5 cursor-pointer">
               Add Friend
             </button>
             <button
-              className="bg-blue-300 text-white font-bold rounded-sm px-3 py-2 cursor-pointer"
+              className="bg-blue-300 text-white font-bold rounded-sm px-5 cursor-pointer"
               onClick={async () => {
                 try {
                   let userConversation = await findConvoWithUser(

@@ -59,7 +59,7 @@ exports.getMyFriends = catchAsync(async (req, res) => {
   });
 });
 
-// No need to get friend requests
+// This will get the requests sent to the current user from other people
 exports.getMyFriendRequests = catchAsync(async (req, res, next) => {
   const friendRequests = await Friend.find({
     user2: req.user.id,

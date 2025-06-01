@@ -55,3 +55,13 @@ export async function isFriend(userId) {
     console.log(err);
   }
 }
+
+export async function sendFriendRequest(userId) {
+  try {
+    const response = await axios.post(
+      `jconnect/api/v1/friends/friendRequest/${userId}`
+    );
+  } catch (err) {
+    console.log("Error sending friend request:", err);
+  }
+}

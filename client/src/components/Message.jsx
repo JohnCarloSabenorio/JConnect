@@ -33,7 +33,7 @@ export default function Message({
                 </div>
               )}
 
-              <span className="z-50 absolute left-0 bottom-full mb-2 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="z-40 absolute left-0 bottom-full mb-2 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity">
                 {formatTime(timeSent)}
               </span>
             </div>
