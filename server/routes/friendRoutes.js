@@ -23,11 +23,29 @@ router
   .route("/friendRequest/:friendId")
   .post(friendController.sendFriendRequest);
 
+router
+  .route("/cancelRequest/:friendId")
+  .delete(friendController.cancelFriendRequest);
+router
+  .route("/rejectRequest/:friendId")
+  .delete(friendController.rejectFriendRequest);
+router
+  .route("/acceptRequest/:friendId")
+  .patch(friendController.acceptFriendRequest);
+
 // NEEDS TO BE REVISED IN THE FUTURE
 router.route("/currentUser/allFriends").get(friendController.getMyFriends);
 router
   .route("/friendRequests/myFriendRequests")
   .get(friendController.getMyFriendRequests);
+
+router
+  .route("/isRequestSent/:userId")
+  .get(friendController.isRequestSentToUser);
+
+router
+  .route("/isRequestReceived/:userId")
+  .get(friendController.isRequestReceived);
 
 router.get("/isFriend/:id", friendController.isFriend);
 // Checks if a conversation exists with a friend

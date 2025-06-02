@@ -23,6 +23,55 @@ exports.sendFriendRequest = catchAsync(async (req, res, next) => {
     data: friendRequest,
   });
 });
+exports.cancelFriendRequest = catchAsync(async (req, res, next) => {
+  const friendRequest = await Friend.findOneAndDelete({
+    user1: req.user.id,
+    user2: req.params.friendId,
+  });
+
+  if (!friendRequest) {
+    return next(new AppError("Friend request does not exist!", 400));
+  }
+  res.status(204).json({
+    status: "success",
+    message: "Friend request cancelled!",
+  });
+});
+exports.rejectFriendRequest = catchAsync(async (req, res, next) => {
+  const friendRequest = await Friend.findOneAndDelete({
+    user1: req.params.friendId,
+    user2: req.user.id,
+  });
+
+  if (!friendRequest) {
+    return next(new AppError("Friend request does not exist!", 400));
+  }
+  res.status(204).json({
+    status: "success",
+    message: "Friend request cancelled!",
+  });
+});
+
+exports.acceptFriendRequest = catchAsync(async (req, res, next) => {
+  const friend = await Friend.findOneAndUpdate(
+    {
+      user1: req.params.friendId,
+      user2: req.user.id,
+    },
+    {
+      status: "accepted",
+    }
+  );
+
+  if (!friend) {
+    return next(new AppError("Friend request does not exist!", 400));
+  }
+  res.status(200).json({
+    status: "success",
+    message: "Friend request accepted!",
+    data: friend,
+  });
+});
 
 // Refactor to "getMyContacts"
 exports.getMyFriends = catchAsync(async (req, res) => {
@@ -70,6 +119,31 @@ exports.getMyFriendRequests = catchAsync(async (req, res, next) => {
     status: "success",
     message: "Friend request sent!",
     data: friendRequests,
+  });
+});
+
+exports.isRequestSentToUser = catchAsync(async (req, res) => {
+  const friendRequest = await Friend.findOne({
+    user1: req.user.id,
+    user2: req.params.userId,
+    status: "pending",
+  });
+
+  res.status(200).json({
+    status: "success",
+    isRequestSent: !!friendRequest,
+  });
+});
+exports.isRequestReceived = catchAsync(async (req, res) => {
+  const friendRequest = await Friend.findOne({
+    user1: req.params.userId,
+    user2: req.user.id,
+    status: "pending",
+  });
+
+  res.status(200).json({
+    status: "success",
+    isRequestReceived: !!friendRequest,
   });
 });
 

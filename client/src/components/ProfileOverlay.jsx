@@ -1,16 +1,28 @@
+import {
+  sendFriendRequest,
+  cancelFriendRequest,
+  rejectFriendRequest,
+  acceptFriendRequest,
+  isRequestSentToUser,
+  isRequestReceived,
+  isFriend,
+} from "../api/friends";
 import { useSelector, useDispatch } from "react-redux";
 import { hideProfileOverlay } from "../redux/profile_overlay";
 import { socket } from "../socket";
-import { setConvoViewMode, updateSidebar } from "../redux/sidebar";
+import { useEffect, useState, useContext } from "react";
+import {
+  setConvoViewMode,
+  updateSidebar,
+  changeActiveInbox,
+} from "../redux/sidebar";
 import {
   createConversation,
   findConvoWithUser,
   getAllUserMessages,
 } from "../api/conversation";
-import { useContext } from "react";
 import { UserContext } from "../App";
 import { initDisplayedMessages } from "../redux/message";
-import { convoIsArchived } from "../api/conversation";
 import {
   setUserIsFriend,
   addANewConvo,
@@ -18,175 +30,242 @@ import {
   setActiveConvoIsGroup,
   setActiveDirectUser,
 } from "../redux/conversation";
-import { changeActiveInbox } from "../redux/sidebar";
 
 export default function ProfileOverlay() {
   const { user } = useContext(UserContext);
+  const [addBtnText, setAddBtnText] = useState("Add Friend");
+  const [isLoading, setIsLoading] = useState(true);
+  const [friendState, setFriendState] = useState();
   const { isDisplayed, displayedUser } = useSelector(
     (state) => state.profileOverlay
   );
   const dispatch = useDispatch();
 
-  async function getMessages(convoId, convoName) {
-    // Join a channel for users in the same conversation
+  useEffect(() => {
+    async function checkFriendStatus() {
+      // Stop checking the friend status if the overlay is not shown
+      if (!displayedUser) {
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+
+      // Check if the user already sent a friend request
+      const requestSent = await isRequestSentToUser(displayedUser._id);
+      if (requestSent) {
+        setFriendState("request_sent");
+        setAddBtnText("Cancel Request");
+        setIsLoading(false);
+        return;
+      }
+
+      // Check if the user received a friend request
+      const requestReceived = await isRequestReceived(displayedUser._id);
+      if (requestReceived) {
+        setFriendState("request_received");
+        setIsLoading(false);
+        return;
+      }
+
+      // Check if the user is friends with the displayed user
+      const friend = await isFriend(displayedUser._id);
+      if (friend) {
+        setFriendState("friend");
+        setIsLoading(false);
+        return;
+      }
+
+      // By default, set the displayed user to not_friend
+      setFriendState("not_friend");
+      setAddBtnText("Add Friend");
+      setIsLoading(false);
+    }
+
+    // If displayed user exists, check the friend status
+    if (displayedUser) {
+      checkFriendStatus();
+    }
+  }, [displayedUser]);
+
+  const getMessages = async (convoId, convoName) => {
     const messages = await getAllUserMessages(convoId);
     dispatch(setActiveConversation([convoName, convoId]));
     dispatch(initDisplayedMessages(messages));
-  }
+  };
+
+  // Add friend function
+  const addFriend = async (userId) => {
+    sendFriendRequest(userId);
+    setFriendState("request_sent");
+  };
+
+  // Cancel request function
+
+  const removeFriendRequest = async (userId) => {
+    cancelFriendRequest(userId);
+    setFriendState("not_friend");
+  };
+
+  // Accept request function
+
+  const acceptRequest = async (userId) => {
+    acceptFriendRequest(userId);
+    setFriendState("friend");
+  };
+
+  // Reject request function
+
+  const rejectRequest = async (userId) => {
+    rejectFriendRequest(userId);
+    setFriendState("not_friend");
+  };
+
+  const handleChat = async () => {
+    try {
+      let userConversation = await findConvoWithUser(displayedUser._id);
+      const isNew = userConversation == null;
+
+      if (isNew) {
+        userConversation = await createConversation(
+          user._id,
+          displayedUser._id
+        );
+        dispatch(addANewConvo(userConversation));
+      }
+
+      const { conversation, conversationName, status } = userConversation;
+
+      socket.emit("join rooms", userConversation._id);
+      await getMessages(conversation._id, conversationName);
+
+      dispatch(
+        updateSidebar({
+          sidebarTitle: status === "archived" ? "archived" : "inbox",
+          sidebarContent: status === "archived" ? "archived" : "inbox",
+          sidebarBtn: status === "archived" ? "archived-btn" : "inbox-btn",
+        })
+      );
+
+      dispatch(setActiveDirectUser(displayedUser._id));
+      dispatch(setUserIsFriend(false));
+      dispatch(setActiveConvoIsGroup(false));
+      dispatch(changeActiveInbox("direct"));
+      dispatch(hideProfileOverlay());
+      dispatch(setConvoViewMode(0));
+
+      console.log(
+        isNew
+          ? "Created new conversation and joined room"
+          : "Joined existing conversation"
+      );
+    } catch (error) {
+      console.error("Failed to handle conversation click:", error);
+    }
+  };
+
+  const renderFriendButtons = () => {
+    if (isLoading) {
+      return (
+        <img src="/img/loading.gif" className="w-10 h-10" alt="Loading..." />
+      );
+    }
+
+    switch (friendState) {
+      case "not_friend":
+        return (
+          <button
+            onClick={() => addFriend(displayedUser._id)}
+            className="bg-gray-400 text-white font-bold rounded-sm px-5 py-2 cursor-pointer"
+          >
+            Add Friend
+          </button>
+        );
+      case "request_sent":
+        return (
+          <button
+            onClick={() => removeFriendRequest(displayedUser._id)}
+            className="bg-yellow-500 text-white font-bold rounded-sm px-5 py-2 cursor-pointer"
+          >
+            Cancel Request
+          </button>
+        );
+      case "request_received":
+        return (
+          <>
+            <button
+              onClick={() => acceptRequest(displayedUser._id)}
+              className="bg-green-400 text-white font-bold rounded-sm px-5 py-2 cursor-pointer"
+            >
+              Accept
+            </button>
+            <button
+              onClick={() => rejectRequest(displayedUser._id)}
+              className="bg-red-400 text-white font-bold rounded-sm px-5 py-2 cursor-pointer"
+            >
+              Reject
+            </button>
+          </>
+        );
+      case "friend":
+        return (
+          <button className="bg-blue-400 text-white font-bold rounded-sm px-5 py-2 cursor-pointer">
+            Friend
+          </button>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <div
-      className={`absolute w-full h-full z-50 bg-black/70  justify-center items-center flex-col ${
+      className={`absolute w-full h-full z-50 bg-black/70 justify-center items-center flex-col ${
         isDisplayed ? "flex" : "hidden"
       }`}
     >
-      {/* Close Button */}
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 -960 960 960"
         fill="#e3e3e3"
         className="absolute top-5 right-5 w-10 h-10 cursor-pointer"
-        onClick={() => dispatch(hideProfileOverlay())}
+        onClick={() => {
+          dispatch(hideProfileOverlay());
+        }}
       >
         <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
       </svg>
 
-      {/* Profile Modal */}
       <div className="bg-white rounded-md overflow-hidden w-7xl">
-        {/* Profile Banner */}
         <div className="w-full h-60 bg-red-400"></div>
         <div className="bg-white flex gap-5 p-5">
           <div className="w-40 relative ml-5">
             <div className="bg-pink-400 absolute rounded-full bottom-1">
-              <img
-                src="/img/avatar.png"
-                className="w-40"
-                alt="profile-img"
-              ></img>
+              <img src="/img/avatar.png" className="w-40" alt="profile-img" />
             </div>
           </div>
+
           <div className="text-xl">
-            <p>John Carlo Sabenorio</p>
+            <p>{displayedUser?.username ?? "Loading..."}</p>
             <p>69 Friends</p>
           </div>
-          <div className="flex gap-2 ml-auto mr-5">
-            <button className="bg-blue-300 text-white font-bold rounded-sm px-5 cursor-pointer">
-              Add Friend
-            </button>
+
+          <div className="flex gap-2 ml-auto mr-5 items-center">
+            {renderFriendButtons()}
             <button
-              className="bg-blue-300 text-white font-bold rounded-sm px-5 cursor-pointer"
-              onClick={async () => {
-                try {
-                  let userConversation = await findConvoWithUser(
-                    displayedUser._id
-                  );
-
-                  const isNew = userConversation == null;
-
-                  if (isNew) {
-                    userConversation = await createConversation(
-                      user._id,
-                      displayedUser._id
-                    );
-                    dispatch(addANewConvo(userConversation));
-                  }
-
-                  const { conversation, conversationName, status } =
-                    userConversation;
-
-                  // Join socket room
-                  socket.emit("join rooms", userConversation._id);
-
-                  // Fetch messages
-                  getMessages(conversation._id, conversationName);
-
-                  // Determine sidebar mode
-                  const isArchived = status === "archived";
-
-                  dispatch(
-                    updateSidebar({
-                      sidebarTitle: isArchived ? "archived" : "inbox",
-                      sidebarContent: isArchived ? "archived" : "inbox",
-                      sidebarBtn: isArchived ? "archived-btn" : "inbox-btn",
-                    })
-                  );
-
-                  dispatch(setActiveDirectUser(displayedUser._id));
-                  dispatch(setUserIsFriend(false));
-                  dispatch(setActiveConvoIsGroup(false));
-                  dispatch(changeActiveInbox("direct"));
-                  dispatch(hideProfileOverlay());
-                  dispatch(setConvoViewMode(0));
-                  console.log(
-                    isNew
-                      ? "Created new conversation and joined room"
-                      : "Joined existing conversation"
-                  );
-                } catch (error) {
-                  console.error("Failed to handle conversation click:", error);
-                }
-              }}
+              className="bg-blue-400 text-white font-bold rounded-sm px-5 py-2 cursor-pointer"
+              onClick={handleChat}
             >
               Chat Now!
             </button>
           </div>
         </div>
-        {/* <div className="bg-white flex">
-          <div className="mt-5 bg-blue-100 p-3 rounded-lg border-1 border-blue-800 shadow-md">
-            <h1 className="font-bold">Bio</h1>
-            <p className="text-pretty">
-              Web developer with a passion for building interactive
-              applications. Specializing in JavaScript, React, and Node.js.
-              Always looking for ways to improve user experience and write
-              clean, scalable code. Currently learning AI and exploring new
-              technologies!
-            </p>
-          </div>
-        </div> */}
-        <div className="mt-5 text-align-center  p-5 min-h-50 m-5 ">
+
+        <div className="mt-5 text-align-center p-5 min-h-50 m-5">
           <h3 className="font-bold">About Me</h3>
           <p className="p-3 min-h-50 text-gray-700 bg-gray-100">bio...</p>
         </div>
       </div>
     </div>
   );
-}
-
-{
-  /* <div className="grid grid-cols-2 gap-3 bg-green-100 p-3 border-green-500 border-1 shadow-md rounded-lg">
-            <label className="font-bold" htmlFor="user-name">
-              Username
-            </label>
-            <h1 id="user-name" className="break-words whitespace-normal">
-              {displayedUser?.username}
-            </h1>
-            <label className="font-bold" htmlFor="user-email">
-              Email
-            </label>
-            <p className="break-words whitespace-normal">
-              {displayedUser?.email}
-            </p>
-            <label className="font-bold" htmlFor="user-number">
-              Phone Number
-            </label>
-            <p id="user-number" className="break-words whitespace-normal">
-              {displayedUser?.phone_number ?? "-"}
-            </p>
-
-            <label className="font-bold" htmlFor="user-location">
-              Location
-            </label>
-            <p id="user-location" className="break-words whitespace-normal">
-              {displayedUser?.location ?? "-"}
-            </p>
-            <label className="font-bold" htmlFor="user-status">
-              Status
-            </label>
-            <p
-              id="user-status"
-              className="break-words whitespace-normal font-bold text-gray-700"
-            >
-              {displayedUser?.status}
-            </p>
-          </div> */
 }
