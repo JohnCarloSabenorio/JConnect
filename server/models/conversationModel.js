@@ -48,7 +48,6 @@ convoSchema.pre(/^find/, function (next) {
   next();
 });
 
-
 const ConvoModel = mongoose.model("Conversation", convoSchema);
 
 module.exports = ConvoModel;

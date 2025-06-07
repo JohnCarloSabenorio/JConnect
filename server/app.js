@@ -11,7 +11,7 @@ const messageRouter = require("./routes/messageRoutes");
 const friendRouter = require("./routes/friendRoutes");
 const convoRouter = require("./routes/conversationRoutes");
 const userConvoRouter = require("./routes/userConversationRoutes");
-
+const notificationRouter = require("./routes/notificationRoutes");
 
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
@@ -56,7 +56,6 @@ app.use(express.json());
 // Parses cookie headers
 app.use(cookieParser());
 
-
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   console.log("Server request time: " + req.requestTime);
@@ -72,6 +71,7 @@ app.use("/jconnect/api/v1/message", messageRouter);
 app.use("/jconnect/api/v1/friends", friendRouter);
 app.use("/jconnect/api/v1/conversation", convoRouter);
 app.use("/jconnect/api/v1/user-conversation", userConvoRouter);
+app.use("/jconnect/api/v1/notification", notificationRouter);
 
 // This will handle undefined routes
 app.all("*", (req, res, next) => {
