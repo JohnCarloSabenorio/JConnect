@@ -23,6 +23,7 @@ import {
 
 import {
   initDisplayedMessages,
+  setMessageIsLoading,
   updateDisplayedMessages,
 } from "../redux/message";
 
@@ -38,7 +39,9 @@ export default function Chat() {
   );
 
   // This will get the messages to be displayed from the message slice
-  const { displayedMessages } = useSelector((state) => state.message);
+  const { displayedMessages, messageIsLoading } = useSelector(
+    (state) => state.message
+  );
 
   // This will get all the images to be displayed from the media slice
   const { mediaImages } = useSelector((state) => state.media);
@@ -185,6 +188,7 @@ export default function Chat() {
     const messages = await getAllUserMessages(convoId);
     dispatch(setActiveConversation([convoName, convoId]));
     dispatch(initDisplayedMessages(messages));
+    dispatch(setMessageIsLoading(false));
   }
 
   async function handleImagesChange(e) {
@@ -329,30 +333,38 @@ export default function Chat() {
               id="chat-ui"
               className="bg-gray-50 flex-grow overflow-y-scroll overflow-x-hidden"
             >
-              {displayedMessages?.map((message, i) => {
-                let blobUrls = [];
-                if (message.images64) {
-                  message.images64.forEach((base64, idx) => {
-                    const blob = base64ToBlob(base64);
+              {messageIsLoading ? (
+                <div
+                  className={`w-full h-full bg-gray-200 flex justify-center items-center`}
+                >
+                  <img src="img/loading.gif" className="w-20 h-20"></img>
+                </div>
+              ) : (
+                displayedMessages.map((message, i) => {
+                  let blobUrls = [];
+                  if (message.images64) {
+                    message.images64.forEach((base64, idx) => {
+                      const blob = base64ToBlob(base64);
 
-                    if (blob) {
-                      blobUrls.push(URL.createObjectURL(blob));
-                    }
-                  });
-                }
+                      if (blob) {
+                        blobUrls.push(URL.createObjectURL(blob));
+                      }
+                    });
+                  }
 
-                return (
-                  <Message
-                    key={i}
-                    imgUrl="img/icons/male-default.jpg"
-                    message={message.message}
-                    username={message.sender.username}
-                    isCurrentUser={message.sender._id === user._id}
-                    timeSent={message.createdAt}
-                    imagesSent={blobUrls}
-                  />
-                );
-              })}
+                  return (
+                    <Message
+                      key={i}
+                      imgUrl="img/icons/male-default.jpg"
+                      message={message.message}
+                      username={message.sender.username}
+                      isCurrentUser={message.sender._id === user._id}
+                      timeSent={message.createdAt}
+                      imagesSent={blobUrls}
+                    />
+                  );
+                })
+              )}
             </div>
 
             <div>

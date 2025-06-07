@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
 import { isFriend } from "../api/friends";
 import { changeSidebarSearch } from "../redux/sidebar";
+import { getAllUserMessages } from "../api/conversation";
+import { initDisplayedMessages } from "../redux/message";
 import { useSelector, useDispatch } from "react-redux";
+import { setMessageIsLoading } from "../redux/message";
 import {
+  setActiveConversation,
   setActiveConvoIsGroup,
   setActiveDirectUser,
   setActiveConvoMembers,
@@ -10,7 +14,6 @@ import {
 } from "../redux/conversation";
 
 export default function ConversationCard({
-  getMessages,
   chatmateId,
   userConversation,
   isArchived,
@@ -21,9 +24,7 @@ export default function ConversationCard({
   const { sidebarSearch } = useSelector((state) => state.sidebar);
   const dispatch = useDispatch();
 
-  console.log("USER CONVERSATION ARCHIVED:", userConversation);
-
-  console.log("THE USER CONVERSATION:", userConversation);
+  useEffect(() => {}, [userConversation]);
   const isActive = activeConvo === userConversation.conversation._id;
 
   useEffect(() => {}, [activeConvoMembers]);
@@ -54,6 +55,14 @@ export default function ConversationCard({
     }
   };
 
+  async function getMessages(convoId) {
+    // Join a channel for users in the same conversation
+    dispatch(setMessageIsLoading(true));
+    const messages = await getAllUserMessages(convoId);
+    dispatch(initDisplayedMessages(messages));
+    dispatch(setMessageIsLoading(false));
+  }
+
   // CHATS DISPLAYED IN THE SIDEBAR
   return (
     <>
@@ -67,10 +76,13 @@ export default function ConversationCard({
             : "hidden"
         }`}
         onClick={() => {
-          getMessages(
-            userConversation.conversation._id,
-            userConversation.conversationName
+          dispatch(
+            setActiveConversation([
+              userConversation.conversationName,
+              userConversation.conversation._id,
+            ])
           );
+          getMessages(userConversation.conversation._id);
 
           dispatch(
             setActiveConvoIsArchived(userConversation.status == "archived")

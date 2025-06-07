@@ -18,6 +18,7 @@ import {
   initAllArchivedConversation,
   setActiveConversation,
 } from "../redux/conversation";
+import { getAllUserMessages } from "../api/conversation";
 import { initDisplayedMessages } from "../redux/message";
 import {
   getAllConversations,

@@ -4,6 +4,7 @@ const messageSlice = createSlice({
   name: "message",
   initialState: {
     displayedMessages: [],
+    messageIsLoading: true,
   },
 
   reducers: {
@@ -11,15 +12,20 @@ const messageSlice = createSlice({
       state.displayedMessages = action.payload;
     },
 
+    setMessageIsLoading: (state, action) => {
+      state.messageIsLoading = action.payload;
+    },
+
     updateDisplayedMessages: (state, action) => {
-      state.displayedMessages = [
-        ...state.displayedMessages,
-        action.payload,
-      ];
+      state.displayedMessages = [...state.displayedMessages, action.payload];
     },
   },
 });
 
-export const { initDisplayedMessages, updateDisplayedMessages } = messageSlice.actions;
+export const {
+  initDisplayedMessages,
+  updateDisplayedMessages,
+  setMessageIsLoading,
+} = messageSlice.actions;
 
 export default messageSlice.reducer;
