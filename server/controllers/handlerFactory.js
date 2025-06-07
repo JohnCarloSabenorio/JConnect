@@ -4,6 +4,7 @@ const APIFeatures = require("../utils/apiFeatures");
 const Conversation = require("../models/conversationModel");
 const UserConversation = require("../models/userConversationModel");
 const User = require("../models/userModel");
+const Friend = require("../models/friendModel");
 const path = require("path");
 const fs = require("fs");
 const sharp = require("sharp");
@@ -143,6 +144,15 @@ exports.deleteOne = (Model) =>
       await UserConversation.deleteMany({ conversation: req.params.id });
     }
     const doc = await Model.findByIdAndDelete(req.params.id);
+
+    if (Model === Friend) {
+      await Friend.findOneAndDelete({
+        $or: [
+          { user1: req.user.id, user2: req.params.id },
+          { user2: req.user.id, user1: req.params.id },
+        ],
+      });
+    }
 
     if (!doc) {
       return next(

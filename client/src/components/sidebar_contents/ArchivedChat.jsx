@@ -6,18 +6,21 @@ import { archiveConversation } from "../../api/conversation";
 import { setConvoViewMode } from "../../redux/sidebar";
 export default function ArchivedChat({ getMessages }) {
   const { user } = useContext(UserContext);
-  const { allUserArchivedConvo, active } = useSelector(
+  const { allArchivedConversation, active } = useSelector(
     (state) => state.conversation
   );
 
   const { convoViewMode } = useSelector((state) => state.sidebar);
+
+  if (!allArchivedConversation) return <></>;
+
   let filteredConversations;
   if (convoViewMode === 0) {
-    filteredConversations = allUserArchivedConvo.filter(
+    filteredConversations = allArchivedConversation.filter(
       (uc) => uc.conversation.users.length === 2
     );
   } else {
-    filteredConversations = allUserArchivedConvo.filter(
+    filteredConversations = allArchivedConversation.filter(
       (uc) => uc.conversation.users.length > 2
     );
   }

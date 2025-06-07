@@ -2,6 +2,7 @@ import {
   sendFriendRequest,
   cancelFriendRequest,
   rejectFriendRequest,
+  removeFriend,
   acceptFriendRequest,
   isRequestSentToUser,
   isRequestReceived,
@@ -34,6 +35,10 @@ import {
 export default function ProfileOverlay() {
   const { user } = useContext(UserContext);
   const [addBtnText, setAddBtnText] = useState("Add Friend");
+
+  // This will handle the display of the friend dropdown
+  const [friendbarActive, setFriendbarActive] = useState(false);
+
   const [isLoading, setIsLoading] = useState(true);
   const [friendState, setFriendState] = useState();
   const { isDisplayed, displayedUser } = useSelector(
@@ -121,6 +126,12 @@ export default function ProfileOverlay() {
     setFriendState("not_friend");
   };
 
+  // Unfriend a user
+  const unfriendUser = async (userId) => {
+    removeFriend(userId);
+    setFriendState("not_friend");
+  };
+
   const handleChat = async () => {
     try {
       let userConversation = await findConvoWithUser(displayedUser._id);
@@ -148,7 +159,6 @@ export default function ProfileOverlay() {
       );
 
       dispatch(setActiveDirectUser(displayedUser._id));
-      dispatch(setUserIsFriend(false));
       dispatch(setActiveConvoIsGroup(false));
       dispatch(changeActiveInbox("direct"));
       dispatch(hideProfileOverlay());
@@ -209,8 +219,28 @@ export default function ProfileOverlay() {
         );
       case "friend":
         return (
-          <button className="bg-blue-400 text-white font-bold rounded-sm px-5 py-2 cursor-pointer">
-            Friend
+          <button
+            className="bg-blue-400 text-white font-bold rounded-sm px-5 py-2 cursor-pointer group relative"
+            onClick={() => {
+              setFriendbarActive((prev) => !prev);
+            }}
+          >
+            <p>Friend</p>
+
+            <div
+              className={`${
+                friendbarActive ? "flex" : "hidden"
+              } absolute top-full mt-3 right-0 rounded-sm w-50 bg-gray-50 shadow-lg origin-top duration-100 flex-col justify-start`}
+            >
+              <a
+                onClick={(e) => {
+                  unfriendUser(displayedUser._id);
+                }}
+                className="text-gray-800 hover:bg-blue-200 rounded-sm p-2"
+              >
+                Unfriend
+              </a>
+            </div>
           </button>
         );
       default:

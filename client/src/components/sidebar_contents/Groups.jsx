@@ -1,15 +1,15 @@
 import ConversationCard from "../ConversationCard";
 import { useSelector } from "react-redux";
 export default function Groups({ getMessages }) {
-  const { allUserGroupConvo } = useSelector((state) => state.conversation);
+  const { allGroupConversation } = useSelector((state) => state.conversation);
 
   return (
     <>
-      {allUserGroupConvo.map((data, id) => {
+      {allGroupConversation.map((data, id) => {
         // console.log("THE CONVORATION:", convo);
 
         console.log(" THE GROUP CONVO:", data);
-        
+
         return (
           <ConversationCard
             key={id}

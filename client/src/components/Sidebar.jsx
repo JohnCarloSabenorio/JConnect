@@ -2,18 +2,31 @@ import { getAllUsers } from "../api/user";
 import { useState, useEffect } from "react";
 import Directs from "./sidebar_contents/Directs";
 import Friends from "./sidebar_contents/Friends";
+import { setAllFriends } from "../redux/friend";
 import ArchivedGroups from "./sidebar_contents/ArchivedGroups";
+import { getFriends } from "../api/friends";
 import Inbox from "./sidebar_contents/Inbox";
 import Groups from "./sidebar_contents/Groups";
 import ArchivedChat from "./sidebar_contents/ArchivedChat";
 import Discover from "./sidebar_contents/Discover";
 import { useDispatch, useSelector } from "react-redux";
+import { socket } from "../socket";
+import {
+  initAllUserConversation,
+  initAllDirectConversation,
+  initAllGroupConversation,
+  initAllArchivedConversation,
+  setActiveConversation,
+} from "../redux/conversation";
+import { initDisplayedMessages } from "../redux/message";
+import {
+  getAllConversations,
+  getAllGroupConversation,
+  getArchivedConversations,
+} from "../api/conversation";
+
 import {
   updateSidebar,
-  changeSidebarTitle,
-  changeSidebarContent,
-  changeSidebarBtn,
-  changeActiveInbox,
   changeSidebarSearch,
   setConvoViewMode,
 } from "../redux/sidebar";
@@ -34,22 +47,39 @@ export default function Sidebar({ getMessages, chatAFriend }) {
     convoViewMode,
   } = useSelector((state) => state.sidebar);
 
+  const {
+    currentConvoName,
+    activeConvo,
+    activeConvoIsArchived,
+    allDirectConversation,
+  } = useSelector((state) => state.conversation);
+
   const { isDarkMode } = useSelector((state) => state.isDarkMode);
-  const { allInboxConversation } = useSelector((state) => state.conversation);
 
   const { allUsers } = useSelector((state) => state.user);
-
-  const [currentActiveId, setCurrentActiveId] = useState(
-    allInboxConversation.length > 0 ? allInboxConversation[0]._id : null
-  );
 
   const sideOptionStyle = " p-3 rounded-full cursor-pointer ";
   const activeColor = "bg-blue-800";
 
-  // Get all users
   useEffect(() => {
-    fetchAllUsers();
+    // Get initial conversation list
+    getDirectConversations();
+    getGroupConversations();
   }, []);
+
+  useEffect(() => {
+    // This will get the initial messages to be displayed (if the currentConvo is null)
+    if (
+      allDirectConversation &&
+      activeConvo === null &&
+      allDirectConversation.length > 0
+    ) {
+      getMessages(
+        allDirectConversation[0].conversation._id,
+        allDirectConversation[0].conversationName
+      );
+    }
+  }, [allDirectConversation]);
 
   useEffect(() => {
     // console.log("the current search input: ", sidebarSearch);
@@ -64,12 +94,74 @@ export default function Sidebar({ getMessages, chatAFriend }) {
     }
   }
 
+  async function getUserFriends() {
+    const friends = await getFriends();
+    dispatch(setAllFriends(friends));
+  }
+
+  async function getDirectConversations() {
+    const allDirectData = await getAllConversations();
+    let allDirects = [];
+    allDirectData.forEach((data) => {
+      data.conversation.userConvoId = data._id;
+      allDirects.push(data);
+    });
+
+    // console.log("JOINING ROOMS");
+    allDirects.forEach((data) => {
+      // User will automatically join the rooms for each direct conversation.
+      socket.emit("join rooms", data.conversation._id);
+    });
+
+    dispatch(initAllDirectConversation(allDirects));
+  }
+
+  async function getGroupConversations() {
+    // Group conversations
+    const groupData = await getAllGroupConversation();
+    let groupConversations = [];
+    groupData.forEach((data) => {
+      data.conversation.userConvoId = data._id;
+      groupConversations.push(data);
+    });
+
+    groupConversations.forEach((data) => {
+      // User will automatically join the rooms for each group conversation.
+      socket.emit("join rooms", data.conversation._id);
+    });
+
+    dispatch(initAllGroupConversation(groupConversations));
+  }
+
+  async function getArchives() {
+    // Archived conversations
+
+    const archivedData = await getArchivedConversations();
+    let archivedConversations = [];
+    archivedData.forEach((data) => {
+      data.conversation.userConvoId = data._id;
+      archivedConversations.push(data);
+    });
+
+    // Join rooms to all conversation  (The convo id will be the room number)
+
+    archivedConversations.forEach((data) => {
+      // User will automatically join the rooms for each archived conversation.
+      socket.emit("join rooms", data.conversation._id);
+    });
+
+    dispatch(initAllArchivedConversation(archivedConversations));
+  }
+
   return (
     <div className="flex bg-white shadow-md mr-0.3">
       <div className="flex flex-col pt-4 gap-5 px-3 bg-white shadow-md">
         {/* Inbox conversation button */}
         <button
           onClick={() => {
+            // Get initial conversation list
+            getDirectConversations();
+            getGroupConversations();
             dispatch(
               updateSidebar({
                 sidebarTitle: "inbox",
@@ -99,6 +191,7 @@ export default function Sidebar({ getMessages, chatAFriend }) {
         {/* Friends button */}
         <button
           onClick={(e) => {
+            getUserFriends();
             dispatch(
               updateSidebar({
                 sidebarTitle: "friends",
@@ -128,6 +221,7 @@ export default function Sidebar({ getMessages, chatAFriend }) {
         {/* Archived chats button */}
         <button
           onClick={(e) => {
+            getArchives();
             dispatch(
               updateSidebar({
                 sidebarTitle: "archived",
@@ -157,6 +251,7 @@ export default function Sidebar({ getMessages, chatAFriend }) {
         {/* Discover button */}
         <button
           onClick={(e) => {
+            fetchAllUsers();
             dispatch(
               updateSidebar({
                 sidebarTitle: "discover",

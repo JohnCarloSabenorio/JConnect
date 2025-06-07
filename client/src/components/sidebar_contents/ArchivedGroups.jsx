@@ -5,11 +5,13 @@ import { UserContext } from "../../App";
 import { archiveConversation } from "../../api/conversation";
 export default function ArchivedGroups({ getMessages }) {
   const { user } = useContext(UserContext);
-  const { allUserArchivedConvo } = useSelector((state) => state.conversation);
+  const { allArchivedConversation } = useSelector(
+    (state) => state.conversation
+  );
 
   return (
     <>
-      {allUserArchivedConvo.map((userConversation, id) => {
+      {allArchivedConversation.map((userConversation, id) => {
         let chatmate = null;
 
         if (userConversation.conversation.users.length > 2) {

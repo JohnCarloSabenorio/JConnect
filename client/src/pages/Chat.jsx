@@ -1,13 +1,5 @@
 import { useContext, useEffect, useState, useRef } from "react";
-import {
-  getFriendsConversation,
-  getAllConversations,
-  getArchivedConversations,
-  getAllUserMessages,
-  getAllGroupConversation,
-} from "../api/conversation";
 import Message from "../components/Message";
-import UnfriendOverlay from "../components/UnfriendOverlay";
 import { UserContext } from "../App";
 import { useSelector, useDispatch } from "react-redux";
 import { socket } from "../socket";
@@ -17,12 +9,13 @@ import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import MediaPanel from "../components/MediaPanel";
 import ProfileOverlay from "../components/ProfileOverlay";
-import { getFriends, getNonUserFriends } from "../api/friends";
 import { createConversation, findConvoWithUser } from "../api/conversation";
 import Overlay from "../components/Overlay";
+import { getAllUserMessages } from "../api/conversation";
+import { toggleMediaPanel } from "../redux/media";
+
 import {
   setActiveConversation,
-  initAllUserConversation,
   updateAGroupConvo,
   addANewConvo,
   updateAConvo,
@@ -40,12 +33,9 @@ import { setMediaImages } from "../redux/media";
 export default function Chat() {
   const dispatch = useDispatch();
   // REDUX STATES
-  const {
-    currentConvoName,
-    allInboxConversation,
-    activeConvo,
-    activeConvoIsArchived,
-  } = useSelector((state) => state.conversation);
+  const { currentConvoName, activeConvo } = useSelector(
+    (state) => state.conversation
+  );
 
   // This will get the messages to be displayed from the message slice
   const { displayedMessages } = useSelector((state) => state.message);
@@ -68,11 +58,7 @@ export default function Chat() {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    // Get initial conversation list
-    getUserConversations();
-
     // Get the freinds of the current user
-    getUserFriends();
 
     // getNonFriends();
     socket.on("chat message", (data) => {
@@ -93,24 +79,10 @@ export default function Chat() {
       dispatch(updateAGroupConvo(data));
     });
 
-    // return () => {
-    //   socket.off("chat message"); // Clean up on unmount
-    // };
+    return () => {
+      socket.off("chat message"); // Clean up on unmount
+    };
   }, []);
-
-  useEffect(() => {
-    // This will get the initial messages to be displayed (if the currentConvo is null)
-    if (
-      allInboxConversation &&
-      activeConvo === null &&
-      allInboxConversation.length > 0
-    ) {
-      getMessages(
-        allInboxConversation[0].conversation._id,
-        allInboxConversation[0].conversationName
-      );
-    }
-  }, [allInboxConversation]);
 
   useEffect(() => {
     const mediaBlobUrls = [];
@@ -145,84 +117,9 @@ export default function Chat() {
   }, [images]);
 
   // Adds a loading screen if all conversations are not yet retrieved.
-  if (!allInboxConversation) {
-    return <div>Loading...</div>;
-  }
-
-  // FUNCTIONS
-  // This will get all the conversation for the user
-  async function getUserConversations() {
-    // Direct conversations
-    const allConversationData = await getAllConversations();
-    let allConversation = [];
-    allConversationData.forEach((data) => {
-      data.conversation.userConvoId = data._id;
-      allConversation.push(data);
-    });
-
-    // console.log("ALL DIRECT CONVERSATIONS:", directConversations);
-
-    // Group conversations
-    const groupData = await getAllGroupConversation();
-    let groupConversations = [];
-    groupData.forEach((data) => {
-      data.conversation.userConvoId = data._id;
-      groupConversations.push(data);
-    });
-
-    // Archived conversations
-
-    const archivedData = await getArchivedConversations();
-    let archivedConversations = [];
-    archivedData.forEach((data) => {
-      data.conversation.userConvoId = data._id;
-      archivedConversations.push(data);
-    });
-
-    // Join rooms to all conversation  (The convo id will be the room number)
-    // console.log("JOINING ROOMS");
-    allConversation.forEach((data) => {
-      // User will automatically join the rooms for each direct conversation.
-      socket.emit("join rooms", data.conversation._id);
-    });
-
-    groupConversations.forEach((data) => {
-      // User will automatically join the rooms for each group conversation.
-      socket.emit("join rooms", data.conversation._id);
-    });
-
-    archivedConversations.forEach((data) => {
-      // User will automatically join the rooms for each archived conversation.
-      socket.emit("join rooms", data.conversation._id);
-    });
-
-    dispatch(
-      initAllUserConversation([
-        allConversation,
-        groupConversations,
-        archivedConversations,
-      ])
-    );
-  }
-
-  // Get friends for the current user
-  async function getUserFriends() {
-    const friends = await getFriends();
-    dispatch(setAllFriends(friends));
-  }
-
-  // async function getNonFriends() {
-  //   const nonFriends = await getNonUserFriends();
-  //   dispatch(setAllNonFriends(nonFriends));
+  // if (!allInboxConversation) {
+  //   return <div>Loading...</div>;
   // }
-
-  // This will set the initial messages displayed to be the most recent conversation
-  async function getMessages(convoId, convoName) {
-    // Join a channel for users in the same conversation
-    const messages = await getAllUserMessages(convoId);
-    dispatch(setActiveConversation([convoName, convoId]));
-    dispatch(initDisplayedMessages(messages));
-  }
 
   function sendMessage(e) {
     e.preventDefault();
@@ -281,6 +178,13 @@ export default function Chat() {
     );
 
     return response[0]._id;
+  }
+
+  async function getMessages(convoId, convoName) {
+    // Join a channel for users in the same conversation
+    const messages = await getAllUserMessages(convoId);
+    dispatch(setActiveConversation([convoName, convoId]));
+    dispatch(initDisplayedMessages(messages));
   }
 
   async function handleImagesChange(e) {
@@ -374,6 +278,7 @@ export default function Chat() {
                 <p className="text-gray-600">Last active 1 hour ago</p>
               </div>
               <div className="flex gap-5 ml-auto items-center justify-center">
+                {/* Voice Call Button */}
                 <button className="cursor-pointer">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -386,6 +291,7 @@ export default function Chat() {
                   </svg>
                 </button>
 
+                {/* Video Call Button */}
                 <button className="cursor-pointer">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -398,7 +304,11 @@ export default function Chat() {
                   </svg>
                 </button>
 
-                <button className="cursor-pointer">
+                {/* Media Panel Button */}
+                <button
+                  className="cursor-pointer"
+                  onClick={(e) => dispatch(toggleMediaPanel())}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 -960 960 960"

@@ -5,13 +5,11 @@ import { UserContext } from "../../App";
 import { archiveConversation } from "../../api/conversation";
 export default function ArchivedDirects({ getMessages }) {
   const { user } = useContext(UserContext);
-  const { allUserArchivedConvo, active } = useSelector(
+  const { allArchivedConversation, active } = useSelector(
     (state) => state.conversation
   );
 
-
-  
-  const filteredConversations = allUserArchivedConvo.filter(
+  const filteredConversations = allArchivedConversation.filter(
     (uc) => uc.conversation.users.length === 2
   );
 
@@ -41,5 +39,3 @@ export default function ArchivedDirects({ getMessages }) {
     </>
   );
 }
-
-

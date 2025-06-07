@@ -9,10 +9,10 @@ const conversationSlice = createSlice({
     activeConvoArrayId: null,
     activeConvoIsGroup: false,
     activeConvoIsArchived: false,
-    allInboxConversation: null,
+    allDirectConversation: null,
     activeConvoMembers: null,
-    allUserGroupConvo: null,
-    allUserArchivedConvo: null,
+    allGroupConversation: null,
+    allArchivedConversation: null,
     activeDirectUser: null,
     userIsFriend: true,
   },
@@ -34,11 +34,11 @@ const conversationSlice = createSlice({
 
     filterArchivedConvo: (state, action) => {
       // Removes the archived direct conversation
-      state.allInboxConversation = state.allInboxConversation.filter(
+      state.allDirectConversation = state.allDirectConversation.filter(
         (userConversation) => {
           // If the convoId matches, exclude it in the direct conversation list
           if (userConversation.conversation._id === action.payload) {
-            state.allUserArchivedConvo.push(userConversation);
+            state.allArchivedConversation.push(userConversation);
 
             return false;
           }
@@ -49,10 +49,10 @@ const conversationSlice = createSlice({
       );
     },
     filterRestoredConvo: (state, action) => {
-      state.allUserArchivedConvo = state.allUserArchivedConvo.filter(
+      state.allArchivedConversation = state.allArchivedConversation.filter(
         (userConversation) => {
           if (userConversation.conversation._id === action.payload) {
-            state.allInboxConversation.push(userConversation);
+            state.allDirectConversation.push(userConversation);
             // If the convoId matches, add it in the direct conversation list
             return false;
           }
@@ -92,20 +92,31 @@ const conversationSlice = createSlice({
     },
 
     initDirectsAndGroups: (state, action) => {
-      state.allInboxConversation = action.payload[0];
-      state.allUserGroupConvo = action.payload[1];
+      state.allDirectConversation = action.payload[0];
+      state.allGroupConversation = action.payload[1];
+    },
+
+    initAllDirectConversation: (state, action) => {
+      state.allDirectConversation = action.payload;
+    },
+    initAllGroupConversation: (state, action) => {
+      state.allGroupConversation = action.payload;
+    },
+    initAllArchivedConversation: (state, action) => {
+      state.allArchivedConversation = action.payload;
     },
     initAllUserConversation: (state, action) => {
-      state.allInboxConversation = action.payload[0];
-      state.allUserGroupConvo = action.payload[1];
-      state.allUserArchivedConvo = action.payload[2];
+      state.allDirectConversation = action.payload[0];
+      state.allGroupConversation = action.payload[1];
+      state.allArchivedConversation = action.payload[2];
     },
+
     initAllUserGroupConvo: (state, action) => {
-      state.allUserGroupConvo = action.payload;
+      state.allGroupConversation = action.payload;
     },
     updateAGroupConvo: (state, action) => {
-      state.allUserGroupConvo = [
-        ...state.allUserGroupConvo.map((userConversation) =>
+      state.allGroupConversation = [
+        ...state.allGroupConversation.map((userConversation) =>
           userConversation._id === action.payload.convo._id
             ? action.payload.convo
             : userConversation
@@ -114,16 +125,16 @@ const conversationSlice = createSlice({
     },
 
     addANewConvo: (state, action) => {
-      state.allInboxConversation = [
+      state.allDirectConversation = [
         action.payload,
-        ...state.allInboxConversation,
+        ...state.allDirectConversation,
       ];
     },
 
     updateAConvo: (state, action) => {
       // this will find the existing conversation and update it with the new one
-      state.allInboxConversation = [
-        ...state.allInboxConversation.map((userConversation) =>
+      state.allDirectConversation = [
+        ...state.allDirectConversation.map((userConversation) =>
           userConversation._id === action.payload.convo._id
             ? action.payload.convo
             : userConversation
@@ -148,6 +159,9 @@ export const {
   setActiveDirectUser,
   setUserIsFriend,
   initDirectsAndGroups,
+  initAllDirectConversation,
+  initAllGroupConversation,
+  initAllArchivedConversation,
   initAllUserConversation,
   initAllUserGroupConvo,
   updateAGroupConvo,

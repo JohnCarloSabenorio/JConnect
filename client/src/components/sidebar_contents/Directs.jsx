@@ -5,12 +5,11 @@ import { UserContext } from "../../App";
 
 export default function Directs({ getMessages }) {
   const { loggedInStatus, user, isConnected } = useContext(UserContext);
-  const { allInboxConversation } = useSelector((state) => state.conversation);
+  const { allDirectConversation } = useSelector((state) => state.conversation);
 
-  // console.log("THESE ARE THE DIRECT CONVERSATIONS:", allInboxConversation);
   return (
     <>
-      {allInboxConversation.map((data, id) => {
+      {allDirectConversation.map((data, id) => {
         let chatmate = null;
 
         console.log("DIRECT CONVERSATION:", data);

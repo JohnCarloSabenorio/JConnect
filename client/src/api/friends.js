@@ -89,6 +89,16 @@ export async function rejectFriendRequest(userId) {
     console.log("Error sending friend request:", err);
   }
 }
+export async function removeFriend(userId) {
+  try {
+    const response = await axios.delete(`jconnect/api/v1/friends/${userId}`);
+
+    console.log("Friend request response:", response);
+  } catch (err) {
+    console.log("Error sending friend request:", err);
+  }
+}
+
 export async function acceptFriendRequest(userId) {
   try {
     const response = await axios.patch(

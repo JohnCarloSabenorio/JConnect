@@ -10,7 +10,7 @@ export default function Discover() {
         return (
           <UserCard
             userId={user._id}
-            name={user.username}
+            user={user}
             key={id}
             imageUrl="/img/icons/male-default.jpg"
           ></UserCard>
