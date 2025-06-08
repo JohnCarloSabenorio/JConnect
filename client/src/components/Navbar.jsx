@@ -2,14 +2,22 @@ import { useState, useEffect } from "react";
 import { logout } from "../api/authenticate";
 import NotificationCard from "./NotificationCard";
 import { getAllNotifications } from "../api/notification";
-
+import { useSelector, useDispatch } from "react-redux";
+import { setAllNotifications } from "../redux/notification";
 export default function Navbar() {
   const [menuActive, setMenuActive] = useState(false);
   const [notifActive, setNotifActive] = useState(false);
+  const { allNotifications } = useSelector((state) => state.notification);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    getAllNotifications();
+    getNotifications();
   }, []);
+
+  async function getNotifications() {
+    const notifications = await getAllNotifications();
+    dispatch(setAllNotifications(notifications));
+  }
 
   async function handleLogout() {
     try {
@@ -53,11 +61,21 @@ export default function Navbar() {
           <div
             className={`${
               notifActive ? "flex" : "hidden"
-            } absolute top-full mt-5 right-0 max-h-200 w-100 bg-gray-50 shadow-lg origin-top duration-100 flex-col overflow-hidden overflow-y-scroll rounded-sm`}
+            } absolute top-full mt-5 right-0 max-h-200 w-100 pb-2 bg-gray-50 shadow-lg origin-top duration-100 flex-col overflow-hidden overflow-y-scroll rounded-sm`}
           >
             <h1 className="font-bold text-4xl text-left ml-4 mb-3 mt-3">
               Notifications
             </h1>
+
+            {allNotifications.length > 0 ? (
+              allNotifications.map((data, id) => {
+                return <NotificationCard message={data.message} />;
+              })
+            ) : (
+              <>
+                <p>You currently have no notifications.</p>
+              </>
+            )}
           </div>
         </button>
 

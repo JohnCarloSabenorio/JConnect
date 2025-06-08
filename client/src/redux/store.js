@@ -9,6 +9,7 @@ import mediaReducer from "./media";
 import overlayReducer from "./overlay";
 import userReducer from "./user";
 import profileOverlayReducer from "./profile_overlay";
+import notificationReducer from "./notification";
 
 export default configureStore({
   reducer: {
@@ -21,6 +22,7 @@ export default configureStore({
     overlay: overlayReducer,
     user: userReducer,
     profileOverlay: profileOverlayReducer,
+    notification: notificationReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });

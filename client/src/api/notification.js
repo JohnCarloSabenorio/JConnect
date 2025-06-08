@@ -16,7 +16,7 @@ export async function getAllNotifications() {
     const response = await axios.get("jconnect/api/v1/notification", {
       withCredentials: true,
     });
-    console.log("ALL NOTIFICATIONS:", response);
+    return response.data.data;
   } catch (err) {
     console.log("Error getting a new notification:", err);
   }
