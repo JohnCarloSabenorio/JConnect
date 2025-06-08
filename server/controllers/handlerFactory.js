@@ -74,7 +74,7 @@ exports.getAll = (Model) =>
 
     if (Model === Notification) {
       console.log("THE USER:", req.user);
-      filter = { user_id: req.user.id };
+      filter = { receiver_id: req.user.id };
     }
 
     console.log("THE QUERY:", req.query);

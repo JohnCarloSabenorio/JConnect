@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 notificationSchema = new mongoose.Schema(
   {
     message: { type: String, required: true },
-    user_id: { type: mongoose.Schema.Types.ObjectId },
+    receiver_id: { type: mongoose.Schema.Types.ObjectId },
     notification_type: {
       type: [String],
       required: true,
@@ -22,7 +22,7 @@ notificationSchema = new mongoose.Schema(
     },
     seen: { type: Boolean, default: false },
     conversation_id: { type: mongoose.Schema.Types.ObjectId },
-    friend_id: { type: mongoose.Schema.Types.ObjectId },
+    actor_id: { type: mongoose.Schema.Types.ObjectId },
   },
   {
     timestamps: true,

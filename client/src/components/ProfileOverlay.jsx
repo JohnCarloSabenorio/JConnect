@@ -32,9 +32,13 @@ import {
   setActiveDirectUser,
 } from "../redux/conversation";
 
+import { createNotification, deleteNotification } from "../api/notification";
+
 export default function ProfileOverlay() {
   const { user } = useContext(UserContext);
   const [addBtnText, setAddBtnText] = useState("Add Friend");
+
+  const [sendNotification, setSendNotification] = useState("");
 
   // This will handle the display of the friend dropdown
   const [friendbarActive, setFriendbarActive] = useState(false);
@@ -102,7 +106,16 @@ export default function ProfileOverlay() {
   // Add friend function
   const addFriend = async (userId) => {
     sendFriendRequest(userId);
+    setIsLoading(true);
+    const newNotification = await createNotification({
+      message: `${user.username} sent you a friend request.`,
+      receiver_id: userId,
+      notification_type: "fr_received",
+      actor_id: user._id,
+    });
+    setSendNotification(newNotification._id);
     setFriendState("request_sent");
+    setIsLoading(false);
   };
 
   // Cancel request function
@@ -110,17 +123,27 @@ export default function ProfileOverlay() {
   const removeFriendRequest = async (userId) => {
     cancelFriendRequest(userId);
     setFriendState("not_friend");
+    deleteNotification(sendNotification);
+    setSendNotification("");
   };
 
   // Accept request function
 
   const acceptRequest = async (userId) => {
+    setIsLoading(true);
     acceptFriendRequest(userId);
+
+    const newNotification = await createNotification({
+      message: `${user.username} accepted your friend request.`,
+      receiver_id: userId,
+      notification_type: "fr_accepted",
+      actor_id: user._id,
+    });
     setFriendState("friend");
+    setIsLoading(false);
   };
 
   // Reject request function
-
   const rejectRequest = async (userId) => {
     rejectFriendRequest(userId);
     setFriendState("not_friend");
