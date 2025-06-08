@@ -335,7 +335,7 @@ export default function Chat() {
             >
               {messageIsLoading ? (
                 <div
-                  className={`w-full h-full bg-gray-200 flex justify-center items-center`}
+                  className={`w-full h-full bg-gray-50 flex justify-center items-center`}
                 >
                   <img src="img/loading.gif" className="w-20 h-20"></img>
                 </div>
