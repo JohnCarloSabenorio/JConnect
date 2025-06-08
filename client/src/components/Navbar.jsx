@@ -69,13 +69,7 @@ export default function Navbar() {
 
             {allNotifications.length > 0 ? (
               allNotifications.map((data, id) => {
-                return (
-                  <NotificationCard
-                    key={id}
-                    ref={data._id}
-                    message={data.message}
-                  />
-                );
+                return <NotificationCard key={id} ref={data._id} data={data} />;
               })
             ) : (
               <>
