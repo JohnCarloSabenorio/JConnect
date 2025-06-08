@@ -2,6 +2,7 @@ const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const APIFeatures = require("../utils/apiFeatures");
 const Conversation = require("../models/conversationModel");
+const Notification = require("../models/notificationModel");
 const UserConversation = require("../models/userConversationModel");
 const User = require("../models/userModel");
 const Friend = require("../models/friendModel");
@@ -61,14 +62,19 @@ exports.getAll = (Model) =>
   catchAsync(async (req, res) => {
     let filter = {};
 
-    console.log("ENDS WITH ALL CONVO:", req.baseUrl.endsWith("allConvo"));
     if (req.baseUrl.endsWith("allConvo")) {
       filter = { users: { $in: req.user.id } };
     }
 
     // If the request came from user-conversation model, filter it with the user's id
     if (Model === UserConversation) {
+      console.log("THE REQUEST USER:", req.user);
       filter = { user: req.user.id };
+    }
+
+    if (Model === Notification) {
+      console.log("THE USER:", req.user);
+      filter = { user_id: req.user.id };
     }
 
     console.log("THE QUERY:", req.query);

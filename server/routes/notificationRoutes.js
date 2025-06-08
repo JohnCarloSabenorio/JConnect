@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/notificationController");
+const authController = require("../controllers/authController");
 
+router.use(authController.protect);
 router
   .route("/")
   .post(controller.createNotification)
