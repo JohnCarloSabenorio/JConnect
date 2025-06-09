@@ -183,17 +183,35 @@ export default function MediaPanel({ getUserConversations }) {
           </div>
 
           <div
-            className={`p-3 flex flex-col ${
+            className={`p-3 flex flex-col gap-3 max-h-100 overflow-y-scroll ${
               membersActive ? "block" : "hidden"
             }`}
           >
             {activeConvoMembers &&
               activeConvoMembers.map((member, idx) => (
-                <div key={idx} className="flex gap-2 p-1 cursor-pointer">
-                  {/* Icon */}
-                  <div></div>
-                  {/* Text */}
-                  <div>{member.username}</div>
+                <div
+                  key={idx}
+                  className="flex justify-between p-1 cursor-pointer items-center gap-5 w-full"
+                >
+                  <div className="flex items-center gap-5">
+                    {/* Profile Image */}
+                    <img src="img/avatar.png" className="w-13 h-13"></img>
+
+                    {/* Text */}
+                    <p>{member.username}</p>
+                  </div>
+                  <div>
+                    <button className="cursor-pointer rounded-full hover:bg-gray-200 p-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 -960 960 960"
+                        fill="gray"
+                        className="w-7 h-7"
+                      >
+                        <path d="M240-400q-33 0-56.5-23.5T160-480q0-33 23.5-56.5T240-560q33 0 56.5 23.5T320-480q0 33-23.5 56.5T240-400Zm240 0q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm240 0q-33 0-56.5-23.5T640-480q0-33 23.5-56.5T720-560q33 0 56.5 23.5T800-480q0 33-23.5 56.5T720-400Z" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               ))}
           </div>

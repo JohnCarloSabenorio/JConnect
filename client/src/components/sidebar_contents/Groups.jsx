@@ -1,6 +1,7 @@
 import ConversationCard from "../ConversationCard";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 export default function Groups({ getMessages }) {
+  const dispatch = useDispatch();
   const { allGroupConversation } = useSelector((state) => state.conversation);
 
   return (

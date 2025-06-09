@@ -18,8 +18,6 @@ export default function OverlayModal() {
     useSelector((state) => state.conversation);
   const dispatch = useDispatch();
 
-  console.log("CONVERSATION IS GROUP?", activeConvoIsGroup);
-
   // Archive the user conversation record of the current user
   function archiveConvo(convoId) {
     console.log("ARCHIVING CONVERSATION:", convoId);

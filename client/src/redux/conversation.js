@@ -11,10 +11,12 @@ const conversationSlice = createSlice({
     activeConvoIsArchived: false,
     allDirectConversation: null,
     activeConvoMembers: null,
+    filteredConvoMembers: [],
     allGroupConversation: null,
     allArchivedConversation: null,
     activeDirectUser: null,
     userIsFriend: true,
+    isMentioning: false,
   },
   reducers: {
     setActiveConversation: (state, action) => {
@@ -66,7 +68,18 @@ const conversationSlice = createSlice({
     },
 
     setActiveConvoMembers: (state, action) => {
+      console.log("GROUP MEMBERS");
       state.activeConvoMembers = action.payload;
+    },
+
+    setFilteredConvoMembers: (state, action) => {
+      state.filteredConvoMembers = state.activeConvoMembers.filter((member) =>
+        member.username.toLowerCase().includes(action.payload)
+      );
+      if (state.filteredConvoMembers.length == 0) {
+        console.log("DIDN'T MATCH ANY");
+        state.isMentioning = false;
+      }
     },
 
     setActiveDirectUser: (state, action) => {
@@ -89,6 +102,10 @@ const conversationSlice = createSlice({
     },
     setActiveConvoIsArchived: (state, action) => {
       state.activeConvoIsArchived = action.payload;
+    },
+
+    setIsMentioning: (state, action) => {
+      state.isMentioning = action.payload;
     },
 
     initDirectsAndGroups: (state, action) => {
@@ -149,6 +166,7 @@ const conversationSlice = createSlice({
 });
 
 export const {
+  setIsMentioning,
   setActiveConversation,
   setActiveConvoArrayId,
   setCurrentConvoName,
@@ -169,6 +187,7 @@ export const {
   addANewConvo,
   updateAConvo,
   filterArchivedConvo,
+  setFilteredConvoMembers,
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

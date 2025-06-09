@@ -13,9 +13,10 @@ import { createConversation, findConvoWithUser } from "../api/conversation";
 import Overlay from "../components/Overlay";
 import { getAllUserMessages } from "../api/conversation";
 import { toggleMediaPanel } from "../redux/media";
-
 import {
+  setIsMentioning,
   setActiveConversation,
+  setFilteredConvoMembers,
   updateAGroupConvo,
   addANewConvo,
   updateAConvo,
@@ -34,9 +35,14 @@ import { setMediaImages } from "../redux/media";
 export default function Chat() {
   const dispatch = useDispatch();
   // REDUX STATES
-  const { currentConvoName, activeConvo } = useSelector(
-    (state) => state.conversation
-  );
+  const {
+    currentConvoName,
+    activeConvo,
+    activeConvoMembers,
+    filteredConvoMembers,
+    activeConvoIsGroup,
+    isMentioning,
+  } = useSelector((state) => state.conversation);
 
   // This will get the messages to be displayed from the message slice
   const { displayedMessages, messageIsLoading } = useSelector(
@@ -50,15 +56,12 @@ export default function Chat() {
   const { user } = useContext(UserContext);
   const [fileInputKey, setFileInputKey] = useState(Date.now()); // Unique key for input reset
   const [displayEmoji, setDisplayEmoji] = useState(false);
-
   // This will store the images to be sent by the user
   const [images, setImages] = useState([]);
 
-  // This will store the message to be sent by the user
-  const [message, setMessage] = useState("");
-
   const uiChatRef = useRef(null);
   const fileInputRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     // Get the freinds of the current user
@@ -126,21 +129,19 @@ export default function Chat() {
 
   function sendMessage(e) {
     e.preventDefault();
-
-    // console.log("SENDING MESSAGE!");
+    const messageToSend = inputRef.current.textContent;
+    inputRef.current.innerHTML = null;
     // IN THE IOCONTROLLER, CHECK IF THE CONVERSATION IS ARCHIVED, IF SO, MOVE IT TO ACTIVE AGAIN
 
-    if (message == "" && images.length == 0) return;
+    if (messageToSend == "" && images.length == 0) return;
     // console.log("Socket connected?", socket.connected);
 
-    console.log("Active conversation to send message to:", activeConvo);
     socket.emit("chat message", {
-      message: message,
+      message: messageToSend,
       sender: user._id,
       conversation: activeConvo,
       images: images,
     });
-    setMessage("");
   }
 
   // Hides/Displays the emoji picker
@@ -152,7 +153,8 @@ export default function Chat() {
   function addEmojiToInput(emoji) {
     setDisplayEmoji(true);
     // console.log("THE EMOJI: ", emoji);
-    setMessage((prev) => prev + emoji.emoji);
+
+    inputRef.current.innerHTML += emoji.emoji;
   }
 
   // This will activate the event of the file picker
@@ -396,7 +398,32 @@ export default function Chat() {
                 ))}
               </div>
             </div>
-            <div className="">
+            <div className="relative">
+              <div
+                className={`${
+                  activeConvoIsGroup && isMentioning ? "flex" : "hidden"
+                } p-3 flex flex-col gap-3 max-h-60 overflow-y-scroll shadow-lg absolute bottom-full bg-gray-50 w-200 mb-2`}
+              >
+                {filteredConvoMembers &&
+                  filteredConvoMembers.map((member, idx) => {
+                    if (member._id === user._id) return;
+                    return (
+                      <div
+                        key={idx}
+                        id={`mention_${member._id}`}
+                        className={`flex justify-between p-1 cursor-pointer items-center gap-5 w-full hover:bg-gray-200`}
+                      >
+                        <div className="flex items-center gap-5">
+                          {/* Profile Image */}
+                          <img src="img/avatar.png" className="w-13 h-13"></img>
+
+                          {/* Text */}
+                          <p>{member.username}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
               <form
                 onSubmit={(e) => sendMessage(e)}
                 className="flex mt-auto p-3 bg-white border-t-0.5 border-gray-500"
@@ -429,15 +456,107 @@ export default function Chat() {
                       <path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-370h80v370q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-390h80v390Z" />
                     </svg>
                   </button>
-                  <input
-                    className="flex-grow mx-4 p-2 ml-0"
-                    type="text"
-                    name="message"
-                    id="message"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Type your message here..."
-                  />
+                  <div
+                    ref={inputRef}
+                    className={`w-200 max-h-50 overflow-y-scroll mx-4 p-2 ml-0
+                      text-black
+                    `}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        sendMessage(e);
+                        return;
+                      }
+
+                      if (e.key === "Backspace") {
+                        if (
+                          inputRef.current.textContent[
+                            inputRef.current.textContent.length - 1
+                          ] == "@"
+                        ) {
+                          dispatch(setIsMentioning(false));
+                          return;
+                        }
+
+                        // if (isMentioning) {
+                        //   const indexOfAtSign =
+                        //     inputRef.current.textContent.lastIndexOf("@");
+                        //   const filter = inputRef.current.textContent
+                        //     .slice(indexOfAtSign + 1)
+                        //     .split(" ")[0];
+
+                        //   console.log("THE FILTER:", filter);
+
+                        //   dispatch(setFilteredConvoMembers(filter));
+                        //   return;
+                        // }
+                      }
+
+                      if (e.key === "@") {
+                        const lastChar = inputRef.current.textContent.slice(-1);
+                        console.log(
+                          "Last char:",
+                          JSON.stringify(lastChar),
+                          "Char code:",
+                          lastChar?.charCodeAt(0)
+                        );
+
+                        console.log("THE LAST CHARACTER:", lastChar);
+                        if (
+                          lastChar === " " ||
+                          lastChar === "\u00A0" ||
+                          lastChar === "\n" ||
+                          lastChar === "\t" ||
+                          (inputRef.current.textContent.length == 0 &&
+                            activeConvoIsGroup)
+                        ) {
+                          dispatch(setIsMentioning(true));
+                          return;
+                        } else {
+                          dispatch(setIsMentioning(false));
+                        }
+                      }
+                    }}
+                    onKeyUp={(e) => {
+                      if (isMentioning) {
+                        const indexOfAtSign =
+                          inputRef.current.textContent.lastIndexOf("@");
+                        const filter = inputRef.current.textContent
+                          .slice(indexOfAtSign + 1)
+                          .split(" ")[0];
+
+                        console.log("THE FILTER:", filter);
+
+                        dispatch(setFilteredConvoMembers(filter.toLowerCase()));
+                        return;
+                      }
+
+                      if (e.key === "Backspace") {
+                        // Opens the mention user list if the last character is an @ sign
+                        console.log(
+                          "THE BACK CHAR",
+                          inputRef.current.textContent[
+                            inputRef.current.textContent.length - 1
+                          ]
+                        );
+                        if (
+                          (inputRef.current.textContent[
+                            inputRef.current.textContent.length - 1
+                          ] == "@" &&
+                            inputRef.current.textContent[
+                              inputRef.current.textContent.length - 2
+                            ] == " ") ||
+                          inputRef.current.textContent.length == 1
+                        ) {
+                          dispatch(setIsMentioning(true));
+                          dispatch(setFilteredConvoMembers(""));
+                          return;
+                        }
+                      }
+                    }}
+                    contentEditable={true}
+                    suppressContentEditableWarning={true}
+                  ></div>
+
                   <div className="flex items-center justify-center ml-auto gap-5">
                     <div className="relative inline-block">
                       <div

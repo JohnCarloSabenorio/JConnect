@@ -76,6 +76,7 @@ export default function ConversationCard({
             : "hidden"
         }`}
         onClick={() => {
+          dispatch(setActiveConvoMembers(userConversation.conversation.users));
           dispatch(
             setActiveConversation([
               userConversation.conversationName,
@@ -95,9 +96,6 @@ export default function ConversationCard({
               userConversation.conversation.users.length > 2
             )
           );
-
-          // Updates the member list of the conversation to be displayed in the media panel
-          dispatch(setActiveConvoMembers(userConversation?.users ?? []));
 
           if (chatmateId) {
             // Updates the active chatmate
