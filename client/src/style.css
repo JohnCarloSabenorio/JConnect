@@ -13,3 +13,7 @@ body {
 .custom-outline {
   -webkit-text-stroke: 0.3px black;
 }
+
+.mention-span:hover {
+  text-decoration: underline;
+}

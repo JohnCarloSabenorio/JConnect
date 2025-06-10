@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState, useRef } from "react";
+import MentionCard from "../components/MentionCard";
 import Message from "../components/Message";
 import { UserContext } from "../App";
 import { useSelector, useDispatch } from "react-redux";
@@ -129,7 +130,7 @@ export default function Chat() {
 
   function sendMessage(e) {
     e.preventDefault();
-    const messageToSend = inputRef.current.textContent;
+    const messageToSend = inputRef.current.textContent.trim();
     inputRef.current.innerHTML = null;
     // IN THE IOCONTROLLER, CHECK IF THE CONVERSATION IS ARCHIVED, IF SO, MOVE IT TO ACTIVE AGAIN
 
@@ -404,23 +405,16 @@ export default function Chat() {
                   activeConvoIsGroup && isMentioning ? "flex" : "hidden"
                 } p-3 flex flex-col gap-3 max-h-60 overflow-y-scroll shadow-lg absolute bottom-full bg-gray-50 w-200 mb-2`}
               >
+                {/* Move to a separate component */}
                 {filteredConvoMembers &&
                   filteredConvoMembers.map((member, idx) => {
                     if (member._id === user._id) return;
                     return (
-                      <div
+                      <MentionCard
                         key={idx}
-                        id={`mention_${member._id}`}
-                        className={`flex justify-between p-1 cursor-pointer items-center gap-5 w-full hover:bg-gray-200`}
-                      >
-                        <div className="flex items-center gap-5">
-                          {/* Profile Image */}
-                          <img src="img/avatar.png" className="w-13 h-13"></img>
-
-                          {/* Text */}
-                          <p>{member.username}</p>
-                        </div>
-                      </div>
+                        member={member}
+                        inputRef={inputRef}
+                      />
                     );
                   })}
               </div>
@@ -461,6 +455,8 @@ export default function Chat() {
                     className={`w-200 max-h-50 overflow-y-scroll mx-4 p-2 ml-0
                       text-black
                     `}
+                    // if user presses space, check if it is mentioning, it is.. then create a new span and move the caret
+
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         sendMessage(e);
@@ -476,20 +472,36 @@ export default function Chat() {
                           dispatch(setIsMentioning(false));
                           return;
                         }
-
-                        // if (isMentioning) {
-                        //   const indexOfAtSign =
-                        //     inputRef.current.textContent.lastIndexOf("@");
-                        //   const filter = inputRef.current.textContent
-                        //     .slice(indexOfAtSign + 1)
-                        //     .split(" ")[0];
-
-                        //   console.log("THE FILTER:", filter);
-
-                        //   dispatch(setFilteredConvoMembers(filter));
-                        //   return;
-                        // }
                       }
+
+                      // if (e.key === " ") {
+                      //   const blankSpan = document.createElement("span");
+                      //   blankSpan.textContent = "\u200B";
+                      //   blankSpan.style.color = "black";
+                      //   inputRef.current.appendChild(blankSpan);
+
+                      //   // Set caret position
+                      //   const range = document.createRange();
+
+                      //   const selection = window.getSelection();
+                      //   console.log("THE CURRENT SELECTION:", selection);
+                      //   console.log(
+                      //     "LENGTH OF BLANK SPAN:",
+                      //     blankSpan.textContent.length
+                      //   );
+
+                      //   range.setStart(blankSpan, 0);
+                      //   range.setEnd(blankSpan, blankSpan.textContent.length);
+                      //   range.collapse(false);
+
+                      //   selection.removeAllRanges();
+
+                      //   selection.addRange(range);
+
+                      //   inputRef.current.focus();
+
+                      //   return;
+                      // }
 
                       if (e.key === "@") {
                         const lastChar = inputRef.current.textContent.slice(-1);
@@ -517,7 +529,7 @@ export default function Chat() {
                       }
                     }}
                     onKeyUp={(e) => {
-                      if (isMentioning) {
+                      if (isMentioning && activeConvoIsGroup) {
                         const indexOfAtSign =
                           inputRef.current.textContent.lastIndexOf("@");
                         const filter = inputRef.current.textContent
@@ -532,12 +544,7 @@ export default function Chat() {
 
                       if (e.key === "Backspace") {
                         // Opens the mention user list if the last character is an @ sign
-                        console.log(
-                          "THE BACK CHAR",
-                          inputRef.current.textContent[
-                            inputRef.current.textContent.length - 1
-                          ]
-                        );
+
                         if (
                           (inputRef.current.textContent[
                             inputRef.current.textContent.length - 1

@@ -1,0 +1,95 @@
+import { setIsMentioning } from "../redux/conversation";
+import { useDispatch } from "react-redux";
+export default function MentionCard({ member, inputRef }) {
+  const dispatch = useDispatch();
+
+  function addElement(text) {
+    const el = inputRef.current;
+    if (!el) return;
+
+    // Remove the "@" trigger character if needed
+    removeLastCharacter();
+
+    const mentionSpan = document.createElement("span");
+    mentionSpan.textContent = `@${text}`;
+    mentionSpan.className = "mention-span";
+
+    // Append the mention span
+    el.appendChild(mentionSpan);
+    const blankSpan = document.createElement("span");
+    blankSpan.textContent = "\u00A0";
+    blankSpan.style.color = "black";
+    el.appendChild(blankSpan);
+
+    // Set caret position
+
+    const range = document.createRange();
+
+    const selection = window.getSelection();
+    console.log("THE CURRENT SELECTION:", selection);
+    console.log("LENGTH OF BLANK SPAN:", blankSpan.textContent.length);
+
+    range.setStart(blankSpan, 0);
+    range.setEnd(blankSpan, blankSpan.textContent.length);
+    range.collapse(false);
+
+    selection.removeAllRanges();
+
+    selection.addRange(range);
+
+    el.focus();
+  }
+
+  function removeLastCharacter() {
+    // create a variable for the inputRef
+    const el = inputRef.current;
+
+    // check if the inputRef does not exist
+    if (!el) return;
+
+    // create a variable for the childNodes
+    const elChildNodes = el.childNodes;
+
+    // check if there are no child nodes
+    if (!elChildNodes.length) return;
+
+    console.log("CHILD NODES:", el.childNodes);
+
+    // get the last node
+    const lastNode = elChildNodes[elChildNodes.length - 1];
+
+    console.log("LAST NODE CONTENT:", lastNode.textContent);
+
+    console.log("LAST NODE TYPE:", lastNode.nodeType);
+
+    // check if the last node is a TEXT_NODE and remove the last character
+    if (
+      lastNode.nodeType == Node.TEXT_NODE ||
+      lastNode.nodeType == Node.ELEMENT_NODE
+    ) {
+      console.log("REMOVING THE LAST CHARACTER...");
+      lastNode.textContent = lastNode.textContent.slice(0, -1);
+    }
+  }
+
+  return (
+    <>
+      <div
+        id={`mention_${member._id}`}
+        className={`flex justify-between p-1 cursor-pointer items-center gap-5 w-full hover:bg-gray-200`}
+        onClick={(e) => {
+          addElement(member.username);
+          dispatch(setIsMentioning(false));
+        }}
+      >
+        <div className="flex items-center gap-5">
+          {/* Profile Image */}
+          <img src="img/avatar.png" className="w-13 h-13"></img>
+
+          {/* Text */}
+          <p>{member.username}</p>
+        </div>
+      </div>
+    </>
+  );
+}
