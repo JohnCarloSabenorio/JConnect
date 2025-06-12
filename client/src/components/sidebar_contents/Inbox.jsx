@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useContext } from "react";
 import { UserContext } from "../../App";
 
-export default function Inbox({ getMessages }) {
+export default function Inbox({ inputRef, getMessages }) {
   const { loggedInStatus, user, isConnected } = useContext(UserContext);
   const { allDirectConversation } = useSelector((state) => state.conversation);
   const { convoViewMode } = useSelector((state) => state.sidebar);
@@ -41,6 +41,7 @@ export default function Inbox({ getMessages }) {
             chatmateId={chatmate._id}
             userConversation={data}
             directArrayId={id}
+            inputRef={inputRef}
           />
         );
       })}

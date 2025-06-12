@@ -35,7 +35,7 @@ import {
 import { toggleDarkMode } from "../redux/isDarkMode";
 import { setAllUsers } from "../redux/user";
 
-export default function Sidebar({ getMessages, chatAFriend }) {
+export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
   const dispatch = useDispatch();
 
   // STATES
@@ -355,7 +355,7 @@ export default function Sidebar({ getMessages, chatAFriend }) {
           // style={{ fontFamily: "Arial", "FontAwesome" }}
         />
         {sidebarContent === "inbox" ? (
-          <Inbox getMessages={getMessages} />
+          <Inbox inputRef={inputRef} getMessages={getMessages} />
         ) : sidebarContent === "friends" ? (
           <Friends chatAFriend={chatAFriend} />
         ) : sidebarContent === "groups" ? (

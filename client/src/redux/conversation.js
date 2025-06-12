@@ -17,8 +17,20 @@ const conversationSlice = createSlice({
     activeDirectUser: null,
     userIsFriend: true,
     isMentioning: false,
+    toMention: {},
+    message: "",
   },
   reducers: {
+    setMessage: (state, action) => {
+      state.message = action.payload;
+    },
+
+    addToMention: (state, action) => {
+      state.toMention[action.payload[0]] = action.payload[1];
+    },
+    removeToMention: (state, action) => {
+      delete state.toMention[action.payload[0]];
+    },
     setActiveConversation: (state, action) => {
       console.log("THE ACTIVE CONVO PAYLOAD:", action.payload);
       state.currentConvoName = action.payload[0];
@@ -166,6 +178,9 @@ const conversationSlice = createSlice({
 });
 
 export const {
+  setMessage,
+  addToMention,
+  removeToMention,
   setIsMentioning,
   setActiveConversation,
   setActiveConvoArrayId,

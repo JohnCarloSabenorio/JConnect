@@ -17,6 +17,7 @@ export default function ConversationCard({
   chatmateId,
   userConversation,
   isArchived,
+  inputRef,
 }) {
   const { activeConvoMembers, activeConvo } = useSelector(
     (state) => state.conversation
@@ -76,6 +77,7 @@ export default function ConversationCard({
             : "hidden"
         }`}
         onClick={() => {
+          inputRef.current.innerHTML = "";
           dispatch(setActiveConvoMembers(userConversation.conversation.users));
           dispatch(
             setActiveConversation([

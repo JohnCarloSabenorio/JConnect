@@ -49,6 +49,7 @@ export default function Chat() {
   const { displayedMessages, messageIsLoading } = useSelector(
     (state) => state.message
   );
+  const { message, toMention } = useSelector((state) => state.conversation);
 
   // This will get all the images to be displayed from the media slice
   const { mediaImages } = useSelector((state) => state.media);
@@ -216,6 +217,30 @@ export default function Chat() {
     setImages((prev) => [...prev, ...selectedFilesBuffer]);
   }
 
+  function getElementBeforeCursor(range) {
+    const { startContainer, startOffset } = range;
+
+    let node;
+
+    if (startContainer.nodeType === Node.TEXT_NODE) {
+      // If inside a text node, try previous sibling or parent
+      node =
+        startOffset > 0
+          ? startContainer
+          : startContainer.previousSibling || startContainer.parentNode;
+    } else {
+      // If in an element node, get the child before the cursor
+      node = startContainer.childNodes[startOffset - 1] || startContainer;
+    }
+
+    // Traverse up or left to find an element node
+    while (node && node.nodeType !== Node.ELEMENT_NODE) {
+      node = node.previousSibling || node.parentNode;
+    }
+
+    return node;
+  }
+
   function base64ToBlob(base64String) {
     try {
       if (!base64String) {
@@ -271,7 +296,7 @@ export default function Chat() {
 
           {/* Sidebar */}
 
-          <Sidebar getMessages={getMessages} chatAFriend={chatAFriend} />
+          <Sidebar inputRef={inputRef} getMessages={getMessages} chatAFriend={chatAFriend} />
 
           {/* Chat Interface */}
           <div className="flex flex-grow flex-col w-4xl  bg-gray-50">
@@ -456,107 +481,184 @@ export default function Chat() {
                       text-black
                     `}
                     // if user presses space, check if it is mentioning, it is.. then create a new span and move the caret
-
+                    // Might revise to check if the span is a mention span instead
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         sendMessage(e);
                         return;
                       }
+                      if (activeConvoIsGroup) {
+                        if (e.key === "Backspace") {
+                          const selection = window.getSelection();
+                          if (!selection.rangeCount) return;
+                          const range = selection.getRangeAt(0);
+                          const nodeBeforeCursor =
+                            getElementBeforeCursor(range);
+                          console.log(
+                            "the node before the cursor:",
+                            nodeBeforeCursor
+                          );
+                          if (
+                            nodeBeforeCursor.classList?.contains("mention-span")
+                          ) {
+                            nodeBeforeCursor.remove();
+                            dispatch(setIsMentioning(false));
+                          }
 
-                      if (e.key === "Backspace") {
-                        if (
-                          inputRef.current.textContent[
-                            inputRef.current.textContent.length - 1
-                          ] == "@"
-                        ) {
-                          dispatch(setIsMentioning(false));
+                          if (
+                            inputRef.current.textContent[
+                              inputRef.current.textContent.length - 1
+                            ] == "@"
+                          ) {
+                            dispatch(setIsMentioning(false));
+                            return;
+                          }
+                        }
+
+                        if (e.key === " ") {
+                          const selection = window.getSelection();
+                          if (!selection.rangeCount) return;
+                          const range = selection.getRangeAt(0);
+                          const nodeBeforeCursor =
+                            getElementBeforeCursor(range);
+                          console.log(
+                            "the node before the cursor:",
+                            nodeBeforeCursor
+                          );
+                          if (
+                            nodeBeforeCursor.classList?.contains("mention-span")
+                          ) {
+                            e.preventDefault();
+                            const blankSpan = document.createElement("span");
+                            blankSpan.textContent = "\u00A0";
+                            inputRef.current.appendChild(blankSpan);
+
+                            const range = document.createRange();
+
+                            const selection = window.getSelection();
+
+                            range.setStart(blankSpan, 0);
+                            range.setEnd(
+                              blankSpan,
+                              blankSpan.textContent.length
+                            );
+                            range.collapse(false);
+
+                            selection.removeAllRanges();
+
+                            selection.addRange(range);
+
+                            inputRef.current.focus();
+                            return;
+                          }
+                        }
+                        if (e.key === "@") {
+                          const lastChar =
+                            inputRef.current.textContent.slice(-1);
+                          console.log(
+                            "Last char:",
+                            JSON.stringify(lastChar),
+                            "Char code:",
+                            lastChar?.charCodeAt(0)
+                          );
+
+                          console.log("THE LAST CHARACTER:", lastChar);
+                          if (
+                            lastChar === " " ||
+                            lastChar === "\u00A0" ||
+                            lastChar === "\n" ||
+                            lastChar === "\t" ||
+                            (inputRef.current.textContent.length == 0 &&
+                              activeConvoIsGroup)
+                          ) {
+                            dispatch(setIsMentioning(true));
+                            return;
+                          } else {
+                            dispatch(setIsMentioning(false));
+                          }
+
                           return;
                         }
-                      }
 
-                      // if (e.key === " ") {
-                      //   const blankSpan = document.createElement("span");
-                      //   blankSpan.textContent = "\u200B";
-                      //   blankSpan.style.color = "black";
-                      //   inputRef.current.appendChild(blankSpan);
-
-                      //   // Set caret position
-                      //   const range = document.createRange();
-
-                      //   const selection = window.getSelection();
-                      //   console.log("THE CURRENT SELECTION:", selection);
-                      //   console.log(
-                      //     "LENGTH OF BLANK SPAN:",
-                      //     blankSpan.textContent.length
-                      //   );
-
-                      //   range.setStart(blankSpan, 0);
-                      //   range.setEnd(blankSpan, blankSpan.textContent.length);
-                      //   range.collapse(false);
-
-                      //   selection.removeAllRanges();
-
-                      //   selection.addRange(range);
-
-                      //   inputRef.current.focus();
-
-                      //   return;
-                      // }
-
-                      if (e.key === "@") {
-                        const lastChar = inputRef.current.textContent.slice(-1);
+                        const selection = window.getSelection();
+                        const range = selection.getRangeAt(0);
+                        const nodeBeforeCursor = getElementBeforeCursor(range);
                         console.log(
-                          "Last char:",
-                          JSON.stringify(lastChar),
-                          "Char code:",
-                          lastChar?.charCodeAt(0)
+                          "the node before the cursor:",
+                          nodeBeforeCursor
                         );
-
-                        console.log("THE LAST CHARACTER:", lastChar);
                         if (
-                          lastChar === " " ||
-                          lastChar === "\u00A0" ||
-                          lastChar === "\n" ||
-                          lastChar === "\t" ||
-                          (inputRef.current.textContent.length == 0 &&
-                            activeConvoIsGroup)
+                          nodeBeforeCursor.classList?.contains(
+                            "mention-span"
+                          ) &&
+                          e.key.length === 1
                         ) {
-                          dispatch(setIsMentioning(true));
-                          return;
-                        } else {
-                          dispatch(setIsMentioning(false));
+                          e.preventDefault();
+                          const newSpan = document.createElement("span");
+                          newSpan.textContent = e.key;
+                          inputRef.current.appendChild(newSpan);
+
+                          const selection = window.getSelection();
+
+                          const range = document.createRange();
+
+                          range.setStart(newSpan, 0);
+                          range.setEnd(newSpan, newSpan.textContent.length);
+                          range.collapse(false);
+                          selection.removeAllRanges();
+                          selection.addRange(range);
+                          inputRef.current.focus();
                         }
                       }
                     }}
                     onKeyUp={(e) => {
-                      if (isMentioning && activeConvoIsGroup) {
-                        const indexOfAtSign =
-                          inputRef.current.textContent.lastIndexOf("@");
-                        const filter = inputRef.current.textContent
-                          .slice(indexOfAtSign + 1)
-                          .split(" ")[0];
+                      if (activeConvoIsGroup) {
+                        if (activeConvoIsGroup) {
+                          const indexOfAtSign =
+                            inputRef.current.textContent.lastIndexOf("@");
+                          const filter = inputRef.current.textContent
+                            .slice(indexOfAtSign + 1)
+                            .split(" ")[0];
 
-                        console.log("THE FILTER:", filter);
+                          console.log("THE FILTER:", filter);
 
-                        dispatch(setFilteredConvoMembers(filter.toLowerCase()));
-                        return;
-                      }
-
-                      if (e.key === "Backspace") {
-                        // Opens the mention user list if the last character is an @ sign
-
-                        if (
-                          (inputRef.current.textContent[
-                            inputRef.current.textContent.length - 1
-                          ] == "@" &&
-                            inputRef.current.textContent[
-                              inputRef.current.textContent.length - 2
-                            ] == " ") ||
-                          inputRef.current.textContent.length == 1
-                        ) {
-                          dispatch(setIsMentioning(true));
-                          dispatch(setFilteredConvoMembers(""));
+                          dispatch(
+                            setFilteredConvoMembers(filter.toLowerCase())
+                          );
                           return;
+                        }
+
+                        if (e.key === "Backspace") {
+                          const selection = window.getSelection();
+                          if (!selection.rangeCount) {
+                            return;
+                          }
+                          const range = selection.getRangeAt(0);
+                          const nodeBeforeCursor =
+                            getElementBeforeCursor(range);
+                          console.log(
+                            "the node before the cursor:",
+                            nodeBeforeCursor
+                          );
+
+                          console.log(
+                            "current input length:",
+                            inputRef.current.textContent.length
+                          );
+                          // if the text content is blank
+                          if (inputRef.current.textContent.length == 0) {
+                            return;
+                          }
+                          // Opens the mention user list if the last character is an @ sign
+                          if (
+                            inputRef.current.textContent[
+                              inputRef.current.textContent.length - 1
+                            ] == "@"
+                          ) {
+                            dispatch(setIsMentioning(true));
+                            dispatch(setFilteredConvoMembers(""));
+                            return;
+                          }
                         }
                       }
                     }}

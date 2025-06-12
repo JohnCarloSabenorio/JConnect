@@ -18,16 +18,13 @@ export default function MentionCard({ member, inputRef }) {
     el.appendChild(mentionSpan);
     const blankSpan = document.createElement("span");
     blankSpan.textContent = "\u00A0";
-    blankSpan.style.color = "black";
     el.appendChild(blankSpan);
 
     // Set caret position
+    // Check if the current node is a mention span
+    const selection = window.getSelection();
 
     const range = document.createRange();
-
-    const selection = window.getSelection();
-    console.log("THE CURRENT SELECTION:", selection);
-    console.log("LENGTH OF BLANK SPAN:", blankSpan.textContent.length);
 
     range.setStart(blankSpan, 0);
     range.setEnd(blankSpan, blankSpan.textContent.length);
