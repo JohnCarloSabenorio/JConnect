@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 
 const conversationSlice = createSlice({
   name: "conversation",
@@ -25,11 +25,40 @@ const conversationSlice = createSlice({
       state.message = action.payload;
     },
 
-    addToMention: (state, action) => {
-      state.toMention[action.payload[0]] = action.payload[1];
+    setToMention: (state, action) => {
+      console.log("RESETTING THE MENTIONS!", action.payload);
+      state.toMention = action.payload;
+
+      console.log("AFTER RESET:", JSON.parse(JSON.stringify(state.toMention)));
     },
+
+    addToMention: (state, action) => {
+      const userId = action.payload;
+      const currentMentions = JSON.parse(JSON.stringify(state.toMention));
+
+      if (currentMentions[userId]) {
+        currentMentions[userId] += 1;
+      } else {
+        currentMentions[userId] = 1;
+      }
+
+      console.log("CURRENT MENTIONS:", currentMentions);
+
+      state.toMention = currentMentions;
+    },
+
     removeToMention: (state, action) => {
-      delete state.toMention[action.payload[0]];
+      const userId = action.payload;
+      const currentMentions = JSON.parse(JSON.stringify(state.toMention));
+
+      if (currentMentions[userId] - 1 == 0) delete currentMentions[userId];
+      else {
+        currentMentions[userId] -= 1;
+      }
+
+      console.log("CURRENT MENTIONS:", currentMentions);
+
+      state.toMention = currentMentions;
     },
     setActiveConversation: (state, action) => {
       console.log("THE ACTIVE CONVO PAYLOAD:", action.payload);
@@ -179,6 +208,7 @@ const conversationSlice = createSlice({
 
 export const {
   setMessage,
+  setToMention,
   addToMention,
   removeToMention,
   setIsMentioning,

@@ -1,4 +1,4 @@
-import { setIsMentioning } from "../redux/conversation";
+import { setIsMentioning, addToMention } from "../redux/conversation";
 import { useDispatch } from "react-redux";
 export default function MentionCard({ member, inputRef }) {
   const dispatch = useDispatch();
@@ -13,7 +13,8 @@ export default function MentionCard({ member, inputRef }) {
     const mentionSpan = document.createElement("span");
     mentionSpan.textContent = `@${text}`;
     mentionSpan.className = "mention-span";
-
+    mentionSpan.dataset.memberId = member._id;
+    mentionSpan.dataset.username = member.username;
     // Append the mention span
     el.appendChild(mentionSpan);
     const blankSpan = document.createElement("span");
@@ -69,15 +70,19 @@ export default function MentionCard({ member, inputRef }) {
     }
   }
 
+  function handleClick() {
+    addElement(member.username);
+    dispatch(setIsMentioning(false));
+    console.log("the member id:", member._id);
+    dispatch(addToMention(member._id));
+  }
+
   return (
     <>
       <div
         id={`mention_${member._id}`}
         className={`flex justify-between p-1 cursor-pointer items-center gap-5 w-full hover:bg-gray-200`}
-        onClick={(e) => {
-          addElement(member.username);
-          dispatch(setIsMentioning(false));
-        }}
+        onClick={(e) => handleClick()}
       >
         <div className="flex items-center gap-5">
           {/* Profile Image */}

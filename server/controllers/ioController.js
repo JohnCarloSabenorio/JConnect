@@ -36,6 +36,7 @@ exports.sendMessage = async (io, socket, data) => {
     sender: data.sender,
     conversation: data.conversation,
     images: filenames,
+    mentions: data.mentions,
   });
 
   // 2. Update the conversation AND get the updated version in one step

@@ -11,6 +11,7 @@ import {
   setActiveDirectUser,
   setActiveConvoMembers,
   setActiveConvoIsArchived,
+  setToMention,
 } from "../redux/conversation";
 
 export default function ConversationCard({
@@ -78,6 +79,7 @@ export default function ConversationCard({
         }`}
         onClick={() => {
           inputRef.current.innerHTML = "";
+          dispatch(setToMention({}));
           dispatch(setActiveConvoMembers(userConversation.conversation.users));
           dispatch(
             setActiveConversation([

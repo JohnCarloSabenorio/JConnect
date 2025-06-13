@@ -7,6 +7,10 @@ const messageSchema = new mongoose.Schema(
       default: "",
     },
 
+    mentions: {
+      type: Map,
+      default: {},
+    },
     sender: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -40,8 +44,6 @@ messageSchema.pre(/^find/, function (next) {
 });
 
 // Methods
-
-
 
 const messageModel = mongoose.model("Message", messageSchema);
 module.exports = messageModel;

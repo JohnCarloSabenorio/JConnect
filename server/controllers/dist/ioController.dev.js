@@ -1,8 +1,18 @@
 "use strict";
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 var Message = require("./../models/messageModel");
 
 var Conversation = require("../models/conversationModel");
+
+var UserConversation = require("../models/userConversationModel");
 
 var sharp = require("sharp"); // For saving and manipulating images
 
@@ -12,12 +22,16 @@ var fs = require("fs");
 var path = require("path");
 
 exports.sendMessage = function _callee3(io, socket, data) {
-  var filenames, newMessage, populatedMessage, updatedConvo, imageBase64Array, messageObject;
+  var filenames, newMessage, _ref, _ref2, populatedMessage, updatedConvo, userConversation, imageBase64Array, messageObject;
+
   return regeneratorRuntime.async(function _callee3$(_context3) {
     while (1) {
       switch (_context3.prev = _context3.next) {
         case 0:
-          _context3.next = 2;
+          // Data should have the: message, sender id, and conversation id
+          console.log("Sent data:", data); // Remove this in the future (Images should be sent in db not via socket)
+
+          _context3.next = 3;
           return regeneratorRuntime.awrap(Promise.all(data.images.map(function _callee(img, idx) {
             var buffer, filename;
             return regeneratorRuntime.async(function _callee$(_context) {
@@ -45,35 +59,39 @@ exports.sendMessage = function _callee3(io, socket, data) {
             });
           })));
 
-        case 2:
+        case 3:
           filenames = _context3.sent;
-          console.log("THE ARRAY FILENAME:", filenames); // Create a new message in the databaseho
-
-          _context3.next = 6;
+          console.log("THE ARRAY FILENAME:", filenames);
+          _context3.next = 7;
           return regeneratorRuntime.awrap(Message.create({
-            message: data.message ? data.message : "",
+            message: data.message || "",
             sender: data.sender,
             conversation: data.conversation,
-            images: filenames
+            images: filenames,
+            mentions: data.mentions
           }));
 
-        case 6:
+        case 7:
           newMessage = _context3.sent;
-          _context3.next = 9;
-          return regeneratorRuntime.awrap(Message.findById(newMessage._id).populate("sender"));
-
-        case 9:
-          populatedMessage = _context3.sent;
-          _context3.next = 12;
-          return regeneratorRuntime.awrap(Conversation.findByIdAndUpdate(data.conversation, {
+          _context3.next = 10;
+          return regeneratorRuntime.awrap(Promise.all([Message.findById(newMessage._id).populate("sender"), // populate sender
+          Conversation.findByIdAndUpdate(data.conversation, {
             latestMessage: data.message
           }, {
             "new": true
-          }));
+          }), UserConversation.findOne({
+            user: data.sender,
+            conversation: data.conversation
+          })]));
 
-        case 12:
-          updatedConvo = _context3.sent;
-          _context3.next = 15;
+        case 10:
+          _ref = _context3.sent;
+          _ref2 = _slicedToArray(_ref, 3);
+          populatedMessage = _ref2[0];
+          updatedConvo = _ref2[1];
+          userConversation = _ref2[2];
+          console.log("The user conversation of the sent message:", userConversation);
+          _context3.next = 18;
           return regeneratorRuntime.awrap(Promise.all(populatedMessage.images.map(function _callee2(filename) {
             var imagePath, buffer;
             return regeneratorRuntime.async(function _callee2$(_context2) {
@@ -97,18 +115,20 @@ exports.sendMessage = function _callee3(io, socket, data) {
             });
           })));
 
-        case 15:
+        case 18:
           imageBase64Array = _context3.sent;
           console.log("IMAGE BUFFERIST:", imageBase64Array);
           messageObject = populatedMessage.toObject();
           messageObject.images64 = imageBase64Array;
           console.log("POPPU WITH IMAGE64:", populatedMessage);
-          io.to(data.conversation).emit("chat message", {
+          console.log("The updated conversation:", updatedConvo);
+          console.log("SENDING MESSAGE TO ROOM:", userConversation._id.toString());
+          io.to(userConversation.conversation._id.toString()).emit("chat message", {
             msg: messageObject,
-            convo: updatedConvo
+            convo: userConversation
           });
 
-        case 21:
+        case 26:
         case "end":
           return _context3.stop();
       }

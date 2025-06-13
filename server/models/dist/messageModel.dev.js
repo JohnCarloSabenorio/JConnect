@@ -7,6 +7,10 @@ var messageSchema = new mongoose.Schema({
     type: String,
     "default": ""
   },
+  mentions: {
+    type: Map,
+    "default": {}
+  },
   sender: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

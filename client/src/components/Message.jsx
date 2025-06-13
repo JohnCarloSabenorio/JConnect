@@ -1,3 +1,6 @@
+import { useDispatch } from "react-redux";
+import { showProfileOverlay } from "../redux/profile_overlay";
+import { setDisplayedUser } from "../redux/profile_overlay";
 export default function Message({
   isCurrentUser,
   imgUrl,
@@ -5,17 +8,28 @@ export default function Message({
   username,
   timeSent,
   imagesSent,
+  mentions,
+  sender,
 }) {
+  const dispatch = useDispatch();
+
   function formatTime(timestamp) {
     const newDate = new Date(timestamp);
     const day = newDate.toLocaleDateString("en-US", { weekday: "long" });
-
     const time = newDate.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
     });
     return `${day}: ${time}`;
+  }
+
+  const messageParts = message.split(/(@\[[^:\]]+:[^\]]+\])/g);
+
+  if (mentions) {
+    for (let mention in mentions) {
+      console.log("TO MENTION:", mention);
+    }
   }
 
   return (
@@ -29,7 +43,28 @@ export default function Message({
             <div className="relative group">
               {message !== "" && (
                 <div className="max-w-max bg-blue-400 p-2 rounded-sm">
-                  <p className="break-all">{message}</p>
+                  <p className="break-all">
+                    {messageParts.map((part, id) => {
+                      if (part.match(/(@\[[^:\]]+:[^\]]+\])/g)) {
+                        const match = part.match(/@\[(.+?):(.+?)\]/);
+                        console.log("THE MATCH:", match);
+                        return (
+                          <span
+                            className="hover:underline cursor-pointer font-bold"
+                            onClick={(e) => {
+                              dispatch(showProfileOverlay());
+                              dispatch(setDisplayedUser(match[1]));
+                            }}
+                            key={id}
+                          >
+                            {match[2]}
+                          </span>
+                        );
+                      } else {
+                        return part;
+                      }
+                    })}
+                  </p>
                 </div>
               )}
 

@@ -16,11 +16,13 @@ import { getAllUserMessages } from "../api/conversation";
 import { toggleMediaPanel } from "../redux/media";
 import {
   setIsMentioning,
+  setToMention,
   setActiveConversation,
   setFilteredConvoMembers,
   updateAGroupConvo,
   addANewConvo,
   updateAConvo,
+  removeToMention,
 } from "../redux/conversation";
 
 import {
@@ -43,13 +45,14 @@ export default function Chat() {
     filteredConvoMembers,
     activeConvoIsGroup,
     isMentioning,
+    message,
+    toMention,
   } = useSelector((state) => state.conversation);
 
   // This will get the messages to be displayed from the message slice
   const { displayedMessages, messageIsLoading } = useSelector(
     (state) => state.message
   );
-  const { message, toMention } = useSelector((state) => state.conversation);
 
   // This will get all the images to be displayed from the media slice
   const { mediaImages } = useSelector((state) => state.media);
@@ -80,7 +83,6 @@ export default function Chat() {
       // This should scroll down the chat ui if the user is the sender (NEEDS TO BE FIXED)
 
       // UPDATES THE CONVERSATION LIST
-
       dispatch(updateAConvo(data));
 
       // UPDATES THE GROUP CONVERATION LIST
@@ -131,6 +133,15 @@ export default function Chat() {
 
   function sendMessage(e) {
     e.preventDefault();
+    const allMentionSpans = inputRef.current.querySelectorAll(".mention-span");
+
+    const originalMessage = inputRef.textContent.trim();
+
+    allMentionSpans.forEach((span) => {
+      span.textContent = `@[${span.dataset.memberId}:${span.dataset.username}]`;
+    });
+
+    console.log("ALL MENTION SPAN:", allMentionSpans);
     const messageToSend = inputRef.current.textContent.trim();
     inputRef.current.innerHTML = null;
     // IN THE IOCONTROLLER, CHECK IF THE CONVERSATION IS ARCHIVED, IF SO, MOVE IT TO ACTIVE AGAIN
@@ -143,7 +154,10 @@ export default function Chat() {
       sender: user._id,
       conversation: activeConvo,
       images: images,
+      mentions: toMention,
     });
+
+    dispatch(setToMention({}));
   }
 
   // Hides/Displays the emoji picker
@@ -296,7 +310,11 @@ export default function Chat() {
 
           {/* Sidebar */}
 
-          <Sidebar inputRef={inputRef} getMessages={getMessages} chatAFriend={chatAFriend} />
+          <Sidebar
+            inputRef={inputRef}
+            getMessages={getMessages}
+            chatAFriend={chatAFriend}
+          />
 
           {/* Chat Interface */}
           <div className="flex flex-grow flex-col w-4xl  bg-gray-50">
@@ -385,6 +403,8 @@ export default function Chat() {
                       key={i}
                       imgUrl="img/icons/male-default.jpg"
                       message={message.message}
+                      sender={message.sender}
+                      mentions={message.mentions}
                       username={message.sender.username}
                       isCurrentUser={message.sender._id === user._id}
                       timeSent={message.createdAt}
@@ -482,11 +502,20 @@ export default function Chat() {
                     `}
                     // if user presses space, check if it is mentioning, it is.. then create a new span and move the caret
                     // Might revise to check if the span is a mention span instead
+                    onPaste={(e) => {
+                      e.preventDefault();
+                      const newSpan = document.createElement("span");
+                      newSpan.textContent = e.clipboardData.getData("text");
+
+                      inputRef.current.appendChild(newSpan);
+                    }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         sendMessage(e);
                         return;
                       }
+
+                      // This is used for checking key events when the user is having a conversation in a group chat
                       if (activeConvoIsGroup) {
                         if (e.key === "Backspace") {
                           const selection = window.getSelection();
@@ -503,6 +532,9 @@ export default function Chat() {
                           ) {
                             nodeBeforeCursor.remove();
                             dispatch(setIsMentioning(false));
+                            dispatch(
+                              removeToMention(nodeBeforeCursor.dataset.memberId)
+                            );
                           }
 
                           if (
@@ -553,31 +585,41 @@ export default function Chat() {
                           }
                         }
                         if (e.key === "@") {
-                          const lastChar =
-                            inputRef.current.textContent.slice(-1);
-                          console.log(
-                            "Last char:",
-                            JSON.stringify(lastChar),
-                            "Char code:",
-                            lastChar?.charCodeAt(0)
-                          );
+                          const selection = window.getSelection();
+                          const range = selection.getRangeAt(0);
+                          const nodeBeforeCursor =
+                            getElementBeforeCursor(range);
 
-                          console.log("THE LAST CHARACTER:", lastChar);
                           if (
-                            lastChar === " " ||
-                            lastChar === "\u00A0" ||
-                            lastChar === "\n" ||
-                            lastChar === "\t" ||
-                            (inputRef.current.textContent.length == 0 &&
-                              activeConvoIsGroup)
+                            nodeBeforeCursor.classList?.contains("mention-span")
                           ) {
-                            dispatch(setIsMentioning(true));
-                            return;
                           } else {
-                            dispatch(setIsMentioning(false));
-                          }
+                            const lastChar =
+                              inputRef.current.textContent.slice(-1);
+                            console.log(
+                              "Last char:",
+                              JSON.stringify(lastChar),
+                              "Char code:",
+                              lastChar?.charCodeAt(0)
+                            );
 
-                          return;
+                            console.log("THE LAST CHARACTER:", lastChar);
+                            if (
+                              lastChar === " " ||
+                              lastChar === "\u00A0" ||
+                              lastChar === "\n" ||
+                              lastChar === "\t" ||
+                              (inputRef.current.textContent.length == 0 &&
+                                activeConvoIsGroup)
+                            ) {
+                              dispatch(setIsMentioning(true));
+                              return;
+                            } else {
+                              dispatch(setIsMentioning(false));
+                            }
+
+                            return;
+                          }
                         }
 
                         const selection = window.getSelection();

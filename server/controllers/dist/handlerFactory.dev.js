@@ -14,7 +14,13 @@ var APIFeatures = require("../utils/apiFeatures");
 
 var Conversation = require("../models/conversationModel");
 
+var Notification = require("../models/notificationModel");
+
 var UserConversation = require("../models/userConversationModel");
+
+var User = require("../models/userModel");
+
+var Friend = require("../models/friendModel");
 
 var path = require("path");
 
@@ -32,24 +38,24 @@ Create generic handlers for:
 
 
 exports.createOne = function (Model) {
-  return catchAsync(function _callee2(req, res) {
+  return catchAsync(function _callee(req, res) {
     var newDoc, updatedConvo;
-    return regeneratorRuntime.async(function _callee2$(_context2) {
+    return regeneratorRuntime.async(function _callee$(_context) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context.prev = _context.next) {
           case 0:
-            _context2.next = 2;
+            _context.next = 2;
             return regeneratorRuntime.awrap(Model.create(req.body));
 
           case 2:
-            newDoc = _context2.sent;
+            newDoc = _context.sent;
 
             if (!req.params.convoId) {
-              _context2.next = 8;
+              _context.next = 8;
               break;
             }
 
-            _context2.next = 6;
+            _context.next = 6;
             return regeneratorRuntime.awrap(Conversation.findByIdAndUpdate(req.params.convoId, {
               latestMessage: req.body.message
             }, {
@@ -57,55 +63,19 @@ exports.createOne = function (Model) {
             }));
 
           case 6:
-            updatedConvo = _context2.sent;
+            updatedConvo = _context.sent;
             console.log("UPDATED CONVERSATION LATEST:", updatedConvo);
 
           case 8:
-            if (!(Model === Conversation)) {
-              _context2.next = 15;
-              break;
-            }
-
-            _context2.next = 11;
-            return regeneratorRuntime.awrap(Conversation.findById(newDoc._id).populate("users"));
-
-          case 11:
-            newDoc = _context2.sent;
-            console.log("USER IS CREATING A CONVERSATION: ", req.body);
-            _context2.next = 15;
-            return regeneratorRuntime.awrap(Promise.all(req.body.users.map(function _callee(user) {
-              return regeneratorRuntime.async(function _callee$(_context) {
-                while (1) {
-                  switch (_context.prev = _context.next) {
-                    case 0:
-                      _context.next = 2;
-                      return regeneratorRuntime.awrap(UserConversation.create({
-                        user: user,
-                        conversation: newDoc._id,
-                        isGroup: newDoc.users.length > 2
-                      }));
-
-                    case 2:
-                      return _context.abrupt("return", _context.sent);
-
-                    case 3:
-                    case "end":
-                      return _context.stop();
-                  }
-                }
-              });
-            })));
-
-          case 15:
             res.status(200).json({
               status: "success",
               message: "New document successfully created!",
               data: newDoc
             });
 
-          case 16:
+          case 9:
           case "end":
-            return _context2.stop();
+            return _context.stop();
         }
       }
     });
@@ -113,24 +83,24 @@ exports.createOne = function (Model) {
 };
 
 exports.getOne = function (Model) {
-  return catchAsync(function _callee3(req, res, next) {
+  return catchAsync(function _callee2(req, res, next) {
     var doc;
-    return regeneratorRuntime.async(function _callee3$(_context3) {
+    return regeneratorRuntime.async(function _callee2$(_context2) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context2.prev = _context2.next) {
           case 0:
-            _context3.next = 2;
+            _context2.next = 2;
             return regeneratorRuntime.awrap(Model.findById(req.params.id));
 
           case 2:
-            doc = _context3.sent;
+            doc = _context2.sent;
 
             if (doc) {
-              _context3.next = 5;
+              _context2.next = 5;
               break;
             }
 
-            return _context3.abrupt("return", next(new AppError("No document found with the id: ".concat(req.params.id), 404)));
+            return _context2.abrupt("return", next(new AppError("No document found with the id: ".concat(req.params.id), 404)));
 
           case 5:
             res.status(200).json({
@@ -141,7 +111,7 @@ exports.getOne = function (Model) {
 
           case 6:
           case "end":
-            return _context3.stop();
+            return _context2.stop();
         }
       }
     });
@@ -149,14 +119,13 @@ exports.getOne = function (Model) {
 };
 
 exports.getAll = function (Model) {
-  return catchAsync(function _callee6(req, res) {
+  return catchAsync(function _callee5(req, res) {
     var filter, docs, docsWithBase;
-    return regeneratorRuntime.async(function _callee6$(_context6) {
+    return regeneratorRuntime.async(function _callee5$(_context5) {
       while (1) {
-        switch (_context6.prev = _context6.next) {
+        switch (_context5.prev = _context5.next) {
           case 0:
             filter = {};
-            console.log("ENDS WITH ALL CONVO:", req.baseUrl.endsWith("allConvo"));
 
             if (req.baseUrl.endsWith("allConvo")) {
               filter = {
@@ -168,8 +137,16 @@ exports.getAll = function (Model) {
 
 
             if (Model === UserConversation) {
+              console.log("THE REQUEST USER:", req.user);
               filter = {
                 user: req.user.id
+              };
+            }
+
+            if (Model === Notification) {
+              console.log("THE USER:", req.user);
+              filter = {
+                receiver_id: req.user.id
               };
             }
 
@@ -179,78 +156,78 @@ exports.getAll = function (Model) {
               conversation: req.params.convoId
             });
             features = new APIFeatures(Model.find(filter), req.query).filter().sort().limitFields();
-            _context6.next = 9;
+            _context5.next = 9;
             return regeneratorRuntime.awrap(features.query);
 
           case 9:
-            docs = _context6.sent;
-            _context6.next = 12;
-            return regeneratorRuntime.awrap(Promise.all(docs.map(function _callee5(doc) {
+            docs = _context5.sent;
+            _context5.next = 12;
+            return regeneratorRuntime.awrap(Promise.all(docs.map(function _callee4(doc) {
               var images64;
-              return regeneratorRuntime.async(function _callee5$(_context5) {
+              return regeneratorRuntime.async(function _callee4$(_context4) {
                 while (1) {
-                  switch (_context5.prev = _context5.next) {
+                  switch (_context4.prev = _context4.next) {
                     case 0:
                       // doc.users = doc.users.filter(user => user._id.toString() === req.user.id);
                       console.log("THE DOC:", doc);
 
                       if (!(!doc.images || !Array.isArray(doc.images))) {
-                        _context5.next = 3;
+                        _context4.next = 3;
                         break;
                       }
 
-                      return _context5.abrupt("return", _objectSpread({}, doc._doc, {
+                      return _context4.abrupt("return", _objectSpread({}, doc._doc, {
                         imageBase64Array: []
                       }));
 
                     case 3:
-                      _context5.next = 5;
-                      return regeneratorRuntime.awrap(Promise.all(doc.images.map(function _callee4(filename) {
+                      _context4.next = 5;
+                      return regeneratorRuntime.awrap(Promise.all(doc.images.map(function _callee3(filename) {
                         var imagePath, buffer;
-                        return regeneratorRuntime.async(function _callee4$(_context4) {
+                        return regeneratorRuntime.async(function _callee3$(_context3) {
                           while (1) {
-                            switch (_context4.prev = _context4.next) {
+                            switch (_context3.prev = _context3.next) {
                               case 0:
                                 imagePath = path.join("public/img/sentImages", filename); // console.log("THE IMAGE PATH:", imagePath);
 
-                                _context4.prev = 1;
-                                _context4.next = 4;
+                                _context3.prev = 1;
+                                _context3.next = 4;
                                 return regeneratorRuntime.awrap(sharp(imagePath).toBuffer());
 
                               case 4:
-                                buffer = _context4.sent;
-                                return _context4.abrupt("return", "data:image/jpeg;base64,".concat(buffer.toString("base64")));
+                                buffer = _context3.sent;
+                                return _context3.abrupt("return", "data:image/jpeg;base64,".concat(buffer.toString("base64")));
 
                               case 8:
-                                _context4.prev = 8;
-                                _context4.t0 = _context4["catch"](1);
-                                console.error("Error processing image:", filename, _context4.t0);
-                                return _context4.abrupt("return", null);
+                                _context3.prev = 8;
+                                _context3.t0 = _context3["catch"](1);
+                                console.error("Error processing image:", filename, _context3.t0);
+                                return _context3.abrupt("return", null);
 
                               case 12:
                               case "end":
-                                return _context4.stop();
+                                return _context3.stop();
                             }
                           }
                         }, null, null, [[1, 8]]);
                       })));
 
                     case 5:
-                      images64 = _context5.sent;
-                      return _context5.abrupt("return", _objectSpread({}, doc._doc, {
+                      images64 = _context4.sent;
+                      return _context4.abrupt("return", _objectSpread({}, doc._doc, {
                         images64: images64
                       }));
 
                     case 7:
                     case "end":
-                      return _context5.stop();
+                      return _context4.stop();
                   }
                 }
               });
             })));
 
           case 12:
-            docsWithBase = _context6.sent;
+            docsWithBase = _context5.sent;
             res.status(200).json({
               status: "success",
               message: "Successfully retrieved all documents",
@@ -259,7 +236,7 @@ exports.getAll = function (Model) {
 
           case 14:
           case "end":
-            return _context6.stop();
+            return _context5.stop();
         }
       }
     });
@@ -267,28 +244,28 @@ exports.getAll = function (Model) {
 };
 
 exports.updateOne = function (Model) {
-  return catchAsync(function _callee7(req, res) {
+  return catchAsync(function _callee6(req, res) {
     var doc;
-    return regeneratorRuntime.async(function _callee7$(_context7) {
+    return regeneratorRuntime.async(function _callee6$(_context6) {
       while (1) {
-        switch (_context7.prev = _context7.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
             console.log("USER MESSAGE:", req.body.message);
-            _context7.next = 3;
+            _context6.next = 3;
             return regeneratorRuntime.awrap(Model.findByIdAndUpdate(req.params.id, req.body, {
               "new": true,
               runValidators: true
             }));
 
           case 3:
-            doc = _context7.sent;
+            doc = _context6.sent;
 
             if (doc) {
-              _context7.next = 6;
+              _context6.next = 6;
               break;
             }
 
-            return _context7.abrupt("return", next(new AppError("No document found with the id of: ".concat(req.params.id), 404)));
+            return _context6.abrupt("return", next(new AppError("No document found with the id of: ".concat(req.params.id), 404)));
 
           case 6:
             res.status(200).json({
@@ -299,7 +276,7 @@ exports.updateOne = function (Model) {
 
           case 7:
           case "end":
-            return _context7.stop();
+            return _context6.stop();
         }
       }
     });
@@ -307,45 +284,62 @@ exports.updateOne = function (Model) {
 };
 
 exports.deleteOne = function (Model) {
-  return catchAsync(function _callee8(req, res, next) {
+  return catchAsync(function _callee7(req, res, next) {
     var doc;
-    return regeneratorRuntime.async(function _callee8$(_context8) {
+    return regeneratorRuntime.async(function _callee7$(_context7) {
       while (1) {
-        switch (_context8.prev = _context8.next) {
+        switch (_context7.prev = _context7.next) {
           case 0:
             if (!(Model === Conversation)) {
-              _context8.next = 3;
+              _context7.next = 3;
               break;
             }
 
-            _context8.next = 3;
+            _context7.next = 3;
             return regeneratorRuntime.awrap(UserConversation.deleteMany({
               conversation: req.params.id
             }));
 
           case 3:
-            _context8.next = 5;
+            _context7.next = 5;
             return regeneratorRuntime.awrap(Model.findByIdAndDelete(req.params.id));
 
           case 5:
-            doc = _context8.sent;
+            doc = _context7.sent;
 
-            if (doc) {
-              _context8.next = 8;
+            if (!(Model === Friend)) {
+              _context7.next = 9;
               break;
             }
 
-            return _context8.abrupt("return", next(new AppError("No document found with the id of: ".concat(req.params.id), 404)));
+            _context7.next = 9;
+            return regeneratorRuntime.awrap(Friend.findOneAndDelete({
+              $or: [{
+                user1: req.user.id,
+                user2: req.params.id
+              }, {
+                user2: req.user.id,
+                user1: req.params.id
+              }]
+            }));
 
-          case 8:
+          case 9:
+            if (doc) {
+              _context7.next = 11;
+              break;
+            }
+
+            return _context7.abrupt("return", next(new AppError("No document found with the id of: ".concat(req.params.id), 404)));
+
+          case 11:
             res.status(204).json({
               status: "success",
               message: "Document successfully deleted!"
             });
 
-          case 9:
+          case 12:
           case "end":
-            return _context8.stop();
+            return _context7.stop();
         }
       }
     });
