@@ -7,10 +7,10 @@ var messageSchema = new mongoose.Schema({
     type: String,
     "default": ""
   },
-  mentions: {
-    type: Map,
-    "default": {}
-  },
+  mentions: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  }],
   sender: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -32,9 +32,11 @@ var messageSchema = new mongoose.Schema({
 // Query Middlewares
 
 messageSchema.pre(/^find/, function (next) {
-  this.populate({
+  this.populate([{
     path: "sender"
-  });
+  }, {
+    path: "mentions"
+  }]);
   next();
 }); // Methods
 

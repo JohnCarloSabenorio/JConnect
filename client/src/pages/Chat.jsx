@@ -135,8 +135,7 @@ export default function Chat() {
     e.preventDefault();
     const allMentionSpans = inputRef.current.querySelectorAll(".mention-span");
 
-    const originalMessage = inputRef.textContent.trim();
-
+    const latestMessage = inputRef.current.textContent.trim();
     allMentionSpans.forEach((span) => {
       span.textContent = `@[${span.dataset.memberId}:${span.dataset.username}]`;
     });
@@ -155,9 +154,10 @@ export default function Chat() {
       conversation: activeConvo,
       images: images,
       mentions: toMention,
+      latestMessage: latestMessage,
     });
 
-    dispatch(setToMention({}));
+    dispatch(setToMention([]));
   }
 
   // Hides/Displays the emoji picker

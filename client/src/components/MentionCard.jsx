@@ -56,10 +56,6 @@ export default function MentionCard({ member, inputRef }) {
     // get the last node
     const lastNode = elChildNodes[elChildNodes.length - 1];
 
-    console.log("LAST NODE CONTENT:", lastNode.textContent);
-
-    console.log("LAST NODE TYPE:", lastNode.nodeType);
-
     // check if the last node is a TEXT_NODE and remove the last character
     if (
       lastNode.nodeType == Node.TEXT_NODE ||

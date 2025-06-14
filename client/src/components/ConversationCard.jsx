@@ -79,7 +79,7 @@ export default function ConversationCard({
         }`}
         onClick={() => {
           inputRef.current.innerHTML = "";
-          dispatch(setToMention({}));
+          dispatch(setToMention([]));
           dispatch(setActiveConvoMembers(userConversation.conversation.users));
           dispatch(
             setActiveConversation([

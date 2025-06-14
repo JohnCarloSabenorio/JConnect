@@ -41,10 +41,10 @@ exports.sendMessage = async (io, socket, data) => {
 
   // 2. Update the conversation AND get the updated version in one step
   const [populatedMessage, updatedConvo, userConversation] = await Promise.all([
-    Message.findById(newMessage._id).populate("sender"), // populate sender
+    Message.findById(newMessage._id).populate("sender").populate("mentions"), // populate sender
     Conversation.findByIdAndUpdate(
       data.conversation,
-      { latestMessage: data.message },
+      { latestMessage: data.latestMessage },
       { new: true }
     ),
     UserConversation.findOne({

@@ -17,7 +17,7 @@ const conversationSlice = createSlice({
     activeDirectUser: null,
     userIsFriend: true,
     isMentioning: false,
-    toMention: {},
+    toMention: [],
     message: "",
   },
   reducers: {
@@ -28,20 +28,15 @@ const conversationSlice = createSlice({
     setToMention: (state, action) => {
       console.log("RESETTING THE MENTIONS!", action.payload);
       state.toMention = action.payload;
-
-      console.log("AFTER RESET:", JSON.parse(JSON.stringify(state.toMention)));
     },
 
     addToMention: (state, action) => {
       const userId = action.payload;
-      const currentMentions = JSON.parse(JSON.stringify(state.toMention));
+      let currentMentions = JSON.parse(JSON.stringify(state.toMention));
 
-      if (currentMentions[userId]) {
-        currentMentions[userId] += 1;
-      } else {
-        currentMentions[userId] = 1;
+      if (!currentMentions.includes(userId)) {
+        currentMentions.push(userId);
       }
-
       console.log("CURRENT MENTIONS:", currentMentions);
 
       state.toMention = currentMentions;
@@ -49,15 +44,13 @@ const conversationSlice = createSlice({
 
     removeToMention: (state, action) => {
       const userId = action.payload;
-      const currentMentions = JSON.parse(JSON.stringify(state.toMention));
+      let currentMentions = JSON.parse(JSON.stringify(state.toMention));
 
-      if (currentMentions[userId] - 1 == 0) delete currentMentions[userId];
-      else {
-        currentMentions[userId] -= 1;
+      if (currentMentions.includes(userId)) {
+        currentMentions = currentMentions.filter((id) => id != userId);
       }
 
       console.log("CURRENT MENTIONS:", currentMentions);
-
       state.toMention = currentMentions;
     },
     setActiveConversation: (state, action) => {

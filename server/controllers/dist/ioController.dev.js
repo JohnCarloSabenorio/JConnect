@@ -74,9 +74,9 @@ exports.sendMessage = function _callee3(io, socket, data) {
         case 7:
           newMessage = _context3.sent;
           _context3.next = 10;
-          return regeneratorRuntime.awrap(Promise.all([Message.findById(newMessage._id).populate("sender"), // populate sender
+          return regeneratorRuntime.awrap(Promise.all([Message.findById(newMessage._id).populate("sender").populate("mentions"), // populate sender
           Conversation.findByIdAndUpdate(data.conversation, {
-            latestMessage: data.message
+            latestMessage: data.latestMessage
           }, {
             "new": true
           }), UserConversation.findOne({

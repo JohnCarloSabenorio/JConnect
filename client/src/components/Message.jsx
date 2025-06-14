@@ -26,12 +26,6 @@ export default function Message({
 
   const messageParts = message.split(/(@\[[^:\]]+:[^\]]+\])/g);
 
-  if (mentions) {
-    for (let mention in mentions) {
-      console.log("TO MENTION:", mention);
-    }
-  }
-
   return (
     <div className="flex flex-col p-5">
       <div className={`flex ${isCurrentUser ? "ml-auto mr-15" : "ml-15"}`}>
@@ -48,12 +42,17 @@ export default function Message({
                       if (part.match(/(@\[[^:\]]+:[^\]]+\])/g)) {
                         const match = part.match(/@\[(.+?):(.+?)\]/);
                         console.log("THE MATCH:", match);
+
                         return (
                           <span
                             className="hover:underline cursor-pointer font-bold"
                             onClick={(e) => {
                               dispatch(showProfileOverlay());
-                              dispatch(setDisplayedUser(match[1]));
+                              dispatch(
+                                setDisplayedUser(
+                                  mentions.find((user) => user._id == match[1])
+                                )
+                              );
                             }}
                             key={id}
                           >
