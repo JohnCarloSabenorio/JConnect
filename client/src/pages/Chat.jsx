@@ -10,6 +10,7 @@ import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import MediaPanel from "../components/MediaPanel";
 import ProfileOverlay from "../components/ProfileOverlay";
+import AddMemberOverlay from "../components/AddMemberOverlay";
 import { createConversation, findConvoWithUser } from "../api/conversation";
 import Overlay from "../components/Overlay";
 import { getAllUserMessages } from "../api/conversation";
@@ -303,6 +304,8 @@ export default function Chat() {
       {/* <UnfriendOverlay /> */}
       <div className="flex flex-col h-screen overflow-hidden">
         <ProfileOverlay />
+
+        <AddMemberOverlay />
         <Navbar />
         {/* Main Content */}
         <div className="flex flex-grow min-h-0 relative">

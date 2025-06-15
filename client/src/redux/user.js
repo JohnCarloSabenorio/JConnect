@@ -8,7 +8,7 @@ const userSlice = createSlice({
 
   reducers: {
     setAllUsers: (state, action) => {
-      console.log("ALL USERS KEK", action.payload);
+      console.log("ALL USERS IN THE WEBSITE", action.payload);
       state.allUsers = action.payload;
     },
   },

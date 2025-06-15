@@ -10,7 +10,7 @@ import overlayReducer from "./overlay";
 import userReducer from "./user";
 import profileOverlayReducer from "./profile_overlay";
 import notificationReducer from "./notification";
-
+import addMemberOverlayReducer from "./addmember_overlay";
 export default configureStore({
   reducer: {
     sidebar: sidebarReducer,
@@ -23,6 +23,7 @@ export default configureStore({
     user: userReducer,
     profileOverlay: profileOverlayReducer,
     notification: notificationReducer,
+    addMemberOverlay: addMemberOverlayReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });

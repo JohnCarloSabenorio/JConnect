@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setIsHidden } from "../redux/overlay";
+import { setHideAddMemberOverlay } from "../redux/addmember_overlay";
 export default function MediaPanel({ getUserConversations }) {
   const { currentConvoName, activeConvoIsGroup, userIsFriend } = useSelector(
     (state) => state.conversation
@@ -37,10 +38,7 @@ export default function MediaPanel({ getUserConversations }) {
           className="rounded-full w-30 h-30"
         />
         <p className="font-bold text-lg">{currentConvoName}</p>
-        <p className="text-gray-500 text-center text-sm italic">
-          I am a bastard that likes to play games!
-        </p>
-        {/* <p className="text-gray-500">johndoe@gmail.com</p> */}
+        <p className="text-gray-500 text-center text-sm italic"></p>
         {/* Media Panel Buttons */}
         <div className="flex justify-center gap-3 mt-5">
           {/* Notifications Button */}
@@ -126,6 +124,22 @@ export default function MediaPanel({ getUserConversations }) {
               fill="black"
             >
               <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z" />
+            </svg>
+          </button>
+
+          {/* Add Member Button */}
+          <button
+            onClick={(e) => dispatch(setHideAddMemberOverlay(false))}
+            className="cursor-pointer shadow-lg p-2 text-sm flex justify-center items-center rounded-full"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 -960 960 960"
+              width="25"
+              height="25"
+              fill="black"
+            >
+              <path d="M500-482q29-32 44.5-73t15.5-85q0-44-15.5-85T500-798q60 8 100 53t40 105q0 60-40 105t-100 53Zm220 322v-120q0-36-16-68.5T662-406q51 18 94.5 46.5T800-280v120h-80Zm80-280v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80Zm-480-40q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM0-160v-112q0-34 17.5-62.5T64-378q62-31 126-46.5T320-440q66 0 130 15.5T576-378q29 15 46.5 43.5T640-272v112H0Zm320-400q33 0 56.5-23.5T400-640q0-33-23.5-56.5T320-720q-33 0-56.5 23.5T240-640q0 33 23.5 56.5T320-560ZM80-240h480v-32q0-11-5.5-20T540-306q-54-27-109-40.5T320-360q-56 0-111 13.5T100-306q-9 5-14.5 14T80-272v32Zm240-400Zm0 400Z" />
             </svg>
           </button>
         </div>
