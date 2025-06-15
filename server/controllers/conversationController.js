@@ -32,6 +32,32 @@ exports.addMember = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.addMultipleMembers = catchAsync(async (req, res, next) => {
+  const convo = Conversation.findByIdAndUpdate(
+    req.params.convoId,
+    {
+      $addToSet: {
+        users: req.body.newUsers,
+      },
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  // Return an error if the conversation does not exist
+  if (!convo) {
+    return next(new AppError("The conversation does not exist!", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "Successfully added new members in the conversation",
+    data: convo,
+  });
+});
+
 // Remove a person from an existing conversation
 exports.removeMember = catchAsync(async (req, res, next) => {
   const convo = await Conversation.findByIdAndUpdate(

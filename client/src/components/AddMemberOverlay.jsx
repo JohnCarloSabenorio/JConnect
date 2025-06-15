@@ -46,7 +46,7 @@ export default function AddMemberOverlay() {
       <div
         className={`${
           hideAddMemberOverlay ? "hidden" : "block"
-        } absolute w-full h-full z-20 bg-black/70  justify-center items-center flex-col flex
+        } absolute w-full h-full z-20 bg-black/70 justify-center items-center flex-col flex
         }`}
       >
         <svg
@@ -61,7 +61,7 @@ export default function AddMemberOverlay() {
           <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
         </svg>
 
-        <div className="bg-white p-5 rounded-sm w-170">
+        <div className="bg-white p-10 rounded-xl w-170">
           <h3 className="font-bold text-4xl text-center">
             Add a user in the chat!
           </h3>
