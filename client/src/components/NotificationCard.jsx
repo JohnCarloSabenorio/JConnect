@@ -1,7 +1,7 @@
 export default function NotificationCard({ data }) {
   return (
     <>
-      <div className="p-3 text-left gap-5 flex justify-between hover:bg-blue-500 hover:text-white align-middle">
+      <div className="p-3 text-left gap-5 flex justify-between hover:bg-blue-500 hover:text-white align-middle cursor-pointer">
         <img src="img/avatar.png" className="w-10 h-10"></img>
         <div className="w-full">
           <p>{data.message}</p>

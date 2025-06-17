@@ -31,5 +31,18 @@ export async function deleteNotification(notificationId) {
   }
 }
 
+export async function updateAllUserNotifications(newData) {
+  try {
+    const response = await axios.patch(
+      `jconnect/api/v1/notification/update-user-notifs`,
+      newData,
+      { withCredentials: true }
+    );
+
+    console.log(response);
+  } catch (err) {
+    console.log("Error updating all notifications:", err);
+  }
+}
+
 export async function getNotification(userId) {}
-export async function updateNotification(userId) {}

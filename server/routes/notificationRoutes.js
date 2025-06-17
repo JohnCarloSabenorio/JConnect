@@ -9,9 +9,12 @@ router
   .post(controller.createNotification)
   .get(controller.getAllNotifications);
 
+router.patch("/update-user-notifs", controller.updateAllUserNotifications);
+
 router
   .route("/:id")
   .get(controller.getNotification)
   .patch(controller.updateNotification)
   .delete(controller.deleteNotification);
+
 module.exports = router;
