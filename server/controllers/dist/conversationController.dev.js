@@ -59,30 +59,37 @@ exports.addMultipleMembers = catchAsync(function _callee2(req, res, next) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
-          convo = Conversation.findByIdAndUpdate(req.params.convoId, {
+          console.log("NEW MEMBERS TO ADD:", req.body.newUsers);
+          _context2.next = 3;
+          return regeneratorRuntime.awrap(Conversation.findByIdAndUpdate(req.params.convoId, {
             $addToSet: {
-              users: req.body.newUsers
+              users: {
+                $each: req.body.newUsers
+              }
             }
           }, {
             "new": true,
             runValidators: true
-          }); // Return an error if the conversation does not exist
+          }));
+
+        case 3:
+          convo = _context2.sent;
 
           if (convo) {
-            _context2.next = 3;
+            _context2.next = 6;
             break;
           }
 
           return _context2.abrupt("return", next(new AppError("The conversation does not exist!", 404)));
 
-        case 3:
+        case 6:
           res.status(200).json({
             status: "success",
             message: "Successfully added new members in the conversation",
-            data: convo
+            updatedUsers: convo.users
           });
 
-        case 4:
+        case 7:
         case "end":
           return _context2.stop();
       }

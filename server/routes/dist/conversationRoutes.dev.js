@@ -18,7 +18,7 @@ router.use("/:convoId/message", messageRouter);
 router.use(authController.protect);
 router.use("/userConvo", userConvoRouter);
 router.route("/member/:convoId").post(convoController.addMember)["delete"](convoController.removeMember);
-router.get("/add-many/:convoId", convoController.addMultipleMembers);
+router.post("/add-many/:convoId", convoController.addMultipleMembers);
 router.route("/").get(convoController.getAllConversation).post(convoController.createConversation);
 router.route("/:id").get(convoController.getConversation).patch(convoController.updateConversation)["delete"](convoController.deleteConversation);
 router.get("/find-convo-with-user/:userId", convoController.checkConvoExists);

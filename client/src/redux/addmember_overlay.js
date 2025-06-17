@@ -11,6 +11,7 @@ const addMemberOverlaySlice = createSlice({
     setHideAddMemberOverlay: (state, action) => {
       console.log("HIDE ADDMEMBER OVERLAY?", action.payload);
       state.hideAddMemberOverlay = action.payload;
+      state.selectedUsers = [];
     },
     addSelectedUser: (state, action) => {
       let updatedSelectedUsers = state.selectedUsers;

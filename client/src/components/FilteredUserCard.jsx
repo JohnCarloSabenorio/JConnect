@@ -20,11 +20,9 @@ export default function FilteredUserCard({ user }) {
         onChange={(e) => {
           if (e.target.checked) {
             dispatch(addSelectedUser(user));
-            setIsChecked(true);
           } else {
             console.log("REMOVE THIS USER:", user._id);
             dispatch(removeSelectedUser(user._id));
-            setIsChecked(false);
           }
         }}
         className="w-5 h-5 rounded-full"

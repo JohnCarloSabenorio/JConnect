@@ -33,11 +33,12 @@ exports.addMember = catchAsync(async (req, res, next) => {
 });
 
 exports.addMultipleMembers = catchAsync(async (req, res, next) => {
-  const convo = Conversation.findByIdAndUpdate(
+  console.log("NEW MEMBERS TO ADD:", req.body.newUsers);
+  const convo = await Conversation.findByIdAndUpdate(
     req.params.convoId,
     {
       $addToSet: {
-        users: req.body.newUsers,
+        users: { $each: req.body.newUsers },
       },
     },
     {
@@ -54,7 +55,7 @@ exports.addMultipleMembers = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     message: "Successfully added new members in the conversation",
-    data: convo,
+    updatedUsers: convo.users,
   });
 });
 

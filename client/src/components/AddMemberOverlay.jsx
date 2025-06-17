@@ -3,11 +3,13 @@ import {
   setHideAddMemberOverlay,
   setSelectedUsers,
 } from "../redux/addmember_overlay";
+import { addNewMembersToGroup } from "../api/conversation";
 import { setAllUsers } from "../redux/user";
 import { getAllUsers } from "../api/user";
 import SelectedUserBadge from "./SelectedUserBadge";
 import FilteredUserCard from "./FilteredUserCard";
 import { useMemo, useEffect, useState } from "react";
+import { setActiveConvoMembers } from "../redux/conversation";
 export default function AddMemberOverlay() {
   const dispatch = useDispatch();
   const { hideAddMemberOverlay } = useSelector(
@@ -16,7 +18,9 @@ export default function AddMemberOverlay() {
 
   const { allUsers } = useSelector((state) => state.user);
   const { selectedUsers } = useSelector((state) => state.addMemberOverlay);
-
+  const { activeConvo, activeConvoMembers } = useSelector(
+    (state) => state.conversation
+  );
   const [searchString, setSearchString] = useState("");
   useEffect(() => {
     fetchAllUsers();
@@ -24,13 +28,15 @@ export default function AddMemberOverlay() {
 
   const filteredUsers = useMemo(() => {
     if (allUsers.length == 0) return [];
-    return allUsers.filter((user) =>
-      user.username
-        .toLowerCase()
-        .trim()
-        .includes(searchString.toLowerCase().trim())
+    return allUsers.filter(
+      (user) =>
+        user.username
+          .toLowerCase()
+          .trim()
+          .includes(searchString.toLowerCase().trim()) &&
+        !activeConvoMembers.find((activeUser) => activeUser._id == user._id)
     );
-  }, [allUsers, searchString]);
+  }, [allUsers, searchString, activeConvoMembers]);
 
   async function fetchAllUsers() {
     try {
@@ -39,6 +45,12 @@ export default function AddMemberOverlay() {
     } catch (err) {
       console.log("Error fetching all users:", err);
     }
+  }
+
+  async function addNewMembers(activeConvo, newMemberIds) {
+    const newMembers = await addNewMembersToGroup(activeConvo, newMemberIds);
+
+    dispatch(setActiveConvoMembers(newMembers));
   }
 
   return (
@@ -76,22 +88,19 @@ export default function AddMemberOverlay() {
             }}
           />
 
-          {/* <p className="text-center text-gray-700 text-xl mt-5">
-              No users selected
-            </p> */}
-          <div className="mt-10 flex gap-10 overflow-x-scroll">
-            {/* USERS SELECTED */}
+          {/* USERS SELECTED */}
 
-            {selectedUsers.length == 0 ? (
-              <p className="text-center text-gray-700 text-xl mt-5">
-                No users selected
-              </p>
-            ) : (
-              selectedUsers.map((user, idx) => {
+          {selectedUsers.length == 0 ? (
+            <p className="text-center text-gray-700 text-xl mt-10">
+              No users selected
+            </p>
+          ) : (
+            <div className="mt-10 flex gap-10 overflow-x-scroll">
+              {selectedUsers.map((user, idx) => {
                 return <SelectedUserBadge key={idx} user={user} />;
-              })
-            )}
-          </div>
+              })}
+            </div>
+          )}
 
           <h3 className="font-bold text-3xl mt-5">Users</h3>
 
@@ -104,7 +113,18 @@ export default function AddMemberOverlay() {
             })}
           </div>
 
-          <button className="bg-blue-500 hover:bg-blue-400 rounded-sm w-full p-3 text-xl shadow-md cursor-pointer font-semibold">
+          <button
+            onClick={(e) => {
+              let newMemberIds = [];
+
+              selectedUsers.forEach((user) => {
+                newMemberIds.push(user._id);
+              });
+              addNewMembers(activeConvo, newMemberIds);
+              dispatch(setHideAddMemberOverlay(true));
+            }}
+            className="bg-blue-500 hover:bg-blue-400 rounded-sm w-full p-3 text-xl shadow-md cursor-pointer font-semibold"
+          >
             Add Users
           </button>
         </div>

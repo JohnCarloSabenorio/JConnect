@@ -210,3 +210,17 @@ export async function unarchiveConversation(convoId) {
     // console.log("Failed to check if conversation is archived: ", err);
   }
 }
+
+export async function addNewMembersToGroup(conversationId, newMembersId) {
+  try {
+    const response = await axios.post(
+      `jconnect/api/v1/conversation/add-many/${conversationId}`,
+      { newUsers: newMembersId },
+      { withCredentials: true }
+    );
+
+    return response.data.updatedUsers;
+  } catch (err) {
+    console.log("Failed to add new members in the conversation:", err);
+  }
+}

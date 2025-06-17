@@ -16,7 +16,7 @@ router
   .post(convoController.addMember)
   .delete(convoController.removeMember);
 
-router.get("/add-many/:convoId", convoController.addMultipleMembers);
+router.post("/add-many/:convoId", convoController.addMultipleMembers);
 
 router
   .route("/")
