@@ -5,6 +5,7 @@ const messageSlice = createSlice({
   initialState: {
     displayedMessages: [],
     messageIsLoading: true,
+    displayChatReact: false,
   },
 
   reducers: {
@@ -19,6 +20,10 @@ const messageSlice = createSlice({
     updateDisplayedMessages: (state, action) => {
       state.displayedMessages = [...state.displayedMessages, action.payload];
     },
+
+    setDisplayChatReact: (state, action) => {
+      state.displayChatReact = action.payeload;
+    },
   },
 });
 
@@ -26,6 +31,7 @@ export const {
   initDisplayedMessages,
   updateDisplayedMessages,
   setMessageIsLoading,
+  setDisplayChatReact,
 } = messageSlice.actions;
 
 export default messageSlice.reducer;
