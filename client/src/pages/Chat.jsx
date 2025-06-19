@@ -62,6 +62,7 @@ export default function Chat() {
   const { user } = useContext(UserContext);
   const [fileInputKey, setFileInputKey] = useState(Date.now()); // Unique key for input reset
   const [displayEmoji, setDisplayEmoji] = useState(false);
+
   // This will store the images to be sent by the user
   const [images, setImages] = useState([]);
 
@@ -166,6 +167,9 @@ export default function Chat() {
     setDisplayEmoji((prev) => !prev);
   }
 
+  function toggleEmojiPicker() {
+    setDisplayEmoji((prev) => !prev);
+  }
   // Adds the emoji to the message input
   function addEmojiToInput(emoji) {
     setDisplayEmoji(true);

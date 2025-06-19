@@ -1,6 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import { showProfileOverlay } from "../redux/profile_overlay";
 import { setDisplayedUser } from "../redux/profile_overlay";
+import Picker from "emoji-picker-react";
+
 import { useState } from "react";
 export default function Message({
   isCurrentUser,
@@ -14,6 +16,7 @@ export default function Message({
 }) {
   const dispatch = useDispatch();
 
+  const [displayReactionPicker, setDisplayReactionPicker] = useState(false);
   const [displayChatReact, setDisplayChatReact] = useState(false);
 
   function formatTime(timestamp) {
@@ -49,49 +52,63 @@ export default function Message({
           <>
             <div className="relative group">
               {message !== "" && (
-                <div className="relative max-w-max bg-blue-400 p-2 rounded-sm">
-                  <p className="break-all">
-                    {messageParts.map((part, id) => {
-                      if (part.match(/(@\[[^:\]]+:[^\]]+\])/g)) {
-                        const match = part.match(/@\[(.+?):(.+?)\]/);
-                        console.log("THE MATCH:", match);
-
-                        return (
-                          <span
-                            className="hover:underline cursor-pointer font-bold"
-                            onClick={(e) => {
-                              dispatch(showProfileOverlay());
-                              dispatch(
-                                setDisplayedUser(
-                                  mentions.find((user) => user._id == match[1])
-                                )
-                              );
-                            }}
-                            key={id}
-                          >
-                            {match[2]}
-                          </span>
-                        );
-                      } else {
-                        return part;
-                      }
-                    })}
-                  </p>
-
-                  {/* Add reaction button */}
-                  <button
-                    className={`${
-                      displayChatReact ? "block" : "hidden"
-                    } absolute mt-3 right-0 cursor-pointer`}
+                <div className="flex gap-5 items-center">
+                  <div
+                    className={`${displayReactionPicker ? "block" : "hidden"}`}
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 -960 960 960"
-                      className="bg w-6 h-6"
-                    >
-                      <path d="M480-480Zm0 400q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q43 0 83 8.5t77 24.5v90q-35-20-75.5-31.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q133 0 226.5-93.5T800-480q0-32-6.5-62T776-600h86q9 29 13.5 58.5T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm320-600v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80ZM620-520q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Zm-280 0q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm140 260q68 0 123.5-38.5T684-400H276q25 63 80.5 101.5T480-260Z" />
-                    </svg>
-                  </button>
+                    <Picker reactionsDefaultOpen={true} />
+                  </div>
+                  <div>
+                    <div className="relative max-w-max bg-blue-400 p-2 rounded-sm">
+                      <p className="break-all">
+                        {messageParts.map((part, id) => {
+                          if (part.match(/(@\[[^:\]]+:[^\]]+\])/g)) {
+                            const match = part.match(/@\[(.+?):(.+?)\]/);
+                            console.log("THE MATCH:", match);
+
+                            return (
+                              <span
+                                className="hover:underline cursor-pointer font-bold"
+                                onClick={(e) => {
+                                  dispatch(showProfileOverlay());
+                                  dispatch(
+                                    setDisplayedUser(
+                                      mentions.find(
+                                        (user) => user._id == match[1]
+                                      )
+                                    )
+                                  );
+                                }}
+                                key={id}
+                              >
+                                {match[2]}
+                              </span>
+                            );
+                          } else {
+                            return part;
+                          }
+                        })}
+                      </p>
+
+                      {/* Add reaction button */}
+                      <button
+                        className={`${
+                          displayChatReact ? "block" : "hidden"
+                        } absolute mt-3 right-0 cursor-pointer`}
+                        onClick={(e) => {
+                          setDisplayReactionPicker((prev) => !prev);
+                        }}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 -960 960 960"
+                          className="bg w-6 h-6"
+                        >
+                          <path d="M480-480Zm0 400q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q43 0 83 8.5t77 24.5v90q-35-20-75.5-31.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q133 0 226.5-93.5T800-480q0-32-6.5-62T776-600h86q9 29 13.5 58.5T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm320-600v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80ZM620-520q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Zm-280 0q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm140 260q68 0 123.5-38.5T684-400H276q25 63 80.5 101.5T480-260Z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -99,12 +116,6 @@ export default function Message({
                 {formatTime(timeSent)}
               </span>
             </div>
-
-            {/* <img
-              src={imgUrl}
-              className="rounded-full w-12 h-12"
-              alt="User Image"
-            /> */}
           </>
         ) : (
           <>
@@ -115,11 +126,67 @@ export default function Message({
             />
 
             <div className="relative group">
-              <div className="max-w-max bg-green-400 p-2 rounded-sm">
-                <p className="break-all">{message}</p>
-              </div>
+              {message !== "" && (
+                <div className="flex gap-5 items-center">
+                  <div className="relative max-w-max bg-green-400 p-2 rounded-sm">
+                    <p className="break-all">
+                      {messageParts.map((part, id) => {
+                        if (part.match(/(@\[[^:\]]+:[^\]]+\])/g)) {
+                          const match = part.match(/@\[(.+?):(.+?)\]/);
+                          console.log("THE MATCH:", match);
 
-              <span className="absolute right-0 bottom-full mb-2 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                          return (
+                            <span
+                              className="hover:underline cursor-pointer font-bold"
+                              onClick={(e) => {
+                                dispatch(showProfileOverlay());
+                                dispatch(
+                                  setDisplayedUser(
+                                    mentions.find(
+                                      (user) => user._id == match[1]
+                                    )
+                                  )
+                                );
+                              }}
+                              key={id}
+                            >
+                              {match[2]}
+                            </span>
+                          );
+                        } else {
+                          return part;
+                        }
+                      })}
+                    </p>
+
+                    {/* Add reaction button */}
+                    <button
+                      className={`${
+                        displayChatReact ? "block" : "hidden"
+                      } absolute mt-3 left-0 cursor-pointer`}
+                      onClick={(e) => {
+                        setDisplayReactionPicker((prev) => !prev);
+                      }}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 -960 960 960"
+                        className="bg w-6 h-6"
+                      >
+                        <path d="M480-480Zm0 400q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q43 0 83 8.5t77 24.5v90q-35-20-75.5-31.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q133 0 226.5-93.5T800-480q0-32-6.5-62T776-600h86q9 29 13.5 58.5T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm320-600v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80ZM620-520q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Zm-280 0q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm140 260q68 0 123.5-38.5T684-400H276q25 63 80.5 101.5T480-260Z" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div
+                    className={`${displayReactionPicker ? "block" : "hidden"}`}
+                  >
+                    <Picker reactionsDefaultOpen={true} />
+                  </div>
+                  <div></div>
+                </div>
+              )}
+
+              <span className="z-40 absolute left-0 bottom-full mb-2 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity">
                 {formatTime(timeSent)}
               </span>
             </div>
