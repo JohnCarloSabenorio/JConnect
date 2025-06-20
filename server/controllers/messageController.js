@@ -53,6 +53,48 @@ exports.resizeImages = catchAsync(async (req, res, next) => {
   next();
 });
 
+exports.reactToMessage = catchAsync(async (req, res) => {
+  const updatedMessage = await Message.findByIdAndUpdate(
+    req.params.messageId,
+    {
+      $push: {
+        reactions: req.body,
+      },
+    },
+    { new: true }
+  );
+
+  if (!updatedMessage) {
+    return next(
+      new AppError(404, "Message does not exist in the conversation.")
+    );
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "Successfully updated message reactions.",
+  });
+});
+exports.unreactToMessage = catchAsync(async (req, res) => {
+  console.log("UNREACTING TO MESSAGE");
+  const updatedMessage = await Message.findByIdAndUpdate(
+    req.params.messageId,
+    {
+      $pull: {
+        reactions: {
+          user: req.body.user,
+        },
+      },
+    },
+    { new: true }
+  );
+
+  res.status(204).json({
+    status: "success",
+    message: "Successfully unreacted to message.",
+  });
+});
+
 // GENERIC HANDLERS
 exports.createMessage = handlerFactory.createOne(Message);
 exports.getMessage = handlerFactory.getOne(Message);

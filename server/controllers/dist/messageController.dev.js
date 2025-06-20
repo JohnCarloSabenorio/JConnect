@@ -92,6 +92,76 @@ exports.resizeImages = catchAsync(function _callee2(req, res, next) {
       }
     }
   });
+});
+exports.reactToMessage = catchAsync(function _callee3(req, res) {
+  var updatedMessage;
+  return regeneratorRuntime.async(function _callee3$(_context3) {
+    while (1) {
+      switch (_context3.prev = _context3.next) {
+        case 0:
+          _context3.next = 2;
+          return regeneratorRuntime.awrap(Message.findByIdAndUpdate(req.params.messageId, {
+            $push: {
+              reactions: req.body
+            }
+          }, {
+            "new": true
+          }));
+
+        case 2:
+          updatedMessage = _context3.sent;
+
+          if (updatedMessage) {
+            _context3.next = 5;
+            break;
+          }
+
+          return _context3.abrupt("return", next(new AppError(404, "Message does not exist in the conversation.")));
+
+        case 5:
+          res.status(200).json({
+            status: "success",
+            message: "Successfully updated message reactions."
+          });
+
+        case 6:
+        case "end":
+          return _context3.stop();
+      }
+    }
+  });
+});
+exports.unreactToMessage = catchAsync(function _callee4(req, res) {
+  var updatedMessage;
+  return regeneratorRuntime.async(function _callee4$(_context4) {
+    while (1) {
+      switch (_context4.prev = _context4.next) {
+        case 0:
+          console.log("UNREACTING TO MESSAGE");
+          _context4.next = 3;
+          return regeneratorRuntime.awrap(Message.findByIdAndUpdate(req.params.messageId, {
+            $pull: {
+              reactions: {
+                user: req.body.user
+              }
+            }
+          }, {
+            "new": true
+          }));
+
+        case 3:
+          updatedMessage = _context4.sent;
+          res.status(204).json({
+            status: "success",
+            message: "Successfully unreacted to message."
+          });
+
+        case 5:
+        case "end":
+          return _context4.stop();
+      }
+    }
+  });
 }); // GENERIC HANDLERS
 
 exports.createMessage = handlerFactory.createOne(Message);

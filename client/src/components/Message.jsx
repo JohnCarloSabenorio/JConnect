@@ -18,6 +18,7 @@ export default function Message({
 
   const [displayReactionPicker, setDisplayReactionPicker] = useState(false);
   const [displayChatReact, setDisplayChatReact] = useState(false);
+  const [pickerKey, setPickerKey] = useState(0);
 
   function formatTime(timestamp) {
     const newDate = new Date(timestamp);
@@ -30,17 +31,20 @@ export default function Message({
     return `${day}: ${time}`;
   }
 
+  function handleEmojiClick(emojiData) {
+    console.log(emojiData.unified);
+    setDisplayReactionPicker(false);
+  }
+
   const messageParts = message.split(/(@\[[^:\]]+:[^\]]+\])/g);
 
   return (
     <div
       className="flex flex-col p-7"
       onMouseEnter={(e) => {
-        console.log("INSIDE");
         setDisplayChatReact(true);
       }}
       onMouseLeave={(e) => {
-        console.log("OUTSIDE");
         setDisplayChatReact(false);
       }}
     >
@@ -56,7 +60,13 @@ export default function Message({
                   <div
                     className={`${displayReactionPicker ? "block" : "hidden"}`}
                   >
-                    <Picker reactionsDefaultOpen={true} />
+                    <Picker
+                      key={pickerKey}
+                      reactionsDefaultOpen={true}
+                      onEmojiClick={(e) => {
+                        handleEmojiClick(e);
+                      }}
+                    />
                   </div>
                   <div>
                     <div className="relative max-w-max bg-blue-400 p-2 rounded-sm">
@@ -97,6 +107,7 @@ export default function Message({
                         } absolute mt-3 right-0 cursor-pointer`}
                         onClick={(e) => {
                           setDisplayReactionPicker((prev) => !prev);
+                          setPickerKey((prev) => prev + 1);
                         }}
                       >
                         <svg
@@ -166,6 +177,7 @@ export default function Message({
                       } absolute mt-3 left-0 cursor-pointer`}
                       onClick={(e) => {
                         setDisplayReactionPicker((prev) => !prev);
+                        setPickerKey((prev) => prev + 1);
                       }}
                     >
                       <svg
@@ -180,7 +192,11 @@ export default function Message({
                   <div
                     className={`${displayReactionPicker ? "block" : "hidden"}`}
                   >
-                    <Picker reactionsDefaultOpen={true} />
+                    <Picker
+                      key={pickerKey}
+                      reactionsDefaultOpen={true}
+                      onEmojiClick={(e) => handleEmojiClick(e)}
+                    />
                   </div>
                   <div></div>
                 </div>
