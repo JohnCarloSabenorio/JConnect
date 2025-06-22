@@ -71,7 +71,7 @@ export default function ConversationCard({
       <div
         className={`mt-5 flex flex-col gap-2 ${
           // This will control the visibility of the chat based on the user's search query in the sidebar.
-          userConversation.conversationName
+          userConversation?.conversationName
             .toLowerCase()
             .includes(sidebarSearch.toLowerCase())
             ? "visible"

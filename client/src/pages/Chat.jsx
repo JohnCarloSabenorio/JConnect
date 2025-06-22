@@ -410,11 +410,13 @@ export default function Chat() {
                       key={i}
                       imgUrl="img/icons/male-default.jpg"
                       message={message.message}
+                      messageId={message._id}
                       sender={message.sender}
                       mentions={message.mentions}
                       username={message.sender.username}
                       isCurrentUser={message.sender._id === user._id}
                       timeSent={message.createdAt}
+                      reactions={message.reactions}
                       imagesSent={blobUrls}
                     />
                   );

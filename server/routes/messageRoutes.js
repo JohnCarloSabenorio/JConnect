@@ -24,6 +24,7 @@ router
   .patch(authController.protect, controller.updateMessage)
   .delete(authController.protect, controller.deleteMessage);
 
+router.use(authController.protect);
 router.post("/unreact-to-message/:messageId", controller.unreactToMessage);
 router.post("/react-to-message/:messageId", controller.reactToMessage);
 module.exports = router;

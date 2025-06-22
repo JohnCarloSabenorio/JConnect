@@ -52,6 +52,50 @@ exports.addMultipleMembers = catchAsync(async (req, res, next) => {
     return next(new AppError("The conversation does not exist!", 404));
   }
 
+  // Create new userconversation for the new members
+
+  // Check if the conversation is a group or not
+
+  const usersFromDB = await User.find({ _id: { $in: convo.users } }).limit(3);
+  const newUsersFromDB = await User.find({ _id: { $in: req.body.newUsers } });
+
+  let newGroupName = "";
+  let usernames = [];
+  try {
+    for (let i = 0; i < usersFromDB.length; i++) {
+      usernames.push(usersFromDB[i].username);
+    }
+
+    newGroupName = `${usernames.join(", ")},...`;
+  } catch (err) {
+    console.log("An error has occurred when creating a group name:", err);
+  }
+
+  // Create user-conversation
+  const newGroupUserConversationData = newUsersFromDB.map((user) => {
+    return {
+      user: user._id,
+      conversation: convo._id,
+      conversationName: newGroupName,
+      isGroup: true,
+    };
+  });
+
+  // Create new user conversation documents
+  const newUserConversation = await UserConversation.create(
+    newGroupUserConversationData
+  );
+
+  if (!newUserConversation) {
+    return next(
+      new AppError(
+        "Failed to create new user conversation for the new members.",
+        400
+      )
+    );
+  }
+
+  // Create an array containing objects of new group conversations
   res.status(200).json({
     status: "success",
     message: "Successfully added new members in the conversation",
@@ -137,7 +181,7 @@ exports.createConversation = catchAsync(async (req, res) => {
 
     // Find the document of the current user
     currentUserNewConvo = await newUserConversation
-      .find((convo) => convo.user.toString() === "67a18fc157b4f802490ce204") // replace this with req.user.id
+      .find((convo) => convo.user.toString() === req.user.id) // replace this with req.user.id
       .populate("conversation");
 
     return res.status(200).json({

@@ -54,35 +54,71 @@ exports.resizeImages = catchAsync(async (req, res, next) => {
 });
 
 exports.reactToMessage = catchAsync(async (req, res) => {
-  const updatedMessage = await Message.findByIdAndUpdate(
-    req.params.messageId,
-    {
-      $push: {
-        reactions: req.body,
-      },
-    },
-    { new: true }
+  console.log("REACTING TO MESSAGE!");
+  console.log("THE MESSAGE ID:", req.params.messageId);
+  console.log("THE UNIFIED EMOJI:", req.body.unified);
+  const reactionData = {
+    unified: req.body.unified,
+    user: req.user._id,
+  };
+
+  // find the message
+  const message = await Message.findById(req.params.messageId);
+
+  if (!message) {
+    console.log("MESSAGE DOES NOT EXIST!");
+    return next(new AppError("Message does not exist", 400));
+  }
+  // find the existing reaction in the message
+
+  const existingReaction = message.reactions.filter(
+    (reaction) => reaction.user.toString() == req.user._id
   );
 
-  if (!updatedMessage) {
-    return next(
-      new AppError(404, "Message does not exist in the conversation.")
-    );
+  // filter out the existing reaction from the reaction array
+  message.reactions = message.reactions.filter(
+    (reaction) => reaction.user.toString() != req.user._id
+  );
+  await message.save();
+
+  // If reaction exists, update it
+  if (existingReaction.length > 0) {
+    if (existingReaction[0].unified == req.body.unified) {
+    } else {
+      console.log("reaction already exists!", existingReaction);
+      existingReaction[0].unified = req.body.unified;
+
+      message.reactions.push(existingReaction[0]);
+
+      console.log("UPDATED MESSAGE REACTIONS:", message.reactions);
+    }
+  } else {
+    console.log("push a new reaction!");
+    // Push a new reaction if no existing reaction exists
+    message.reactions.push(reactionData);
   }
+
+  await message.save();
 
   res.status(200).json({
     status: "success",
     message: "Successfully updated message reactions.",
+    reactions: message.reactions,
   });
 });
+
 exports.unreactToMessage = catchAsync(async (req, res) => {
-  console.log("UNREACTING TO MESSAGE");
+  const reactionData = {
+    unified: req.body.unified,
+    user: req.user.id,
+  };
+
   const updatedMessage = await Message.findByIdAndUpdate(
     req.params.messageId,
     {
       $pull: {
         reactions: {
-          user: req.body.user,
+          user: req.user.id,
         },
       },
     },

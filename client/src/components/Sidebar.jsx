@@ -120,6 +120,9 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
   async function getGroupConversations() {
     // Group conversations
     const groupData = await getAllGroupConversation();
+    console.log("getting all group conversation!");
+
+    console.log("GROUP DATA:", groupData);
     let groupConversations = [];
     groupData.forEach((data) => {
       data.conversation.userConvoId = data._id;

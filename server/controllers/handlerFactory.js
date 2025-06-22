@@ -68,16 +68,14 @@ exports.getAll = (Model) =>
 
     // If the request came from user-conversation model, filter it with the user's id
     if (Model === UserConversation) {
-      console.log("THE REQUEST USER:", req.user);
-      filter = { user: req.user.id };
+      console.log("MODEL IS USERCONVERSATION");
+      filter = { user: req.user._id };
     }
 
     if (Model === Notification) {
-      console.log("THE USER:", req.user);
       filter = { receiver_id: req.user.id };
     }
 
-    console.log("THE QUERY:", req.query);
     // If convoId is present, the user is getting a message
     if (req.params.convoId)
       Object.assign(filter, { conversation: req.params.convoId });
@@ -88,10 +86,11 @@ exports.getAll = (Model) =>
       .limitFields();
     const docs = await features.query;
 
+    console.log("THE DOCS:", docs);
+
     const docsWithBase = await Promise.all(
       docs.map(async (doc) => {
         // doc.users = doc.users.filter(user => user._id.toString() === req.user.id);
-        console.log("THE DOC:", doc);
         if (!doc.images || !Array.isArray(doc.images)) {
           return { ...doc._doc, imageBase64Array: [] }; // Handle missing images
         }
@@ -99,7 +98,6 @@ exports.getAll = (Model) =>
         const images64 = await Promise.all(
           doc.images.map(async (filename) => {
             const imagePath = path.join("public/img/sentImages", filename);
-            // console.log("THE IMAGE PATH:", imagePath);
 
             try {
               const buffer = await sharp(imagePath).toBuffer();

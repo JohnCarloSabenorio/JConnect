@@ -7,17 +7,19 @@ var messageSchema = new mongoose.Schema({
     type: String,
     "default": ""
   },
-  reactions: [{
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true
-    },
-    unified: {
-      type: String,
-      required: true
-    }
-  }],
+  reactions: {
+    type: [{
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+      },
+      unified: {
+        type: String,
+        required: true
+      }
+    }]
+  },
 
   /* 
   unified: string,

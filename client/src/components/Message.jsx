@@ -1,13 +1,16 @@
 import { useDispatch, useSelector } from "react-redux";
 import { showProfileOverlay } from "../redux/profile_overlay";
 import { setDisplayedUser } from "../redux/profile_overlay";
-import Picker from "emoji-picker-react";
+import Picker, { Emoji } from "emoji-picker-react";
+import { reactToMessage } from "../api/message";
 
 import { useState } from "react";
 export default function Message({
   isCurrentUser,
   imgUrl,
   message,
+  messageId,
+  reactions,
   username,
   timeSent,
   imagesSent,
@@ -16,9 +19,13 @@ export default function Message({
 }) {
   const dispatch = useDispatch();
 
+  console.log("REACTIONS:", reactions);
+
   const [displayReactionPicker, setDisplayReactionPicker] = useState(false);
   const [displayChatReact, setDisplayChatReact] = useState(false);
   const [pickerKey, setPickerKey] = useState(0);
+
+  const [allReactions, setAllReactions] = useState(reactions);
 
   function formatTime(timestamp) {
     const newDate = new Date(timestamp);
@@ -31,9 +38,10 @@ export default function Message({
     return `${day}: ${time}`;
   }
 
-  function handleEmojiClick(emojiData) {
-    console.log(emojiData.unified);
+  async function handleEmojiClick(emojiData) {
     setDisplayReactionPicker(false);
+    const updatedReactions = await reactToMessage(messageId, emojiData.unified);
+    setAllReactions(updatedReactions);
   }
 
   const messageParts = message.split(/(@\[[^:\]]+:[^\]]+\])/g);
@@ -58,15 +66,19 @@ export default function Message({
               {message !== "" && (
                 <div className="flex gap-5 items-center">
                   <div
-                    className={`${displayReactionPicker ? "block" : "hidden"}`}
+                    className={`${
+                      displayReactionPicker ? "block" : "hidden"
+                    } relative`}
                   >
-                    <Picker
-                      key={pickerKey}
-                      reactionsDefaultOpen={true}
-                      onEmojiClick={(e) => {
-                        handleEmojiClick(e);
-                      }}
-                    />
+                    <div className="absolute right-0 -bottom-6">
+                      <Picker
+                        key={pickerKey}
+                        reactionsDefaultOpen={true}
+                        onEmojiClick={(e) => {
+                          handleEmojiClick(e);
+                        }}
+                      />
+                    </div>
                   </div>
                   <div>
                     <div className="relative max-w-max bg-blue-400 p-2 rounded-sm">
@@ -74,7 +86,6 @@ export default function Message({
                         {messageParts.map((part, id) => {
                           if (part.match(/(@\[[^:\]]+:[^\]]+\])/g)) {
                             const match = part.match(/@\[(.+?):(.+?)\]/);
-                            console.log("THE MATCH:", match);
 
                             return (
                               <span
@@ -101,23 +112,33 @@ export default function Message({
                       </p>
 
                       {/* Add reaction button */}
-                      <button
+                      <div
                         className={`${
                           displayChatReact ? "block" : "hidden"
-                        } absolute mt-3 right-0 cursor-pointer`}
-                        onClick={(e) => {
-                          setDisplayReactionPicker((prev) => !prev);
-                          setPickerKey((prev) => prev + 1);
-                        }}
+                        } absolute mt-3 cursor-pointer flex gap-1 right-0`}
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 -960 960 960"
-                          className="bg w-6 h-6"
+                        {allReactions.map((r, idx) => {
+                          return (
+                            <Emoji key={idx} unified={r.unified} size="22" />
+                          );
+                        })}
+
+                        <button
+                          onClick={(e) => {
+                            setDisplayReactionPicker((prev) => !prev);
+                            setPickerKey((prev) => prev + 1);
+                          }}
+                          className="cursor-pointer"
                         >
-                          <path d="M480-480Zm0 400q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q43 0 83 8.5t77 24.5v90q-35-20-75.5-31.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q133 0 226.5-93.5T800-480q0-32-6.5-62T776-600h86q9 29 13.5 58.5T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm320-600v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80ZM620-520q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Zm-280 0q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm140 260q68 0 123.5-38.5T684-400H276q25 63 80.5 101.5T480-260Z" />
-                        </svg>
-                      </button>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 -960 960 960"
+                            className="bg w-6 h-6"
+                          >
+                            <path d="M480-480Zm0 400q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q43 0 83 8.5t77 24.5v90q-35-20-75.5-31.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q133 0 226.5-93.5T800-480q0-32-6.5-62T776-600h86q9 29 13.5 58.5T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm320-600v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80ZM620-520q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Zm-280 0q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm140 260q68 0 123.5-38.5T684-400H276q25 63 80.5 101.5T480-260Z" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -144,8 +165,6 @@ export default function Message({
                       {messageParts.map((part, id) => {
                         if (part.match(/(@\[[^:\]]+:[^\]]+\])/g)) {
                           const match = part.match(/@\[(.+?):(.+?)\]/);
-                          console.log("THE MATCH:", match);
-
                           return (
                             <span
                               className="hover:underline cursor-pointer font-bold"
@@ -171,34 +190,49 @@ export default function Message({
                     </p>
 
                     {/* Add reaction button */}
-                    <button
+                    <div
                       className={`${
                         displayChatReact ? "block" : "hidden"
-                      } absolute mt-3 left-0 cursor-pointer`}
-                      onClick={(e) => {
-                        setDisplayReactionPicker((prev) => !prev);
-                        setPickerKey((prev) => prev + 1);
-                      }}
+                      } absolute mt-3 cursor-pointer flex gap-1`}
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 -960 960 960"
-                        className="bg w-6 h-6"
+                      {allReactions.map((r, idx) => {
+                        return (
+                          <Emoji key={idx} unified={r.unified} size="22" />
+                        );
+                      })}
+
+                      <button
+                        onClick={(e) => {
+                          setDisplayReactionPicker((prev) => !prev);
+                          setPickerKey((prev) => prev + 1);
+                        }}
+                        className="cursor-pointer"
                       >
-                        <path d="M480-480Zm0 400q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q43 0 83 8.5t77 24.5v90q-35-20-75.5-31.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q133 0 226.5-93.5T800-480q0-32-6.5-62T776-600h86q9 29 13.5 58.5T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm320-600v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80ZM620-520q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Zm-280 0q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm140 260q68 0 123.5-38.5T684-400H276q25 63 80.5 101.5T480-260Z" />
-                      </svg>
-                    </button>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 -960 960 960"
+                          className="bg w-6 h-6"
+                        >
+                          <path d="M480-480Zm0 400q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q43 0 83 8.5t77 24.5v90q-35-20-75.5-31.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q133 0 226.5-93.5T800-480q0-32-6.5-62T776-600h86q9 29 13.5 58.5T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm320-600v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80ZM620-520q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Zm-280 0q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm140 260q68 0 123.5-38.5T684-400H276q25 63 80.5 101.5T480-260Z" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                   <div
-                    className={`${displayReactionPicker ? "block" : "hidden"}`}
+                    className={`${
+                      displayReactionPicker ? "block" : "hidden"
+                    } relative`}
                   >
-                    <Picker
-                      key={pickerKey}
-                      reactionsDefaultOpen={true}
-                      onEmojiClick={(e) => handleEmojiClick(e)}
-                    />
+                    <div className="absolute left-0 -bottom-6">
+                      <Picker
+                        key={pickerKey}
+                        reactionsDefaultOpen={true}
+                        onEmojiClick={(e) => {
+                          handleEmojiClick(e);
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div></div>
                 </div>
               )}
 

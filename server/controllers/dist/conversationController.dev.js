@@ -54,7 +54,7 @@ exports.addMember = catchAsync(function _callee(req, res, next) {
   });
 });
 exports.addMultipleMembers = catchAsync(function _callee2(req, res, next) {
-  var convo;
+  var convo, usersFromDB, newUsersFromDB, newGroupName, usernames, i, newGroupUserConversationData, newUserConversation;
   return regeneratorRuntime.async(function _callee2$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
@@ -83,13 +83,69 @@ exports.addMultipleMembers = catchAsync(function _callee2(req, res, next) {
           return _context2.abrupt("return", next(new AppError("The conversation does not exist!", 404)));
 
         case 6:
+          _context2.next = 8;
+          return regeneratorRuntime.awrap(User.find({
+            _id: {
+              $in: convo.users
+            }
+          }).limit(3));
+
+        case 8:
+          usersFromDB = _context2.sent;
+          _context2.next = 11;
+          return regeneratorRuntime.awrap(User.find({
+            _id: {
+              $in: req.body.newUsers
+            }
+          }));
+
+        case 11:
+          newUsersFromDB = _context2.sent;
+          newGroupName = "";
+          usernames = [];
+
+          try {
+            for (i = 0; i < usersFromDB.length; i++) {
+              usernames.push(usersFromDB[i].username);
+            }
+
+            newGroupName = "".concat(usernames.join(", "), ",...");
+          } catch (err) {
+            console.log("An error has occurred when creating a group name:", err);
+          } // Create user-conversation
+
+
+          newGroupUserConversationData = newUsersFromDB.map(function (user) {
+            return {
+              user: user._id,
+              conversation: convo._id,
+              conversationName: newGroupName,
+              isGroup: true
+            };
+          }); // Create new user conversation documents
+
+          _context2.next = 18;
+          return regeneratorRuntime.awrap(UserConversation.create(newGroupUserConversationData));
+
+        case 18:
+          newUserConversation = _context2.sent;
+
+          if (newUserConversation) {
+            _context2.next = 21;
+            break;
+          }
+
+          return _context2.abrupt("return", next(new AppError("Failed to create new user conversation for the new members.", 400)));
+
+        case 21:
+          // Create an array containing objects of new group conversations
           res.status(200).json({
             status: "success",
             message: "Successfully added new members in the conversation",
             updatedUsers: convo.users
           });
 
-        case 7:
+        case 22:
         case "end":
           return _context2.stop();
       }
@@ -222,7 +278,7 @@ exports.createConversation = catchAsync(function _callee5(req, res) {
           newUserConversation = _context5.sent;
           _context5.next = 18;
           return regeneratorRuntime.awrap(newUserConversation.find(function (convo) {
-            return convo.user.toString() === "67a18fc157b4f802490ce204";
+            return convo.user.toString() === req.user.id;
           }) // replace this with req.user.id
           .populate("conversation"));
 

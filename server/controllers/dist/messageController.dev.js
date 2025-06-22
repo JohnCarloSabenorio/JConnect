@@ -94,37 +94,71 @@ exports.resizeImages = catchAsync(function _callee2(req, res, next) {
   });
 });
 exports.reactToMessage = catchAsync(function _callee3(req, res) {
-  var updatedMessage;
+  var reactionData, message, existingReaction;
   return regeneratorRuntime.async(function _callee3$(_context3) {
     while (1) {
       switch (_context3.prev = _context3.next) {
         case 0:
-          _context3.next = 2;
-          return regeneratorRuntime.awrap(Message.findByIdAndUpdate(req.params.messageId, {
-            $push: {
-              reactions: req.body
-            }
-          }, {
-            "new": true
-          }));
+          console.log("REACTING TO MESSAGE!");
+          console.log("THE MESSAGE ID:", req.params.messageId);
+          console.log("THE UNIFIED EMOJI:", req.body.unified);
+          reactionData = {
+            unified: req.body.unified,
+            user: req.user._id
+          }; // find the message
 
-        case 2:
-          updatedMessage = _context3.sent;
+          _context3.next = 6;
+          return regeneratorRuntime.awrap(Message.findById(req.params.messageId));
 
-          if (updatedMessage) {
-            _context3.next = 5;
+        case 6:
+          message = _context3.sent;
+
+          if (message) {
+            _context3.next = 10;
             break;
           }
 
-          return _context3.abrupt("return", next(new AppError(404, "Message does not exist in the conversation.")));
+          console.log("MESSAGE DOES NOT EXIST!");
+          return _context3.abrupt("return", next(new AppError("Message does not exist", 400)));
 
-        case 5:
+        case 10:
+          // find the existing reaction in the message
+          existingReaction = message.reactions.filter(function (reaction) {
+            return reaction.user.toString() == req.user._id;
+          }); // filter out the existing reaction from the reaction array
+
+          message.reactions = message.reactions.filter(function (reaction) {
+            return reaction.user.toString() != req.user._id;
+          });
+          _context3.next = 14;
+          return regeneratorRuntime.awrap(message.save());
+
+        case 14:
+          // If reaction exists, update it
+          if (existingReaction.length > 0) {
+            if (existingReaction[0].unified == req.body.unified) {} else {
+              console.log("reaction already exists!", existingReaction);
+              existingReaction[0].unified = req.body.unified;
+              message.reactions.push(existingReaction[0]);
+              console.log("UPDATED MESSAGE REACTIONS:", message.reactions);
+            }
+          } else {
+            console.log("push a new reaction!"); // Push a new reaction if no existing reaction exists
+
+            message.reactions.push(reactionData);
+          }
+
+          _context3.next = 17;
+          return regeneratorRuntime.awrap(message.save());
+
+        case 17:
           res.status(200).json({
             status: "success",
-            message: "Successfully updated message reactions."
+            message: "Successfully updated message reactions.",
+            reactions: message.reactions
           });
 
-        case 6:
+        case 18:
         case "end":
           return _context3.stop();
       }
@@ -132,17 +166,20 @@ exports.reactToMessage = catchAsync(function _callee3(req, res) {
   });
 });
 exports.unreactToMessage = catchAsync(function _callee4(req, res) {
-  var updatedMessage;
+  var reactionData, updatedMessage;
   return regeneratorRuntime.async(function _callee4$(_context4) {
     while (1) {
       switch (_context4.prev = _context4.next) {
         case 0:
-          console.log("UNREACTING TO MESSAGE");
+          reactionData = {
+            unified: req.body.unified,
+            user: req.user.id
+          };
           _context4.next = 3;
           return regeneratorRuntime.awrap(Message.findByIdAndUpdate(req.params.messageId, {
             $pull: {
               reactions: {
-                user: req.body.user
+                user: req.user.id
               }
             }
           }, {
