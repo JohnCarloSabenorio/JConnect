@@ -131,6 +131,43 @@ exports.unreactToMessage = catchAsync(async (req, res) => {
   });
 });
 
+exports.getTopMessageEmojis = catchAsync(async (req, res) => {
+  // Find the message using its id
+  const message = await Message.findById(req.params.messageId);
+
+  // Return an error 404 if message does not exist
+
+  if (!message)
+    return res.status(404).json({
+      status: "failed",
+      message: "message does not exist!",
+    });
+
+  let reactionsCount = {};
+
+  // Count each reaction and sort it
+  message.reactions.forEach((reaction) => {
+    if (reaction.unified in reactionsCount) reactionsCount[reaction.unified]++;
+    else reactionsCount[reaction.unified] = 1;
+  });
+
+  // fromEntries will convert the key value pair arrays back to an object
+  console.log("Object entries", Object.entries(reactionsCount));
+
+  // This will get the top 3 reactions from the message
+  let topReactions = Object.fromEntries(
+    Object.entries(reactionsCount)
+      .sort(([, count1], [, count2]) => count2 - count1)
+      .slice(0, 3)
+  );
+
+  // Return the top 3 emojis
+  res.status(200).json({
+    message: "Top 3 emojis of the message retrieved!",
+    reactions: topReactions,
+  });
+});
+
 // GENERIC HANDLERS
 exports.createMessage = handlerFactory.createOne(Message);
 exports.getMessage = handlerFactory.getOne(Message);

@@ -26,6 +26,7 @@ import {
   removeToMention,
 } from "../redux/conversation";
 
+import ReactionsOverlay from "../components/ReactionsOverlay";
 import {
   initDisplayedMessages,
   setMessageIsLoading,
@@ -308,7 +309,7 @@ export default function Chat() {
       {/* <UnfriendOverlay /> */}
       <div className="flex flex-col h-screen overflow-hidden">
         <ProfileOverlay />
-
+        <ReactionsOverlay />
         <AddMemberOverlay />
         <Navbar />
         {/* Main Content */}

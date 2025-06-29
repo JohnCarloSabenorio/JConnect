@@ -1,5 +1,13 @@
 "use strict";
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 var Message = require("./../models/messageModel");
 
 var catchAsync = require("../utils/catchAsync");
@@ -196,6 +204,59 @@ exports.unreactToMessage = catchAsync(function _callee4(req, res) {
         case 5:
         case "end":
           return _context4.stop();
+      }
+    }
+  });
+});
+exports.getTopMessageEmojis = catchAsync(function _callee5(req, res) {
+  var message, reactionsCount, topReactions;
+  return regeneratorRuntime.async(function _callee5$(_context5) {
+    while (1) {
+      switch (_context5.prev = _context5.next) {
+        case 0:
+          _context5.next = 2;
+          return regeneratorRuntime.awrap(Message.findById(req.params.messageId));
+
+        case 2:
+          message = _context5.sent;
+
+          if (message) {
+            _context5.next = 5;
+            break;
+          }
+
+          return _context5.abrupt("return", res.status(404).json({
+            status: "failed",
+            message: "message does not exist!"
+          }));
+
+        case 5:
+          reactionsCount = {}; // Count each reaction and sort it
+
+          message.reactions.forEach(function (reaction) {
+            if (reaction.unified in reactionsCount) reactionsCount[reaction.unified]++;else reactionsCount[reaction.unified] = 1;
+          }); // fromEntries will convert the key value pair arrays back to an object
+
+          console.log("Object entries", Object.entries(reactionsCount)); // This will get the top 3 reactions from the message
+
+          topReactions = Object.fromEntries(Object.entries(reactionsCount).sort(function (_ref, _ref2) {
+            var _ref3 = _slicedToArray(_ref, 2),
+                count1 = _ref3[1];
+
+            var _ref4 = _slicedToArray(_ref2, 2),
+                count2 = _ref4[1];
+
+            return count2 - count1;
+          }).slice(0, 3)); // Return the top 3 emojis
+
+          res.status(200).json({
+            message: "Top 3 emojis of the message retrieved!",
+            reactions: topReactions
+          });
+
+        case 10:
+        case "end":
+          return _context5.stop();
       }
     }
   });

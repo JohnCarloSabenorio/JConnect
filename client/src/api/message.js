@@ -28,3 +28,10 @@ export async function unreactToMessage(messageId) {
     console.log("Failed to react to message:", err);
   }
 }
+
+export async function getTopEmojis(messageId) {
+  const response = await axios.get(
+    `jconnect/api/v1/message/get-top-emojis/${messageId}`
+  );
+  return response.data.reactions;
+}
