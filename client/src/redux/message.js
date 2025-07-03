@@ -6,6 +6,9 @@ const messageSlice = createSlice({
     displayedMessages: [],
     messageIsLoading: true,
     displayChatReact: false,
+    messageReactionsId: "",
+    displayReactionsOverlay: false,
+    allMessageReactions: {},
   },
 
   reducers: {
@@ -22,7 +25,19 @@ const messageSlice = createSlice({
     },
 
     setDisplayChatReact: (state, action) => {
-      state.displayChatReact = action.payeload;
+      state.displayChatReact = action.payload;
+    },
+
+    setMessageReactionsId: (state, action) => {
+      state.messageReactionsId = action.payload;
+    },
+
+    setDisplayReactionsOverlay: (state, action) => {
+      state.displayReactionsOverlay = action.payload;
+    },
+
+    setAllMessageReactions: (state, action) => {
+      state.allMessageReactions = action.payload;
     },
   },
 });
@@ -32,6 +47,9 @@ export const {
   updateDisplayedMessages,
   setMessageIsLoading,
   setDisplayChatReact,
+  setMessageReactionsId,
+  setDisplayReactionsOverlay,
+  setAllMessageReactions,
 } = messageSlice.actions;
 
 export default messageSlice.reducer;

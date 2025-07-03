@@ -28,5 +28,5 @@ router.use(authController.protect);
 router.post("/unreact-to-message/:messageId", controller.unreactToMessage);
 router.post("/react-to-message/:messageId", controller.reactToMessage);
 router.get("/get-top-emojis/:messageId", controller.getTopMessageEmojis);
-
+router.get("/get-all-reactions/:messageId", controller.getAllReactions);
 module.exports = router;

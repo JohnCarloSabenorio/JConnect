@@ -35,3 +35,14 @@ export async function getTopEmojis(messageId) {
   );
   return response.data.reactions;
 }
+export async function getAllMessageReactions(messageId) {
+  try {
+    const response = await axios.get(
+      `jconnect/api/v1/message/get-all-reactions/${messageId}`
+    );
+
+    return response.data.reactions;
+  } catch (err) {
+    console.log("Failed to retrieve all message reactions:", err);
+  }
+}

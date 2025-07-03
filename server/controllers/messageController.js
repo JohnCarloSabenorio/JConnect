@@ -168,6 +168,41 @@ exports.getTopMessageEmojis = catchAsync(async (req, res) => {
   });
 });
 
+exports.getAllReactions = catchAsync(async (req, res) => {
+  // 1. Get message
+  const message = await Message.findById(req.params.messageId);
+
+  if (!message) {
+    return res.status(404).json({
+      status: "failed",
+      message: "The message does not exist!",
+    });
+  }
+  // 2. Extract the reactions of the message
+
+  const reactions = message.reactions;
+  console.log("THE QUERY STRING:", req.query);
+
+  // 3. Sort the users by their reaction
+  const sortedReactions = {};
+
+  reactions.forEach((reaction) => {
+    const unifiedEmoji = reaction.unified;
+    if (unifiedEmoji in sortedReactions) {
+      sortedReactions[unifiedEmoji].push(reaction);
+    } else {
+      sortedReactions[unifiedEmoji] = [reaction];
+    }
+  });
+
+  // 4. Return a nested object emoji : [users]
+  return res.status(200).json({
+    status: "success",
+    message: "Sucessfully retrieved all message reactions",
+    reactions: sortedReactions,
+  });
+});
+
 // GENERIC HANDLERS
 exports.createMessage = handlerFactory.createOne(Message);
 exports.getMessage = handlerFactory.getOne(Message);

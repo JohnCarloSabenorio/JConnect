@@ -1,13 +1,16 @@
 import { useDispatch, useSelector } from "react-redux";
 import { showProfileOverlay } from "../redux/profile_overlay";
 import { setDisplayedUser } from "../redux/profile_overlay";
+import { getAllMessageReactions } from "../api/message";
+
 import Picker, { Emoji } from "emoji-picker-react";
-import { reactToMessage } from "../api/message";
-
-import { getTopEmojis } from "../api/message";
-
+import { reactToMessage, getTopEmojis } from "../api/message";
+import {
+  setMessageReactionsId,
+  setDisplayReactionsOverlay,
+  setAllMessageReactions,
+} from "../redux/message";
 import { useEffect, useState } from "react";
-import { all } from "axios";
 export default function Message({
   isCurrentUser,
   imgUrl,
@@ -24,6 +27,7 @@ export default function Message({
 
   console.log("REACTIONS:", reactions);
 
+  const { displayReactionsOverlay } = useSelector((state) => state.message);
   const [displayReactionPicker, setDisplayReactionPicker] = useState(false);
   const [displayChatReact, setDisplayChatReact] = useState(false);
   const [pickerKey, setPickerKey] = useState(0);
@@ -61,6 +65,12 @@ export default function Message({
   }
 
   const messageParts = message.split(/(@\[[^:\]]+:[^\]]+\])/g);
+
+  async function getReactions(id) {
+    const reactions = await getAllMessageReactions(id);
+
+    dispatch(setAllMessageReactions(reactions));
+  }
 
   return (
     <div
@@ -116,7 +126,7 @@ export default function Message({
                         </svg>
                       </button>
                     </div>
-                    <div className="relative max-w-max bg-blue-400 p-2 rounded-sm">
+                    <div className="relative max-w-max bg-blue-400 p-2 rounded-full px-3">
                       <p className="break-all">
                         {messageParts.map((part, id) => {
                           if (part.match(/(@\[[^:\]]+:[^\]]+\])/g)) {
@@ -148,7 +158,18 @@ export default function Message({
 
                       {/* Add reaction button */}
                       <div
-                        className={`absolute mt-3 cursor-pointer flex gap-1 right-0 bg-gray-300 rounded-full py-1 px-2`}
+                        className={`${
+                          topReactions.length > 0 ? "block" : "hidden"
+                        } absolute mt-3 cursor-pointer flex gap-1 right-0 bg-gray-300 rounded-full py-1 px-2`}
+                        onClick={(e) => {
+                          getReactions(messageId);
+
+                          dispatch(
+                            setDisplayReactionsOverlay(!displayReactionsOverlay)
+                          );
+
+                          dispatch(setMessageReactionsId(messageId));
+                        }}
                       >
                         {topReactions.map((r, idx) => {
                           return <Emoji key={idx} unified={r} size="22" />;
@@ -179,7 +200,7 @@ export default function Message({
             <div className="relative group">
               {message !== "" && (
                 <div className="flex gap-2 items-center">
-                  <div className="relative max-w-max bg-green-400 p-2 rounded-sm">
+                  <div className="relative max-w-max bg-green-400 p-2 px-3 rounded-full">
                     <p className="break-all">
                       {messageParts.map((part, id) => {
                         if (part.match(/(@\[[^:\]]+:[^\]]+\])/g)) {
@@ -211,6 +232,14 @@ export default function Message({
                     {/* Add reaction button */}
                     <div
                       className={`absolute left-0 mt-3 cursor-pointer flex gap-1 bg-gray-300 rounded-full py-1 px-2`}
+                      onClick={(e) => {
+                        getReactions(messageId);
+
+                        dispatch(
+                          setDisplayReactionsOverlay(!displayReactionsOverlay)
+                        );
+                        dispatch(setMessageReactionsId(messageId));
+                      }}
                     >
                       {topReactions.map((r, idx) => {
                         return <Emoji key={idx} unified={r} size="22" />;

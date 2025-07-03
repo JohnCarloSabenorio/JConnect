@@ -260,6 +260,57 @@ exports.getTopMessageEmojis = catchAsync(function _callee5(req, res) {
       }
     }
   });
+});
+exports.getAllReactions = catchAsync(function _callee6(req, res) {
+  var message, reactions, sortedReactions;
+  return regeneratorRuntime.async(function _callee6$(_context6) {
+    while (1) {
+      switch (_context6.prev = _context6.next) {
+        case 0:
+          _context6.next = 2;
+          return regeneratorRuntime.awrap(Message.findById(req.params.messageId));
+
+        case 2:
+          message = _context6.sent;
+
+          if (message) {
+            _context6.next = 5;
+            break;
+          }
+
+          return _context6.abrupt("return", res.status(404).json({
+            status: "failed",
+            message: "The message does not exist!"
+          }));
+
+        case 5:
+          // 2. Extract the reactions of the message
+          reactions = message.reactions;
+          console.log("THE QUERY STRING:", req.query); // 3. Sort the users by their reaction
+
+          sortedReactions = {};
+          reactions.forEach(function (reaction) {
+            var unifiedEmoji = reaction.unified;
+
+            if (unifiedEmoji in sortedReactions) {
+              sortedReactions[unifiedEmoji].push(reaction);
+            } else {
+              sortedReactions[unifiedEmoji] = [reaction];
+            }
+          }); // 4. Return a nested object emoji : [users]
+
+          return _context6.abrupt("return", res.status(200).json({
+            status: "success",
+            message: "Sucessfully retrieved all message reactions",
+            reactions: sortedReactions
+          }));
+
+        case 10:
+        case "end":
+          return _context6.stop();
+      }
+    }
+  });
 }); // GENERIC HANDLERS
 
 exports.createMessage = handlerFactory.createOne(Message);
