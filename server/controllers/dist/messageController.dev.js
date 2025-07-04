@@ -297,7 +297,16 @@ exports.getAllReactions = catchAsync(function _callee6(req, res) {
             } else {
               sortedReactions[unifiedEmoji] = [reaction];
             }
-          }); // 4. Return a nested object emoji : [users]
+          });
+          sortedReactions = Object.fromEntries(Object.entries(sortedReactions).sort(function (_ref5, _ref6) {
+            var _ref7 = _slicedToArray(_ref5, 2),
+                arr1 = _ref7[1];
+
+            var _ref8 = _slicedToArray(_ref6, 2),
+                arr2 = _ref8[1];
+
+            return arr2.length - arr1.length;
+          })); // 4. Return a nested object emoji : [users]
 
           return _context6.abrupt("return", res.status(200).json({
             status: "success",
@@ -305,7 +314,7 @@ exports.getAllReactions = catchAsync(function _callee6(req, res) {
             reactions: sortedReactions
           }));
 
-        case 10:
+        case 11:
         case "end":
           return _context6.stop();
       }

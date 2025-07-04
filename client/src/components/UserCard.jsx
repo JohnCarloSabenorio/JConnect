@@ -23,7 +23,7 @@ export default function UserCard({ user, imageUrl }) {
           dispatch(setDisplayedUser(user));
         }}
       >
-        <div className="bg-white rounded-md flex p-5 shadow-md cursor-pointer">
+        <div className="bg-white hover:bg-gray-200 rounded-md flex p-5 shadow-md cursor-pointer">
           <img src={imageUrl} className="rounded-full w-12 h-12" />
           <div className="flex flex-grow">
             <div className="px-3  flex-grow">

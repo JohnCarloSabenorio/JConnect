@@ -54,6 +54,8 @@ messageSchema.pre(/^find/, function (next) {
     path: "sender"
   }, {
     path: "mentions"
+  }, {
+    path: "reactions.user"
   }]);
   next();
 }); // Methods

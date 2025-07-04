@@ -184,7 +184,7 @@ exports.getAllReactions = catchAsync(async (req, res) => {
   console.log("THE QUERY STRING:", req.query);
 
   // 3. Sort the users by their reaction
-  const sortedReactions = {};
+  let sortedReactions = {};
 
   reactions.forEach((reaction) => {
     const unifiedEmoji = reaction.unified;
@@ -194,6 +194,12 @@ exports.getAllReactions = catchAsync(async (req, res) => {
       sortedReactions[unifiedEmoji] = [reaction];
     }
   });
+
+  sortedReactions = Object.fromEntries(
+    Object.entries(sortedReactions).sort(
+      ([, arr1], [, arr2]) => arr2.length - arr1.length
+    )
+  );
 
   // 4. Return a nested object emoji : [users]
   return res.status(200).json({

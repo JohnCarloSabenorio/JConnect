@@ -9,6 +9,9 @@ const messageSlice = createSlice({
     messageReactionsId: "",
     displayReactionsOverlay: false,
     allMessageReactions: {},
+    collectedReactions: [],
+    displayedEmoji: "all_emoji",
+    displayedUserReactions: [],
   },
 
   reducers: {
@@ -38,6 +41,25 @@ const messageSlice = createSlice({
 
     setAllMessageReactions: (state, action) => {
       state.allMessageReactions = action.payload;
+
+      let collectedArr = [];
+
+      for (const unifiedEmoji in state.allMessageReactions) {
+        collectedArr = collectedArr.concat(
+          state.allMessageReactions[unifiedEmoji]
+        );
+      }
+      state.collectedReactions = collectedArr;
+
+      state.displayedUserReactions = collectedArr;
+    },
+
+    setDisplayedUserReactions: (state, action) => {
+      state.displayedUserReactions = action.payload;
+    },
+
+    setDisplayedEmoji: (state, action) => {
+      state.displayedEmoji = action.payload;
     },
   },
 });
@@ -50,6 +72,8 @@ export const {
   setMessageReactionsId,
   setDisplayReactionsOverlay,
   setAllMessageReactions,
+  setDisplayedUserReactions,
+  setDisplayedEmoji,
 } = messageSlice.actions;
 
 export default messageSlice.reducer;
