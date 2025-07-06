@@ -2,16 +2,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { showProfileOverlay } from "../redux/profile_overlay";
 import { setDisplayedUser } from "../redux/profile_overlay";
 import { getAllMessageReactions } from "../api/message";
-
 import Picker, { Emoji } from "emoji-picker-react";
+import { socket } from "../socket";
+import React from "react";
 import { reactToMessage, getTopEmojis } from "../api/message";
 import {
   setMessageReactionsId,
   setDisplayReactionsOverlay,
   setAllMessageReactions,
 } from "../redux/message";
-import { useEffect, useState } from "react";
-export default function Message({
+import { useEffect, useState, useContext } from "react";
+import { UserContext } from "../App";
+export const Message = React.memo(function Message({
   isCurrentUser,
   imgUrl,
   message,
@@ -24,8 +26,7 @@ export default function Message({
   sender,
 }) {
   const dispatch = useDispatch();
-
-  console.log("REACTIONS:", reactions);
+  const { user } = useContext(UserContext);
 
   const { displayReactionsOverlay } = useSelector((state) => state.message);
   const [displayReactionPicker, setDisplayReactionPicker] = useState(false);
@@ -34,18 +35,27 @@ export default function Message({
 
   const [topReactions, setTopReactions] = useState([]);
 
-  const [allReactions, setAllReactions] = useState(reactions);
-
   useEffect(() => {
     async function getTop3Emojis(id) {
-      const emojis = await getTopEmojis(id);
-      console.log("THE TOP EMOJIS FOR THIS MESSAGE:", emojis);
+      let reactionsCount = {};
 
-      setTopReactions(Object.keys(emojis));
+      reactions.forEach((reaction) => {
+        if (reaction.unified in reactionsCount)
+          reactionsCount[reaction.unified]++;
+        else reactionsCount[reaction.unified] = 1;
+      });
+
+      let topReactions = Object.fromEntries(
+        Object.entries(reactionsCount)
+          .sort(([, count1], [, count2]) => count2 - count1)
+          .slice(0, 3)
+      );
+
+      setTopReactions(Object.keys(topReactions));
     }
 
     getTop3Emojis(messageId);
-  }, []);
+  }, [reactions]);
 
   function formatTime(timestamp) {
     const newDate = new Date(timestamp);
@@ -60,8 +70,16 @@ export default function Message({
 
   async function handleEmojiClick(emojiData) {
     setDisplayReactionPicker(false);
-    const updatedReactions = await reactToMessage(messageId, emojiData.unified);
-    setAllReactions(updatedReactions);
+
+    // Emit using socket instead
+
+    // const updatedReactions = await reactToMessage(messageId, emojiData.unified);
+
+    socket.emit("message react", {
+      userId: user._id,
+      messageId,
+      emojiUnified: emojiData.unified,
+    });
   }
 
   const messageParts = message.split(/(@\[[^:\]]+:[^\]]+\])/g);
@@ -176,7 +194,7 @@ export default function Message({
                         })}
 
                         <p className="">
-                          {allReactions.length > 0 && allReactions.length}
+                          {reactions.length > 0 && reactions.length}
                         </p>
                       </div>
                     </div>
@@ -231,7 +249,9 @@ export default function Message({
 
                     {/* Add reaction button */}
                     <div
-                      className={`absolute left-0 mt-3 cursor-pointer flex gap-1 bg-gray-300 rounded-full py-1 px-2`}
+                      className={`${
+                        topReactions.length > 0 ? "block" : "hidden"
+                      } absolute left-0 mt-3 cursor-pointer flex gap-1 bg-gray-300 rounded-full py-1 px-2`}
                       onClick={(e) => {
                         getReactions(messageId);
 
@@ -246,7 +266,7 @@ export default function Message({
                       })}
 
                       <p className="">
-                        {allReactions.length > 0 && allReactions.length}
+                        {reactions.length > 0 && reactions.length}
                       </p>
                     </div>
                   </div>
@@ -314,7 +334,7 @@ export default function Message({
       </div>
     </div>
   );
-}
+});
 
 /* 
               <div className="flex flex-col p-5">
@@ -329,3 +349,5 @@ export default function Message({
                 </div>
               </div>
 */
+
+export default Message;

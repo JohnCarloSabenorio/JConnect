@@ -64,12 +64,44 @@ export default function Chat() {
   const [fileInputKey, setFileInputKey] = useState(Date.now()); // Unique key for input reset
   const [displayEmoji, setDisplayEmoji] = useState(false);
 
+  const [updatedReactions, setUpdatedReactions] = useState([]);
+  const [updatedMessageId, setUpdatedMessageId] = useState("");
   // This will store the images to be sent by the user
   const [images, setImages] = useState([]);
 
   const uiChatRef = useRef(null);
   const fileInputRef = useRef(null);
   const inputRef = useRef(null);
+  const displayedMessagesRef = useRef([]);
+
+  useEffect(() => {
+    displayedMessagesRef.current = displayedMessages;
+  }, [displayedMessages]);
+
+  useEffect(() => {
+    const handleMessageReact = (data) => {
+      console.log("THE MESSAGE REACTIONS HAVE BEEN UPDATED:", data);
+
+      const messagesCollection = [...displayedMessagesRef.current];
+      console.log(" the displayed messages:", messagesCollection);
+
+      const updateIdx = messagesCollection.findIndex(
+        (m) => m._id == data.message._id
+      );
+
+      console.log(" the updated idx:", updateIdx);
+
+      messagesCollection[updateIdx] = data.message;
+
+      dispatch(initDisplayedMessages(messagesCollection));
+    };
+
+    socket.on("message react", handleMessageReact);
+
+    return () => {
+      socket.off("message react", handleMessageReact);
+    };
+  }, []);
 
   useEffect(() => {
     // Get the freinds of the current user
@@ -417,7 +449,11 @@ export default function Chat() {
                       username={message.sender.username}
                       isCurrentUser={message.sender._id === user._id}
                       timeSent={message.createdAt}
-                      reactions={message.reactions}
+                      reactions={
+                        message._id == updatedMessageId
+                          ? updatedReactions
+                          : message.reactions
+                      }
                       imagesSent={blobUrls}
                     />
                   );

@@ -49,13 +49,18 @@ mongoose.connect(db).then(function (res) {
 }); // WEBSOCKET CONNECTION AND HANDLERS
 
 io.on("connection", function (socket) {
-  console.log("A user connected!"); // Creates a room for every conversation the user is part of
+  console.log("USER JOINED:", socket.handshake.auth.userId);
+  var userRoom = "user_".concat(socket.handshake.auth.userId);
+  socket.join(userRoom); // Creates a room for every conversation the user is part of
 
   socket.on("join rooms", function (data) {
+    // Check if the user is already in the room
     if (!socket.rooms.has(data)) {
+      console.log("the room:", data);
       socket.join(data);
+      console.log("Socket ".concat(socket.id, " joined room ").concat(data));
     } else {
-      console.log("THE USER IS ALREADY IN THIS ROOM!");
+      console.log("The user is already in the room!");
     }
   }); // Disconnects the user
 
@@ -64,8 +69,11 @@ io.on("connection", function (socket) {
   }); // Sends real-time messages
 
   socket.on("chat message", function (data) {
-    app.post("");
     ioController.sendMessage(io, socket, data);
+  });
+  socket.on("message react", function (data) {
+    console.log("A user reacted to the message!");
+    ioController.reactToMesage(io, socket, data);
   });
 }); // RUN SERVER
 

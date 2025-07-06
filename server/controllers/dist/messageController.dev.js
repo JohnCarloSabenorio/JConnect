@@ -131,17 +131,20 @@ exports.reactToMessage = catchAsync(function _callee3(req, res) {
 
         case 10:
           // find the existing reaction in the message
+          console.log("message reactions:", message.reactions);
+          console.log("the req user id:", req.user._id);
           existingReaction = message.reactions.filter(function (reaction) {
-            return reaction.user.toString() == req.user._id;
-          }); // filter out the existing reaction from the reaction array
+            return reaction.user._id.toString() == req.user._id.toString();
+          });
+          console.log("THE existing reaction:", existingReaction); // filter out the existing reaction from the reaction array
 
           message.reactions = message.reactions.filter(function (reaction) {
-            return reaction.user.toString() != req.user._id;
+            return reaction.user._id.toString() != req.user._id.toString();
           });
-          _context3.next = 14;
+          _context3.next = 17;
           return regeneratorRuntime.awrap(message.save());
 
-        case 14:
+        case 17:
           // If reaction exists, update it
           if (existingReaction.length > 0) {
             if (existingReaction[0].unified == req.body.unified) {} else {
@@ -156,17 +159,17 @@ exports.reactToMessage = catchAsync(function _callee3(req, res) {
             message.reactions.push(reactionData);
           }
 
-          _context3.next = 17;
+          _context3.next = 20;
           return regeneratorRuntime.awrap(message.save());
 
-        case 17:
+        case 20:
           res.status(200).json({
             status: "success",
             message: "Successfully updated message reactions.",
             reactions: message.reactions
           });
 
-        case 18:
+        case 21:
         case "end":
           return _context3.stop();
       }

@@ -15,3 +15,4 @@ socket.on("connect_error", (err) => {
   // some additional context, for example the XMLHttpRequest object
   console.log(err.context);
 });
+

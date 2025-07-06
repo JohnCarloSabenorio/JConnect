@@ -135,3 +135,75 @@ exports.sendMessage = function _callee3(io, socket, data) {
     }
   });
 };
+
+exports.reactToMesage = function _callee4(io, socket, data) {
+  var message, messageReactions, existingUserReaction, reactionIdx;
+  return regeneratorRuntime.async(function _callee4$(_context4) {
+    while (1) {
+      switch (_context4.prev = _context4.next) {
+        case 0:
+          _context4.next = 2;
+          return regeneratorRuntime.awrap(Message.findById(data.messageId));
+
+        case 2:
+          message = _context4.sent;
+          console.log("the message:", message);
+
+          if (message) {
+            _context4.next = 6;
+            break;
+          }
+
+          return _context4.abrupt("return");
+
+        case 6:
+          // Extract the message reactions
+          messageReactions = message.reactions; // Check if the user already reacted to the message
+
+          existingUserReaction = messageReactions.find(function (reaction) {
+            return reaction.user._id.toString() == data.userId.toString();
+          }); // Find the index of the existing user reaction
+
+          reactionIdx = messageReactions.findIndex(function (reaction) {
+            return reaction.user._id.toString() == data.userId.toString();
+          }); // console.log("the user reaction: ", existingUserReaction);
+          // console.log(reactionIdx);
+
+          if (existingUserReaction) {
+            // If the user reacted to the message, check if the unified emoji is the same
+            if (existingUserReaction.unified == data.emojiUnified) {
+              console.log("removed the reaction"); // If it is, then remove the reaction
+
+              messageReactions.splice(reactionIdx, 1);
+            } else {
+              console.log("replaced the reaction"); // If not, then replace the unified emoji
+
+              existingUserReaction.unified = data.emojiUnified;
+              messageReactions[reactionIdx] = existingUserReaction;
+            }
+          } else {
+            // If there is no existing user reaction, create one
+            console.log("added new user reaction");
+            messageReactions.push({
+              user: data.userId,
+              unified: data.emojiUnified
+            });
+            message.reactions = messageReactions;
+          }
+
+          _context4.next = 12;
+          return regeneratorRuntime.awrap(message.save());
+
+        case 12:
+          io.to(message.conversation._id.toString()).emit("message react", {
+            reactions: messageReactions,
+            message: message
+          });
+
+        case 13:
+        case "end":
+          return _context4.stop();
+      }
+    }
+  });
+};

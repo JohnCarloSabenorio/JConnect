@@ -81,3 +81,61 @@ exports.sendMessage = async (io, socket, data) => {
     convo: userConversation,
   });
 };
+
+exports.reactToMesage = async (io, socket, data) => {
+  // console.log("reaction data:", data);
+  // 1. Find the message
+  const message = await Message.findById(data.messageId);
+
+  console.log("the message:", message);
+  if (!message) {
+    return;
+  }
+
+  // Extract the message reactions
+  const messageReactions = message.reactions;
+
+  // Check if the user already reacted to the message
+
+  const existingUserReaction = messageReactions.find(
+    (reaction) => reaction.user._id.toString() == data.userId.toString()
+  );
+
+  // Find the index of the existing user reaction
+  const reactionIdx = messageReactions.findIndex(
+    (reaction) => reaction.user._id.toString() == data.userId.toString()
+  );
+
+  // console.log("the user reaction: ", existingUserReaction);
+  // console.log(reactionIdx);
+
+  if (existingUserReaction) {
+    // If the user reacted to the message, check if the unified emoji is the same
+    if (existingUserReaction.unified == data.emojiUnified) {
+      console.log("removed the reaction");
+      // If it is, then remove the reaction
+      messageReactions.splice(reactionIdx, 1);
+    } else {
+      console.log("replaced the reaction");
+      // If not, then replace the unified emoji
+      existingUserReaction.unified = data.emojiUnified;
+      messageReactions[reactionIdx] = existingUserReaction;
+    }
+  } else {
+    // If there is no existing user reaction, create one
+    console.log("added new user reaction");
+    messageReactions.push({
+      user: data.userId,
+      unified: data.emojiUnified,
+    });
+
+    message.reactions = messageReactions;
+  }
+
+  await message.save();
+
+  io.to(message.conversation._id.toString()).emit("message react", {
+    reactions: messageReactions,
+    message: message,
+  });
+};

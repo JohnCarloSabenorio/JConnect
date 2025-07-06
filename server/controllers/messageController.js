@@ -71,13 +71,17 @@ exports.reactToMessage = catchAsync(async (req, res) => {
   }
   // find the existing reaction in the message
 
+  console.log("message reactions:", message.reactions);
+  console.log("the req user id:", req.user._id);
   const existingReaction = message.reactions.filter(
-    (reaction) => reaction.user.toString() == req.user._id
+    (reaction) => reaction.user._id.toString() == req.user._id.toString()
   );
+
+  console.log("THE existing reaction:", existingReaction);
 
   // filter out the existing reaction from the reaction array
   message.reactions = message.reactions.filter(
-    (reaction) => reaction.user.toString() != req.user._id
+    (reaction) => reaction.user._id.toString() != req.user._id.toString()
   );
   await message.save();
 

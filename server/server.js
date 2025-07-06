@@ -50,12 +50,16 @@ mongoose
 
 // WEBSOCKET CONNECTION AND HANDLERS
 io.on("connection", (socket) => {
-  console.log("A user connected!");
+  console.log("USER JOINED:", socket.handshake.auth.userId);
+
+  const userRoom = `user_${socket.handshake.auth.userId}`;
+  socket.join(userRoom);
 
   // Creates a room for every conversation the user is part of
   socket.on("join rooms", (data) => {
     // Check if the user is already in the room
     if (!socket.rooms.has(data)) {
+      console.log("the room:", data);
       socket.join(data);
       console.log(`Socket ${socket.id} joined room ${data}`);
     } else {
@@ -71,6 +75,12 @@ io.on("connection", (socket) => {
   // Sends real-time messages
   socket.on("chat message", (data) => {
     ioController.sendMessage(io, socket, data);
+  });
+
+  socket.on("message react", (data) => {
+    console.log("A user reacted to the message!");
+
+    ioController.reactToMesage(io, socket, data);
   });
 });
 

@@ -42,10 +42,15 @@ export default function App() {
         withCredentials: true,
       });
 
-      if (!socket.connected) socket.connect();
-
-      setUser(response.data.currentUser);
-      setLoggedInStatus(true);
+      // IMPROVE LOGIN HANDLING
+      if (response.data.currentUser) {
+        socket.auth = { userId: response.data.currentUser._id };
+        socket.connect();
+        setUser(response.data.currentUser);
+        setLoggedInStatus(true);
+      } else {
+        setLoggedInStatus(false);
+      }
     } catch (err) {
       console.log(err?.response?.data?.message || "Login check failed");
       socket.disconnect();
