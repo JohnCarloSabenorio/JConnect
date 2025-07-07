@@ -48,9 +48,19 @@ export default function AddMemberOverlay() {
   }
 
   async function addNewMembers(activeConvo, newMemberIds) {
-    const newMembers = await addNewMembersToGroup(activeConvo, newMemberIds);
-
-    dispatch(setActiveConvoMembers(newMembers));
+    try {
+      const newMembers = await addNewMembersToGroup(activeConvo, newMemberIds);
+      newMemberIds.forEach((userId) => {
+        socket.emit("send notification", {
+          message: `you've been invited to a group chat!`,
+          receiver_id: userId,
+          notification_type: "group_invite",
+        });
+      });
+      dispatch(setActiveConvoMembers(newMembers));
+    } catch (err) {
+      console.log("error adding new members.");
+    }
   }
 
   return (

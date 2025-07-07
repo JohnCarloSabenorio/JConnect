@@ -127,12 +127,12 @@ export default function ProfileOverlay() {
     setIsLoading(true);
     acceptFriendRequest(userId);
 
-    const newNotification = await createNotification({
+    emitNotification({
       message: `${user.username} accepted your friend request.`,
       receiver_id: userId,
       notification_type: "fr_accepted",
-      actor_id: user._id,
     });
+
     setFriendState("friend");
     setIsLoading(false);
   };
@@ -152,13 +152,6 @@ export default function ProfileOverlay() {
   // Send notification function
 
   const emitNotification = async (data) => {
-    /* 
-    1. message
-    2. receiver
-    3. type of notification
-    4. actor (the user)
-    */
-
     socket.emit("send notification", data);
   };
 

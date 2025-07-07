@@ -69,11 +69,20 @@ export const Message = React.memo(function Message({
   }
 
   async function handleEmojiClick(emojiData) {
+    console.log("THE EMOJI DATA:", emojiData);
     setDisplayReactionPicker(false);
 
     // Emit using socket instead
 
     // const updatedReactions = await reactToMessage(messageId, emojiData.unified);
+
+    if (sender._id != user._id) {
+      socket.emit("send notification", {
+        message: `${user.username} reacted ${emojiData.emoji} to your message.`,
+        receiver_id: sender._id,
+        notification_type: "reaction",
+      });
+    }
 
     socket.emit("message react", {
       userId: user._id,

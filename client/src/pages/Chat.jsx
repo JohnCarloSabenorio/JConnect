@@ -181,6 +181,16 @@ export default function Chat() {
     e.preventDefault();
     const allMentionSpans = inputRef.current.querySelectorAll(".mention-span");
 
+    console.log("USERS TO BE MENTIONED:", toMention);
+
+    toMention.forEach((userId) => {
+      socket.emit("send notification", {
+        message: `${user.username} mentioned you in the group chat.`,
+        receiver_id: userId,
+        notification_type: "mention",
+      });
+    });
+
     const latestMessage = inputRef.current.textContent.trim();
     allMentionSpans.forEach((span) => {
       span.textContent = `@[${span.dataset.memberId}:${span.dataset.username}]`;
