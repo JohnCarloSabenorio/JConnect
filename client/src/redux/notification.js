@@ -19,7 +19,14 @@ const notifSlice = createSlice({
       state.unreadCount = unreadCount;
     },
     addNotification: (state, action) => {
-      state.allNotifications = state.allNotifications.push(action.payload);
+      console.log("ADDING A NEW NOTIFICATION BRO!");
+      const updatedNotifs = [...state.allNotifications];
+
+      updatedNotifs.push(action.payload);
+      state.allNotifications = updatedNotifs;
+      let unread = state.unreadCount;
+      unread++;
+      state.unreadCount = unread;
     },
     setUnreadCount: (state, action) => {
       state.unreadCount = action.payload;

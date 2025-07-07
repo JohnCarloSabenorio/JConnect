@@ -15,6 +15,7 @@ import { createConversation, findConvoWithUser } from "../api/conversation";
 import Overlay from "../components/Overlay";
 import { getAllUserMessages } from "../api/conversation";
 import { toggleMediaPanel } from "../redux/media";
+import { addNotification } from "../redux/notification";
 import {
   setIsMentioning,
   setToMention,
@@ -56,6 +57,8 @@ export default function Chat() {
     (state) => state.message
   );
 
+  const { allNotifications } = useSelector((state) => state.notification);
+
   // This will get all the images to be displayed from the media slice
   const { mediaImages } = useSelector((state) => state.media);
 
@@ -77,6 +80,14 @@ export default function Chat() {
   useEffect(() => {
     displayedMessagesRef.current = displayedMessages;
   }, [displayedMessages]);
+
+  // This will handle notification emits
+  useEffect(() => {
+    const handleReceiveNotification = (data) => {
+      dispatch(addNotification(data));
+    };
+    socket.on("receive notification", handleReceiveNotification);
+  }, []);
 
   useEffect(() => {
     const handleMessageReact = (data) => {

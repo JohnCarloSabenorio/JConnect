@@ -56,7 +56,13 @@ export default function Navbar() {
             className="relative cursor-pointer"
             onClick={(e) => {
               e.preventDefault();
-              setNotifActive((prev) => !prev);
+
+              setNotifActive((prev) => {
+                if (prev) {
+                  readAllNotifications();
+                }
+                return !prev;
+              });
               setMenuActive(false);
             }}
           >

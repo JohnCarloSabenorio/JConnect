@@ -70,6 +70,13 @@ io.on("connection", function (socket) {
 
   socket.on("chat message", function (data) {
     ioController.sendMessage(io, socket, data);
+  }); // Send notification
+
+  socket.on("send notification", function (data) {
+    data["actor_id"] = socket.handshake.auth.userId;
+    console.log("updated data:", data);
+    console.log("A user sent a notification!", socket.handshake.auth.userId);
+    ioController.sendNotification(io, socket, data);
   });
   socket.on("message react", function (data) {
     console.log("A user reacted to the message!");

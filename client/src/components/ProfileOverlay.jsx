@@ -38,8 +38,6 @@ export default function ProfileOverlay() {
   const { user } = useContext(UserContext);
   const [addBtnText, setAddBtnText] = useState("Add Friend");
 
-  const [sendNotification, setSendNotification] = useState("");
-
   // This will handle the display of the friend dropdown
   const [friendbarActive, setFriendbarActive] = useState(false);
 
@@ -107,13 +105,11 @@ export default function ProfileOverlay() {
   const addFriend = async (userId) => {
     sendFriendRequest(userId);
     setIsLoading(true);
-    const newNotification = await createNotification({
-      message: `${user.username} sent you a friend request.`,
+    emitNotification({
+      message: `user sent you a friend request!`,
       receiver_id: userId,
       notification_type: "fr_received",
-      actor_id: user._id,
     });
-    setSendNotification(newNotification._id);
     setFriendState("request_sent");
     setIsLoading(false);
   };
@@ -123,8 +119,6 @@ export default function ProfileOverlay() {
   const removeFriendRequest = async (userId) => {
     cancelFriendRequest(userId);
     setFriendState("not_friend");
-    deleteNotification(sendNotification);
-    setSendNotification("");
   };
 
   // Accept request function
@@ -153,6 +147,19 @@ export default function ProfileOverlay() {
   const unfriendUser = async (userId) => {
     removeFriend(userId);
     setFriendState("not_friend");
+  };
+
+  // Send notification function
+
+  const emitNotification = async (data) => {
+    /* 
+    1. message
+    2. receiver
+    3. type of notification
+    4. actor (the user)
+    */
+
+    socket.emit("send notification", data);
   };
 
   const handleChat = async () => {

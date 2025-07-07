@@ -12,6 +12,8 @@ var Message = require("./../models/messageModel");
 
 var Conversation = require("../models/conversationModel");
 
+var Notification = require("../models/notificationModel");
+
 var UserConversation = require("../models/userConversationModel");
 
 var sharp = require("sharp"); // For saving and manipulating images
@@ -206,4 +208,34 @@ exports.reactToMesage = function _callee4(io, socket, data) {
       }
     }
   });
+};
+
+exports.sendNotification = function _callee5(io, socket, data) {
+  var newNotification;
+  return regeneratorRuntime.async(function _callee5$(_context5) {
+    while (1) {
+      switch (_context5.prev = _context5.next) {
+        case 0:
+          _context5.prev = 0;
+          _context5.next = 3;
+          return regeneratorRuntime.awrap(Notification.create(data));
+
+        case 3:
+          newNotification = _context5.sent;
+          console.log("new notification created:", newNotification);
+          io.to("user_".concat(data.receiver_id)).emit("receive notification", newNotification);
+          _context5.next = 11;
+          break;
+
+        case 8:
+          _context5.prev = 8;
+          _context5.t0 = _context5["catch"](0);
+          console.log("Failed to create new notification:", _context5.t0);
+
+        case 11:
+        case "end":
+          return _context5.stop();
+      }
+    }
+  }, null, null, [[0, 8]]);
 };

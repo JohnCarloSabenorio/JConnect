@@ -1,5 +1,6 @@
 const Message = require("./../models/messageModel");
 const Conversation = require("../models/conversationModel");
+const Notification = require("../models/notificationModel");
 const UserConversation = require("../models/userConversationModel");
 const sharp = require("sharp"); // For saving and manipulating images
 const fs = require("fs");
@@ -138,4 +139,21 @@ exports.reactToMesage = async (io, socket, data) => {
     reactions: messageReactions,
     message: message,
   });
+};
+
+exports.sendNotification = async (io, socket, data) => {
+  // Create notification
+
+  try {
+    const newNotification = await Notification.create(data);
+
+    console.log("new notification created:", newNotification);
+    io.to(`user_${data.receiver_id}`).emit(
+      "receive notification",
+      newNotification
+    );
+  } catch (err) {
+    console.log("Failed to create new notification:", err);
+  }
+  // Emit received notification to the target user
 };
