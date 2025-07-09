@@ -64,7 +64,7 @@ exports.acceptFriendRequest = catchAsync(async (req, res, next) => {
   );
 
   if (!friend) {
-    return next(new AppError("Friend request does not exist!", 400));
+    return next(new AppError("Friend request no longer exists!", 400));
   }
   res.status(200).json({
     status: "success",

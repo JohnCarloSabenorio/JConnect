@@ -105,9 +105,9 @@ export async function acceptFriendRequest(userId) {
       `jconnect/api/v1/friends/acceptRequest/${userId}`
     );
 
-    console.log("Friend request response:", response);
+    return response.data.data;
   } catch (err) {
-    console.log("Error sending friend request:", err);
+    console.log("Error accepting friend request:", err);
   }
 }
 
