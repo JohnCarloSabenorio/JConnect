@@ -70,6 +70,7 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
 
   useEffect(() => {
     // This will get the initial messages to be displayed (if the currentConvo is null)
+    console.log("All direct conversation:", allDirectConversation);
     if (
       allDirectConversation &&
       activeConvo === null &&
@@ -82,9 +83,7 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
     }
   }, [allDirectConversation]);
 
-  useEffect(() => {
-    // console.log("the current search input: ", sidebarSearch);
-  }, [sidebarSearch]);
+  useEffect(() => {}, [sidebarSearch]);
 
   async function fetchAllUsers() {
     try {
@@ -108,7 +107,6 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
       allDirects.push(data);
     });
 
-    // console.log("JOINING ROOMS");
     allDirects.forEach((data) => {
       // User will automatically join the rooms for each direct conversation.
       socket.emit("join rooms", data.conversation._id);
@@ -120,9 +118,8 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
   async function getGroupConversations() {
     // Group conversations
     const groupData = await getAllGroupConversation();
-    console.log("getting all group conversation!");
 
-    console.log("GROUP DATA:", groupData);
+    console.log("group data:", groupData);
     let groupConversations = [];
     groupData.forEach((data) => {
       data.conversation.userConvoId = data._id;

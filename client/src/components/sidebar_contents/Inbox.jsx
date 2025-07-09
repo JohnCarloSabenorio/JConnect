@@ -5,7 +5,7 @@ import { UserContext } from "../../App";
 
 export default function Inbox({ inputRef, getMessages }) {
   const { loggedInStatus, user, isConnected } = useContext(UserContext);
-  const { allDirectConversation } = useSelector((state) => state.conversation);
+  const { allDirectConversation, allGroupConversation } = useSelector((state) => state.conversation);
   const { convoViewMode } = useSelector((state) => state.sidebar);
 
   let filteredConversations;
@@ -16,7 +16,7 @@ export default function Inbox({ inputRef, getMessages }) {
       (uc) => uc.conversation.users.length === 2
     );
   } else {
-    filteredConversations = allDirectConversation.filter(
+    filteredConversations = allGroupConversation.filter(
       (uc) => uc.conversation.users.length > 2
     );
   }
