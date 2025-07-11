@@ -9,6 +9,11 @@ const userConvoRouter = require("./userConversationRoutes");
 router.use("/:convoId/message", messageRouter);
 router.use(authController.protect);
 
+router
+  .route("/")
+  .get(convoController.getAllConversation)
+  .post(convoController.createConversation);
+
 router.use("/userConvo", userConvoRouter);
 
 router
@@ -17,11 +22,6 @@ router
   .delete(convoController.removeMember);
 
 router.post("/add-many/:convoId", convoController.addMultipleMembers);
-
-router
-  .route("/")
-  .get(convoController.getAllConversation)
-  .post(convoController.createConversation);
 
 router
   .route("/:id")

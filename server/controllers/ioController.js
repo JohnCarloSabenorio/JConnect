@@ -71,10 +71,6 @@ exports.sendMessage = async (io, socket, data) => {
   const messageObject = populatedMessage.toObject();
   messageObject.images64 = imageBase64Array;
 
-  console.log("POPPU WITH IMAGE64:", populatedMessage);
-
-  console.log("The updated conversation:", updatedConvo);
-
   console.log("SENDING MESSAGE TO ROOM:", userConversation._id.toString());
 
   io.to(userConversation.conversation._id.toString()).emit("chat message", {

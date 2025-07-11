@@ -158,19 +158,20 @@ export default function ProfileOverlay() {
   const handleChat = async () => {
     try {
       let userConversation = await findConvoWithUser(displayedUser._id);
-      const isNew = userConversation == null;
 
-      if (isNew) {
+      if (!userConversation) {
         userConversation = await createConversation(
           user._id,
           displayedUser._id
         );
+
+        console.log("CREATED A CONVERSATION:", userConversation);
         dispatch(addANewConvo(userConversation));
       }
 
       const { conversation, conversationName, status } = userConversation;
 
-      socket.emit("join rooms", userConversation._id);
+      socket.emit("join rooms", userConversation.conversation._id);
       await getMessages(conversation._id, conversationName);
 
       dispatch(
@@ -186,12 +187,6 @@ export default function ProfileOverlay() {
       dispatch(changeActiveInbox("direct"));
       dispatch(hideProfileOverlay());
       dispatch(setConvoViewMode(0));
-
-      console.log(
-        isNew
-          ? "Created new conversation and joined room"
-          : "Joined existing conversation"
-      );
     } catch (error) {
       console.error("Failed to handle conversation click:", error);
     }

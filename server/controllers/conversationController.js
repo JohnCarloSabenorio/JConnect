@@ -203,10 +203,13 @@ exports.createConversation = catchAsync(async (req, res) => {
       },
     ]);
 
-    currentUserNewConvo = await newDirectUserConversations
-      .find((convo) => convo.user.toString() === "67a18fc157b4f802490ce204")
+    console.log("NEW DIRECTS:", newDirectUserConversations);
+
+    const currentUserNewConvo = await newDirectUserConversations
+      .find((convo) => convo.user.toString() === req.user.id)
       .populate("conversation");
 
+    console.log("FOUND USER CONVO:", currentUserNewConvo);
     return res.status(200).json({
       status: "success",
       message: "New conversation successfully created!",

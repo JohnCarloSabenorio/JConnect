@@ -227,7 +227,8 @@ exports.checkConvoExists = catchAsync(function _callee4(req, res) {
   });
 });
 exports.createConversation = catchAsync(function _callee5(req, res) {
-  var newConversation, usersFromDB, newGroupName, newGroupUserConversationData, newUserConversation, newDirectUserConversations;
+  var newConversation, usersFromDB, newGroupName, newGroupUserConversationData, newUserConversation, newDirectUserConversations, _currentUserNewConvo;
+
   return regeneratorRuntime.async(function _callee5$(_context5) {
     while (1) {
       switch (_context5.prev = _context5.next) {
@@ -304,20 +305,22 @@ exports.createConversation = catchAsync(function _callee5(req, res) {
 
         case 24:
           newDirectUserConversations = _context5.sent;
-          _context5.next = 27;
+          console.log("NEW DIRECTS:", newDirectUserConversations);
+          _context5.next = 28;
           return regeneratorRuntime.awrap(newDirectUserConversations.find(function (convo) {
-            return convo.user.toString() === "67a18fc157b4f802490ce204";
+            return convo.user.toString() === req.user.id;
           }).populate("conversation"));
 
-        case 27:
-          currentUserNewConvo = _context5.sent;
+        case 28:
+          _currentUserNewConvo = _context5.sent;
+          console.log("FOUND USER CONVO:", _currentUserNewConvo);
           return _context5.abrupt("return", res.status(200).json({
             status: "success",
             message: "New conversation successfully created!",
-            data: currentUserNewConvo
+            data: _currentUserNewConvo
           }));
 
-        case 29:
+        case 31:
         case "end":
           return _context5.stop();
       }

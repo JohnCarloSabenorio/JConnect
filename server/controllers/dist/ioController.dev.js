@@ -122,15 +122,13 @@ exports.sendMessage = function _callee3(io, socket, data) {
           console.log("IMAGE BUFFERIST:", imageBase64Array);
           messageObject = populatedMessage.toObject();
           messageObject.images64 = imageBase64Array;
-          console.log("POPPU WITH IMAGE64:", populatedMessage);
-          console.log("The updated conversation:", updatedConvo);
           console.log("SENDING MESSAGE TO ROOM:", userConversation._id.toString());
           io.to(userConversation.conversation._id.toString()).emit("chat message", {
             msg: messageObject,
             convo: userConversation
           });
 
-        case 26:
+        case 24:
         case "end":
           return _context3.stop();
       }
