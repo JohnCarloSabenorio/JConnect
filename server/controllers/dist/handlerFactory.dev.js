@@ -120,7 +120,7 @@ exports.getOne = function (Model) {
 
 exports.getAll = function (Model) {
   return catchAsync(function _callee5(req, res) {
-    var filter, docs, docsWithBase;
+    var filter, featureQuery, docs, docsWithBase;
     return regeneratorRuntime.async(function _callee5$(_context5) {
       while (1) {
         switch (_context5.prev = _context5.next) {
@@ -145,7 +145,7 @@ exports.getAll = function (Model) {
 
             if (Model === Notification) {
               filter = {
-                receiver_id: req.user.id
+                receiver: req.user.id
               };
             } // If convoId is present, the user is getting a message
 
@@ -154,13 +154,33 @@ exports.getAll = function (Model) {
               conversation: req.params.convoId
             });
             features = new APIFeatures(Model.find(filter), req.query).filter().sort().limitFields();
-            _context5.next = 8;
-            return regeneratorRuntime.awrap(features.query);
+            featureQuery = features.query;
 
-          case 8:
+            if (Model === Notification) {
+              console.log("THIS IS NOTIFICATION");
+              featureQuery = featureQuery.populate("actor").lean();
+            }
+
+            _context5.next = 10;
+            return regeneratorRuntime.awrap(featureQuery);
+
+          case 10:
             docs = _context5.sent;
             console.log("THE DOCS:", docs);
-            _context5.next = 12;
+
+            if (!(Model === Notification)) {
+              _context5.next = 14;
+              break;
+            }
+
+            return _context5.abrupt("return", res.status(200).json({
+              status: "success",
+              message: "Successfully retrieved all documents",
+              data: docs
+            }));
+
+          case 14:
+            _context5.next = 16;
             return regeneratorRuntime.awrap(Promise.all(docs.map(function _callee4(doc) {
               var images64;
               return regeneratorRuntime.async(function _callee4$(_context4) {
@@ -168,16 +188,17 @@ exports.getAll = function (Model) {
                   switch (_context4.prev = _context4.next) {
                     case 0:
                       if (!(!doc.images || !Array.isArray(doc.images))) {
-                        _context4.next = 2;
+                        _context4.next = 3;
                         break;
                       }
 
+                      console.log("THE DOC:", docs);
                       return _context4.abrupt("return", _objectSpread({}, doc._doc, {
                         imageBase64Array: []
                       }));
 
-                    case 2:
-                      _context4.next = 4;
+                    case 3:
+                      _context4.next = 5;
                       return regeneratorRuntime.awrap(Promise.all(doc.images.map(function _callee3(filename) {
                         var imagePath, buffer;
                         return regeneratorRuntime.async(function _callee3$(_context3) {
@@ -207,13 +228,13 @@ exports.getAll = function (Model) {
                         }, null, null, [[1, 8]]);
                       })));
 
-                    case 4:
+                    case 5:
                       images64 = _context4.sent;
                       return _context4.abrupt("return", _objectSpread({}, doc._doc, {
                         images64: images64
                       }));
 
-                    case 6:
+                    case 7:
                     case "end":
                       return _context4.stop();
                   }
@@ -221,7 +242,7 @@ exports.getAll = function (Model) {
               });
             })));
 
-          case 12:
+          case 16:
             docsWithBase = _context5.sent;
             res.status(200).json({
               status: "success",
@@ -229,7 +250,7 @@ exports.getAll = function (Model) {
               data: docsWithBase
             });
 
-          case 14:
+          case 18:
           case "end":
             return _context5.stop();
         }

@@ -7,10 +7,11 @@ import {
 } from "../api/notification";
 import { useSelector, useDispatch } from "react-redux";
 import { setAllNotifications } from "../redux/notification";
+
+import { setNotifActive } from "../redux/notification";
 export default function Navbar() {
   const [menuActive, setMenuActive] = useState(false);
-  const [notifActive, setNotifActive] = useState(false);
-  const { allNotifications, unreadCount } = useSelector(
+  const { allNotifications, unreadCount, notifActive } = useSelector(
     (state) => state.notification
   );
   const dispatch = useDispatch();
@@ -21,6 +22,7 @@ export default function Navbar() {
 
   async function getNotifications() {
     const notifications = await getAllNotifications();
+    console.log("ALL NOTIFS:", notifications);
     dispatch(setAllNotifications(notifications));
   }
 
@@ -28,7 +30,6 @@ export default function Navbar() {
     await updateAllUserNotifications({
       seen: true,
     });
-    await getNotifications();
   }
 
   async function handleLogout() {
@@ -57,12 +58,13 @@ export default function Navbar() {
             onClick={(e) => {
               e.preventDefault();
 
-              setNotifActive((prev) => {
-                if (prev) {
-                  readAllNotifications();
-                }
-                return !prev;
-              });
+              dispatch(setNotifActive(!notifActive));
+
+              if (!notifActive) {
+                readAllNotifications();
+              } else {
+                getNotifications();
+              }
               setMenuActive(false);
             }}
           >
@@ -113,6 +115,7 @@ export default function Navbar() {
             </div>
             {allNotifications.length > 0 ? (
               allNotifications.map((data, id) => {
+                console.log("THE DATA:", data);
                 return <NotificationCard key={id} ref={data._id} data={data} />;
               })
             ) : (

@@ -141,10 +141,31 @@ exports.sendNotification = async (io, socket, data) => {
   // Create notification
 
   try {
+    console.log("THE SEND NOTIF DATA:", data);
+
+    if (
+      data.notification_type == "fr_received" ||
+      data.notification_type == "fr_accepted"
+    ) {
+      const existingNotification = await Notification.findOne({
+        receiver: data.receiver,
+        notification_type: data.notification_type,
+        actor: data.actor,
+      });
+
+      console.log("the existing notif:", existingNotification);
+
+      if (existingNotification) {
+        existingNotification.updatedAt = Date.now();
+        existingNotification.seen = false;
+        await existingNotification.save();
+        return;
+      }
+    }
     const newNotification = await Notification.create(data);
 
     console.log("new notification created:", newNotification);
-    io.to(`user_${data.receiver_id}`).emit(
+    io.to(`user_${data.receiver}`).emit(
       "receive notification",
       newNotification
     );

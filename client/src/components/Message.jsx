@@ -79,7 +79,7 @@ export const Message = React.memo(function Message({
     if (sender._id != user._id) {
       socket.emit("send notification", {
         message: `${user.username} reacted ${emojiData.emoji} to your message.`,
-        receiver_id: sender._id,
+        receiver: sender._id,
         notification_type: "reaction",
       });
     }

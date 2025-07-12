@@ -107,7 +107,7 @@ export default function ProfileOverlay() {
     setIsLoading(true);
     emitNotification({
       message: `user sent you a friend request!`,
-      receiver_id: userId,
+      receiver: userId,
       notification_type: "fr_received",
     });
     setFriendState("request_sent");
@@ -129,7 +129,7 @@ export default function ProfileOverlay() {
 
     emitNotification({
       message: `${user.username} accepted your friend request.`,
-      receiver_id: userId,
+      receiver: userId,
       notification_type: "fr_accepted",
     });
 

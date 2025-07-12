@@ -67,6 +67,8 @@ export default function Chat() {
   const [fileInputKey, setFileInputKey] = useState(Date.now()); // Unique key for input reset
   const [displayEmoji, setDisplayEmoji] = useState(false);
 
+  const { notifActive } = useSelector((state) => state.notification);
+
   const [updatedReactions, setUpdatedReactions] = useState([]);
   const [updatedMessageId, setUpdatedMessageId] = useState("");
   // This will store the images to be sent by the user
@@ -86,7 +88,11 @@ export default function Chat() {
     const handleReceiveNotification = (data) => {
       dispatch(addNotification(data));
     };
-    socket.on("receive notification", handleReceiveNotification);
+    socket.on("receive notification", (data) => {
+      if (!notifActive) {
+        handleReceiveNotification(data);
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -186,7 +192,7 @@ export default function Chat() {
     toMention.forEach((userId) => {
       socket.emit("send notification", {
         message: `${user.username} mentioned you in the group chat.`,
-        receiver_id: userId,
+        receiver: userId,
         notification_type: "mention",
       });
     });

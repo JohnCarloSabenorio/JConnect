@@ -1,6 +1,7 @@
 const friend = require("../models/friendModel");
 const Friend = require("../models/friendModel");
 const User = require("../models/userModel");
+const Notification = require("../models/notificationModel");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const handlerFactory = require("./handlerFactory");
@@ -24,14 +25,31 @@ exports.sendFriendRequest = catchAsync(async (req, res, next) => {
   });
 });
 exports.cancelFriendRequest = catchAsync(async (req, res, next) => {
+  // 1. Delete friend
   const friendRequest = await Friend.findOneAndDelete({
     user1: req.user.id,
     user2: req.params.friendId,
   });
 
+  console.log("the friend request:", friendRequest);
+
   if (!friendRequest) {
     return next(new AppError("Friend request does not exist!", 400));
   }
+
+  // 2. Find the notification of the friend request and delete it
+
+  if (friendRequest.user2.status === "offline") {
+    await Notification.findOneAndDelete({
+      receiver: req.params.friendId,
+      actor: req.user.id,
+      notification_type: "fr_received",
+      seen: false,
+    });
+  }
+
+  console.log("The friend notif:", notification);
+  // 3. Return success message
   res.status(204).json({
     status: "success",
     message: "Friend request cancelled!",
