@@ -73,7 +73,7 @@ exports.getAll = (Model) =>
     }
 
     if (Model === Notification) {
-      filter = { receiver_id: req.user.id };
+      filter = { receiver: req.user.id };
     }
 
     // If convoId is present, the user is getting a message
@@ -84,14 +84,31 @@ exports.getAll = (Model) =>
       .filter()
       .sort()
       .limitFields();
-    const docs = await features.query;
+
+    let featureQuery = features.query;
+
+    if (Model === Notification) {
+      console.log("THIS IS NOTIFICATION");
+      featureQuery = featureQuery.populate("actor").lean();
+    }
+
+    const docs = await featureQuery;
 
     console.log("THE DOCS:", docs);
+
+    if (Model === Notification) {
+      return res.status(200).json({
+        status: "success",
+        message: "Successfully retrieved all documents",
+        data: docs,
+      });
+    }
 
     const docsWithBase = await Promise.all(
       docs.map(async (doc) => {
         // doc.users = doc.users.filter(user => user._id.toString() === req.user.id);
         if (!doc.images || !Array.isArray(doc.images)) {
+          console.log("THE DOC:", docs);
           return { ...doc._doc, imageBase64Array: [] }; // Handle missing images
         }
 

@@ -53,7 +53,6 @@ const conversationSlice = createSlice({
       state.toMention = currentMentions;
     },
     setActiveConversation: (state, action) => {
-      console.log("THE ACTIVE CONVO PAYLOAD:", action.payload);
       state.currentConvoName = action.payload[0];
       state.activeConvo = action.payload[1];
     },

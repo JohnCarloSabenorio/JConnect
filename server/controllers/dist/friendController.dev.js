@@ -14,6 +14,8 @@ var Friend = require("../models/friendModel");
 
 var User = require("../models/userModel");
 
+var Notification = require("../models/notificationModel");
+
 var AppError = require("../utils/appError");
 
 var catchAsync = require("../utils/catchAsync");
@@ -72,21 +74,38 @@ exports.cancelFriendRequest = catchAsync(function _callee2(req, res, next) {
 
         case 2:
           friendRequest = _context2.sent;
+          console.log("the friend request:", friendRequest);
 
           if (friendRequest) {
-            _context2.next = 5;
+            _context2.next = 6;
             break;
           }
 
           return _context2.abrupt("return", next(new AppError("Friend request does not exist!", 400)));
 
-        case 5:
+        case 6:
+          if (!(friendRequest.user2.status === "offline")) {
+            _context2.next = 9;
+            break;
+          }
+
+          _context2.next = 9;
+          return regeneratorRuntime.awrap(Notification.findOneAndDelete({
+            receiver: req.params.friendId,
+            actor: req.user.id,
+            notification_type: "fr_received",
+            seen: false
+          }));
+
+        case 9:
+          console.log("The friend notif:", notification); // 3. Return success message
+
           res.status(204).json({
             status: "success",
             message: "Friend request cancelled!"
           });
 
-        case 6:
+        case 11:
         case "end":
           return _context2.stop();
       }

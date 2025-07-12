@@ -53,7 +53,7 @@ export default function AddMemberOverlay() {
       newMemberIds.forEach((userId) => {
         socket.emit("send notification", {
           message: `you've been invited to a group chat!`,
-          receiver_id: userId,
+          receiver: userId,
           notification_type: "group_invite",
         });
       });

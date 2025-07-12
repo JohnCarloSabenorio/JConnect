@@ -1,10 +1,12 @@
 import { acceptFriendRequest, rejectFriendRequest } from "../api/friends";
 import { useState } from "react";
-
+import { setDisplayedUser } from "../redux/profile_overlay";
+import { showProfileOverlay } from "../redux/profile_overlay";
+import { useDispatch } from "react-redux";
 export default function NotificationCard({ data }) {
-  console.log("the notification data:", data);
-
   const [requestAccepted, setRequestAccepted] = useState(false);
+  const dispatch = useDispatch();
+  console.log("notification data:", data);
 
   async function acceptRequest(actor_id) {
     const response = await acceptFriendRequest(actor_id);
@@ -21,14 +23,18 @@ export default function NotificationCard({ data }) {
       alert("This request is no longer available!");
     }
   }
-  console.log("The data of the notif:", data);
 
   return (
     <>
       <div
         className="p-3 text-left gap-5 flex justify-between hover:bg-blue-500 cursor-pointer hover:text-white align-middle"
         onClick={(e) => {
-          if (data.notification_type[0] == "fr_received") {
+          if (
+            data.notification_type == "fr_received" ||
+            data.notification_type == "fr_accepted"
+          ) {
+            dispatch(setDisplayedUser(data.actor));
+            dispatch(showProfileOverlay());
           }
         }}
       >

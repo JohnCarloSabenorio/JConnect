@@ -209,31 +209,63 @@ exports.reactToMesage = function _callee4(io, socket, data) {
 };
 
 exports.sendNotification = function _callee5(io, socket, data) {
-  var newNotification;
+  var existingNotification, newNotification;
   return regeneratorRuntime.async(function _callee5$(_context5) {
     while (1) {
       switch (_context5.prev = _context5.next) {
         case 0:
           _context5.prev = 0;
-          _context5.next = 3;
+          console.log("THE SEND NOTIF DATA:", data);
+
+          if (!(data.notification_type == "fr_received" || data.notification_type == "fr_accepted")) {
+            _context5.next = 13;
+            break;
+          }
+
+          _context5.next = 5;
+          return regeneratorRuntime.awrap(Notification.findOne({
+            receiver: data.receiver,
+            notification_type: data.notification_type,
+            actor: data.actor
+          }));
+
+        case 5:
+          existingNotification = _context5.sent;
+          console.log("the existing notif:", existingNotification);
+
+          if (!existingNotification) {
+            _context5.next = 13;
+            break;
+          }
+
+          existingNotification.updatedAt = Date.now();
+          existingNotification.seen = false;
+          _context5.next = 12;
+          return regeneratorRuntime.awrap(existingNotification.save());
+
+        case 12:
+          return _context5.abrupt("return");
+
+        case 13:
+          _context5.next = 15;
           return regeneratorRuntime.awrap(Notification.create(data));
 
-        case 3:
+        case 15:
           newNotification = _context5.sent;
           console.log("new notification created:", newNotification);
-          io.to("user_".concat(data.receiver_id)).emit("receive notification", newNotification);
-          _context5.next = 11;
+          io.to("user_".concat(data.receiver)).emit("receive notification", newNotification);
+          _context5.next = 23;
           break;
 
-        case 8:
-          _context5.prev = 8;
+        case 20:
+          _context5.prev = 20;
           _context5.t0 = _context5["catch"](0);
           console.log("Failed to create new notification:", _context5.t0);
 
-        case 11:
+        case 23:
         case "end":
           return _context5.stop();
       }
     }
-  }, null, null, [[0, 8]]);
+  }, null, null, [[0, 20]]);
 };

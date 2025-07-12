@@ -6,6 +6,7 @@ const notifSlice = createSlice({
   initialState: {
     allNotifications: [],
     unreadCount: 0,
+    notifActive: false,
   },
 
   reducers: {
@@ -13,6 +14,8 @@ const notifSlice = createSlice({
       // This will initialize the number of unread notifications and the collection of notifications
       state.allNotifications = action.payload;
       let unreadCount = 0;
+
+      console.log("the notifications:", action.payload);
       state.allNotifications.forEach((notif) => {
         if (!notif.seen) unreadCount++;
       });
@@ -31,12 +34,20 @@ const notifSlice = createSlice({
     setUnreadCount: (state, action) => {
       state.unreadCount = action.payload;
     },
+
+    setNotifActive: (state, action) => {
+      state.notifActive = action.payload;
+    },
   },
 });
 
 // export all actions
-export const { setAllNotifications, addNotification, setUnreadCount } =
-  notifSlice.actions;
+export const {
+  setAllNotifications,
+  addNotification,
+  setUnreadCount,
+  setNotifActive,
+} = notifSlice.actions;
 
 // export message slice reducer
 export default notifSlice.reducer;

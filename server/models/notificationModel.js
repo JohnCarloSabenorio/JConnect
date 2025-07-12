@@ -4,9 +4,13 @@ const mongoose = require("mongoose");
 notificationSchema = new mongoose.Schema(
   {
     message: { type: String, required: true },
-    receiver_id: { type: mongoose.Schema.Types.ObjectId },
+    receiver: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     notification_type: {
-      type: [String],
+      type: String,
       required: true,
       enum: {
         values: [
@@ -21,8 +25,12 @@ notificationSchema = new mongoose.Schema(
       },
     },
     seen: { type: Boolean, default: false },
-    conversation_id: { type: mongoose.Schema.Types.ObjectId },
-    actor_id: { type: mongoose.Schema.Types.ObjectId },
+    conversation: { type: mongoose.Schema.Types.ObjectId },
+    actor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   {
     timestamps: true,
@@ -30,6 +38,18 @@ notificationSchema = new mongoose.Schema(
     toObject: { virtuals: false },
   }
 );
+
+notificationSchema.pre(/^find/, function (next) {
+  this.populate([
+    {
+      path: "actor",
+    },
+    {
+      path: "receiver",
+    },
+  ]);
+  next();
+});
 
 // Document Middlewares
 

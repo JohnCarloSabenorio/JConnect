@@ -17,7 +17,7 @@ exports.updateAllUserNotifications = catchAsync(function _callee(req, res) {
           console.log(req.user);
           _context.next = 3;
           return regeneratorRuntime.awrap(Notification.updateMany({
-            receiver_id: req.user._id
+            receiver: req.user._id
           }, req.body));
 
         case 3:

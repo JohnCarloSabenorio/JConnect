@@ -62,7 +62,12 @@ exports.login = async (req, res, next) => {
   }
 
   // 2. Check if user exists or if the password is correct.
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOneAndUpdate(
+    { email },
+    {
+      status: "online",
+    }
+  ).select("+password");
 
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError("Invalid email or password", 401));
@@ -71,7 +76,15 @@ exports.login = async (req, res, next) => {
   createSignToken(user, 200, res);
 };
 
-exports.logout = (req, res) => {
+exports.logout = async (req, res) => {
+  console.log("the req user:", req.user);
+  const user = await User.findOneAndUpdate(
+    { email: req.user.email },
+    {
+      status: "offline",
+    }
+  );
+
   res.cookie("jwt", "loggedout", {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,

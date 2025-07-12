@@ -6,7 +6,7 @@ const AppError = require("../utils/appError");
 exports.updateAllUserNotifications = catchAsync(async (req, res) => {
   console.log(req.user);
   const updatedNotifs = await Notification.updateMany(
-    { receiver_id: req.user._id },
+    { receiver: req.user._id },
     req.body
   );
 
