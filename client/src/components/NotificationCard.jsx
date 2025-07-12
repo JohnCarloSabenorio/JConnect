@@ -29,7 +29,10 @@ export default function NotificationCard({ data }) {
       <div
         className="p-3 text-left gap-5 flex justify-between hover:bg-blue-500 cursor-pointer hover:text-white align-middle"
         onClick={(e) => {
-          if (data.notification_type == "fr_received") {
+          if (
+            data.notification_type == "fr_received" ||
+            data.notification_type == "fr_accepted"
+          ) {
             dispatch(setDisplayedUser(data.actor));
             dispatch(showProfileOverlay());
           }
