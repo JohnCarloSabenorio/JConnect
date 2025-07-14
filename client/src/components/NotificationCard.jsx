@@ -35,6 +35,13 @@ export default function NotificationCard({ data }) {
           ) {
             dispatch(setDisplayedUser(data.actor));
             dispatch(showProfileOverlay());
+          } else if (data.notification_type == "group_invite") {
+            console.log("group invite notif data:", data);
+          } else if (
+            data.notification_type == "mention" ||
+            data.notification_type == "reaction"
+          ) {
+            // Handle mention notification
           }
         }}
       >

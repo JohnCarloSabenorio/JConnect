@@ -10,6 +10,7 @@ import SelectedUserBadge from "./SelectedUserBadge";
 import FilteredUserCard from "./FilteredUserCard";
 import { useMemo, useEffect, useState } from "react";
 import { setActiveConvoMembers } from "../redux/conversation";
+import { socket } from "../socket";
 export default function AddMemberOverlay() {
   const dispatch = useDispatch();
   const { hideAddMemberOverlay } = useSelector(
@@ -50,7 +51,10 @@ export default function AddMemberOverlay() {
   async function addNewMembers(activeConvo, newMemberIds) {
     try {
       const newMembers = await addNewMembersToGroup(activeConvo, newMemberIds);
+
+      console.log("ADDING MEMBERS TO THE GROUP CHAT!");
       newMemberIds.forEach((userId) => {
+        console.log(`adding member ${userId} to the group chat!`);
         socket.emit("send notification", {
           message: `you've been invited to a group chat!`,
           receiver: userId,
@@ -59,7 +63,7 @@ export default function AddMemberOverlay() {
       });
       dispatch(setActiveConvoMembers(newMembers));
     } catch (err) {
-      console.log("error adding new members.");
+      console.log("error adding new members:", err);
     }
   }
 

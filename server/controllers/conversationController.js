@@ -181,8 +181,10 @@ exports.createConversation = catchAsync(async (req, res) => {
 
     // Find the document of the current user
     currentUserNewConvo = await newUserConversation
-      .find((convo) => convo.user.toString() === req.user.id) // replace this with req.user.id
+      .find((convo) => convo.user.toString() === req.user.id)
       .populate("conversation");
+
+    console.log("current new user convo:", currentUserNewConvo);
 
     return res.status(200).json({
       status: "success",

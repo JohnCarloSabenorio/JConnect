@@ -256,7 +256,7 @@ exports.createConversation = catchAsync(function _callee5(req, res) {
           usersFromDB = _context5.sent;
 
           if (!(newConversation.users.length > 2)) {
-            _context5.next = 22;
+            _context5.next = 23;
             break;
           }
 
@@ -280,19 +280,19 @@ exports.createConversation = catchAsync(function _callee5(req, res) {
           _context5.next = 18;
           return regeneratorRuntime.awrap(newUserConversation.find(function (convo) {
             return convo.user.toString() === req.user.id;
-          }) // replace this with req.user.id
-          .populate("conversation"));
+          }).populate("conversation"));
 
         case 18:
           currentUserNewConvo = _context5.sent;
+          console.log("current new user convo:", currentUserNewConvo);
           return _context5.abrupt("return", res.status(200).json({
             status: "success",
             message: "New conversation successfully created!",
             data: currentUserNewConvo
           }));
 
-        case 22:
-          _context5.next = 24;
+        case 23:
+          _context5.next = 25;
           return regeneratorRuntime.awrap(UserConversation.create([{
             user: usersFromDB[0]._id,
             conversation: newConversation._id,
@@ -303,15 +303,15 @@ exports.createConversation = catchAsync(function _callee5(req, res) {
             conversationName: usersFromDB[0].username
           }]));
 
-        case 24:
+        case 25:
           newDirectUserConversations = _context5.sent;
           console.log("NEW DIRECTS:", newDirectUserConversations);
-          _context5.next = 28;
+          _context5.next = 29;
           return regeneratorRuntime.awrap(newDirectUserConversations.find(function (convo) {
             return convo.user.toString() === req.user.id;
           }).populate("conversation"));
 
-        case 28:
+        case 29:
           _currentUserNewConvo = _context5.sent;
           console.log("FOUND USER CONVO:", _currentUserNewConvo);
           return _context5.abrupt("return", res.status(200).json({
@@ -320,7 +320,7 @@ exports.createConversation = catchAsync(function _callee5(req, res) {
             data: _currentUserNewConvo
           }));
 
-        case 31:
+        case 32:
         case "end":
           return _context5.stop();
       }

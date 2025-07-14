@@ -131,6 +131,7 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
       socket.emit("join rooms", data.conversation._id);
     });
 
+
     dispatch(initAllGroupConversation(groupConversations));
   }
 
