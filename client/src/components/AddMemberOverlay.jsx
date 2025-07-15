@@ -30,12 +30,12 @@ export default function AddMemberOverlay() {
   const filteredUsers = useMemo(() => {
     if (allUsers.length == 0) return [];
     return allUsers.filter(
-      (user) =>
-        user.username
+      (u) =>
+        u.username
           .toLowerCase()
           .trim()
           .includes(searchString.toLowerCase().trim()) &&
-        !activeConvoMembers.find((activeUser) => activeUser._id == user._id)
+        !activeConvoMembers.find((activeU) => activeU._id == u._id)
     );
   }, [allUsers, searchString, activeConvoMembers]);
 
@@ -59,6 +59,7 @@ export default function AddMemberOverlay() {
           message: `you've been invited to a group chat!`,
           receiver: userId,
           notification_type: "group_invite",
+          conversation_id: "",
         });
       });
       dispatch(setActiveConvoMembers(newMembers));

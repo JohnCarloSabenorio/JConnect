@@ -13,7 +13,7 @@ const userConvoSchema = mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["active", "archived", "muted"],
+    enum: ["active", "pending", "archived", "muted"],
     default: "active",
   },
 

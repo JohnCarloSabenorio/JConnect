@@ -82,9 +82,8 @@ io.on("connection", (socket) => {
   socket.on("send notification", (data) => {
     data["actor"] = socket.handshake.auth.userId;
 
-    console.log("updated data:", data);
     console.log("A user sent a notification!", socket.handshake.auth.userId);
-
+    console.log("notification data:", data);
     ioController.sendNotification(io, socket, data);
   });
 

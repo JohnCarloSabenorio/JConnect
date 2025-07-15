@@ -209,7 +209,7 @@ exports.reactToMesage = function _callee4(io, socket, data) {
 };
 
 exports.sendNotification = function _callee5(io, socket, data) {
-  var existingNotification, newNotification;
+  var existingNotification, userConversation, newNotification;
   return regeneratorRuntime.async(function _callee5$(_context5) {
     while (1) {
       switch (_context5.prev = _context5.next) {
@@ -247,25 +247,37 @@ exports.sendNotification = function _callee5(io, socket, data) {
           return _context5.abrupt("return");
 
         case 13:
-          _context5.next = 15;
+          if (!(data.notification_type == "group_invite")) {
+            _context5.next = 17;
+            break;
+          }
+
+          _context5.next = 16;
+          return regeneratorRuntime.awrap(UserConversation.findOne({}));
+
+        case 16:
+          userConversation = _context5.sent;
+
+        case 17:
+          _context5.next = 19;
           return regeneratorRuntime.awrap(Notification.create(data));
 
-        case 15:
+        case 19:
           newNotification = _context5.sent;
           console.log("new notification created:", newNotification);
           io.to("user_".concat(data.receiver)).emit("receive notification", newNotification);
-          _context5.next = 23;
+          _context5.next = 27;
           break;
 
-        case 20:
-          _context5.prev = 20;
+        case 24:
+          _context5.prev = 24;
           _context5.t0 = _context5["catch"](0);
           console.log("Failed to create new notification:", _context5.t0);
 
-        case 23:
+        case 27:
         case "end":
           return _context5.stop();
       }
     }
-  }, null, null, [[0, 20]]);
+  }, null, null, [[0, 24]]);
 };

@@ -16,9 +16,12 @@ var userConvoSchema = mongoose.Schema({
     ref: "Conversation",
     required: true
   },
+  conversationName: {
+    type: String
+  },
   status: {
     type: String,
-    "enum": ["active", "archived", "muted"],
+    "enum": ["active", "pending", "archived", "muted"],
     "default": "active"
   },
   isGroup: {
