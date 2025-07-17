@@ -11,6 +11,8 @@ import FilteredUserCard from "./FilteredUserCard";
 import { useMemo, useEffect, useState } from "react";
 import { setActiveConvoMembers } from "../redux/conversation";
 import { socket } from "../socket";
+import { useContext } from "react";
+import { UserContext } from "../App";
 export default function AddMemberOverlay() {
   const dispatch = useDispatch();
   const { hideAddMemberOverlay } = useSelector(
@@ -19,13 +21,15 @@ export default function AddMemberOverlay() {
 
   const { allUsers } = useSelector((state) => state.user);
   const { selectedUsers } = useSelector((state) => state.addMemberOverlay);
-  const { activeConvo, activeConvoMembers } = useSelector(
+  const { activeConvo, activeConvoMembers, activeUserConvo } = useSelector(
     (state) => state.conversation
   );
   const [searchString, setSearchString] = useState("");
   useEffect(() => {
     fetchAllUsers();
   }, []);
+
+  const { user } = useContext(UserContext);
 
   const filteredUsers = useMemo(() => {
     if (allUsers.length == 0) return [];
@@ -52,14 +56,16 @@ export default function AddMemberOverlay() {
     try {
       const newMembers = await addNewMembersToGroup(activeConvo, newMemberIds);
 
+      // UPDATE SENDING PROGRESS BASED ON THE UPDATED NOTIF MODEL
       console.log("ADDING MEMBERS TO THE GROUP CHAT!");
       newMemberIds.forEach((userId) => {
         console.log(`adding member ${userId} to the group chat!`);
         socket.emit("send notification", {
-          message: `you've been invited to a group chat!`,
+          message: `${user.username} invited you to a group chat!`,
           receiver: userId,
           notification_type: "group_invite",
-          conversation_id: "",
+          userconversation: "",
+          actor: "",
         });
       });
       dispatch(setActiveConvoMembers(newMembers));

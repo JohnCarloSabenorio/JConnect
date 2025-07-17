@@ -247,6 +247,8 @@ export default function Chat() {
     // console.log("THE FRIEND ID:", friendId);
     const response = await findConvoWithUser(friendId);
 
+    console.log("chatting a friend:", response);
+
     // console.log("CHAT A FRIEND RESPONSE:", response);
     // This will get the messages using the id of the response, since if the conversation exists, it's in the allInboxConversation array
     // Create a conversation with the friend if no convo exists
@@ -266,10 +268,10 @@ export default function Chat() {
     return response[0]._id;
   }
 
-  async function getMessages(convoId, convoName) {
+  async function getMessages(convoId, convoName, userConvoId) {
     // Join a channel for users in the same conversation
     const messages = await getAllUserMessages(convoId);
-    dispatch(setActiveConversation([convoName, convoId]));
+    dispatch(setActiveConversation([convoName, convoId, userConvoId]));
     dispatch(initDisplayedMessages(messages));
     dispatch(setMessageIsLoading(false));
   }

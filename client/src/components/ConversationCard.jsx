@@ -85,6 +85,7 @@ export default function ConversationCard({
             setActiveConversation([
               userConversation.conversationName,
               userConversation.conversation._id,
+              userConversation._id,
             ])
           );
           getMessages(userConversation.conversation._id);

@@ -164,9 +164,7 @@ exports.sendNotification = async (io, socket, data) => {
     }
     // Retrieve the "user convo" of the conversation
     if (data.notification_type == "group_invite") {
-      const userConversation = await UserConversation.findOne({
-        
-      });
+      const userConversation = await UserConversation.findOne({});
     }
     const newNotification = await Notification.create(data);
 

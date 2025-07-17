@@ -113,14 +113,16 @@ export default function Navbar() {
                 Mark all as read
               </a>
             </div>
-            {allNotifications.length > 0 ? (
+            {allNotifications && allNotifications.length > 0 ? (
               allNotifications.map((data, id) => {
                 console.log("THE DATA:", data);
                 return <NotificationCard key={id} ref={data._id} data={data} />;
               })
             ) : (
               <>
-                <p>You currently have no notifications.</p>
+                <p className="text-center">
+                  You currently have no notifications.
+                </p>
               </>
             )}
           </div>

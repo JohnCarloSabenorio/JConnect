@@ -95,9 +95,9 @@ export default function ProfileOverlay() {
     }
   }, [displayedUser]);
 
-  const getMessages = async (convoId, convoName) => {
+  const getMessages = async (convoId, convoName, userConvoId) => {
     const messages = await getAllUserMessages(convoId);
-    dispatch(setActiveConversation([convoName, convoId]));
+    dispatch(setActiveConversation([convoName, convoId, userConvoId]));
     dispatch(initDisplayedMessages(messages));
   };
 
@@ -172,7 +172,11 @@ export default function ProfileOverlay() {
       const { conversation, conversationName, status } = userConversation;
 
       socket.emit("join rooms", userConversation.conversation._id);
-      await getMessages(conversation._id, conversationName);
+      await getMessages(
+        conversation._id,
+        conversationName,
+        userConversation._id
+      );
 
       dispatch(
         updateSidebar({

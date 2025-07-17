@@ -4,6 +4,7 @@ const conversationSlice = createSlice({
   name: "conversation",
   initialState: {
     currentConvoName: "",
+    activeUserConvo: null,
     activeConvo: null,
     activeConvoArrayId: null,
     activeConvoIsGroup: false,
@@ -55,7 +56,9 @@ const conversationSlice = createSlice({
     setActiveConversation: (state, action) => {
       state.currentConvoName = action.payload[0];
       state.activeConvo = action.payload[1];
+      state.activeUserConvo = action.payload[2];
     },
+
     setCurrentConvoName: (state, action) => {
       state.currentConvoName = action.payload;
     },

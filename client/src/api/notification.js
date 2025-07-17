@@ -13,12 +13,15 @@ export async function createNotification(body) {
 
 export async function getAllNotifications() {
   try {
+    console.log("getting all the mofo notifications...");
     const response = await axios.get(
       "jconnect/api/v1/notification?sort=updatedAt",
       {
         withCredentials: true,
       }
     );
+
+    console.log("notifications retrieved:", response.data);
     return response.data.data;
   } catch (err) {
     console.log("Error getting a new notification:", err);
