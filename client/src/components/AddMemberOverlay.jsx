@@ -65,6 +65,7 @@ export default function AddMemberOverlay() {
           receiver: userId,
           notification_type: "group_invite",
           userconversation: "",
+          conversation: activeConvo,
           actor: "",
         });
       });
@@ -141,7 +142,7 @@ export default function AddMemberOverlay() {
               selectedUsers.forEach((user) => {
                 newMemberIds.push(user._id);
               });
-              addNewMembers(activeConvo, newMemberIds);
+              addNewMembers(activeConvo, selectedUsers);
               dispatch(setHideAddMemberOverlay(true));
             }}
             className="bg-blue-500 hover:bg-blue-400 rounded-sm w-full p-3 text-xl shadow-md cursor-pointer font-semibold"

@@ -163,11 +163,26 @@ exports.sendNotification = async (io, socket, data) => {
       }
     }
     // Retrieve the "user convo" of the conversation
-    if (data.notification_type == "group_invite") {
-      const userConversation = await UserConversation.findOne({});
-    }
-    const newNotification = await Notification.create(data);
 
+    let notificationData = {
+      message: data.message,
+      receiver: data.receiver,
+      notification_type: data.notification_type,
+      actor: data.actor,
+    };
+
+    if (data.notification_type == "group_invite") {
+      const userConversation = await UserConversation.findOne({
+        user: data.receiver,
+        conversation: data.conversation,
+      });
+
+      console.log("notification is a group invite!");
+      console.log("existing user conversation:", userConversation);
+      notificationData["userconversation"] = userConversation._id;
+    }
+
+    const newNotification = await Notification.create(notificationData);
     console.log("new notification created:", newNotification);
     io.to(`user_${data.receiver}`).emit(
       "receive notification",

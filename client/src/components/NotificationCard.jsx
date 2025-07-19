@@ -2,7 +2,20 @@ import { acceptFriendRequest, rejectFriendRequest } from "../api/friends";
 import { useState } from "react";
 import { setDisplayedUser } from "../redux/profile_overlay";
 import { showProfileOverlay } from "../redux/profile_overlay";
+import { getAllUserMessages } from "../api/conversation";
+import { initDisplayedMessages } from "../redux/message";
+
 import { useDispatch } from "react-redux";
+import {
+  setActiveConversation,
+  setActiveConvoIsGroup,
+  setActiveDirectUser,
+  setActiveConvoMembers,
+  setActiveConvoIsArchived,
+  setToMention,
+} from "../redux/conversation";
+
+import { setMessageIsLoading } from "../redux/message";
 export default function NotificationCard({ data }) {
   const [requestAccepted, setRequestAccepted] = useState(false);
   const dispatch = useDispatch();
@@ -24,6 +37,14 @@ export default function NotificationCard({ data }) {
     }
   }
 
+  async function getMessages(convoId) {
+    // Join a channel for users in the same conversation
+    dispatch(setMessageIsLoading(true));
+    const messages = await getAllUserMessages(convoId);
+    dispatch(initDisplayedMessages(messages));
+    dispatch(setMessageIsLoading(false));
+  }
+
   return (
     <>
       <div
@@ -36,7 +57,30 @@ export default function NotificationCard({ data }) {
             dispatch(setDisplayedUser(data.actor));
             dispatch(showProfileOverlay());
           } else if (data.notification_type == "group_invite") {
-            console.log("group invite notif data:", data);
+            // inputRef.current.innerHTML = "";
+            const userConversation = data.userconversation;
+            console.log("users:", userConversation.conversation.users);
+            dispatch(setToMention([]));
+            dispatch(
+              setActiveConvoMembers(userConversation.conversation.users)
+            );
+            dispatch(
+              setActiveConversation([
+                userConversation.conversationName,
+                userConversation.conversation._id,
+                userConversation._id,
+              ])
+            );
+
+            getMessages(userConversation.conversation._id);
+            dispatch(
+              setActiveConvoIsArchived(userConversation.status == "archived")
+            );
+            dispatch(
+              setActiveConvoIsGroup(
+                userConversation.conversation.users.length > 2
+              )
+            );
           } else if (
             data.notification_type == "mention" ||
             data.notification_type == "reaction"
