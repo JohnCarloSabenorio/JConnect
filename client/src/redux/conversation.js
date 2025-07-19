@@ -152,6 +152,7 @@ const conversationSlice = createSlice({
       state.allDirectConversation = action.payload;
     },
     initAllGroupConversation: (state, action) => {
+      console.log("ALL GROUP CONVERSATION:", action.payload);
       state.allGroupConversation = action.payload;
     },
     initAllArchivedConversation: (state, action) => {
@@ -174,6 +175,11 @@ const conversationSlice = createSlice({
             : userConversation
         ),
       ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    },
+
+    addGroupConversation: (state, action) => {
+      console.log("added a conversation:", action.payload);
+      state.allGroupConversation.push(action.payload);
     },
 
     addANewConvo: (state, action) => {
@@ -227,6 +233,7 @@ export const {
   updateAConvo,
   filterArchivedConvo,
   setFilteredConvoMembers,
+  addGroupConversation,
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

@@ -1,4 +1,10 @@
-import { useContext, useEffect, useState, useRef } from "react";
+import {
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  useInsertionEffect,
+} from "react";
 import MentionCard from "../components/MentionCard";
 import Message from "../components/Message";
 import { UserContext } from "../App";
@@ -25,6 +31,7 @@ import {
   addANewConvo,
   updateAConvo,
   removeToMention,
+  addGroupConversation,
 } from "../redux/conversation";
 
 import ReactionsOverlay from "../components/ReactionsOverlay";
@@ -86,13 +93,27 @@ export default function Chat() {
   // This will handle notification emits
   useEffect(() => {
     const handleReceiveNotification = (data) => {
+      console.log("new notification data:", data);
       dispatch(addNotification(data));
     };
     socket.on("receive notification", (data) => {
+      console.log("new notification data:", data);
       if (!notifActive) {
         handleReceiveNotification(data);
       }
     });
+  }, []);
+
+  // This will add a new group conversation to the collection in the navbar
+  useEffect(() => {
+    const handleAddGroupConversation = (data) => {
+      console.log(
+        "you have been invited to a new conversation:",
+        data.userConversation
+      );
+      dispatch(addGroupConversation(data.userConversation));
+    };
+    socket.on("invite groupchat", handleAddGroupConversation);
   }, []);
 
   useEffect(() => {

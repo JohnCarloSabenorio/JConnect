@@ -23,48 +23,87 @@ var fs = require("fs");
 
 var path = require("path");
 
-exports.sendMessage = function _callee3(io, socket, data) {
+exports.inviteToGroupChat = function _callee(io, socket, data) {
+  var userConversation;
+  return regeneratorRuntime.async(function _callee$(_context) {
+    while (1) {
+      switch (_context.prev = _context.next) {
+        case 0:
+          console.log("inviting user to the group chat!");
+          _context.next = 3;
+          return regeneratorRuntime.awrap(UserConversation.findOne({
+            user: data.user,
+            conversation: data.conversation
+          }));
+
+        case 3:
+          userConversation = _context.sent;
+          console.log("invited user to conversation:", data.conversation);
+
+          if (userConversation) {
+            _context.next = 8;
+            break;
+          }
+
+          console.log("there is no existing user conversation!");
+          return _context.abrupt("return");
+
+        case 8:
+          console.log("THE DATA USER:", data.user);
+          io.to("user_".concat(data.user)).emit("invite groupchat", {
+            userConversation: userConversation
+          });
+
+        case 10:
+        case "end":
+          return _context.stop();
+      }
+    }
+  });
+};
+
+exports.sendMessage = function _callee4(io, socket, data) {
   var filenames, newMessage, _ref, _ref2, populatedMessage, updatedConvo, userConversation, imageBase64Array, messageObject;
 
-  return regeneratorRuntime.async(function _callee3$(_context3) {
+  return regeneratorRuntime.async(function _callee4$(_context4) {
     while (1) {
-      switch (_context3.prev = _context3.next) {
+      switch (_context4.prev = _context4.next) {
         case 0:
           // Data should have the: message, sender id, and conversation id
           console.log("Sent data:", data); // Remove this in the future (Images should be sent in db not via socket)
 
-          _context3.next = 3;
-          return regeneratorRuntime.awrap(Promise.all(data.images.map(function _callee(img, idx) {
+          _context4.next = 3;
+          return regeneratorRuntime.awrap(Promise.all(data.images.map(function _callee2(img, idx) {
             var buffer, filename;
-            return regeneratorRuntime.async(function _callee$(_context) {
+            return regeneratorRuntime.async(function _callee2$(_context2) {
               while (1) {
-                switch (_context.prev = _context.next) {
+                switch (_context2.prev = _context2.next) {
                   case 0:
                     console.log("THE IMAGE BRO:", img);
                     buffer = Buffer.from(img);
                     console.log("THE BUFFER:", buffer);
                     filename = "image-".concat(data.sender, "-").concat(Date.now(), "-").concat(idx, ".jpeg");
-                    _context.next = 6;
+                    _context2.next = 6;
                     return regeneratorRuntime.awrap(sharp(buffer).resize(800).toFormat("jpeg").jpeg({
                       quality: 70
                     }).toFile("public/img/sentImages/".concat(filename)));
 
                   case 6:
                     console.log("IMAGE BUFFER:", buffer);
-                    return _context.abrupt("return", filename);
+                    return _context2.abrupt("return", filename);
 
                   case 8:
                   case "end":
-                    return _context.stop();
+                    return _context2.stop();
                 }
               }
             });
           })));
 
         case 3:
-          filenames = _context3.sent;
+          filenames = _context4.sent;
           console.log("THE ARRAY FILENAME:", filenames);
-          _context3.next = 7;
+          _context4.next = 7;
           return regeneratorRuntime.awrap(Message.create({
             message: data.message || "",
             sender: data.sender,
@@ -74,8 +113,8 @@ exports.sendMessage = function _callee3(io, socket, data) {
           }));
 
         case 7:
-          newMessage = _context3.sent;
-          _context3.next = 10;
+          newMessage = _context4.sent;
+          _context4.next = 10;
           return regeneratorRuntime.awrap(Promise.all([Message.findById(newMessage._id).populate("sender").populate("mentions"), // populate sender
           Conversation.findByIdAndUpdate(data.conversation, {
             latestMessage: data.latestMessage
@@ -87,38 +126,38 @@ exports.sendMessage = function _callee3(io, socket, data) {
           })]));
 
         case 10:
-          _ref = _context3.sent;
+          _ref = _context4.sent;
           _ref2 = _slicedToArray(_ref, 3);
           populatedMessage = _ref2[0];
           updatedConvo = _ref2[1];
           userConversation = _ref2[2];
           console.log("The user conversation of the sent message:", userConversation);
-          _context3.next = 18;
-          return regeneratorRuntime.awrap(Promise.all(populatedMessage.images.map(function _callee2(filename) {
+          _context4.next = 18;
+          return regeneratorRuntime.awrap(Promise.all(populatedMessage.images.map(function _callee3(filename) {
             var imagePath, buffer;
-            return regeneratorRuntime.async(function _callee2$(_context2) {
+            return regeneratorRuntime.async(function _callee3$(_context3) {
               while (1) {
-                switch (_context2.prev = _context2.next) {
+                switch (_context3.prev = _context3.next) {
                   case 0:
                     imagePath = path.join("public/img/sentImages", filename); // console.log("THE IMAGE PATH:", imagePath);
 
-                    _context2.next = 3;
+                    _context3.next = 3;
                     return regeneratorRuntime.awrap(sharp(imagePath).toBuffer());
 
                   case 3:
-                    buffer = _context2.sent;
-                    return _context2.abrupt("return", "data:image/jpeg;base64,".concat(buffer.toString("base64")));
+                    buffer = _context3.sent;
+                    return _context3.abrupt("return", "data:image/jpeg;base64,".concat(buffer.toString("base64")));
 
                   case 5:
                   case "end":
-                    return _context2.stop();
+                    return _context3.stop();
                 }
               }
             });
           })));
 
         case 18:
-          imageBase64Array = _context3.sent;
+          imageBase64Array = _context4.sent;
           console.log("IMAGE BUFFERIST:", imageBase64Array);
           messageObject = populatedMessage.toObject();
           messageObject.images64 = imageBase64Array;
@@ -130,31 +169,31 @@ exports.sendMessage = function _callee3(io, socket, data) {
 
         case 24:
         case "end":
-          return _context3.stop();
+          return _context4.stop();
       }
     }
   });
 };
 
-exports.reactToMesage = function _callee4(io, socket, data) {
+exports.reactToMesage = function _callee5(io, socket, data) {
   var message, messageReactions, existingUserReaction, reactionIdx;
-  return regeneratorRuntime.async(function _callee4$(_context4) {
+  return regeneratorRuntime.async(function _callee5$(_context5) {
     while (1) {
-      switch (_context4.prev = _context4.next) {
+      switch (_context5.prev = _context5.next) {
         case 0:
-          _context4.next = 2;
+          _context5.next = 2;
           return regeneratorRuntime.awrap(Message.findById(data.messageId));
 
         case 2:
-          message = _context4.sent;
+          message = _context5.sent;
           console.log("the message:", message);
 
           if (message) {
-            _context4.next = 6;
+            _context5.next = 6;
             break;
           }
 
-          return _context4.abrupt("return");
+          return _context5.abrupt("return");
 
         case 6:
           // Extract the message reactions
@@ -191,7 +230,7 @@ exports.reactToMesage = function _callee4(io, socket, data) {
             message.reactions = messageReactions;
           }
 
-          _context4.next = 12;
+          _context5.next = 12;
           return regeneratorRuntime.awrap(message.save());
 
         case 12:
@@ -202,52 +241,20 @@ exports.reactToMesage = function _callee4(io, socket, data) {
 
         case 13:
         case "end":
-          return _context4.stop();
+          return _context5.stop();
       }
     }
   });
 };
 
-exports.sendNotification = function _callee5(io, socket, data) {
-  var existingNotification, notificationData, userConversation, newNotification;
-  return regeneratorRuntime.async(function _callee5$(_context5) {
+exports.sendNotification = function _callee6(io, socket, data) {
+  var notificationData, existingNotification, newNotification;
+  return regeneratorRuntime.async(function _callee6$(_context6) {
     while (1) {
-      switch (_context5.prev = _context5.next) {
+      switch (_context6.prev = _context6.next) {
         case 0:
-          _context5.prev = 0;
+          _context6.prev = 0;
           console.log("THE SEND NOTIF DATA:", data);
-
-          if (!(data.notification_type == "fr_received" || data.notification_type == "fr_accepted")) {
-            _context5.next = 13;
-            break;
-          }
-
-          _context5.next = 5;
-          return regeneratorRuntime.awrap(Notification.findOne({
-            receiver: data.receiver,
-            notification_type: data.notification_type,
-            actor: data.actor
-          }));
-
-        case 5:
-          existingNotification = _context5.sent;
-          console.log("the existing notif:", existingNotification);
-
-          if (!existingNotification) {
-            _context5.next = 13;
-            break;
-          }
-
-          existingNotification.updatedAt = Date.now();
-          existingNotification.seen = false;
-          _context5.next = 12;
-          return regeneratorRuntime.awrap(existingNotification.save());
-
-        case 12:
-          return _context5.abrupt("return");
-
-        case 13:
-          // Retrieve the "user convo" of the conversation
           notificationData = {
             message: data.message,
             receiver: data.receiver,
@@ -255,42 +262,77 @@ exports.sendNotification = function _callee5(io, socket, data) {
             actor: data.actor
           };
 
-          if (!(data.notification_type == "group_invite")) {
-            _context5.next = 21;
+          if (!(data.notification_type == "fr_received" || data.notification_type == "fr_accepted")) {
+            _context6.next = 16;
             break;
           }
 
-          _context5.next = 17;
-          return regeneratorRuntime.awrap(UserConversation.findOne({
-            user: data.receiver,
-            conversation: data.conversation
+          _context6.next = 6;
+          return regeneratorRuntime.awrap(Notification.findOne({
+            receiver: data.receiver,
+            notification_type: data.notification_type,
+            actor: data.actor
           }));
 
-        case 17:
-          userConversation = _context5.sent;
-          console.log("notification is a group invite!");
-          console.log("existing user conversation:", userConversation);
-          notificationData["userconversation"] = userConversation._id;
+        case 6:
+          existingNotification = _context6.sent;
+          console.log("the existing notif:", existingNotification);
 
-        case 21:
-          _context5.next = 23;
+          if (!existingNotification) {
+            _context6.next = 14;
+            break;
+          }
+
+          existingNotification.updatedAt = Date.now();
+          existingNotification.seen = false;
+          _context6.next = 13;
+          return regeneratorRuntime.awrap(existingNotification.save());
+
+        case 13:
+          return _context6.abrupt("return");
+
+        case 14:
+          _context6.next = 17;
+          break;
+
+        case 16:
+          if (data.notification_type == "group_invite") {
+            console.log("data userconversation:", data.userconversation);
+            notificationData["userconversation"] = data.userconversation;
+          }
+
+        case 17:
+          _context6.next = 19;
           return regeneratorRuntime.awrap(Notification.create(notificationData));
 
+        case 19:
+          newNotification = _context6.sent;
+
+          if (!newNotification.userconversation) {
+            _context6.next = 24;
+            break;
+          }
+
+          _context6.next = 23;
+          return regeneratorRuntime.awrap(newNotification.populate("userconversation"));
+
         case 23:
-          newNotification = _context5.sent;
-          console.log("new notification created:", newNotification);
+          newNotification = _context6.sent;
+
+        case 24:
+          console.log("the new notification:", newNotification);
           io.to("user_".concat(data.receiver)).emit("receive notification", newNotification);
-          _context5.next = 31;
+          _context6.next = 31;
           break;
 
         case 28:
-          _context5.prev = 28;
-          _context5.t0 = _context5["catch"](0);
-          console.log("Failed to create new notification:", _context5.t0);
+          _context6.prev = 28;
+          _context6.t0 = _context6["catch"](0);
+          console.log("Failed to create new notification:", _context6.t0);
 
         case 31:
         case "end":
-          return _context5.stop();
+          return _context6.stop();
       }
     }
   }, null, null, [[0, 28]]);

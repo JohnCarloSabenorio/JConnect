@@ -60,6 +60,8 @@ export default function ProfileOverlay() {
 
       // Check if the user already sent a friend request
       const requestSent = await isRequestSentToUser(displayedUser._id);
+      setFriendState("not_friend");
+
       if (requestSent) {
         setFriendState("request_sent");
         setAddBtnText("Cancel Request");
@@ -84,7 +86,6 @@ export default function ProfileOverlay() {
       }
 
       // By default, set the displayed user to not_friend
-      setFriendState("not_friend");
       setAddBtnText("Add Friend");
       setIsLoading(false);
     }
@@ -93,7 +94,7 @@ export default function ProfileOverlay() {
     if (displayedUser) {
       checkFriendStatus();
     }
-  }, [displayedUser]);
+  }, [isDisplayed]);
 
   const getMessages = async (convoId, convoName, userConvoId) => {
     const messages = await getAllUserMessages(convoId);

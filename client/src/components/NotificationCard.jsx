@@ -4,7 +4,7 @@ import { setDisplayedUser } from "../redux/profile_overlay";
 import { showProfileOverlay } from "../redux/profile_overlay";
 import { getAllUserMessages } from "../api/conversation";
 import { initDisplayedMessages } from "../redux/message";
-
+import { setConvoViewMode } from "../redux/sidebar";
 import { useDispatch } from "react-redux";
 import {
   setActiveConversation,
@@ -57,6 +57,7 @@ export default function NotificationCard({ data }) {
             dispatch(setDisplayedUser(data.actor));
             dispatch(showProfileOverlay());
           } else if (data.notification_type == "group_invite") {
+            dispatch(setConvoViewMode(1));
             // inputRef.current.innerHTML = "";
             const userConversation = data.userconversation;
             console.log("users:", userConversation.conversation.users);

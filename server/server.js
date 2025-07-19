@@ -53,6 +53,7 @@ io.on("connection", (socket) => {
   console.log("USER JOINED:", socket.handshake.auth.userId);
 
   const userRoom = `user_${socket.handshake.auth.userId}`;
+  console.log("user room:", userRoom);
   socket.join(userRoom);
 
   // Creates a room for every conversation the user is part of
@@ -77,8 +78,12 @@ io.on("connection", (socket) => {
     ioController.sendMessage(io, socket, data);
   });
 
-  // Send notification
+  // Adds the new user conversation in the sidebar of the invited user
+  socket.on("invite groupchat", (data) => {
+    ioController.inviteToGroupChat(io, socket, data);
+  });
 
+  // Send notification
   socket.on("send notification", (data) => {
     data["actor"] = socket.handshake.auth.userId;
 

@@ -5,6 +5,24 @@ const UserConversation = require("../models/userConversationModel");
 const sharp = require("sharp"); // For saving and manipulating images
 const fs = require("fs");
 const path = require("path");
+
+exports.inviteToGroupChat = async (io, socket, data) => {
+  console.log("inviting user to the group chat!");
+  const userConversation = await UserConversation.findOne({
+    user: data.user,
+    conversation: data.conversation,
+  });
+  console.log("invited user to conversation:", data.conversation);
+  if (!userConversation) {
+    console.log("there is no existing user conversation!");
+    return;
+  }
+
+  console.log("THE DATA USER:", data.user);
+
+  io.to(`user_${data.user}`).emit("invite groupchat", { userConversation });
+};
+
 exports.sendMessage = async (io, socket, data) => {
   // Data should have the: message, sender id, and conversation id
 
@@ -143,6 +161,13 @@ exports.sendNotification = async (io, socket, data) => {
   try {
     console.log("THE SEND NOTIF DATA:", data);
 
+    let notificationData = {
+      message: data.message,
+      receiver: data.receiver,
+      notification_type: data.notification_type,
+      actor: data.actor,
+    };
+
     if (
       data.notification_type == "fr_received" ||
       data.notification_type == "fr_accepted"
@@ -161,29 +186,18 @@ exports.sendNotification = async (io, socket, data) => {
         await existingNotification.save();
         return;
       }
+    } else if (data.notification_type == "group_invite") {
+      console.log("data userconversation:", data.userconversation);
+      notificationData["userconversation"] = data.userconversation;
     }
     // Retrieve the "user convo" of the conversation
 
-    let notificationData = {
-      message: data.message,
-      receiver: data.receiver,
-      notification_type: data.notification_type,
-      actor: data.actor,
-    };
+    let newNotification = await Notification.create(notificationData);
 
-    if (data.notification_type == "group_invite") {
-      const userConversation = await UserConversation.findOne({
-        user: data.receiver,
-        conversation: data.conversation,
-      });
-
-      console.log("notification is a group invite!");
-      console.log("existing user conversation:", userConversation);
-      notificationData["userconversation"] = userConversation._id;
+    if (newNotification.userconversation) {
+      newNotification = await newNotification.populate("userconversation");
     }
-
-    const newNotification = await Notification.create(notificationData);
-    console.log("new notification created:", newNotification);
+    console.log("the new notification:", newNotification);
     io.to(`user_${data.receiver}`).emit(
       "receive notification",
       newNotification

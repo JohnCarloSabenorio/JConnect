@@ -51,6 +51,7 @@ mongoose.connect(db).then(function (res) {
 io.on("connection", function (socket) {
   console.log("USER JOINED:", socket.handshake.auth.userId);
   var userRoom = "user_".concat(socket.handshake.auth.userId);
+  console.log("user room:", userRoom);
   socket.join(userRoom); // Creates a room for every conversation the user is part of
 
   socket.on("join rooms", function (data) {
@@ -70,6 +71,10 @@ io.on("connection", function (socket) {
 
   socket.on("chat message", function (data) {
     ioController.sendMessage(io, socket, data);
+  }); // Adds the new user conversation in the sidebar of the invited user
+
+  socket.on("invite groupchat", function (data) {
+    ioController.inviteToGroupChat(io, socket, data);
   }); // Send notification
 
   socket.on("send notification", function (data) {

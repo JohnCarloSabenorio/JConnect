@@ -12,11 +12,9 @@ import Discover from "./sidebar_contents/Discover";
 import { useDispatch, useSelector } from "react-redux";
 import { socket } from "../socket";
 import {
-  initAllUserConversation,
   initAllDirectConversation,
   initAllGroupConversation,
   initAllArchivedConversation,
-  setActiveConversation,
 } from "../redux/conversation";
 import { getAllUserMessages } from "../api/conversation";
 import { initDisplayedMessages } from "../redux/message";
@@ -130,7 +128,6 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
       // User will automatically join the rooms for each group conversation.
       socket.emit("join rooms", data.conversation._id);
     });
-
 
     dispatch(initAllGroupConversation(groupConversations));
   }

@@ -58,17 +58,23 @@ export default function AddMemberOverlay() {
 
       // UPDATE SENDING PROGRESS BASED ON THE UPDATED NOTIF MODEL
       console.log("ADDING MEMBERS TO THE GROUP CHAT!");
-      newMemberIds.forEach((userId) => {
-        console.log(`adding member ${userId} to the group chat!`);
+      newMemberIds.forEach((u) => {
+        console.log(`adding member ${u} to the group chat!`);
         socket.emit("send notification", {
           message: `${user.username} invited you to a group chat!`,
-          receiver: userId,
+          receiver: u._id,
           notification_type: "group_invite",
-          userconversation: "",
+          userconversation: activeUserConvo,
           conversation: activeConvo,
           actor: "",
         });
+
+        socket.emit("invite groupchat", {
+          user: u._id,
+          conversation: activeConvo,
+        });
       });
+
       dispatch(setActiveConvoMembers(newMembers));
     } catch (err) {
       console.log("error adding new members:", err);
