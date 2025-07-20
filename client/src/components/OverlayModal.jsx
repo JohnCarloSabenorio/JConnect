@@ -14,12 +14,18 @@ import {
 import { setConvoViewMode, updateSidebar } from "../redux/sidebar";
 
 export default function OverlayModal() {
-  const { activeConvo, activeConvoIsArchived, activeConvoIsGroup } =
-    useSelector((state) => state.conversation);
+  const {
+    activeConvo,
+    activeConvoIsArchived,
+    activeConvoIsGroup,
+    allDirectConversation,
+  } = useSelector((state) => state.conversation);
   const dispatch = useDispatch();
 
   // Archive the user conversation record of the current user
   function archiveConvo(convoId) {
+    console.log("active convo is archived:", activeConvoIsArchived);
+    console.log("all direct convo:", allDirectConversation);
     console.log("ARCHIVING CONVERSATION:", convoId);
     dispatch(filterArchivedConvo(convoId));
     dispatch(setActiveConvoIsArchived(true));

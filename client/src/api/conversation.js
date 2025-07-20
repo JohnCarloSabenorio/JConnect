@@ -5,7 +5,7 @@ export async function getAllConversations() {
     // console.log("Getting all direct conversations...");
 
     const response = await axios.get(
-      "/jconnect/api/v1/user-conversation?isGroup=false&status=active",
+      "/jconnect/api/v1/user-conversation?isGroup=false&status=active&status=pending&status=muted",
       { withCredentials: true }
     );
 
@@ -40,7 +40,7 @@ export async function getAllGroupConversation() {
     // console.log("Getting all group conversations...");
 
     const response = await axios.get(
-      "/jconnect/api/v1/user-conversation?isGroup=true&status=active",
+      "/jconnect/api/v1/user-conversation?isGroup=true&status=active&status=pending&status=muted",
       { withCredentials: true }
     );
 

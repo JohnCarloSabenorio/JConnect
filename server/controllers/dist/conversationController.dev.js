@@ -120,7 +120,8 @@ exports.addMultipleMembers = catchAsync(function _callee2(req, res, next) {
               user: user._id,
               conversation: convo._id,
               conversationName: newGroupName,
-              isGroup: true
+              isGroup: true,
+              status: "pending"
             };
           }); // Create new user conversation documents
 

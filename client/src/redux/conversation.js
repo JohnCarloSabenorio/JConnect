@@ -9,11 +9,11 @@ const conversationSlice = createSlice({
     activeConvoArrayId: null,
     activeConvoIsGroup: false,
     activeConvoIsArchived: false,
-    allDirectConversation: null,
+    allDirectConversation: [],
     activeConvoMembers: [],
     filteredConvoMembers: [],
     allGroupConversation: null,
-    allArchivedConversation: null,
+    allArchivedConversation: [],
     activeDirectUser: null,
     userIsFriend: true,
     isMentioning: false,
@@ -75,6 +75,7 @@ const conversationSlice = createSlice({
         (userConversation) => {
           // If the convoId matches, exclude it in the direct conversation list
           if (userConversation.conversation._id === action.payload) {
+            userConversation.status = "archived";
             state.allArchivedConversation.push(userConversation);
 
             return false;
@@ -89,6 +90,7 @@ const conversationSlice = createSlice({
       state.allArchivedConversation = state.allArchivedConversation.filter(
         (userConversation) => {
           if (userConversation.conversation._id === action.payload) {
+            userConversation.status = "active";
             state.allDirectConversation.push(userConversation);
             // If the convoId matches, add it in the direct conversation list
             return false;

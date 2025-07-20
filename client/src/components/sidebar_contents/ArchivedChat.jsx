@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { UserContext } from "../../App";
 import { archiveConversation } from "../../api/conversation";
 import { setConvoViewMode } from "../../redux/sidebar";
-export default function ArchivedChat({ getMessages }) {
+export default function ArchivedChat({ inputRef, getMessages }) {
   const { user } = useContext(UserContext);
   const { allArchivedConversation, active } = useSelector(
     (state) => state.conversation
@@ -45,6 +45,7 @@ export default function ArchivedChat({ getMessages }) {
             chatmateId={chatmate?._id}
             userConversation={userConversation}
             directArrayId={id}
+            inputRef={inputRef}
           />
         );
       })}

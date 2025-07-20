@@ -55,7 +55,6 @@ exports.addMultipleMembers = catchAsync(async (req, res, next) => {
   // Create new userconversation for the new members
 
   // Check if the conversation is a group or not
-
   const usersFromDB = await User.find({ _id: { $in: convo.users } }).limit(3);
   const newUsersFromDB = await User.find({ _id: { $in: req.body.newUsers } });
 
@@ -78,6 +77,7 @@ exports.addMultipleMembers = catchAsync(async (req, res, next) => {
       conversation: convo._id,
       conversationName: newGroupName,
       isGroup: true,
+      status: "pending",
     };
   });
 

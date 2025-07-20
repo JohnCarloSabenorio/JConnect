@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { isFriend } from "../api/friends";
 import { changeSidebarSearch } from "../redux/sidebar";
 import { getAllUserMessages } from "../api/conversation";
@@ -89,7 +89,7 @@ export default function ConversationCard({
             ])
           );
           getMessages(userConversation.conversation._id);
-
+          alert(`user conversation status: ${userConversation.status}`);
           dispatch(
             setActiveConvoIsArchived(userConversation.status == "archived")
           );

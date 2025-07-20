@@ -359,7 +359,7 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
         ) : sidebarContent === "groups" ? (
           <Groups getMessages={getMessages} />
         ) : sidebarContent === "archived" ? (
-          <ArchivedChat getMessages={getMessages} />
+          <ArchivedChat inputRef={inputRef} getMessages={getMessages} />
         ) : sidebarContent === "discover" ? (
           <Discover />
         ) : (
