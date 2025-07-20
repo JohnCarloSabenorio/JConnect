@@ -11,6 +11,7 @@ import userReducer from "./user";
 import profileOverlayReducer from "./profile_overlay";
 import notificationReducer from "./notification";
 import addMemberOverlayReducer from "./addmember_overlay";
+import chatReducer from "./chat";
 export default configureStore({
   reducer: {
     sidebar: sidebarReducer,
@@ -24,6 +25,7 @@ export default configureStore({
     profileOverlay: profileOverlayReducer,
     notification: notificationReducer,
     addMemberOverlay: addMemberOverlayReducer,
+    chat: chatReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });

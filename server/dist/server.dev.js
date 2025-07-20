@@ -48,9 +48,12 @@ mongoose.connect(db).then(function (res) {
   console.log("Error: ".concat(err));
 }); // WEBSOCKET CONNECTION AND HANDLERS
 
+var onlineSockets = {};
 io.on("connection", function (socket) {
   console.log("USER JOINED:", socket.handshake.auth.userId);
-  var userRoom = "user_".concat(socket.handshake.auth.userId);
+  var userId = socket.handshake.auth.userId;
+  onlineSockets[userId] = socket;
+  var userRoom = "user_".concat(userId);
   console.log("user room:", userRoom);
   socket.join(userRoom); // Creates a room for every conversation the user is part of
 
@@ -66,11 +69,18 @@ io.on("connection", function (socket) {
   }); // Disconnects the user
 
   socket.on("disconnect", function () {
+    delete onlineSockets[userId];
     console.log("A user disconnected");
   }); // Sends real-time messages
 
   socket.on("chat message", function (data) {
     ioController.sendMessage(io, socket, data);
+  }); // Join the group conversation room
+
+  socket.on("join groupconversation", function (data) {
+    var usersocket = onlineSockets[data.userId];
+    usersocket.join(data.conversation);
+    console.log("Socket ".concat(socket.id, " joined room ").concat(data.conversation));
   }); // Adds the new user conversation in the sidebar of the invited user
 
   socket.on("invite groupchat", function (data) {

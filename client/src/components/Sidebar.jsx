@@ -76,7 +76,9 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
     ) {
       getMessages(
         allDirectConversation[0].conversation._id,
-        allDirectConversation[0].conversationName
+        allDirectConversation[0].conversationName,
+        allDirectConversation[0]._id,
+        allDirectConversation[0].status
       );
     }
   }, [allDirectConversation]);

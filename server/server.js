@@ -49,10 +49,15 @@ mongoose
   });
 
 // WEBSOCKET CONNECTION AND HANDLERS
+
+let onlineSockets = {};
 io.on("connection", (socket) => {
   console.log("USER JOINED:", socket.handshake.auth.userId);
 
-  const userRoom = `user_${socket.handshake.auth.userId}`;
+  const userId = socket.handshake.auth.userId;
+  onlineSockets[userId] = socket;
+
+  const userRoom = `user_${userId}`;
   console.log("user room:", userRoom);
   socket.join(userRoom);
 
@@ -70,12 +75,20 @@ io.on("connection", (socket) => {
 
   // Disconnects the user
   socket.on("disconnect", () => {
+    delete onlineSockets[userId];
     console.log("A user disconnected");
   });
 
   // Sends real-time messages
   socket.on("chat message", (data) => {
     ioController.sendMessage(io, socket, data);
+  });
+
+  // Join the group conversation room
+  socket.on("join groupconversation", (data) => {
+    const usersocket = onlineSockets[data.userId];
+    usersocket.join(data.conversation);
+    console.log(`Socket ${socket.id} joined room ${data.conversation}`);
   });
 
   // Adds the new user conversation in the sidebar of the invited user

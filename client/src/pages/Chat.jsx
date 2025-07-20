@@ -22,6 +22,8 @@ import Overlay from "../components/Overlay";
 import { getAllUserMessages } from "../api/conversation";
 import { toggleMediaPanel } from "../redux/media";
 import { addNotification } from "../redux/notification";
+import { setEmojiPickerIsOpen } from "../redux/chat";
+import { activateGroupConversation } from "../redux/conversation";
 import {
   setIsMentioning,
   setToMention,
@@ -32,8 +34,9 @@ import {
   updateAConvo,
   removeToMention,
   addGroupConversation,
+  setConversationStatus,
 } from "../redux/conversation";
-
+import { activateUserConversation } from "../api/conversation";
 import ReactionsOverlay from "../components/ReactionsOverlay";
 import {
   initDisplayedMessages,
@@ -51,18 +54,21 @@ export default function Chat() {
   const {
     currentConvoName,
     activeConvo,
+    activeUserConvo,
     activeConvoMembers,
     filteredConvoMembers,
     activeConvoIsGroup,
     isMentioning,
     message,
     toMention,
+    conversationStatus,
   } = useSelector((state) => state.conversation);
 
   // This will get the messages to be displayed from the message slice
   const { displayedMessages, messageIsLoading } = useSelector(
     (state) => state.message
   );
+  const { emojiPickerIsOpen } = useSelector((state) => state.chat);
 
   const { allNotifications } = useSelector((state) => state.notification);
 
@@ -243,17 +249,9 @@ export default function Chat() {
     dispatch(setToMention([]));
   }
 
-  // Hides/Displays the emoji picker
-  function toggleEmojiPicker() {
-    setDisplayEmoji((prev) => !prev);
-  }
-
-  function toggleEmojiPicker() {
-    setDisplayEmoji((prev) => !prev);
-  }
   // Adds the emoji to the message input
   function addEmojiToInput(emoji) {
-    setDisplayEmoji(true);
+    dispatch(setEmojiPickerIsOpen(true));
     // console.log("THE EMOJI: ", emoji);
 
     inputRef.current.innerHTML += emoji.emoji;
@@ -263,6 +261,14 @@ export default function Chat() {
   function handleFileInputClick() {
     fileInputRef.current.click();
   }
+
+  async function joinGroup() {
+    activateUserConversation(activeUserConvo);
+    dispatch(setConversationStatus("active"));
+    dispatch(activateGroupConversation(activeUserConvo));
+  }
+
+  async function leaveGroup() {}
 
   async function chatAFriend(friendId) {
     // console.log("THE FRIEND ID:", friendId);
@@ -279,22 +285,24 @@ export default function Chat() {
       dispatch(addANewConvo(newConvo));
       return newConvo._id;
     }
-
     getMessages(
       response[0]._id,
       response[0].convoName,
-      response[0].userConvoId
+      response[0].userConvoId,
+      response[0].status
     );
 
     return response[0]._id;
   }
 
-  async function getMessages(convoId, convoName, userConvoId) {
+  async function getMessages(convoId, convoName, userConvoId, convoStatus) {
+    console.log("GETTING DA PAKING MESSAGE!");
     // Join a channel for users in the same conversation
     const messages = await getAllUserMessages(convoId);
     dispatch(setActiveConversation([convoName, convoId, userConvoId]));
     dispatch(initDisplayedMessages(messages));
     dispatch(setMessageIsLoading(false));
+    dispatch(setConversationStatus(convoStatus));
   }
 
   async function handleImagesChange(e) {
@@ -559,6 +567,30 @@ export default function Chat() {
                     );
                   })}
               </div>
+
+              {/* Prompt to join group if user is pending */}
+              {conversationStatus == "pending" && (
+                <div className="flex justify-center mb-5">
+                  <div className="shadow-xl bg-blue-50 p-3 rounded-lg">
+                    <div className="flex gap-2 items-center">
+                      <p>Join Group?</p>
+                      <button
+                        className="bg-blue-300 px-3 py-2 rounded-lg cursor-pointer"
+                        onClick={(e) => joinGroup()}
+                      >
+                        Yes
+                      </button>
+                      <button
+                        className="bg-red-300 px-3 py-2 rounded-lg cursor-pointer"
+                        onClick={(e) => leaveGroup()}
+                      >
+                        No
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <form
                 onSubmit={(e) => sendMessage(e)}
                 className="flex mt-auto p-3 bg-white border-t-0.5 border-gray-500"
@@ -578,7 +610,8 @@ export default function Chat() {
                   {/* File input button */}
                   <button
                     type="button"
-                    className="cursor-pointer"
+                    className={"cursor-pointer"}
+                    disabled={conversationStatus != "active"}
                     onClick={handleFileInputClick}
                   >
                     <svg
@@ -800,7 +833,7 @@ export default function Chat() {
                         }
                       }
                     }}
-                    contentEditable={true}
+                    contentEditable={conversationStatus == "active"}
                     suppressContentEditableWarning={true}
                   ></div>
 
@@ -809,18 +842,24 @@ export default function Chat() {
                       <div
                         id="emoji-picker"
                         className={`absolute bottom-full mb-2 left-0 z-10 ${
-                          displayEmoji ? "block" : "hidden"
+                          emojiPickerIsOpen ? "block" : "hidden"
                         }`}
                       >
-                        <EmojiPicker onEmojiClick={addEmojiToInput} />
+                        <EmojiPicker
+                          onEmojiClick={addEmojiToInput}
+                          open={true}
+                        />
                       </div>
 
                       <div className="flex gap-1">
                         {/* <Emoji unified="1f423" size="25" /> */}
                         <button
                           type="button"
-                          onClick={toggleEmojiPicker}
+                          onClick={(e) => {
+                            dispatch(setEmojiPickerIsOpen(!emojiPickerIsOpen));
+                          }}
                           className="cursor-pointer"
+                          disabled={conversationStatus != "active"}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"

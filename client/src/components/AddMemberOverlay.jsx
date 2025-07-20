@@ -33,6 +33,8 @@ export default function AddMemberOverlay() {
 
   const filteredUsers = useMemo(() => {
     if (allUsers.length == 0) return [];
+
+    console.log("THE USERS:", allUsers);
     return allUsers.filter(
       (u) =>
         u.username
@@ -58,13 +60,19 @@ export default function AddMemberOverlay() {
 
       // UPDATE SENDING PROGRESS BASED ON THE UPDATED NOTIF MODEL
       console.log("ADDING MEMBERS TO THE GROUP CHAT!");
+
       newMemberIds.forEach((u) => {
         console.log(`adding member ${u} to the group chat!`);
+
+        socket.emit("join groupconversation", {
+          userId: u._id,
+          conversation: activeConvo,
+        });
+
         socket.emit("send notification", {
           message: `${user.username} invited you to a group chat!`,
           receiver: u._id,
           notification_type: "group_invite",
-          userconversation: activeUserConvo,
           conversation: activeConvo,
           actor: "",
         });

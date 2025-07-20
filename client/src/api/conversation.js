@@ -212,6 +212,25 @@ export async function unarchiveConversation(convoId) {
   }
 }
 
+export async function activateUserConversation(userConvoId) {
+  try {
+    const response = await axios.patch(
+      `jconnect/api/v1/user-conversation/activate/${userConvoId}`
+    );
+
+    if (!response.status === 200) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const responseData = response.data;
+
+    console.log("activated user conversation:", responseData);
+  } catch (err) {
+    console.log("Error activating user conversation:", err);
+    p;
+  }
+}
+
 export async function addNewMembersToGroup(conversationId, newMembersId) {
   try {
     const response = await axios.post(

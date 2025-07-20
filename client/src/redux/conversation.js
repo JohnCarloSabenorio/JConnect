@@ -4,6 +4,7 @@ const conversationSlice = createSlice({
   name: "conversation",
   initialState: {
     currentConvoName: "",
+    conversationStatus: "",
     activeUserConvo: null,
     activeConvo: null,
     activeConvoArrayId: null,
@@ -23,6 +24,10 @@ const conversationSlice = createSlice({
   reducers: {
     setMessage: (state, action) => {
       state.message = action.payload;
+    },
+
+    setConversationStatus: (state, action) => {
+      state.conversationStatus = action.payload;
     },
 
     setToMention: (state, action) => {
@@ -76,6 +81,7 @@ const conversationSlice = createSlice({
           // If the convoId matches, exclude it in the direct conversation list
           if (userConversation.conversation._id === action.payload) {
             userConversation.status = "archived";
+
             state.allArchivedConversation.push(userConversation);
 
             return false;
@@ -86,6 +92,15 @@ const conversationSlice = createSlice({
         }
       );
     },
+
+    activateGroupConversation: (state, action) => {
+      const userConvo = state.allGroupConversation.find(
+        (userConvo) => userConvo._id == action.payload
+      );
+
+      userConvo.status = "active";
+    },
+
     filterRestoredConvo: (state, action) => {
       state.allArchivedConversation = state.allArchivedConversation.filter(
         (userConversation) => {
@@ -210,6 +225,8 @@ const conversationSlice = createSlice({
 
 export const {
   setMessage,
+  setConversationStatus,
+  activateGroupConversation,
   setToMention,
   addToMention,
   removeToMention,

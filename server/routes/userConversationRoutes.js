@@ -18,6 +18,7 @@ router
 router.patch("/archive/:id", controller.archiveConversation);
 router.patch("/unarchive/:id", controller.unarchiveConversation);
 
+router.patch("/activate/:userConvoId", controller.activateUserConversation);
 router.get("/isArchived/:id", controller.userConvoIsArchived);
 router.get("/getStatus/:id", controller.getUserConvoStatus);
 router.get("/conversation-name/:convoId", controller.getConversationName);

@@ -123,6 +123,26 @@ exports.getConversationWithUser = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.activateUserConversation = catchASync(async (req, res, next) => {
+  // Find the conversation and update its status to "active"
+  const userConversation = await UserConversation.findByIdAndUpdate(
+    req.params.userConvoId,
+    {
+      status: "active",
+    }
+  );
+
+  if (!userConversation) {
+    return next(new AppError("Failed to activate user conversation!", 400));
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "user conversation activated successfully!",
+    userConversation,
+  });
+});
+
 // GENERIC HANDLERS
 exports.createUserConversation = handlerFactory.createOne(UserConversation);
 exports.getAllUserConversation = handlerFactory.getAll(UserConversation);

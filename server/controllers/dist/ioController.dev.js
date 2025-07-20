@@ -248,7 +248,7 @@ exports.reactToMesage = function _callee5(io, socket, data) {
 };
 
 exports.sendNotification = function _callee6(io, socket, data) {
-  var notificationData, existingNotification, newNotification;
+  var notificationData, existingNotification, userConversation, newNotification;
   return regeneratorRuntime.async(function _callee6$(_context6) {
     while (1) {
       switch (_context6.prev = _context6.next) {
@@ -292,48 +292,59 @@ exports.sendNotification = function _callee6(io, socket, data) {
           return _context6.abrupt("return");
 
         case 14:
-          _context6.next = 17;
+          _context6.next = 21;
           break;
 
         case 16:
-          if (data.notification_type == "group_invite") {
-            console.log("data userconversation:", data.userconversation);
-            notificationData["userconversation"] = data.userconversation;
-          }
-
-        case 17:
-          _context6.next = 19;
-          return regeneratorRuntime.awrap(Notification.create(notificationData));
-
-        case 19:
-          newNotification = _context6.sent;
-
-          if (!newNotification.userconversation) {
-            _context6.next = 24;
+          if (!(data.notification_type == "group_invite")) {
+            _context6.next = 21;
             break;
           }
 
+          _context6.next = 19;
+          return regeneratorRuntime.awrap(UserConversation.findOne({
+            user: data.receiver,
+            conversation: data.conversation
+          }));
+
+        case 19:
+          userConversation = _context6.sent;
+          notificationData["userconversation"] = userConversation._id;
+
+        case 21:
           _context6.next = 23;
-          return regeneratorRuntime.awrap(newNotification.populate("userconversation"));
+          return regeneratorRuntime.awrap(Notification.create(notificationData));
 
         case 23:
           newNotification = _context6.sent;
+          console.log("THE USER CONVO IN NOTIF:", newNotification.userconversation);
 
-        case 24:
-          console.log("the new notification:", newNotification);
-          io.to("user_".concat(data.receiver)).emit("receive notification", newNotification);
-          _context6.next = 31;
-          break;
+          if (!newNotification.userconversation) {
+            _context6.next = 29;
+            break;
+          }
+
+          _context6.next = 28;
+          return regeneratorRuntime.awrap(newNotification.populate("userconversation"));
 
         case 28:
-          _context6.prev = 28;
+          newNotification = _context6.sent;
+
+        case 29:
+          console.log("the new notification:", newNotification);
+          io.to("user_".concat(data.receiver)).emit("receive notification", newNotification);
+          _context6.next = 36;
+          break;
+
+        case 33:
+          _context6.prev = 33;
           _context6.t0 = _context6["catch"](0);
           console.log("Failed to create new notification:", _context6.t0);
 
-        case 31:
+        case 36:
         case "end":
           return _context6.stop();
       }
     }
-  }, null, null, [[0, 28]]);
+  }, null, null, [[0, 33]]);
 };

@@ -2,6 +2,8 @@
 
 var UserConversation = require("../models/userConversationModel");
 
+var Conversation = require("../models/conversationModel");
+
 var AppError = require("../utils/appError");
 
 var catchAsync = require("../utils/catchAsync");
@@ -140,6 +142,122 @@ exports.unarchiveConversation = catchASync(function _callee4(req, res, next) {
         case 6:
         case "end":
           return _context4.stop();
+      }
+    }
+  });
+});
+exports.getConversationName = catchASync(function _callee5(req, res, next) {
+  var conversation;
+  return regeneratorRuntime.async(function _callee5$(_context5) {
+    while (1) {
+      switch (_context5.prev = _context5.next) {
+        case 0:
+          _context5.next = 2;
+          return regeneratorRuntime.awrap(UserConversation.find({
+            user: req.user.id,
+            conversation: req.params.convoId
+          }));
+
+        case 2:
+          conversation = _context5.sent;
+          console.log("THE CONVERSATION:", conversation);
+          res.status(200).json({
+            status: "success",
+            message: "Conversation name successfully retrieved!"
+          });
+
+        case 5:
+        case "end":
+          return _context5.stop();
+      }
+    }
+  });
+});
+exports.getConversationWithUser = catchAsync(function _callee6(req, res, next) {
+  var convo, userConversation;
+  return regeneratorRuntime.async(function _callee6$(_context6) {
+    while (1) {
+      switch (_context6.prev = _context6.next) {
+        case 0:
+          console.log("GETTING user conversation record...");
+          console.log("THE FCKIN USER:", req.params.userId); // Check if conversation exists using id of two users
+
+          _context6.next = 4;
+          return regeneratorRuntime.awrap(Conversation.findOne({
+            users: {
+              $all: [req.params.userId, req.user.id]
+            },
+            $expr: {
+              $eq: [{
+                $size: "$users"
+              }, 2]
+            }
+          }));
+
+        case 4:
+          convo = _context6.sent;
+          userConversation = null; // Get the user conversation record that matches the current user and conversation
+
+          if (!convo) {
+            _context6.next = 10;
+            break;
+          }
+
+          _context6.next = 9;
+          return regeneratorRuntime.awrap(UserConversation.findOne({
+            user: req.user.id,
+            conversation: convo._id
+          }).populate("conversation"));
+
+        case 9:
+          userConversation = _context6.sent;
+
+        case 10:
+          console.log("THE USER CONVERSATION:", userConversation);
+          res.status(200).json({
+            status: "success",
+            message: "User conversation record successfully retrieved!",
+            data: userConversation
+          });
+
+        case 12:
+        case "end":
+          return _context6.stop();
+      }
+    }
+  });
+});
+exports.activateUserConversation = catchASync(function _callee7(req, res, next) {
+  var userConversation;
+  return regeneratorRuntime.async(function _callee7$(_context7) {
+    while (1) {
+      switch (_context7.prev = _context7.next) {
+        case 0:
+          _context7.next = 2;
+          return regeneratorRuntime.awrap(UserConversation.findByIdAndUpdate(req.params.userConvoId, {
+            status: "active"
+          }));
+
+        case 2:
+          userConversation = _context7.sent;
+
+          if (userConversation) {
+            _context7.next = 5;
+            break;
+          }
+
+          return _context7.abrupt("return", next(new AppError("Failed to activate user conversation!", 400)));
+
+        case 5:
+          res.status(200).json({
+            status: "success",
+            message: "user conversation activated successfully!",
+            userConversation: userConversation
+          });
+
+        case 6:
+        case "end":
+          return _context7.stop();
       }
     }
   });

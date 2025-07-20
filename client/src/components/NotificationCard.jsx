@@ -6,6 +6,7 @@ import { getAllUserMessages } from "../api/conversation";
 import { initDisplayedMessages } from "../redux/message";
 import { setConvoViewMode } from "../redux/sidebar";
 import { useDispatch } from "react-redux";
+import { setConversationStatus } from "../redux/conversation";
 import {
   setActiveConversation,
   setActiveConvoIsGroup,
@@ -65,6 +66,7 @@ export default function NotificationCard({ data }) {
             dispatch(
               setActiveConvoMembers(userConversation.conversation.users)
             );
+            dispatch(setConversationStatus(userConversation.status));
             dispatch(
               setActiveConversation([
                 userConversation.conversationName,
@@ -72,6 +74,7 @@ export default function NotificationCard({ data }) {
                 userConversation._id,
               ])
             );
+            console.log("the user convo in notif:", userConversation);
 
             getMessages(userConversation.conversation._id);
             dispatch(

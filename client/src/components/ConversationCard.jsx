@@ -7,20 +7,21 @@ import { useSelector, useDispatch } from "react-redux";
 import { setMessageIsLoading } from "../redux/message";
 import {
   setActiveConversation,
+  setConversationStatus,
   setActiveConvoIsGroup,
   setActiveDirectUser,
   setActiveConvoMembers,
   setActiveConvoIsArchived,
   setToMention,
 } from "../redux/conversation";
-
+import { setEmojiPickerIsOpen } from "../redux/chat";
 export default function ConversationCard({
   chatmateId,
   userConversation,
   isArchived,
   inputRef,
 }) {
-  const { activeConvoMembers, activeConvo } = useSelector(
+  const { activeConvoMembers, activeConvo, conversationStatus } = useSelector(
     (state) => state.conversation
   );
   const { sidebarSearch } = useSelector((state) => state.sidebar);
@@ -79,7 +80,8 @@ export default function ConversationCard({
         }`}
         onClick={() => {
           inputRef.current.innerHTML = "";
-          dispatch(setToMention([]));
+          dispatch(setEmojiPickerIsOpen(false));
+          dispatch(setConversationStatus(userConversation.status));
           dispatch(setActiveConvoMembers(userConversation.conversation.users));
           dispatch(
             setActiveConversation([
@@ -88,8 +90,8 @@ export default function ConversationCard({
               userConversation._id,
             ])
           );
+          dispatch(setToMention([]));
           getMessages(userConversation.conversation._id);
-          alert(`user conversation status: ${userConversation.status}`);
           dispatch(
             setActiveConvoIsArchived(userConversation.status == "archived")
           );

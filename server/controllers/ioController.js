@@ -187,13 +187,18 @@ exports.sendNotification = async (io, socket, data) => {
         return;
       }
     } else if (data.notification_type == "group_invite") {
-      console.log("data userconversation:", data.userconversation);
-      notificationData["userconversation"] = data.userconversation;
+      const userConversation = await UserConversation.findOne({
+        user: data.receiver,
+        conversation: data.conversation,
+      });
+
+      notificationData["userconversation"] = userConversation._id;
     }
     // Retrieve the "user convo" of the conversation
 
     let newNotification = await Notification.create(notificationData);
 
+    console.log("THE USER CONVO IN NOTIF:", newNotification.userconversation);
     if (newNotification.userconversation) {
       newNotification = await newNotification.populate("userconversation");
     }

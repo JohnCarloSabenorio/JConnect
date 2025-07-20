@@ -5,14 +5,20 @@ const chatSlice = createSlice({
   initialState: {
     conversationName: "ConName",
     messageInput: "",
+    emojiPickerIsOpen: false,
   },
   reducers: {
     setConversationName: (state, action) => {
       state.conversationName = action.payload;
     },
+
+    setEmojiPickerIsOpen: (state, action) => {
+      state.emojiPickerIsOpen = action.payload;
+    },
   },
 });
 
-export const { setConversationName, setMessageInput } = chatSlice.actions;
+export const { setConversationName, setMessageInput, setEmojiPickerIsOpen } =
+  chatSlice.actions;
 
 export default chatSlice.reducer;
