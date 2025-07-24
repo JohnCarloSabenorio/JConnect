@@ -221,6 +221,7 @@ export default function Chat() {
         message: `${user.username} mentioned you in the group chat.`,
         receiver: userId,
         notification_type: "mention",
+        conversation: activeConvo,
       });
     });
 

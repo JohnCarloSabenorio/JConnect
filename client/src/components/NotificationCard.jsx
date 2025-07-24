@@ -57,7 +57,11 @@ export default function NotificationCard({ data }) {
           ) {
             dispatch(setDisplayedUser(data.actor));
             dispatch(showProfileOverlay());
-          } else if (data.notification_type == "group_invite") {
+          } else if (
+            data.notification_type == "group_invite" ||
+            data.notification_type == "mention" ||
+            data.notification_type == "reaction"
+          ) {
             dispatch(setConvoViewMode(1));
             // inputRef.current.innerHTML = "";
             const userConversation = data.userconversation;
@@ -85,11 +89,6 @@ export default function NotificationCard({ data }) {
                 userConversation.conversation.users.length > 2
               )
             );
-          } else if (
-            data.notification_type == "mention" ||
-            data.notification_type == "reaction"
-          ) {
-            // Handle mention notification
           }
         }}
       >

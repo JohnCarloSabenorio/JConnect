@@ -296,7 +296,7 @@ exports.sendNotification = function _callee6(io, socket, data) {
           break;
 
         case 16:
-          if (!(data.notification_type == "group_invite")) {
+          if (!(data.notification_type == "group_invite" || data.notification_type == "mention" || data.notification_type == "reaction")) {
             _context6.next = 21;
             break;
           }

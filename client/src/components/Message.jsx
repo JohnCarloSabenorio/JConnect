@@ -108,6 +108,7 @@ export const Message = React.memo(function Message({
       onMouseLeave={(e) => {
         setDisplayChatReact(false);
       }}
+      id={`msg-${messageId}`}
     >
       <div className={`flex ${isCurrentUser ? "ml-auto mr-15" : "ml-15"}`}>
         {/* <p className="">{username}</p> */}

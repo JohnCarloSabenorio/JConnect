@@ -29,6 +29,10 @@ notificationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "UserConversation"
   },
+  messageId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Message"
+  },
   actor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -50,6 +54,8 @@ notificationSchema.pre(/^find/, function (next) {
     path: "receiver"
   }, {
     path: "userconversation"
+  }, {
+    path: "message"
   }]);
   next();
 }); // Document Middlewares

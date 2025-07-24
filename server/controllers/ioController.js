@@ -186,7 +186,11 @@ exports.sendNotification = async (io, socket, data) => {
         await existingNotification.save();
         return;
       }
-    } else if (data.notification_type == "group_invite") {
+    } else if (
+      data.notification_type == "group_invite" ||
+      data.notification_type == "mention" ||
+      data.notification_type == "reaction"
+    ) {
       const userConversation = await UserConversation.findOne({
         user: data.receiver,
         conversation: data.conversation,
@@ -194,6 +198,7 @@ exports.sendNotification = async (io, socket, data) => {
 
       notificationData["userconversation"] = userConversation._id;
     }
+
     // Retrieve the "user convo" of the conversation
 
     let newNotification = await Notification.create(notificationData);
