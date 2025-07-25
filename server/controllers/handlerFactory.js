@@ -26,8 +26,11 @@ exports.createOne = (Model) =>
     // This will update the latest message in the conversation model
 
     // Updating the latest message
+    console.log("the MODEL:", Model);
     if (Model === Message) {
+      console.log("updating the convo...");
       console.log("conversation id:", req.body.conversation);
+      console.log("the reqbody message:", req.body.message);
       const updatedConvo = await Conversation.findByIdAndUpdate(
         req.body.conversation,
         {
@@ -35,6 +38,8 @@ exports.createOne = (Model) =>
         },
         { new: true }
       );
+
+      console.log("updated convo:", updatedConvo);
     }
 
     res.status(200).json({

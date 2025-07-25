@@ -215,8 +215,6 @@ export default function Chat() {
     e.preventDefault();
     const allMentionSpans = inputRef.current.querySelectorAll(".mention-span");
 
-    console.log("USERS TO BE MENTIONED:", toMention);
-
     const latestMessage = inputRef.current.textContent.trim();
     allMentionSpans.forEach((span) => {
       span.textContent = `@[${span.dataset.memberId}:${span.dataset.username}]`;
@@ -245,15 +243,16 @@ export default function Chat() {
       images: images,
     });
 
-    console.log("to mentionssss:", toMention);
-    toMention.forEach((userId) => {
-      socket.emit("send notification", {
-        message: `${user.username} mentioned you in the group chat.`,
-        receiver: userId,
-        notification_type: "mention",
-        conversation: activeConvo,
+    if (newMessage.mentions.length > 0) {
+      toMention.forEach((userId) => {
+        socket.emit("send notification", {
+          message: `${user.username} mentioned you in the group chat.`,
+          receiver: userId,
+          notification_type: "mention",
+          conversation: activeConvo,
+        });
       });
-    });
+    }
 
     dispatch(setToMention([]));
   }

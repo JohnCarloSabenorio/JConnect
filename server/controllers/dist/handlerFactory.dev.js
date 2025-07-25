@@ -54,30 +54,35 @@ exports.createOne = function (Model) {
             console.log("creating a new document!"); // This will update the latest message in the conversation model
             // Updating the latest message
 
+            console.log("the MODEL:", Model);
+
             if (!(Model === Message)) {
-              _context.next = 9;
+              _context.next = 13;
               break;
             }
 
+            console.log("updating the convo...");
             console.log("conversation id:", req.body.conversation);
-            _context.next = 8;
+            console.log("the reqbody message:", req.body.message);
+            _context.next = 11;
             return regeneratorRuntime.awrap(Conversation.findByIdAndUpdate(req.body.conversation, {
               latestMessage: req.body.message
             }, {
               "new": true
             }));
 
-          case 8:
+          case 11:
             updatedConvo = _context.sent;
+            console.log("updated convo:", updatedConvo);
 
-          case 9:
+          case 13:
             res.status(200).json({
               status: "success",
               message: "New document successfully created!",
               data: newDoc
             });
 
-          case 10:
+          case 14:
           case "end":
             return _context.stop();
         }

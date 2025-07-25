@@ -66,6 +66,22 @@ export default function ConversationCard({
     dispatch(setMessageIsLoading(false));
   }
 
+  const messageParts = userConversation.conversation.latestMessage.split(
+    /(@\[[^:\]]+:[^\]]+\])/g
+  );
+
+  const displayedLatestMessage = messageParts
+    .map((part, id) => {
+      if (part.match(/(@\[[^:\]]+:[^\]]+\])/g)) {
+        const match = part.match(/@\[(.+?):(.+?)\]/);
+        return match[2];
+      } else {
+        return part;
+      }
+    })
+    .join("");
+
+  console.log("displayed latest message:", displayedLatestMessage);
   // CHATS DISPLAYED IN THE SIDEBAR
   return (
     <>
@@ -125,10 +141,9 @@ export default function ConversationCard({
             <div className="px-3  flex-grow">
               <p className="font-bold">{userConversation.conversationName}</p>
               <p>
-                {userConversation.conversation.latestMessage.length > 10
-                  ? userConversation.conversation.latestMessage.slice(0, 19) +
-                    "..."
-                  : userConversation.conversation.latestMessage}
+                {displayedLatestMessage.length > 10
+                  ? displayedLatestMessage.slice(0, 19) + "..."
+                  : displayedLatestMessage}
               </p>
             </div>
             <div className="ml-auto">
