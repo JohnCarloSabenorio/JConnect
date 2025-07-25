@@ -24,76 +24,63 @@ exports.inviteToGroupChat = async (io, socket, data) => {
 };
 
 exports.sendMessage = async (io, socket, data) => {
-  // Data should have the: message, sender id, and conversation id
+  // 1. Find the message created in the db
+  const newMessage = await Message.findById(data.messageId)
+    .populate("sender")
+    .populate("mentions");
 
-  console.log("Sent data:", data);
+  console.log("new message:", newMessage);
   // Remove this in the future (Images should be sent in db not via socket)
-  const filenames = await Promise.all(
-    data.images.map(async (img, idx) => {
-      console.log("THE IMAGE BRO:", img);
-      const buffer = Buffer.from(img);
 
-      console.log("THE BUFFER:", buffer);
+  // 2. Create filenames for sent images
+  if (data.images.length > 0) {
+    console.log("filenames exist!");
+    const filenames = await Promise.all(
+      data.images.map(async (img, idx) => {
+        const buffer = Buffer.from(img);
+        const filename = `image-${
+          newMessage.sender._id
+        }-${Date.now()}-${idx}.jpeg`;
 
-      const filename = `image-${data.sender}-${Date.now()}-${idx}.jpeg`;
+        await sharp(buffer)
+          .resize(800)
+          .toFormat("jpeg")
+          .jpeg({ quality: 70 })
+          .toFile(`public/img/sentImages/${filename}`);
+        return filename;
+      })
+    );
 
-      await sharp(buffer)
-        .resize(800)
-        .toFormat("jpeg")
-        .jpeg({ quality: 70 })
-        .toFile(`public/img/sentImages/${filename}`);
+    newMessage.images = filenames;
+    await newMessage.save();
+    console.log("Array of image file names:", filenames);
+  }
 
-      console.log("IMAGE BUFFER:", buffer);
-      return filename; // Return filename to collect in array
-    })
-  );
-
-  console.log("THE ARRAY FILENAME:", filenames);
-
-  const newMessage = await Message.create({
-    message: data.message || "",
-    sender: data.sender,
-    conversation: data.conversation,
-    images: filenames,
-    mentions: data.mentions,
+  // 3. Update the user conversation
+  const updatedUserConversation = await UserConversation.findOne({
+    user: newMessage.sender._id,
+    conversation: newMessage.conversation,
   });
 
-  // 2. Update the conversation AND get the updated version in one step
-  const [populatedMessage, updatedConvo, userConversation] = await Promise.all([
-    Message.findById(newMessage._id).populate("sender").populate("mentions"), // populate sender
-    Conversation.findByIdAndUpdate(
-      data.conversation,
-      { latestMessage: data.latestMessage },
-      { new: true }
-    ),
-    UserConversation.findOne({
-      user: data.sender,
-      conversation: data.conversation,
-    }),
-  ]);
+  console.log("updated user conversation:", updatedUserConversation);
 
-  console.log("The user conversation of the sent message:", userConversation);
-
+  // 4. Convert images to base64 (This is not recommended.. Change this)
   const imageBase64Array = await Promise.all(
-    populatedMessage.images.map(async (filename) => {
+    newMessage.images.map(async (filename) => {
       const imagePath = path.join("public/img/sentImages", filename);
-
-      // console.log("THE IMAGE PATH:", imagePath);
       const buffer = await sharp(imagePath).toBuffer();
       return `data:image/jpeg;base64,${buffer.toString("base64")}`;
     })
   );
 
-  console.log("IMAGE BUFFERIST:", imageBase64Array);
+  const messageObject = {
+    ...newMessage.toObject(),
+    images64: imageBase64Array,
+  };
 
-  const messageObject = populatedMessage.toObject();
-  messageObject.images64 = imageBase64Array;
-
-  console.log("SENDING MESSAGE TO ROOM:", userConversation._id.toString());
-
-  io.to(userConversation.conversation._id.toString()).emit("chat message", {
+  io.to(newMessage.conversation.toString()).emit("chat message", {
     msg: messageObject,
-    convo: userConversation,
+    convo: updatedUserConversation,
   });
 };
 

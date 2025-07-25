@@ -46,3 +46,24 @@ export async function getAllMessageReactions(messageId) {
     console.log("Failed to retrieve all message reactions:", err);
   }
 }
+
+export async function createMessage(data) {
+  try {
+    const response = await axios.post(
+      "jconnect/api/v1/message",
+      {
+        message: data.message || "",
+        sender: data.sender,
+        conversation: data.conversation,
+        mentions: data.mentions,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+
+    return response.data.data;
+  } catch (err) {
+    console.log("Error creating a message:", err);
+  }
+}

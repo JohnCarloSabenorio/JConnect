@@ -21,9 +21,11 @@ const upload = multer({
 });
 
 exports.initSenderConvo = (req, res, next) => {
+  console.log("going next!!");
+  console.log("");
   req.body.sender = req.user.id;
   req.body.conversation = req.params.convoId;
-  next();
+  return next();
 };
 
 // Upload images
@@ -32,9 +34,9 @@ exports.uploadImages = upload.fields([{ name: "images", maxCount: 3 }]);
 // Resize images (try to refcator it so that the resolution of the iamge remains the same)
 exports.resizeImages = catchAsync(async (req, res, next) => {
   // Check if image exists in the request
-  console.log("THE FILES:", req.file);
-  if (!req.files.images) return next();
+  console.log("resizing images...");
 
+  if (!req.files || !req.files.images) return next();
   req.body.images = [];
   await Promise.all(
     req.files.images.map(async (image, idx) => {

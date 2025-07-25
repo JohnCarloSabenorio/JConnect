@@ -43,6 +43,7 @@ import {
   setMessageIsLoading,
   updateDisplayedMessages,
 } from "../redux/message";
+import { createMessage } from "../api/message";
 
 import { setAllFriends, setAllNonFriends } from "../redux/friend";
 
@@ -210,20 +211,11 @@ export default function Chat() {
   //   return <div>Loading...</div>;
   // }
 
-  function sendMessage(e) {
+  async function sendMessage(e) {
     e.preventDefault();
     const allMentionSpans = inputRef.current.querySelectorAll(".mention-span");
 
     console.log("USERS TO BE MENTIONED:", toMention);
-
-    toMention.forEach((userId) => {
-      socket.emit("send notification", {
-        message: `${user.username} mentioned you in the group chat.`,
-        receiver: userId,
-        notification_type: "mention",
-        conversation: activeConvo,
-      });
-    });
 
     const latestMessage = inputRef.current.textContent.trim();
     allMentionSpans.forEach((span) => {
@@ -238,13 +230,29 @@ export default function Chat() {
     if (messageToSend == "" && images.length == 0) return;
     // console.log("Socket connected?", socket.connected);
 
-    socket.emit("chat message", {
+    const newMessage = await createMessage({
       message: messageToSend,
       sender: user._id,
       conversation: activeConvo,
-      images: images,
       mentions: toMention,
       latestMessage: latestMessage,
+    });
+
+    console.log("Created a new message:", newMessage);
+
+    socket.emit("chat message", {
+      messageId: newMessage._id,
+      images: images,
+    });
+
+    console.log("to mentionssss:", toMention);
+    toMention.forEach((userId) => {
+      socket.emit("send notification", {
+        message: `${user.username} mentioned you in the group chat.`,
+        receiver: userId,
+        notification_type: "mention",
+        conversation: activeConvo,
+      });
     });
 
     dispatch(setToMention([]));

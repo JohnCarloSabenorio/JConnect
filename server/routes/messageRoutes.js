@@ -14,7 +14,6 @@ router
     authController.protect,
     controller.uploadImages,
     controller.resizeImages,
-    controller.initSenderConvo,
     controller.createMessage
   );
 

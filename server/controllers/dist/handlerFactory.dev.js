@@ -18,6 +18,8 @@ var Notification = require("../models/notificationModel");
 
 var UserConversation = require("../models/userConversationModel");
 
+var Message = require("../models/messageModel");
+
 var User = require("../models/userModel");
 
 var Friend = require("../models/friendModel");
@@ -49,31 +51,33 @@ exports.createOne = function (Model) {
 
           case 2:
             newDoc = _context.sent;
+            console.log("creating a new document!"); // This will update the latest message in the conversation model
+            // Updating the latest message
 
-            if (!req.params.convoId) {
-              _context.next = 8;
+            if (!(Model === Message)) {
+              _context.next = 9;
               break;
             }
 
-            _context.next = 6;
-            return regeneratorRuntime.awrap(Conversation.findByIdAndUpdate(req.params.convoId, {
+            console.log("conversation id:", req.body.conversation);
+            _context.next = 8;
+            return regeneratorRuntime.awrap(Conversation.findByIdAndUpdate(req.body.conversation, {
               latestMessage: req.body.message
             }, {
               "new": true
             }));
 
-          case 6:
-            updatedConvo = _context.sent;
-            console.log("UPDATED CONVERSATION LATEST:", updatedConvo);
-
           case 8:
+            updatedConvo = _context.sent;
+
+          case 9:
             res.status(200).json({
               status: "success",
               message: "New document successfully created!",
               data: newDoc
             });
 
-          case 9:
+          case 10:
           case "end":
             return _context.stop();
         }

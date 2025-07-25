@@ -38,9 +38,11 @@ var upload = multer({
 });
 
 exports.initSenderConvo = function (req, res, next) {
+  console.log("going next!!");
+  console.log("");
   req.body.sender = req.user.id;
   req.body.conversation = req.params.convoId;
-  next();
+  return next();
 }; // Upload images
 
 
@@ -55,9 +57,9 @@ exports.resizeImages = catchAsync(function _callee2(req, res, next) {
       switch (_context2.prev = _context2.next) {
         case 0:
           // Check if image exists in the request
-          console.log("THE FILES:", req.file);
+          console.log("resizing images...");
 
-          if (req.files.images) {
+          if (!(!req.files || !req.files.images)) {
             _context2.next = 3;
             break;
           }

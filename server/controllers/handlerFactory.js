@@ -4,6 +4,7 @@ const APIFeatures = require("../utils/apiFeatures");
 const Conversation = require("../models/conversationModel");
 const Notification = require("../models/notificationModel");
 const UserConversation = require("../models/userConversationModel");
+const Message = require("../models/messageModel");
 const User = require("../models/userModel");
 const Friend = require("../models/friendModel");
 const path = require("path");
@@ -21,19 +22,19 @@ Create generic handlers for:
 exports.createOne = (Model) =>
   catchAsync(async (req, res) => {
     let newDoc = await Model.create(req.body);
-
+    console.log("creating a new document!");
     // This will update the latest message in the conversation model
-    // ConvoId indicates that the user is sending a message to a conversation
-    if (req.params.convoId) {
+
+    // Updating the latest message
+    if (Model === Message) {
+      console.log("conversation id:", req.body.conversation);
       const updatedConvo = await Conversation.findByIdAndUpdate(
-        req.params.convoId,
+        req.body.conversation,
         {
           latestMessage: req.body.message,
         },
         { new: true }
       );
-
-      console.log("UPDATED CONVERSATION LATEST:", updatedConvo);
     }
 
     res.status(200).json({
