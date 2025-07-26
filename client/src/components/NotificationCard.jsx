@@ -5,7 +5,7 @@ import { showProfileOverlay } from "../redux/profile_overlay";
 import { getAllUserMessages } from "../api/conversation";
 import { initDisplayedMessages } from "../redux/message";
 import { setConvoViewMode } from "../redux/sidebar";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setConversationStatus } from "../redux/conversation";
 import {
   setActiveConversation,
@@ -16,10 +16,13 @@ import {
   setToMention,
 } from "../redux/conversation";
 
+import { setTargetScrollMessageId } from "../redux/message";
 import { setMessageIsLoading } from "../redux/message";
 export default function NotificationCard({ data }) {
   const [requestAccepted, setRequestAccepted] = useState(false);
   const dispatch = useDispatch();
+
+  const { targetScrollMessageId } = useSelector((state) => state.message);
   console.log("notification data:", data);
 
   async function acceptRequest(actor_id) {
@@ -89,6 +92,10 @@ export default function NotificationCard({ data }) {
                 userConversation.conversation.users.length > 2
               )
             );
+
+            if (data.messageId) {
+              dispatch(setTargetScrollMessageId(data.messageId));
+            }
           }
         }}
       >

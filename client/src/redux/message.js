@@ -12,11 +12,16 @@ const messageSlice = createSlice({
     collectedReactions: [],
     displayedEmoji: "all_emoji",
     displayedUserReactions: [],
+    targetScrollMessageId: "",
   },
 
   reducers: {
     initDisplayedMessages: (state, action) => {
       state.displayedMessages = action.payload;
+    },
+
+    setTargetScrollMessageId: (state, action) => {
+      state.targetScrollMessageId = action.payload;
     },
 
     setMessageIsLoading: (state, action) => {
@@ -74,6 +79,7 @@ export const {
   setAllMessageReactions,
   setDisplayedUserReactions,
   setDisplayedEmoji,
+  setTargetScrollMessageId,
 } = messageSlice.actions;
 
 export default messageSlice.reducer;

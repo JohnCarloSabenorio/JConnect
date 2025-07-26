@@ -49,6 +49,8 @@ import { setAllFriends, setAllNonFriends } from "../redux/friend";
 
 import { setMediaImages } from "../redux/media";
 
+import { setTargetScrollMessageId } from "../redux/message";
+
 export default function Chat() {
   const dispatch = useDispatch();
   // REDUX STATES
@@ -82,6 +84,7 @@ export default function Chat() {
   const [displayEmoji, setDisplayEmoji] = useState(false);
 
   const { notifActive } = useSelector((state) => state.notification);
+  const { targetScrollMessageId } = useSelector((state) => state.message);
 
   const [updatedReactions, setUpdatedReactions] = useState([]);
   const [updatedMessageId, setUpdatedMessageId] = useState("");
@@ -92,6 +95,27 @@ export default function Chat() {
   const fileInputRef = useRef(null);
   const inputRef = useRef(null);
   const displayedMessagesRef = useRef([]);
+
+  useEffect(() => {
+    // Check if there is a targeted message to scroll into
+    if (!targetScrollMessageId || targetScrollMessageId == "") return;
+
+    // Waits until the DOM is finished updating
+    const timeout = setTimeout(() => {
+      const el = document.getElementById(targetScrollMessageId);
+
+      if (el) {
+        console.log("there is an existing chuchu to scroll!");
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+
+        dispatch(setTargetScrollMessageId(""));
+      } else {
+        console.log("no existing message element!");
+      }
+    }, 0); // defer until after render
+
+    return () => clearTimeout(timeout);
+  }, [displayedMessages, targetScrollMessageId]);
 
   useEffect(() => {
     displayedMessagesRef.current = displayedMessages;
@@ -236,13 +260,14 @@ export default function Chat() {
       latestMessage: latestMessage,
     });
 
-    console.log("Created a new message:", newMessage);
-
     socket.emit("chat message", {
       messageId: newMessage._id,
       images: images,
     });
 
+    console.log("the new message id:", newMessage._id);
+
+    console.log("Created a new message:", newMessage);
     if (newMessage.mentions.length > 0) {
       toMention.forEach((userId) => {
         socket.emit("send notification", {
@@ -250,6 +275,7 @@ export default function Chat() {
           receiver: userId,
           notification_type: "mention",
           conversation: activeConvo,
+          messageId: newMessage._id,
         });
       });
     }

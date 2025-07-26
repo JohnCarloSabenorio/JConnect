@@ -154,7 +154,10 @@ export const Message = React.memo(function Message({
                         </svg>
                       </button>
                     </div>
-                    <div className="relative max-w-max bg-blue-400 p-2 rounded-full px-3">
+                    <div
+                      className="relative max-w-max bg-blue-400 p-2 rounded-full px-3"
+                      id={messageId}
+                    >
                       <p className="break-all">
                         {messageParts.map((part, id) => {
                           if (part.match(/(@\[[^:\]]+:[^\]]+\])/g)) {
@@ -228,7 +231,10 @@ export const Message = React.memo(function Message({
             <div className="relative group">
               {message !== "" && (
                 <div className="flex gap-2 items-center">
-                  <div className="relative max-w-max bg-green-400 p-2 px-3 rounded-full">
+                  <div
+                    className="relative max-w-max bg-green-400 p-2 px-3 rounded-full"
+                    id={messageId}
+                  >
                     <p className="break-all">
                       {messageParts.map((part, id) => {
                         if (part.match(/(@\[[^:\]]+:[^\]]+\])/g)) {

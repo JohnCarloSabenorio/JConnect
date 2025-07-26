@@ -153,6 +153,7 @@ exports.sendNotification = async (io, socket, data) => {
       receiver: data.receiver,
       notification_type: data.notification_type,
       actor: data.actor,
+      messageId: data.messageId ? data.messageId : undefined,
     };
 
     if (

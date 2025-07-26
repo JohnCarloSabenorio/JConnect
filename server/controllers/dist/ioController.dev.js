@@ -250,7 +250,8 @@ exports.sendNotification = function _callee6(io, socket, data) {
             message: data.message,
             receiver: data.receiver,
             notification_type: data.notification_type,
-            actor: data.actor
+            actor: data.actor,
+            messageId: data.messageId ? data.messageId : undefined
           };
 
           if (!(data.notification_type == "fr_received" || data.notification_type == "fr_accepted")) {
