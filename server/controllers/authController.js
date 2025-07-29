@@ -283,6 +283,7 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
 
 exports.isLoggedInBool = catchAsync(async (req, res, next) => {
   // 1. Get the decoded cookie
+  console.log("AHH");
   if (!req.cookies.jwt) {
     console.log("HE");
     return res.status(404).json({

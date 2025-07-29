@@ -470,8 +470,11 @@ exports.isLoggedInBool = catchAsync(function _callee9(req, res, next) {
     while (1) {
       switch (_context9.prev = _context9.next) {
         case 0:
+          // 1. Get the decoded cookie
+          console.log("AHH");
+
           if (req.cookies.jwt) {
-            _context9.next = 3;
+            _context9.next = 4;
             break;
           }
 
@@ -481,16 +484,16 @@ exports.isLoggedInBool = catchAsync(function _callee9(req, res, next) {
             message: "JWT not present!"
           }));
 
-        case 3:
-          _context9.next = 5;
+        case 4:
+          _context9.next = 6;
           return regeneratorRuntime.awrap(promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET));
 
-        case 5:
+        case 6:
           decoded = _context9.sent;
-          _context9.next = 8;
+          _context9.next = 9;
           return regeneratorRuntime.awrap(User.findById(decoded.id));
 
-        case 8:
+        case 9:
           currentUser = _context9.sent;
 
           if (!currentUser) {
@@ -508,7 +511,7 @@ exports.isLoggedInBool = catchAsync(function _callee9(req, res, next) {
             currentUser: currentUser
           });
 
-        case 12:
+        case 13:
         case "end":
           return _context9.stop();
       }

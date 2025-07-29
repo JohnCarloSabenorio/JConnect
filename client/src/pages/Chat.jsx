@@ -40,8 +40,10 @@ import { activateUserConversation } from "../api/conversation";
 import ReactionsOverlay from "../components/ReactionsOverlay";
 import {
   initDisplayedMessages,
+  setInitialMessageRender,
   setMessageIsLoading,
   updateDisplayedMessages,
+  updateMessage,
 } from "../redux/message";
 import { createMessage } from "../api/message";
 
@@ -84,7 +86,9 @@ export default function Chat() {
   const [displayEmoji, setDisplayEmoji] = useState(false);
 
   const { notifActive } = useSelector((state) => state.notification);
-  const { targetScrollMessageId } = useSelector((state) => state.message);
+  const { targetScrollMessageId, initialRender } = useSelector(
+    (state) => state.message
+  );
 
   const [updatedReactions, setUpdatedReactions] = useState([]);
   const [updatedMessageId, setUpdatedMessageId] = useState("");
@@ -94,7 +98,6 @@ export default function Chat() {
   const uiChatRef = useRef(null);
   const fileInputRef = useRef(null);
   const inputRef = useRef(null);
-  const displayedMessagesRef = useRef([]);
 
   useEffect(() => {
     // Check if there is a targeted message to scroll into
@@ -116,10 +119,6 @@ export default function Chat() {
 
     return () => clearTimeout(timeout);
   }, [displayedMessages, targetScrollMessageId]);
-
-  useEffect(() => {
-    displayedMessagesRef.current = displayedMessages;
-  }, [displayedMessages]);
 
   // This will handle notification emits
   useEffect(() => {
@@ -150,19 +149,7 @@ export default function Chat() {
   useEffect(() => {
     const handleMessageReact = (data) => {
       console.log("THE MESSAGE REACTIONS HAVE BEEN UPDATED:", data);
-
-      const messagesCollection = [...displayedMessagesRef.current];
-      console.log(" the displayed messages:", messagesCollection);
-
-      const updateIdx = messagesCollection.findIndex(
-        (m) => m._id == data.message._id
-      );
-
-      console.log(" the updated idx:", updateIdx);
-
-      messagesCollection[updateIdx] = data.message;
-
-      dispatch(initDisplayedMessages(messagesCollection));
+      dispatch(updateMessage(data.message));
     };
 
     socket.on("message react", handleMessageReact);
@@ -216,9 +203,14 @@ export default function Chat() {
       dispatch(setMediaImages(mediaBlobUrls));
     }
 
-    uiChatRef.current?.scrollTo({
-      top: uiChatRef.current.scrollHeight, // Scrolls to the very bottom
-    });
+    if (initialRender) {
+      console.log("yes initial render to bobbo!");
+      uiChatRef.current?.scrollTo({
+        top: uiChatRef.current.scrollHeight, // Scrolls to the very bottom
+      });
+
+      dispatch(setInitialMessageRender(false));
+    }
 
     setImages([]);
   }, [displayedMessages]);
@@ -532,20 +524,9 @@ export default function Chat() {
 
                   return (
                     <Message
-                      key={i}
+                      key={message._id}
                       imgUrl="img/icons/male-default.jpg"
-                      message={message.message}
-                      messageId={message._id}
-                      sender={message.sender}
-                      mentions={message.mentions}
-                      username={message.sender.username}
-                      isCurrentUser={message.sender._id === user._id}
-                      timeSent={message.createdAt}
-                      reactions={
-                        message._id == updatedMessageId
-                          ? updatedReactions
-                          : message.reactions
-                      }
+                      messageData={message}
                       imagesSent={blobUrls}
                     />
                   );

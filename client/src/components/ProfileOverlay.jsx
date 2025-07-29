@@ -23,7 +23,7 @@ import {
   getAllUserMessages,
 } from "../api/conversation";
 import { UserContext } from "../App";
-import { initDisplayedMessages } from "../redux/message";
+import { initDisplayedMessages, setInitialMessageRender } from "../redux/message";
 import {
   setUserIsFriend,
   addANewConvo,
@@ -158,6 +158,7 @@ export default function ProfileOverlay() {
 
   const handleChat = async () => {
     try {
+      dispatch(setInitialMessageRender(true));
       let userConversation = await findConvoWithUser(displayedUser._id);
 
       if (!userConversation) {

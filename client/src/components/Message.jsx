@@ -13,28 +13,33 @@ import {
 } from "../redux/message";
 import { useEffect, useState, useContext } from "react";
 import { UserContext } from "../App";
-export const Message = React.memo(function Message({
-  isCurrentUser,
-  imgUrl,
-  message,
-  messageId,
-  reactions,
-  username,
-  timeSent,
-  imagesSent,
-  mentions,
-  sender,
-}) {
-  const dispatch = useDispatch();
-  const { user } = useContext(UserContext);
 
+export const Message = React.memo(function Message({
+  imgUrl,
+  messageData,
+  imagesSent,
+}) {
+  const { user } = useContext(UserContext);
+  const {
+    _id: messageId,
+    sender,
+    mentions,
+    createdAt: timeSent,
+    reactions,
+    message,
+  } = messageData;
+
+  const username = sender.username;
+  console.log("rerendering:", messageId);
+  const isCurrentUser = sender._id === user._id;
+  const dispatch = useDispatch();
+  const { activeConvo } = useSelector((state) => state.conversation);
   const { displayReactionsOverlay } = useSelector((state) => state.message);
   const [displayReactionPicker, setDisplayReactionPicker] = useState(false);
   const [displayChatReact, setDisplayChatReact] = useState(false);
   const [pickerKey, setPickerKey] = useState(0);
 
   const [topReactions, setTopReactions] = useState([]);
-
   useEffect(() => {
     async function getTop3Emojis(id) {
       let reactionsCount = {};
@@ -77,10 +82,13 @@ export const Message = React.memo(function Message({
     // const updatedReactions = await reactToMessage(messageId, emojiData.unified);
 
     if (sender._id != user._id) {
+      console.log("reacted to a messagE!");
       socket.emit("send notification", {
         message: `${user.username} reacted ${emojiData.emoji} to your message.`,
         receiver: sender._id,
         notification_type: "reaction",
+        conversation: activeConvo,
+        messageId: messageId,
       });
     }
 

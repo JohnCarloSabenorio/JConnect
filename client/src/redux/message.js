@@ -13,11 +13,22 @@ const messageSlice = createSlice({
     displayedEmoji: "all_emoji",
     displayedUserReactions: [],
     targetScrollMessageId: "",
+    initialRender: true,
   },
 
   reducers: {
     initDisplayedMessages: (state, action) => {
       state.displayedMessages = action.payload;
+    },
+
+    setInitialMessageRender: (state, action) => {
+      state.initialRender = action.payload;
+    },
+
+    updateMessage: (state, action) => {
+      state.displayedMessages = state.displayedMessages.map((msg) =>
+        msg._id === action.payload._id ? action.payload : msg
+      );
     },
 
     setTargetScrollMessageId: (state, action) => {
@@ -71,7 +82,9 @@ const messageSlice = createSlice({
 
 export const {
   initDisplayedMessages,
+  setInitialMessageRender,
   updateDisplayedMessages,
+  updateMessage,
   setMessageIsLoading,
   setDisplayChatReact,
   setMessageReactionsId,

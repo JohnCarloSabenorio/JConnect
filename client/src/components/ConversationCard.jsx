@@ -2,7 +2,10 @@ import { useState, useEffect, useContext } from "react";
 import { isFriend } from "../api/friends";
 import { changeSidebarSearch } from "../redux/sidebar";
 import { getAllUserMessages } from "../api/conversation";
-import { initDisplayedMessages } from "../redux/message";
+import {
+  initDisplayedMessages,
+  setInitialMessageRender,
+} from "../redux/message";
 import { useSelector, useDispatch } from "react-redux";
 import { setMessageIsLoading } from "../redux/message";
 import {
@@ -95,6 +98,7 @@ export default function ConversationCard({
             : "hidden"
         }`}
         onClick={() => {
+          dispatch(setInitialMessageRender(true));
           inputRef.current.innerHTML = "";
           dispatch(setEmojiPickerIsOpen(false));
           dispatch(setConversationStatus(userConversation.status));

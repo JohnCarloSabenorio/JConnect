@@ -3,7 +3,10 @@ import { useState } from "react";
 import { setDisplayedUser } from "../redux/profile_overlay";
 import { showProfileOverlay } from "../redux/profile_overlay";
 import { getAllUserMessages } from "../api/conversation";
-import { initDisplayedMessages } from "../redux/message";
+import {
+  initDisplayedMessages,
+  setInitialMessageRender,
+} from "../redux/message";
 import { setConvoViewMode } from "../redux/sidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { setConversationStatus } from "../redux/conversation";
@@ -54,6 +57,7 @@ export default function NotificationCard({ data }) {
       <div
         className="p-3 text-left gap-5 flex justify-between hover:bg-blue-500 cursor-pointer hover:text-white align-middle"
         onClick={(e) => {
+          dispatch(setInitialMessageRender(true));
           if (
             data.notification_type == "fr_received" ||
             data.notification_type == "fr_accepted"
