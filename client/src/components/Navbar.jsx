@@ -22,7 +22,6 @@ export default function Navbar() {
 
   async function getNotifications() {
     const notifications = await getAllNotifications();
-    console.log("ALL NOTIFS:", notifications);
     dispatch(setAllNotifications(notifications));
   }
 

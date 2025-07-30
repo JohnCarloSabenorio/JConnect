@@ -27,6 +27,7 @@ export default function ConversationCard({
   const { activeConvoMembers, activeConvo, conversationStatus } = useSelector(
     (state) => state.conversation
   );
+
   const { sidebarSearch } = useSelector((state) => state.sidebar);
   const dispatch = useDispatch();
 

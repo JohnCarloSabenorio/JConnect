@@ -30,7 +30,6 @@ export const Message = React.memo(function Message({
   } = messageData;
 
   const username = sender.username;
-  console.log("rerendering:", messageId);
   const isCurrentUser = sender._id === user._id;
   const dispatch = useDispatch();
   const { activeConvo } = useSelector((state) => state.conversation);

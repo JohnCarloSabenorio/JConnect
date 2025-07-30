@@ -155,7 +155,10 @@ exports.sendMessage = function _callee4(io, socket, data) {
           });
           io.to(newMessage.conversation.toString()).emit("chat message", {
             msg: messageObject,
-            convo: updatedUserConversation
+            convo: updatedUserConversation.conversation,
+            isGroup: updatedUserConversation.isGroup // conversation
+            // latest message
+
           });
 
         case 22:
@@ -239,7 +242,8 @@ exports.reactToMesage = function _callee5(io, socket, data) {
 };
 
 exports.sendNotification = function _callee6(io, socket, data) {
-  var notificationData, existingNotification, userConversation, newNotification;
+  var notificationData, existingNotification, userConversation, _existingNotification, newNotification;
+
   return regeneratorRuntime.async(function _callee6$(_context6) {
     while (1) {
       switch (_context6.prev = _context6.next) {
@@ -284,12 +288,12 @@ exports.sendNotification = function _callee6(io, socket, data) {
           return _context6.abrupt("return");
 
         case 14:
-          _context6.next = 21;
+          _context6.next = 32;
           break;
 
         case 16:
           if (!(data.notification_type == "group_invite" || data.notification_type == "mention" || data.notification_type == "reaction")) {
-            _context6.next = 21;
+            _context6.next = 32;
             break;
           }
 
@@ -301,42 +305,74 @@ exports.sendNotification = function _callee6(io, socket, data) {
 
         case 19:
           userConversation = _context6.sent;
-          notificationData["userconversation"] = userConversation._id;
 
-        case 21:
+          if (!(data.notification_type == "reaction")) {
+            _context6.next = 31;
+            break;
+          }
+
           _context6.next = 23;
-          return regeneratorRuntime.awrap(Notification.create(notificationData));
+          return regeneratorRuntime.awrap(Notification.findOne({
+            receiver: data.receiver,
+            notification_type: data.notification_type,
+            actor: data.actor,
+            messageId: data.messageId
+          }));
 
         case 23:
+          _existingNotification = _context6.sent;
+
+          if (!_existingNotification) {
+            _context6.next = 31;
+            break;
+          }
+
+          _existingNotification.updatedAt = Date.now();
+          _existingNotification.seen = false;
+          _existingNotification.message = data.message;
+          _context6.next = 30;
+          return regeneratorRuntime.awrap(_existingNotification.save());
+
+        case 30:
+          return _context6.abrupt("return");
+
+        case 31:
+          notificationData["userconversation"] = userConversation._id;
+
+        case 32:
+          _context6.next = 34;
+          return regeneratorRuntime.awrap(Notification.create(notificationData));
+
+        case 34:
           newNotification = _context6.sent;
           console.log("THE USER CONVO IN NOTIF:", newNotification.userconversation);
 
           if (!newNotification.userconversation) {
-            _context6.next = 29;
+            _context6.next = 40;
             break;
           }
 
-          _context6.next = 28;
+          _context6.next = 39;
           return regeneratorRuntime.awrap(newNotification.populate("userconversation"));
 
-        case 28:
+        case 39:
           newNotification = _context6.sent;
 
-        case 29:
+        case 40:
           console.log("the new notification:", newNotification);
           io.to("user_".concat(data.receiver)).emit("receive notification", newNotification);
-          _context6.next = 36;
+          _context6.next = 47;
           break;
 
-        case 33:
-          _context6.prev = 33;
+        case 44:
+          _context6.prev = 44;
           _context6.t0 = _context6["catch"](0);
           console.log("Failed to create new notification:", _context6.t0);
 
-        case 36:
+        case 47:
         case "end":
           return _context6.stop();
       }
     }
-  }, null, null, [[0, 33]]);
+  }, null, null, [[0, 44]]);
 };

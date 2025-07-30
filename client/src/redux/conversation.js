@@ -59,6 +59,7 @@ const conversationSlice = createSlice({
       state.toMention = currentMentions;
     },
     setActiveConversation: (state, action) => {
+      console.log("setting the actives:", action.payload);
       state.currentConvoName = action.payload[0];
       state.activeConvo = action.payload[1];
       state.activeUserConvo = action.payload[2];
@@ -185,12 +186,18 @@ const conversationSlice = createSlice({
       state.allGroupConversation = action.payload;
     },
     updateAGroupConvo: (state, action) => {
+      const updatedConversation = action.payload;
       state.allGroupConversation = [
-        ...state.allGroupConversation.map((userConversation) =>
-          userConversation._id === action.payload.convo._id
-            ? action.payload.convo
-            : userConversation
-        ),
+        ...state.allGroupConversation.map((userConversation) => {
+          if (userConversation.conversation._id === updatedConversation._id) {
+            return {
+              ...userConversation,
+              conversation: updatedConversation,
+            };
+          } else {
+            return userConversation;
+          }
+        }),
       ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
     },
 
@@ -208,12 +215,20 @@ const conversationSlice = createSlice({
 
     updateAConvo: (state, action) => {
       // this will find the existing conversation and update it with the new one
+      console.log("updating redux conversation...");
+
+      const updatedConversation = action.payload;
       state.allDirectConversation = [
-        ...state.allDirectConversation.map((userConversation) =>
-          userConversation._id === action.payload.convo._id
-            ? action.payload.convo
-            : userConversation
-        ),
+        ...state.allDirectConversation.map((userConversation) => {
+          if (userConversation.conversation._id === updatedConversation._id) {
+            return {
+              ...userConversation,
+              conversation: updatedConversation,
+            };
+          } else {
+            return userConversation;
+          }
+        }),
       ].sort(
         (a, b) =>
           new Date(b.conversation.updatedAt) -

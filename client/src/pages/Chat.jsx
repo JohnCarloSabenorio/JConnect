@@ -69,6 +69,8 @@ export default function Chat() {
     conversationStatus,
   } = useSelector((state) => state.conversation);
 
+  console.log("THE ACTIVE CONVERSATION:", activeConvo);
+
   // This will get the messages to be displayed from the message slice
   const { displayedMessages, messageIsLoading } = useSelector(
     (state) => state.message
@@ -108,7 +110,6 @@ export default function Chat() {
       const el = document.getElementById(targetScrollMessageId);
 
       if (el) {
-        console.log("there is an existing chuchu to scroll!");
         el.scrollIntoView({ behavior: "smooth", block: "center" });
 
         dispatch(setTargetScrollMessageId(""));
@@ -166,24 +167,35 @@ export default function Chat() {
     socket.on("chat message", (data) => {
       // Messages will be updated if the sent messages is for the current conversation
 
-      console.log("MESSAGE DATA RECEIVED MOTHER DUCKER:", data);
-      dispatch(updateDisplayedMessages(data.msg));
+      if (data.msg.sender._id === user._id) {
+        dispatch(setInitialMessageRender(true));
+      }
 
+      console.log("the active conversation:", activeConvo);
+      console.log("the message data:", data);
+
+      if (activeConvo == data.convo._id) {
+        dispatch(updateDisplayedMessages(data.msg));
+      }
       setImages([]);
       setFileInputKey(Date.now());
+
       // This should scroll down the chat ui if the user is the sender (NEEDS TO BE FIXED)
 
       // UPDATES THE CONVERSATION LIST
-      dispatch(updateAConvo(data));
+      if (!data.isGroup) {
+        dispatch(updateAConvo(data.convo));
+      } else {
+        dispatch(updateAGroupConvo(data.convo));
+      }
 
       // UPDATES THE GROUP CONVERATION LIST
-      dispatch(updateAGroupConvo(data));
     });
 
     return () => {
       socket.off("chat message"); // Clean up on unmount
     };
-  }, []);
+  }, [activeConvo]);
 
   useEffect(() => {
     const mediaBlobUrls = [];
@@ -202,9 +214,13 @@ export default function Chat() {
       });
       dispatch(setMediaImages(mediaBlobUrls));
     }
+    const isNearBottom =
+      uiChatRef.current?.scrollHeight -
+        uiChatRef.current?.clientHeight -
+        uiChatRef.current?.scrollTop <
+      50; // 50px tolerance
 
-    if (initialRender) {
-      console.log("yes initial render to bobbo!");
+    if (isNearBottom) {
       uiChatRef.current?.scrollTo({
         top: uiChatRef.current.scrollHeight, // Scrolls to the very bottom
       });

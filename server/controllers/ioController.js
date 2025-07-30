@@ -80,7 +80,10 @@ exports.sendMessage = async (io, socket, data) => {
 
   io.to(newMessage.conversation.toString()).emit("chat message", {
     msg: messageObject,
-    convo: updatedUserConversation,
+    convo: updatedUserConversation.conversation,
+    isGroup: updatedUserConversation.isGroup,
+    // conversation
+    // latest message
   });
 };
 
@@ -183,6 +186,25 @@ exports.sendNotification = async (io, socket, data) => {
         user: data.receiver,
         conversation: data.conversation,
       });
+
+      // Check if there is an existing reaction notification
+      if (data.notification_type == "reaction") {
+        const existingNotification = await Notification.findOne({
+          receiver: data.receiver,
+          notification_type: data.notification_type,
+          actor: data.actor,
+          messageId: data.messageId,
+        });
+
+        // Update the notification instead of creating one
+        if (existingNotification) {
+          existingNotification.updatedAt = Date.now();
+          existingNotification.seen = false;
+          existingNotification.message = data.message;
+          await existingNotification.save();
+          return;
+        }
+      }
 
       notificationData["userconversation"] = userConversation._id;
     }
