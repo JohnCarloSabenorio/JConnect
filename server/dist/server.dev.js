@@ -76,14 +76,12 @@ io.on("connection", function (socket) {
   socket.on("chat message", function (data) {
     ioController.sendMessage(io, socket, data);
   }); // Join the group conversation room
-
-  socket.on("join groupconversation", function (data) {
-    var usersocket = onlineSockets[data.userId];
-    usersocket.join(data.conversation);
-    console.log("Socket ".concat(socket.id, " joined room ").concat(data.conversation));
-  }); // Adds the new user conversation in the sidebar of the invited user
+  // Adds the new user conversation in the sidebar of the invited user
 
   socket.on("invite groupchat", function (data) {
+    console.log("inviting user to the group chat!");
+    var usersocket = onlineSockets[data.user];
+    usersocket.join(data.conversation);
     ioController.inviteToGroupChat(io, socket, data);
   }); // Send notification
 

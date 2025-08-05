@@ -17,15 +17,19 @@ import Sidebar from "../components/Sidebar";
 import MediaPanel from "../components/MediaPanel";
 import ProfileOverlay from "../components/ProfileOverlay";
 import AddMemberOverlay from "../components/AddMemberOverlay";
-import { createConversation, findConvoWithUser } from "../api/conversation";
+import {
+  createConversation,
+  findConvoWithUser,
+  leaveConversation,
+} from "../api/conversation";
 import Overlay from "../components/Overlay";
 import { getAllUserMessages } from "../api/conversation";
 import { toggleMediaPanel } from "../redux/media";
 import { addNotification } from "../redux/notification";
 import { setEmojiPickerIsOpen } from "../redux/chat";
-import { activateGroupConversation } from "../redux/conversation";
 import {
   setIsMentioning,
+  activateGroupConversation,
   setToMention,
   setActiveConversation,
   setFilteredConvoMembers,
@@ -35,6 +39,8 @@ import {
   removeToMention,
   addGroupConversation,
   setConversationStatus,
+  removeAConvo,
+  setMessage,
 } from "../redux/conversation";
 import { activateUserConversation } from "../api/conversation";
 import ReactionsOverlay from "../components/ReactionsOverlay";
@@ -68,6 +74,8 @@ export default function Chat() {
     toMention,
     conversationStatus,
   } = useSelector((state) => state.conversation);
+
+  console.log("conversation status:", conversationStatus);
 
   console.log("THE ACTIVE CONVERSATION:", activeConvo);
 
@@ -138,10 +146,6 @@ export default function Chat() {
   // This will add a new group conversation to the collection in the navbar
   useEffect(() => {
     const handleAddGroupConversation = (data) => {
-      console.log(
-        "you have been invited to a new conversation:",
-        data.userConversation
-      );
       dispatch(addGroupConversation(data.userConversation));
     };
     socket.on("invite groupchat", handleAddGroupConversation);
@@ -310,7 +314,17 @@ export default function Chat() {
     dispatch(activateGroupConversation(activeUserConvo));
   }
 
-  async function leaveGroup() {}
+  async function leaveGroup() {
+    // Delete the user conversation in the redux array
+    dispatch(removeAConvo(activeUserConvo));
+    // set the conversation to loading (for now)
+    dispatch(setMessageIsLoading(true));
+
+    // set the conversation as active by default for now
+    dispatch(setConversationStatus("active"));
+    // Delete the user conversation in the db
+    leaveConversation(activeUserConvo);
+  }
 
   async function chatAFriend(friendId) {
     // console.log("THE FRIEND ID:", friendId);

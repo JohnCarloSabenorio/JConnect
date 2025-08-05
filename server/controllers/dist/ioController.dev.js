@@ -29,32 +29,31 @@ exports.inviteToGroupChat = function _callee(io, socket, data) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          console.log("inviting user to the group chat!");
-          _context.next = 3;
+          _context.next = 2;
           return regeneratorRuntime.awrap(UserConversation.findOne({
             user: data.user,
             conversation: data.conversation
           }));
 
-        case 3:
+        case 2:
           userConversation = _context.sent;
           console.log("invited user to conversation:", data.conversation);
 
           if (userConversation) {
-            _context.next = 8;
+            _context.next = 7;
             break;
           }
 
           console.log("there is no existing user conversation!");
           return _context.abrupt("return");
 
-        case 8:
+        case 7:
           console.log("THE DATA USER:", data.user);
           io.to("user_".concat(data.user)).emit("invite groupchat", {
             userConversation: userConversation
           });
 
-        case 10:
+        case 9:
         case "end":
           return _context.stop();
       }

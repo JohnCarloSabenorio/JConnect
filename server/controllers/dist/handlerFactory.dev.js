@@ -175,12 +175,9 @@ exports.getAll = function (Model) {
 
           case 10:
             docs = _context5.sent;
-            console.log(req.query);
-            console.log(Model == Notification);
-            console.log("THE DOCS:", docs);
 
             if (!(Model === Notification)) {
-              _context5.next = 16;
+              _context5.next = 13;
               break;
             }
 
@@ -190,8 +187,8 @@ exports.getAll = function (Model) {
               data: docs
             }));
 
-          case 16:
-            _context5.next = 18;
+          case 13:
+            _context5.next = 15;
             return regeneratorRuntime.awrap(Promise.all(docs.map(function _callee4(doc) {
               var images64;
               return regeneratorRuntime.async(function _callee4$(_context4) {
@@ -253,7 +250,7 @@ exports.getAll = function (Model) {
               });
             })));
 
-          case 18:
+          case 15:
             docsWithBase = _context5.sent;
             res.status(200).json({
               status: "success",
@@ -261,7 +258,7 @@ exports.getAll = function (Model) {
               data: docsWithBase
             });
 
-          case 20:
+          case 17:
           case "end":
             return _context5.stop();
         }
@@ -312,7 +309,7 @@ exports.updateOne = function (Model) {
 
 exports.deleteOne = function (Model) {
   return catchAsync(function _callee7(req, res, next) {
-    var doc;
+    var userConvo, updatedConversation, doc;
     return regeneratorRuntime.async(function _callee7$(_context7) {
       while (1) {
         switch (_context7.prev = _context7.next) {
@@ -328,18 +325,48 @@ exports.deleteOne = function (Model) {
             }));
 
           case 3:
-            _context7.next = 5;
-            return regeneratorRuntime.awrap(Model.findByIdAndDelete(req.params.id));
-
-          case 5:
-            doc = _context7.sent;
-
-            if (!(Model === Friend)) {
-              _context7.next = 9;
+            if (!(Model === UserConversation)) {
+              _context7.next = 14;
               break;
             }
 
-            _context7.next = 9;
+            _context7.next = 6;
+            return regeneratorRuntime.awrap(UserConversation.findById(req.params.id));
+
+          case 6:
+            userConvo = _context7.sent;
+            console.log("user convo to delete:", userConvo);
+
+            if (!userConvo) {
+              _context7.next = 14;
+              break;
+            }
+
+            console.log("the req user id:", req.user.id);
+            _context7.next = 12;
+            return regeneratorRuntime.awrap(Conversation.findByIdAndUpdate(userConvo.conversation, {
+              $pull: {
+                users: req.user.id
+              }
+            }));
+
+          case 12:
+            updatedConversation = _context7.sent;
+            console.log("updated conversation after leaving convo:", updatedConversation);
+
+          case 14:
+            _context7.next = 16;
+            return regeneratorRuntime.awrap(Model.findByIdAndDelete(req.params.id));
+
+          case 16:
+            doc = _context7.sent;
+
+            if (!(Model === Friend)) {
+              _context7.next = 20;
+              break;
+            }
+
+            _context7.next = 20;
             return regeneratorRuntime.awrap(Friend.findOneAndDelete({
               $or: [{
                 user1: req.user.id,
@@ -350,21 +377,21 @@ exports.deleteOne = function (Model) {
               }]
             }));
 
-          case 9:
+          case 20:
             if (doc) {
-              _context7.next = 11;
+              _context7.next = 22;
               break;
             }
 
             return _context7.abrupt("return", next(new AppError("No document found with the id of: ".concat(req.params.id), 404)));
 
-          case 11:
+          case 22:
             res.status(204).json({
               status: "success",
               message: "Document successfully deleted!"
             });
 
-          case 12:
+          case 23:
           case "end":
             return _context7.stop();
         }

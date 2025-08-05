@@ -5,7 +5,9 @@ import { UserContext } from "../../App";
 
 export default function Inbox({ inputRef, getMessages }) {
   const { loggedInStatus, user, isConnected } = useContext(UserContext);
-  const { allDirectConversation, allGroupConversation } = useSelector((state) => state.conversation);
+  const { allDirectConversation, allGroupConversation } = useSelector(
+    (state) => state.conversation
+  );
   const { convoViewMode } = useSelector((state) => state.sidebar);
 
   let filteredConversations;
@@ -16,9 +18,7 @@ export default function Inbox({ inputRef, getMessages }) {
       (uc) => uc.conversation.users.length === 2
     );
   } else {
-    filteredConversations = allGroupConversation.filter(
-      (uc) => uc.conversation.users.length > 2
-    );
+    filteredConversations = allGroupConversation.filter((uc) => uc.isGroup);
   }
 
   return (
@@ -37,7 +37,7 @@ export default function Inbox({ inputRef, getMessages }) {
             key={id}
             ref={data._id}
             getMessages={getMessages}
-            isGroup={data.conversation.users.length > 2}
+            isGroup={data.isGroup}
             chatmateId={chatmate._id}
             userConversation={data}
             directArrayId={id}

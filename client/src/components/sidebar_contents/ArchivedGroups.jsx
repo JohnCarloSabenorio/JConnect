@@ -14,7 +14,7 @@ export default function ArchivedGroups({ getMessages }) {
       {allArchivedConversation.map((userConversation, id) => {
         let chatmate = null;
 
-        if (userConversation.conversation.users.length > 2) {
+        if (userConversation.isGroup) {
           chatmate = userConversation.conversation.users.find(
             (u) => u._id.toString() !== user._id.toString()
           );

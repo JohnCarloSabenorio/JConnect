@@ -20,9 +20,7 @@ export default function ArchivedChat({ inputRef, getMessages }) {
       (uc) => uc.conversation.users.length === 2
     );
   } else {
-    filteredConversations = allArchivedConversation.filter(
-      (uc) => uc.conversation.users.length > 2
-    );
+    filteredConversations = allArchivedConversation.filter((uc) => uc.isGroup);
   }
 
   return (

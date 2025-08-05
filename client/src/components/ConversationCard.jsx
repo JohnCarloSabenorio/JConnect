@@ -118,11 +118,7 @@ export default function ConversationCard({
 
           // Checks if the conversation is a group chat or not
 
-          dispatch(
-            setActiveConvoIsGroup(
-              userConversation.conversation.users.length > 2
-            )
-          );
+          dispatch(setActiveConvoIsGroup(userConversation.isGroup));
 
           if (chatmateId) {
             // Updates the active chatmate

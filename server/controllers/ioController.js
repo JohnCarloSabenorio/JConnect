@@ -8,7 +8,6 @@ const fs = require("fs");
 const path = require("path");
 
 exports.inviteToGroupChat = async (io, socket, data) => {
-  console.log("inviting user to the group chat!");
   const userConversation = await UserConversation.findOne({
     user: data.user,
     conversation: data.conversation,

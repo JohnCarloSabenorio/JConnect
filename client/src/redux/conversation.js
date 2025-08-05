@@ -235,10 +235,28 @@ const conversationSlice = createSlice({
           new Date(a.conversation.updatedAt)
       );
     },
+
+    removeAConvo: (state, action) => {
+      const [isGroup, conversationId] = action.payload;
+      if (!isGroup) {
+        state.allDirectConversation = [
+          ...state.allDirectConversation.filter((convo) => {
+            convo._id === conversationId;
+          }),
+        ];
+      } else {
+        state.allGroupConversation = [
+          ...state.allGroupConversation.filter((convo) => {
+            convo._id === conversationId;
+          }),
+        ];
+      }
+    },
   },
 });
 
 export const {
+  removeAConvo,
   setMessage,
   setConversationStatus,
   activateGroupConversation,

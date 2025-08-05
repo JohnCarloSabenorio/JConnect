@@ -93,11 +93,7 @@ export default function NotificationCard({ data }) {
             dispatch(
               setActiveConvoIsArchived(userConversation.status == "archived")
             );
-            dispatch(
-              setActiveConvoIsGroup(
-                userConversation.conversation.users.length > 2
-              )
-            );
+            dispatch(setActiveConvoIsGroup(userConversation.isGroup));
 
             if (data.messageId) {
               dispatch(setTargetScrollMessageId(data.messageId));

@@ -98,9 +98,7 @@ exports.getAll = (Model) =>
     }
 
     const docs = await featureQuery;
-    console.log(req.query);
-    console.log(Model == Notification);
-    console.log("THE DOCS:", docs);
+
     if (Model === Notification) {
       return res.status(200).json({
         status: "success",
@@ -169,6 +167,24 @@ exports.deleteOne = (Model) =>
       // Change this (user must only delete his/her record of the conversation)
       await UserConversation.deleteMany({ conversation: req.params.id });
     }
+
+    if (Model === UserConversation) {
+      const userConvo = await UserConversation.findById(req.params.id);
+      console.log("user convo to delete:", userConvo);
+
+      if (userConvo) {
+        console.log("the req user id:", req.user.id);
+        const updatedConversation = await Conversation.findByIdAndUpdate(
+          userConvo.conversation,
+          { $pull: { users: req.user.id } }
+        );
+        console.log(
+          "updated conversation after leaving convo:",
+          updatedConversation
+        );
+      }
+    }
+
     const doc = await Model.findByIdAndDelete(req.params.id);
 
     if (Model === Friend) {

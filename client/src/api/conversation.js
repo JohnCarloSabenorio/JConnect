@@ -44,6 +44,7 @@ export async function getAllGroupConversation() {
       { withCredentials: true }
     );
 
+    console.log("all groups response:", response.data);
     const allGroups = response.data.data;
     return allGroups;
   } catch (error) {
@@ -228,6 +229,22 @@ export async function activateUserConversation(userConvoId) {
   } catch (err) {
     console.log("Error activating user conversation:", err);
     p;
+  }
+}
+
+export async function leaveConversation(userConvoId) {
+  try {
+    const response = await axios.delete(
+      `jconnect/api/v1/user-conversation/${userConvoId}`
+    );
+
+    if (!response.status === 204) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    console.log("User Conversation Deleted!", response.data);
+  } catch (err) {
+    console.log("Error leaving conversation:", err);
   }
 }
 
