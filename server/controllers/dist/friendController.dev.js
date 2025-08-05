@@ -98,14 +98,13 @@ exports.cancelFriendRequest = catchAsync(function _callee2(req, res, next) {
           }));
 
         case 9:
-          console.log("The friend notif:", notification); // 3. Return success message
-
+          // 3. Return success message
           res.status(204).json({
             status: "success",
             message: "Friend request cancelled!"
           });
 
-        case 11:
+        case 10:
         case "end":
           return _context2.stop();
       }

@@ -72,6 +72,8 @@ export default function NotificationCard({ data }) {
             dispatch(setConvoViewMode(1));
             // inputRef.current.innerHTML = "";
             const userConversation = data.userconversation;
+            dispatch(setConvoViewMode(userConversation.isGroup ? 1 : 0));
+
             console.log("users:", userConversation.conversation.users);
             dispatch(setToMention([]));
             dispatch(

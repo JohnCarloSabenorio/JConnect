@@ -48,11 +48,12 @@ class APIFeatures {
 
   sort() {
     try {
+      console.log("THE QUERY STRING SORT:", this.queryString?.sort);
       if (this.queryString.sort) {
         let sortBy = this.queryString.sort.replace(",", " ");
-        this.query.sort(sortBy);
+        this.query = this.query.sort(sortBy);
       } else {
-        this.query.sort("fname");
+        this.query = this.query.sort("fname");
       }
     } catch (err) {
       console.log("Failed to sort query!");

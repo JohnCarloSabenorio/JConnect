@@ -77,6 +77,8 @@ function () {
     key: "sort",
     value: function sort() {
       try {
+        console.log("THE QUERY STRING SORT:", this.queryString.sort);
+
         if (this.queryString.sort) {
           var sortBy = this.queryString.sort.replace(",", " ");
           this.query.sort(sortBy);

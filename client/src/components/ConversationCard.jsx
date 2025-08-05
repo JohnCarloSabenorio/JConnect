@@ -85,7 +85,6 @@ export default function ConversationCard({
     })
     .join("");
 
-  console.log("displayed latest message:", displayedLatestMessage);
   // CHATS DISPLAYED IN THE SIDEBAR
   return (
     <>

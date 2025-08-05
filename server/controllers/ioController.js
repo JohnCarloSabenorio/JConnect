@@ -2,6 +2,7 @@ const Message = require("./../models/messageModel");
 const Conversation = require("../models/conversationModel");
 const Notification = require("../models/notificationModel");
 const UserConversation = require("../models/userConversationModel");
+const User = require("../models/userModel");
 const sharp = require("sharp"); // For saving and manipulating images
 const fs = require("fs");
 const path = require("path");
@@ -103,12 +104,12 @@ exports.reactToMesage = async (io, socket, data) => {
   // Check if the user already reacted to the message
 
   const existingUserReaction = messageReactions.find(
-    (reaction) => reaction.user._id.toString() == data.userId.toString()
+    (reaction) => reaction.user._id.toString() == data.actor.toString()
   );
 
   // Find the index of the existing user reaction
   const reactionIdx = messageReactions.findIndex(
-    (reaction) => reaction.user._id.toString() == data.userId.toString()
+    (reaction) => reaction.user._id.toString() == data.actor.toString()
   );
 
   // console.log("the user reaction: ", existingUserReaction);
@@ -120,11 +121,42 @@ exports.reactToMesage = async (io, socket, data) => {
       console.log("removed the reaction");
       // If it is, then remove the reaction
       messageReactions.splice(reactionIdx, 1);
+
+      // This will remove the notification if the receiver is not online
+
+      const theReceiver = await User.findById(data.receiver);
+
+      console.log("the receiver:", theReceiver);
+      // NEED TESTING
+
+      if (theReceiver.status != "online") {
+        console.log("THE RECEIVER IS NOT ONLINE!");
+        const deleteNotif = await Notification.findOneAndDelete({
+          actor: data.actor,
+          messageId: data.messageId,
+          receiver: data.receiver,
+          notification_type: "reaction",
+        });
+        console.log("deleted!");
+      }
     } else {
       console.log("replaced the reaction");
       // If not, then replace the unified emoji
       existingUserReaction.unified = data.emojiUnified;
       messageReactions[reactionIdx] = existingUserReaction;
+
+      // This will update the notification if the receiver is not online
+      // NEED TESTING
+      const existingNotification = await Notification.findOneAndUpdate(
+        {
+          actor: data.actor,
+          messageId: data.messageId,
+          conversation: data.conversation,
+          receiver: data.receiver,
+          notification_type: "reaction",
+        },
+        { message: data.notifMessage }
+      );
     }
   } else {
     // If there is no existing user reaction, create one

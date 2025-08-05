@@ -152,7 +152,7 @@ exports.getAll = function (Model) {
               };
             }
 
-            if (Model === Notification) {
+            if (Model == Notification) {
               filter = {
                 receiver: req.user.id
               };
@@ -165,7 +165,7 @@ exports.getAll = function (Model) {
             features = new APIFeatures(Model.find(filter), req.query).filter().sort().limitFields();
             featureQuery = features.query;
 
-            if (Model === Notification) {
+            if (Model == Notification) {
               console.log("THIS IS NOTIFICATION");
               featureQuery = featureQuery.populate("actor").lean();
             }
@@ -175,10 +175,12 @@ exports.getAll = function (Model) {
 
           case 10:
             docs = _context5.sent;
+            console.log(req.query);
+            console.log(Model == Notification);
             console.log("THE DOCS:", docs);
 
             if (!(Model === Notification)) {
-              _context5.next = 14;
+              _context5.next = 16;
               break;
             }
 
@@ -188,8 +190,8 @@ exports.getAll = function (Model) {
               data: docs
             }));
 
-          case 14:
-            _context5.next = 16;
+          case 16:
+            _context5.next = 18;
             return regeneratorRuntime.awrap(Promise.all(docs.map(function _callee4(doc) {
               var images64;
               return regeneratorRuntime.async(function _callee4$(_context4) {
@@ -251,7 +253,7 @@ exports.getAll = function (Model) {
               });
             })));
 
-          case 16:
+          case 18:
             docsWithBase = _context5.sent;
             res.status(200).json({
               status: "success",
@@ -259,7 +261,7 @@ exports.getAll = function (Model) {
               data: docsWithBase
             });
 
-          case 18:
+          case 20:
           case "end":
             return _context5.stop();
         }

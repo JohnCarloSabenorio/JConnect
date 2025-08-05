@@ -78,7 +78,7 @@ exports.getAll = (Model) =>
       filter = { user: req.user._id };
     }
 
-    if (Model === Notification) {
+    if (Model == Notification) {
       filter = { receiver: req.user.id };
     }
 
@@ -92,16 +92,15 @@ exports.getAll = (Model) =>
       .limitFields();
 
     let featureQuery = features.query;
-
-    if (Model === Notification) {
+    if (Model == Notification) {
       console.log("THIS IS NOTIFICATION");
       featureQuery = featureQuery.populate("actor").lean();
     }
 
     const docs = await featureQuery;
-
+    console.log(req.query);
+    console.log(Model == Notification);
     console.log("THE DOCS:", docs);
-
     if (Model === Notification) {
       return res.status(200).json({
         status: "success",

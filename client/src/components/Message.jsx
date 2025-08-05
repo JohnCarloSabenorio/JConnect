@@ -81,7 +81,7 @@ export const Message = React.memo(function Message({
     // const updatedReactions = await reactToMessage(messageId, emojiData.unified);
 
     if (sender._id != user._id) {
-      console.log("reacted to a messagE!");
+      console.log("reacted to a message!");
       socket.emit("send notification", {
         message: `${user.username} reacted ${emojiData.emoji} to your message.`,
         receiver: sender._id,
@@ -94,7 +94,10 @@ export const Message = React.memo(function Message({
     socket.emit("message react", {
       userId: user._id,
       messageId,
+      receiver: sender._id,
+      conversation: activeConvo,
       emojiUnified: emojiData.unified,
+      notifMessage: `${user.username} reacted ${emojiData.emoji} to your message.`,
     });
   }
 

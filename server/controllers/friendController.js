@@ -48,7 +48,6 @@ exports.cancelFriendRequest = catchAsync(async (req, res, next) => {
     });
   }
 
-  console.log("The friend notif:", notification);
   // 3. Return success message
   res.status(204).json({
     status: "success",

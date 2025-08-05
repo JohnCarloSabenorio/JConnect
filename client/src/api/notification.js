@@ -15,7 +15,7 @@ export async function getAllNotifications() {
   try {
     console.log("getting all the mofo notifications...");
     const response = await axios.get(
-      "jconnect/api/v1/notification?sort=updatedAt",
+      "jconnect/api/v1/notification?sort=-createdAt",
       {
         withCredentials: true,
       }

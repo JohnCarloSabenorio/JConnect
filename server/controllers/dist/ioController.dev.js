@@ -14,6 +14,8 @@ var Notification = require("../models/notificationModel");
 
 var UserConversation = require("../models/userConversationModel");
 
+var User = require("../models/userModel");
+
 var sharp = require("sharp"); // For saving and manipulating images
 
 
@@ -170,7 +172,7 @@ exports.sendMessage = function _callee4(io, socket, data) {
 };
 
 exports.reactToMesage = function _callee5(io, socket, data) {
-  var message, messageReactions, existingUserReaction, reactionIdx;
+  var message, messageReactions, existingUserReaction, reactionIdx, theReceiver, deleteNotif, existingNotification;
   return regeneratorRuntime.async(function _callee5$(_context5) {
     while (1) {
       switch (_context5.prev = _context5.next) {
@@ -194,46 +196,102 @@ exports.reactToMesage = function _callee5(io, socket, data) {
           messageReactions = message.reactions; // Check if the user already reacted to the message
 
           existingUserReaction = messageReactions.find(function (reaction) {
-            return reaction.user._id.toString() == data.userId.toString();
+            return reaction.user._id.toString() == data.actor.toString();
           }); // Find the index of the existing user reaction
 
           reactionIdx = messageReactions.findIndex(function (reaction) {
-            return reaction.user._id.toString() == data.userId.toString();
+            return reaction.user._id.toString() == data.actor.toString();
           }); // console.log("the user reaction: ", existingUserReaction);
           // console.log(reactionIdx);
 
-          if (existingUserReaction) {
-            // If the user reacted to the message, check if the unified emoji is the same
-            if (existingUserReaction.unified == data.emojiUnified) {
-              console.log("removed the reaction"); // If it is, then remove the reaction
-
-              messageReactions.splice(reactionIdx, 1);
-            } else {
-              console.log("replaced the reaction"); // If not, then replace the unified emoji
-
-              existingUserReaction.unified = data.emojiUnified;
-              messageReactions[reactionIdx] = existingUserReaction;
-            }
-          } else {
-            // If there is no existing user reaction, create one
-            console.log("added new user reaction");
-            messageReactions.push({
-              user: data.userId,
-              unified: data.emojiUnified
-            });
-            message.reactions = messageReactions;
+          if (!existingUserReaction) {
+            _context5.next = 33;
+            break;
           }
 
-          _context5.next = 12;
+          if (!(existingUserReaction.unified == data.emojiUnified)) {
+            _context5.next = 25;
+            break;
+          }
+
+          console.log("removed the reaction"); // If it is, then remove the reaction
+
+          messageReactions.splice(reactionIdx, 1); // This will remove the notification if the receiver is not online
+
+          _context5.next = 15;
+          return regeneratorRuntime.awrap(User.findById(data.receiver));
+
+        case 15:
+          theReceiver = _context5.sent;
+          console.log("the receiver:", theReceiver); // NEED TESTING
+
+          if (!(theReceiver.status != "online")) {
+            _context5.next = 23;
+            break;
+          }
+
+          console.log("THE RECEIVER IS NOT ONLINE!");
+          _context5.next = 21;
+          return regeneratorRuntime.awrap(Notification.findOneAndDelete({
+            actor: data.actor,
+            messageId: data.messageId,
+            receiver: data.receiver,
+            notification_type: "reaction"
+          }));
+
+        case 21:
+          deleteNotif = _context5.sent;
+          console.log("deleted!");
+
+        case 23:
+          _context5.next = 31;
+          break;
+
+        case 25:
+          console.log("replaced the reaction"); // If not, then replace the unified emoji
+
+          existingUserReaction.unified = data.emojiUnified;
+          messageReactions[reactionIdx] = existingUserReaction; // This will update the notification if the receiver is not online
+          // NEED TESTING
+
+          _context5.next = 30;
+          return regeneratorRuntime.awrap(Notification.findOneAndUpdate({
+            actor: data.actor,
+            messageId: data.messageId,
+            conversation: data.conversation,
+            receiver: data.receiver,
+            notification_type: "reaction"
+          }, {
+            message: data.notifMessage
+          }));
+
+        case 30:
+          existingNotification = _context5.sent;
+
+        case 31:
+          _context5.next = 36;
+          break;
+
+        case 33:
+          // If there is no existing user reaction, create one
+          console.log("added new user reaction");
+          messageReactions.push({
+            user: data.userId,
+            unified: data.emojiUnified
+          });
+          message.reactions = messageReactions;
+
+        case 36:
+          _context5.next = 38;
           return regeneratorRuntime.awrap(message.save());
 
-        case 12:
+        case 38:
           io.to(message.conversation._id.toString()).emit("message react", {
             reactions: messageReactions,
             message: message
           });
 
-        case 13:
+        case 39:
         case "end":
           return _context5.stop();
       }

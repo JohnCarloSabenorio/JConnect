@@ -106,6 +106,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("message react", (data) => {
+    data["actor"] = socket.handshake.auth.userId;
     console.log("A user reacted to the message!");
 
     ioController.reactToMesage(io, socket, data);
