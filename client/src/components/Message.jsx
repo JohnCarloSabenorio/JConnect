@@ -6,18 +6,20 @@ import Picker, { Emoji } from "emoji-picker-react";
 import { socket } from "../socket";
 import React from "react";
 import { reactToMessage, getTopEmojis } from "../api/message";
+import { createPortal } from "react-dom";
 import {
   setMessageReactionsId,
   setDisplayReactionsOverlay,
   setAllMessageReactions,
 } from "../redux/message";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { UserContext } from "../App";
 
 export const Message = React.memo(function Message({
   imgUrl,
   messageData,
   imagesSent,
+  uiChatRef,
 }) {
   const { user } = useContext(UserContext);
   const {
@@ -37,6 +39,54 @@ export const Message = React.memo(function Message({
   const [displayReactionPicker, setDisplayReactionPicker] = useState(false);
   const [displayChatReact, setDisplayChatReact] = useState(false);
   const [pickerKey, setPickerKey] = useState(0);
+  const buttonRef = useRef(null);
+  const [pickerPosition, setPickerPosition] = useState({ top: 0, left: 0 });
+  const [timeOpacity, setTimeOpacity] = useState(0);
+
+  function openPicker() {
+    if (!displayReactionPicker && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const pickerHeight = 70; // approximate height of the emoji picker
+      const spacing = 8; // space between button and picker
+
+      setPickerPosition({
+        top: rect.top - pickerHeight - spacing,
+        left: rect.left + rect.width / 2,
+      });
+    }
+
+    setDisplayReactionPicker(true);
+  }
+
+  useEffect(() => {
+    const chat = uiChatRef.current;
+    if (!chat) return;
+
+    function handleScroll() {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const chatRect = chat.getBoundingClientRect();
+
+      const pickerHeight = 70; // approximate height of the emoji picker
+      const spacing = 8; // space between button and picker
+
+      let top = rect.top - pickerHeight - spacing;
+      let left = rect.left + rect.width / 2;
+      setPickerPosition({
+        top: top,
+        left: left,
+      });
+
+      if (top < chatRect.top || top - pickerHeight > chatRect.height) {
+        setDisplayReactionPicker(false);
+      }
+    }
+
+    chat.addEventListener("scroll", handleScroll);
+
+    return () => {
+      chat.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const [topReactions, setTopReactions] = useState([]);
   useEffect(() => {
@@ -111,7 +161,7 @@ export const Message = React.memo(function Message({
 
   return (
     <div
-      className="flex flex-col p-7"
+      className={"flex flex-col p-7"}
       onMouseEnter={(e) => {
         setDisplayChatReact(true);
       }}
@@ -120,39 +170,51 @@ export const Message = React.memo(function Message({
       }}
       id={`msg-${messageId}`}
     >
-      <div className={`flex ${isCurrentUser ? "ml-auto mr-15" : "ml-15"}`}>
-        {/* <p className="">{username}</p> */}
-      </div>
       <div className={isCurrentUser ? "ml-auto flex gap-2" : "flex gap-2"}>
         {isCurrentUser ? (
           <>
             <div className="relative group">
               {message !== "" && (
                 <div className="flex gap-5 items-center">
-                  <div
-                    className={`${
-                      displayReactionPicker ? "block" : "hidden"
-                    } relative`}
-                  >
-                    <div className="absolute right-0 -bottom-6">
-                      <Picker
-                        key={pickerKey}
-                        reactionsDefaultOpen={true}
-                        onEmojiClick={(e) => {
-                          handleEmojiClick(e);
-                        }}
-                      />
-                    </div>
-                  </div>
                   <div className="flex gap-2">
-                    <div className="flex justify-center items-center">
+                    <div className="flex justify-center items-center relative">
+                      {displayReactionPicker &&
+                        createPortal(
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: `${pickerPosition.top}px`,
+                              left: `${pickerPosition.left}px`,
+                              transform: "translateX(-50%)",
+                              display: `${
+                                displayReactionPicker ? "block" : "hidden"
+                              }`,
+                            }}
+                            className={`absolute z-[9999]`}
+                          >
+                            <Picker
+                              key={pickerKey}
+                              reactionsDefaultOpen={true}
+                              onEmojiClick={handleEmojiClick}
+                            />
+                          </div>,
+                          document.body
+                        )}
+
                       <button
+                        ref={buttonRef}
                         onClick={(e) => {
-                          setDisplayReactionPicker((prev) => !prev);
+                          if (displayReactionPicker) {
+                            setDisplayReactionPicker(false);
+                          } else {
+                            openPicker();
+                          }
                           setPickerKey((prev) => prev + 1);
                         }}
                         className={`${
-                          displayChatReact ? "block" : "hidden"
+                          displayChatReact || displayReactionPicker
+                            ? "block"
+                            : "hidden"
                         } cursor-pointer`}
                       >
                         <svg
@@ -163,10 +225,24 @@ export const Message = React.memo(function Message({
                           <path d="M480-480Zm0 400q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q43 0 83 8.5t77 24.5v90q-35-20-75.5-31.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q133 0 226.5-93.5T800-480q0-32-6.5-62T776-600h86q9 29 13.5 58.5T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm320-600v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80ZM620-520q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Zm-280 0q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm140 260q68 0 123.5-38.5T684-400H276q25 63 80.5 101.5T480-260Z" />
                         </svg>
                       </button>
+
+                      <span
+                        className={`z-40 absolute right-0 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded-full opacity-${timeOpacity} transition-opacity ${
+                          timeOpacity == 0 && "hidden"
+                        }`}
+                      >
+                        {formatTime(timeSent)}
+                      </span>
                     </div>
                     <div
-                      className="relative max-w-max bg-blue-400 p-2 rounded-full px-3"
+                      className="relative max-w-xl bg-blue-400 p-2 rounded-full px-3"
                       id={messageId}
+                      onMouseEnter={(e) => {
+                        setTimeOpacity(100);
+                      }}
+                      onMouseLeave={(e) => {
+                        setTimeOpacity(0);
+                      }}
                     >
                       <p className="break-all">
                         {messageParts.map((part, id) => {
@@ -224,10 +300,6 @@ export const Message = React.memo(function Message({
                   </div>
                 </div>
               )}
-
-              <span className="z-40 absolute left-0 bottom-full mb-2 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                {formatTime(timeSent)}
-              </span>
             </div>
           </>
         ) : (
@@ -242,8 +314,14 @@ export const Message = React.memo(function Message({
               {message !== "" && (
                 <div className="flex gap-2 items-center">
                   <div
-                    className="relative max-w-max bg-green-400 p-2 px-3 rounded-full"
+                    className="relative max-w-xl bg-green-400 p-2 px-3 rounded-full"
                     id={messageId}
+                    onMouseEnter={(e) => {
+                      setTimeOpacity(100);
+                    }}
+                    onMouseLeave={(e) => {
+                      setTimeOpacity(0);
+                    }}
                   >
                     <p className="break-all">
                       {messageParts.map((part, id) => {
@@ -296,30 +374,44 @@ export const Message = React.memo(function Message({
                       </p>
                     </div>
                   </div>
-                  <div
-                    className={`${
-                      displayReactionPicker ? "block" : "hidden"
-                    } relative`}
-                  >
-                    <div className="absolute left-0 -bottom-6">
-                      <Picker
-                        key={pickerKey}
-                        reactionsDefaultOpen={true}
-                        onEmojiClick={(e) => {
-                          handleEmojiClick(e);
-                        }}
-                      />
-                    </div>
-                  </div>
 
-                  <div className="flex justify-center items-center">
+                  <div className="flex justify-center items-center gap-5 relative">
+                    {displayReactionPicker &&
+                      createPortal(
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: `${pickerPosition.top}px`,
+                            left: `${pickerPosition.left}px`,
+                            transform: "translateX(-50%)",
+                            display: `${
+                              displayReactionPicker ? "block" : "hidden"
+                            }`,
+                          }}
+                          className={`absolute z-[9999]`}
+                        >
+                          <Picker
+                            key={pickerKey}
+                            reactionsDefaultOpen={true}
+                            onEmojiClick={handleEmojiClick}
+                          />
+                        </div>,
+                        document.body
+                      )}
                     <button
+                      ref={buttonRef}
                       onClick={(e) => {
-                        setDisplayReactionPicker((prev) => !prev);
+                        if (displayReactionPicker) {
+                          setDisplayReactionPicker(false);
+                        } else {
+                          openPicker();
+                        }
                         setPickerKey((prev) => prev + 1);
                       }}
                       className={`${
-                        displayChatReact ? "block" : "hidden"
+                        displayChatReact || displayReactionPicker
+                          ? "block"
+                          : "hidden"
                       } cursor-pointer`}
                     >
                       <svg
@@ -330,13 +422,17 @@ export const Message = React.memo(function Message({
                         <path d="M480-480Zm0 400q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q43 0 83 8.5t77 24.5v90q-35-20-75.5-31.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q133 0 226.5-93.5T800-480q0-32-6.5-62T776-600h86q9 29 13.5 58.5T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm320-600v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80ZM620-520q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Zm-280 0q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm140 260q68 0 123.5-38.5T684-400H276q25 63 80.5 101.5T480-260Z" />
                       </svg>
                     </button>
+
+                    <span
+                      className={`z-40 absolute left-0 mb-2 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded-full  opacity-${timeOpacity} transition-opacity ${
+                        timeOpacity == 0 && "hidden"
+                      }`}
+                    >
+                      {formatTime(timeSent)}
+                    </span>
                   </div>
                 </div>
               )}
-
-              <span className="z-40 absolute left-0 bottom-full mb-2 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                {formatTime(timeSent)}
-              </span>
             </div>
           </>
         )}

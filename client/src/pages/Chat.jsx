@@ -471,7 +471,7 @@ export default function Chat() {
           />
 
           {/* Chat Interface */}
-          <div className="flex flex-grow flex-col w-4xl  bg-gray-50">
+          <div className="flex flex-grow flex-col w-4xl bg-gray-50 h-full">
             <div className="border-b-8-gray-800 flex p-3 gap-5 px-10 bg-white">
               <img
                 src="/img/icons/male-default.jpg"
@@ -558,6 +558,7 @@ export default function Chat() {
                       imgUrl="img/icons/male-default.jpg"
                       messageData={message}
                       imagesSent={blobUrls}
+                      uiChatRef={uiChatRef}
                     />
                   );
                 })
