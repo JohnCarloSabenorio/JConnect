@@ -145,8 +145,9 @@ exports.checkConvoExists = catchAsync(async (req, res) => {
 });
 
 exports.createConversation = catchAsync(async (req, res) => {
-  console.log("Creating Conversation");
-  // Create a new conversation
+  console.log("Creating Conversation...");
+
+  console.log("THE BODY;", req.body);
   let newConversation = await Conversation.create(req.body);
 
   // Populate the user data
@@ -158,11 +159,14 @@ exports.createConversation = catchAsync(async (req, res) => {
   const usersFromDB = await User.find({ _id: { $in: req.body.users } });
 
   // Create user-conversation
-
   // Check if it is a group conversation or not
-  if (newConversation.users.length > 2) {
+
+  console.log("IS IT A GROUP?", req.body.isGroup);
+  if (req.body.isGroup) {
     // Create Group Name using first three usernames
-    const newGroupName = `${usersFromDB[0].username}, ${usersFromDB[1].username}, ${usersFromDB[2].username},...`;
+    const newGroupName = req.body.conversationName
+      ? req.body.conversationName
+      : `${usersFromDB[0].username}, ${usersFromDB[1].username}, ${usersFromDB[2].username},...`;
 
     // Create an array containing objects of new group conversations
     const newGroupUserConversationData = usersFromDB.map((user) => {
@@ -175,21 +179,32 @@ exports.createConversation = catchAsync(async (req, res) => {
     });
 
     // Create new user conversation documents
-    const newUserConversation = await UserConversation.create(
+    const newUserConversations = await UserConversation.create(
       newGroupUserConversationData
     );
 
+    console.log("new user conversations from group:", newUserConversations);
+    // Populate the new user  conversations
+    const populatedUserConversations = await UserConversation.populate(
+      newUserConversations,
+      {
+        path: "conversation",
+      }
+    );
     // Find the document of the current user
-    currentUserNewConvo = await newUserConversation
-      .find((convo) => convo.user.toString() === req.user.id)
-      .populate("conversation");
+    currentUserNewConvo = populatedUserConversations.find(
+      (userconvo) => userconvo.user.toString() === req.user.id
+    );
 
     console.log("current new user convo:", currentUserNewConvo);
 
     return res.status(200).json({
       status: "success",
       message: "New conversation successfully created!",
-      data: currentUserNewConvo,
+      data: {
+        newUserConversations: populatedUserConversations,
+        currentUserNewConversation: currentUserNewConvo,
+      },
     });
   } else {
     const newDirectUserConversations = await UserConversation.create([

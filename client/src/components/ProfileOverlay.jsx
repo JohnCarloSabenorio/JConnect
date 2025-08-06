@@ -23,7 +23,10 @@ import {
   getAllUserMessages,
 } from "../api/conversation";
 import { UserContext } from "../App";
-import { initDisplayedMessages, setInitialMessageRender } from "../redux/message";
+import {
+  initDisplayedMessages,
+  setInitialMessageRender,
+} from "../redux/message";
 import {
   setUserIsFriend,
   addANewConvo,
@@ -163,8 +166,8 @@ export default function ProfileOverlay() {
 
       if (!userConversation) {
         userConversation = await createConversation(
-          user._id,
-          displayedUser._id
+          [user._id, displayedUser._id],
+          false
         );
 
         console.log("CREATED A CONVERSATION:", userConversation);

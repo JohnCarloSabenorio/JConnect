@@ -202,8 +202,10 @@ const conversationSlice = createSlice({
     },
 
     addGroupConversation: (state, action) => {
-      console.log("added a conversation:", action.payload);
-      state.allGroupConversation.push(action.payload);
+      state.allGroupConversation = [
+        action.payload,
+        ...state.allGroupConversation,
+      ];
     },
 
     addANewConvo: (state, action) => {

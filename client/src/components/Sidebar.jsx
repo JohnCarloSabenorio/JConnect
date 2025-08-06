@@ -10,6 +10,7 @@ import Groups from "./sidebar_contents/Groups";
 import ArchivedChat from "./sidebar_contents/ArchivedChat";
 import Discover from "./sidebar_contents/Discover";
 import { useDispatch, useSelector } from "react-redux";
+import { setDisplayGroupChatOverlay } from "../redux/creategroupchat_overlay";
 import { socket } from "../socket";
 import {
   initAllDirectConversation,
@@ -354,12 +355,19 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
           }}
           // style={{ fontFamily: "Arial", "FontAwesome" }}
         />
+        {convoViewMode === 1 && (
+          <button
+            className="mt-3 p-3 shadow-md rounded-md cursor-pointer hover:bg-gray-50 font-semibold"
+            onClick={(e) => dispatch(setDisplayGroupChatOverlay(true))}
+          >
+            Create Group Conversation
+          </button>
+        )}
+
         {sidebarContent === "inbox" ? (
           <Inbox inputRef={inputRef} getMessages={getMessages} />
         ) : sidebarContent === "friends" ? (
           <Friends chatAFriend={chatAFriend} />
-        ) : sidebarContent === "groups" ? (
-          <Groups getMessages={getMessages} />
         ) : sidebarContent === "archived" ? (
           <ArchivedChat inputRef={inputRef} getMessages={getMessages} />
         ) : sidebarContent === "discover" ? (
@@ -367,6 +375,12 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
         ) : (
           <p>brother...</p>
         )}
+
+        {/* 
+        : sidebarContent === "groups" ? (
+          <Groups getMessages={getMessages} />
+        )
+         */}
       </div>
     </div>
   );

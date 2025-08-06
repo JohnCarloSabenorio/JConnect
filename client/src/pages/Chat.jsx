@@ -23,7 +23,6 @@ import {
   leaveConversation,
 } from "../api/conversation";
 import Overlay from "../components/Overlay";
-import { getAllUserMessages } from "../api/conversation";
 import { toggleMediaPanel } from "../redux/media";
 import { addNotification } from "../redux/notification";
 import { setEmojiPickerIsOpen } from "../redux/chat";
@@ -42,7 +41,10 @@ import {
   removeAConvo,
   setMessage,
 } from "../redux/conversation";
-import { activateUserConversation } from "../api/conversation";
+import {
+  activateUserConversation,
+  getAllUserMessages,
+} from "../api/conversation";
 import ReactionsOverlay from "../components/ReactionsOverlay";
 import {
   initDisplayedMessages,
@@ -52,13 +54,9 @@ import {
   updateMessage,
 } from "../redux/message";
 import { createMessage } from "../api/message";
-
-import { setAllFriends, setAllNonFriends } from "../redux/friend";
-
 import { setMediaImages } from "../redux/media";
-
 import { setTargetScrollMessageId } from "../redux/message";
-
+import CreateGroupChatOverlay from "../components/CreateGroupChatOverlay";
 export default function Chat() {
   const dispatch = useDispatch();
   // REDUX STATES
@@ -336,7 +334,7 @@ export default function Chat() {
     // This will get the messages using the id of the response, since if the conversation exists, it's in the allInboxConversation array
     // Create a conversation with the friend if no convo exists
     if (response.length == 0) {
-      const newConvo = await createConversation(user._id, friendId);
+      const newConvo = await createConversation([user._id, friendId], false);
       getMessages(newConvo._id, newConvo.convoName);
       dispatch(addANewConvo(newConvo));
       return newConvo._id;
@@ -457,6 +455,7 @@ export default function Chat() {
         <ProfileOverlay />
         <ReactionsOverlay />
         <AddMemberOverlay />
+        <CreateGroupChatOverlay />
         <Navbar />
         {/* Main Content */}
         <div className="flex flex-grow min-h-0 relative">
@@ -540,7 +539,7 @@ export default function Chat() {
                   <img src="img/loading.gif" className="w-20 h-20"></img>
                 </div>
               ) : (
-                displayedMessages.map((message, i) => {
+                displayedMessages?.map((message, i) => {
                   let blobUrls = [];
                   if (message.images64) {
                     message.images64.forEach((base64, idx) => {

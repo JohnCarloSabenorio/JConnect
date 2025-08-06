@@ -85,15 +85,14 @@ export async function getAllUserMessages(convoId) {
   }
 }
 
-export async function createConversation(userId, friendId) {
+export async function createConversation(users, isGroup, conversationName) {
   try {
-    console.log("THE USER ID:", userId);
-    console.log("THE FRIEND ID:", friendId);
-
     const response = await axios.post(
       `/jconnect/api/v1/conversation`,
       {
-        users: [userId, friendId],
+        users,
+        isGroup,
+        conversationName,
       },
       {
         withCredentials: true,

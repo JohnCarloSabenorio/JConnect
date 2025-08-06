@@ -88,9 +88,13 @@ io.on("connection", (socket) => {
 
   // Adds the new user conversation in the sidebar of the invited user
   socket.on("invite groupchat", (data) => {
+    console.log("THE DATA:", data);
     console.log("inviting user to the group chat!");
     const usersocket = onlineSockets[data.user];
-    usersocket.join(data.conversation);
+
+    if (usersocket) {
+      usersocket.join(data.conversation);
+    }
     ioController.inviteToGroupChat(io, socket, data);
   });
 

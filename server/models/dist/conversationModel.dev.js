@@ -19,9 +19,13 @@ var convoSchema = new mongoose.Schema({
       message: "{PATH} must be between 2 and 10 users"
     }
   },
-  convoName: {
+  conversationName: {
     type: String,
     "default": "New Conversation"
+  },
+  isGroup: {
+    type: Boolean,
+    "default": false
   },
   convoImage: {
     type: String,
