@@ -368,47 +368,86 @@ exports.resetPassword = catchAsync(function _callee6(req, res, next) {
   });
 });
 exports.updatePassword = catchAsync(function _callee7(req, res, next) {
-  var user;
+  var _req$body2, newPassword, confirmNewPassword, currentPassword, errorMessages, user, regex;
+
   return regeneratorRuntime.async(function _callee7$(_context7) {
     while (1) {
       switch (_context7.prev = _context7.next) {
         case 0:
-          _context7.next = 2;
+          _req$body2 = req.body, newPassword = _req$body2.newPassword, confirmNewPassword = _req$body2.confirmNewPassword, currentPassword = _req$body2.currentPassword;
+          errorMessages = [];
+          console.log("the bodehh", req.body); // 1. Get user from collection
+
+          console.log("the req user:", req.user);
+          _context7.next = 6;
           return regeneratorRuntime.awrap(User.findById(req.user._id).select("+password"));
 
-        case 2:
+        case 6:
           user = _context7.sent;
 
           if (user) {
-            _context7.next = 5;
+            _context7.next = 9;
             break;
           }
 
           return _context7.abrupt("return", next(new AppError("User does not exist!", 404)));
 
-        case 5:
-          _context7.next = 7;
-          return regeneratorRuntime.awrap(user.correctPassword(req.body.currentPassword, user.password));
+        case 9:
+          _context7.next = 11;
+          return regeneratorRuntime.awrap(user.correctPassword(currentPassword, user.password));
 
-        case 7:
+        case 11:
           if (_context7.sent) {
-            _context7.next = 9;
+            _context7.next = 13;
             break;
           }
 
-          return _context7.abrupt("return", next(new AppError("Your password is not correct! Please try again.", 400)));
-
-        case 9:
-          // 3. If correct, update the password
-          user.password = req.body.newPassword;
-          user.passwordConfirm = req.body.confirmNewPassword;
-          _context7.next = 13;
-          return regeneratorRuntime.awrap(user.save());
+          errorMessages.push("Your password is not correct! Please try again.");
 
         case 13:
-          createSignToken(user, 200, res);
+          // 3. Check if the password is atleast 8 characters long
+          if (newPassword.length < 8) {
+            errorMessages.push("Password must be at least 8 characters long.");
+          } // 4. Check if the password contains atleast 1 uppercase, 1 lowercase, 1 digit, and 1 special character
 
-        case 14:
+
+          regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).+$/;
+
+          if (!regex.test(req.body.newPassword)) {
+            errorMessages.push("Password must contain atleast 1 uppercase, 1 lowercase, 1 digit, and 1 special character.");
+          } // 5. Check if the password and confirm password matches
+
+
+          if (newPassword != confirmNewPassword) {
+            errorMessages.push("Passwords provided must match.");
+          } // 6. If there is at least 1 error message, return an error
+
+
+          if (!(errorMessages.length > 0)) {
+            _context7.next = 19;
+            break;
+          }
+
+          return _context7.abrupt("return", res.status(400).json({
+            status: "failed",
+            message: "Failed to update user password!",
+            errorMessages: errorMessages
+          }));
+
+        case 19:
+          // 7. Save the password if all the conditions are met
+          user.password = req.body.newPassword;
+          user.passwordConfirm = req.body.confirmNewPassword;
+          _context7.next = 23;
+          return regeneratorRuntime.awrap(user.save());
+
+        case 23:
+          res.status(200).json({
+            status: "success",
+            message: "User password successfully updated!"
+          });
+
+        case 24:
         case "end":
           return _context7.stop();
       }

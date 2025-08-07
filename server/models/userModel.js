@@ -43,22 +43,12 @@ const userSchema = new mongoose.Schema(
       required: [true, "A user must have a password!"],
       minlength: 8,
       select: false, // This sets password to cannot be queried
-      validate: [
-        validator.isStrongPassword,
-        "User must enter a valid password! ({VALUE} is not a valid password!)",
-      ],
     },
 
     passwordConfirm: {
       type: String,
       required: [true, "Please confirm your password!"],
       select: false,
-      validate: {
-        validator: function (el) {
-          return el === this.password;
-        },
-        message: "Your passwords do not match! Please try again.",
-      },
     },
 
     phone_number: {

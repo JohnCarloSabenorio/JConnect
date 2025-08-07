@@ -231,29 +231,61 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
+  const { newPassword, confirmNewPassword, currentPassword } = req.body;
+  const errorMessages = [];
+
+  console.log("the bodehh", req.body);
   // 1. Get user from collection
+  console.log("the req user:", req.user);
   const user = await User.findById(req.user._id).select("+password");
-  // 2. Check if POSTed current password is correct
   if (!user) {
     return next(new AppError("User does not exist!", 404));
   }
+  // 2. Check if the current password is correct
+  if (!(await user.correctPassword(currentPassword, user.password))) {
+    errorMessages.push("Your password is not correct! Please try again.");
+  }
 
-  if (!(await user.correctPassword(req.body.currentPassword, user.password)))
-    return next(
-      new AppError("Your password is not correct! Please try again.", 400)
+  // 3. Check if the password is atleast 8 characters long
+  if (newPassword.length < 8) {
+    errorMessages.push("Password must be at least 8 characters long.");
+  }
+
+  // 4. Check if the password contains atleast 1 uppercase, 1 lowercase, 1 digit, and 1 special character
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).+$/;
+  if (!regex.test(req.body.newPassword)) {
+    errorMessages.push(
+      "Password must contain atleast 1 uppercase, 1 lowercase, 1 digit, and 1 special character."
     );
+  }
+  // 5. Check if the password and confirm password matches
 
-  // 3. If correct, update the password
+  if (newPassword != confirmNewPassword) {
+    errorMessages.push("Passwords provided must match.");
+  }
+
+  // 6. If there is at least 1 error message, return an error
+  if (errorMessages.length > 0) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Failed to update user password!",
+      errorMessages,
+    });
+  }
+
+  // 7. Save the password if all the conditions are met
   user.password = req.body.newPassword;
   user.passwordConfirm = req.body.confirmNewPassword;
   await user.save();
 
-  createSignToken(user, 200, res);
+  res.status(200).json({
+    status: "success",
+    message: "User password successfully updated!",
+  });
 });
 
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
   // 1. Get the decoded cookie
-
   try {
     const decoded = await promisify(jwt.verify)(
       req.cookies.jwt,

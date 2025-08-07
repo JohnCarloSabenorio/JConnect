@@ -16,6 +16,7 @@ import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import MediaPanel from "../components/MediaPanel";
 import ProfileOverlay from "../components/ProfileOverlay";
+import SettingsOverlay from "../components/SettingsOverlay";
 import AddMemberOverlay from "../components/AddMemberOverlay";
 import {
   createConversation,
@@ -57,6 +58,7 @@ import { createMessage } from "../api/message";
 import { setMediaImages } from "../redux/media";
 import { setTargetScrollMessageId } from "../redux/message";
 import CreateGroupChatOverlay from "../components/CreateGroupChatOverlay";
+
 export default function Chat() {
   const dispatch = useDispatch();
   // REDUX STATES
@@ -450,11 +452,12 @@ export default function Chat() {
 
   return (
     <>
-      {/* <UnfriendOverlay /> */}
       <div className="flex flex-col h-screen overflow-hidden">
+        {/* Overlays */}
         <ProfileOverlay />
         <ReactionsOverlay />
         <AddMemberOverlay />
+        <SettingsOverlay />
         <CreateGroupChatOverlay />
         <Navbar />
         {/* Main Content */}

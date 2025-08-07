@@ -23,3 +23,28 @@ export async function getUser(userId) {
     console.log("Error getting all users:", error);
   }
 }
+
+export async function changePassword(
+  currentPassword,
+  newPassword,
+  confirmNewPassword
+) {
+  try {
+    const response = await axios.patch(
+      `jconnect/api/v1/users/updatePassword`,
+      {
+        currentPassword,
+        newPassword,
+        confirmNewPassword,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+
+    return response;
+  } catch (error) {
+    console.log("Error getting all users:", error);
+    return error;
+  }
+}

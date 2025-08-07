@@ -7,7 +7,7 @@ import {
 } from "../api/notification";
 import { useSelector, useDispatch } from "react-redux";
 import { setAllNotifications } from "../redux/notification";
-
+import { setDisplaySettingsOverlay } from "../redux/settings_overlay";
 import { setNotifActive } from "../redux/notification";
 export default function Navbar() {
   const [menuActive, setMenuActive] = useState(false);
@@ -146,7 +146,15 @@ export default function Navbar() {
             } absolute top-full mt-3 right-0 rounded-sm w-50 bg-gray-50 shadow-lg origin-top duration-100 flex-col justify-start`}
           >
             <a className="hover:bg-blue-200 rounded-sm p-2">Profile</a>
-            <a className="hover:bg-blue-200 rounded-sm p-2">Settings</a>
+            <a
+              className="hover:bg-blue-200 rounded-sm p-2"
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(setDisplaySettingsOverlay(true));
+              }}
+            >
+              Settings
+            </a>
             <a
               onClick={handleLogout}
               className="hover:bg-blue-200 rounded-sm p-2"

@@ -13,6 +13,7 @@ import notificationReducer from "./notification";
 import addMemberOverlayReducer from "./addmember_overlay";
 import createGroupChatOverlayReducer from "./creategroupchat_overlay";
 import chatReducer from "./chat";
+import settingsOverlayReducer from "./settings_overlay";
 export default configureStore({
   reducer: {
     sidebar: sidebarReducer,
@@ -28,6 +29,7 @@ export default configureStore({
     addMemberOverlay: addMemberOverlayReducer,
     chat: chatReducer,
     createGroupChatOverlay: createGroupChatOverlayReducer,
+    settingsOverlay: settingsOverlayReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });
