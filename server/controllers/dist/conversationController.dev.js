@@ -272,7 +272,8 @@ exports.createConversation = catchAsync(function _callee5(req, res) {
               user: user._id,
               conversation: newConversation._id,
               conversationName: newGroupName,
-              isGroup: true
+              isGroup: true,
+              status: "pending"
             };
           }); // Create new user conversation documents
 

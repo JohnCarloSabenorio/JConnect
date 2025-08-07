@@ -175,6 +175,7 @@ exports.createConversation = catchAsync(async (req, res) => {
         conversation: newConversation._id,
         conversationName: newGroupName,
         isGroup: true,
+        status: "pending",
       };
     });
 
