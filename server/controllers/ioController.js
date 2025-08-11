@@ -15,6 +15,7 @@ exports.removeMember = async (io, socket, data) => {
       $pull: {
         users: data.member._id,
       },
+      latestMessage: `${data.member.username} has been removed from the group.`,
     },
     {
       new: true,
@@ -36,12 +37,13 @@ exports.removeMember = async (io, socket, data) => {
     action: "remove_member",
   });
 
-  console.log("the message created:", newMessage);
+  const populatedMessage = await newMessage.populate("sender");
 
   // Emit remove member to the conversation
   io.to(data.conversationId.toString()).emit("remove member", {
-    conversationId: data.conversationId,
-    message: newMessage,
+    userId: data.member._id,
+    conversationData: convo,
+    messageData: populatedMessage,
   });
 };
 

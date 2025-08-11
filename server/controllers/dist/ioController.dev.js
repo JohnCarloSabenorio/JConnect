@@ -24,7 +24,7 @@ var fs = require("fs");
 var path = require("path");
 
 exports.removeMember = function _callee(io, socket, data) {
-  var convo, newMessage;
+  var convo, newMessage, populatedMessage;
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -33,7 +33,8 @@ exports.removeMember = function _callee(io, socket, data) {
           return regeneratorRuntime.awrap(Conversation.findByIdAndUpdate(data.conversationId, {
             $pull: {
               users: data.member._id
-            }
+            },
+            latestMessage: "".concat(data.member.username, " has been removed from the group.")
           }, {
             "new": true,
             runValidators: true
@@ -58,14 +59,19 @@ exports.removeMember = function _callee(io, socket, data) {
 
         case 7:
           newMessage = _context.sent;
-          console.log("the message created:", newMessage); // Emit remove member to the conversation
-
-          io.to(data.conversationId.toString()).emit("remove member", {
-            conversationId: data.conversationId,
-            message: newMessage
-          });
+          _context.next = 10;
+          return regeneratorRuntime.awrap(newMessage.populate("sender"));
 
         case 10:
+          populatedMessage = _context.sent;
+          // Emit remove member to the conversation
+          io.to(data.conversationId.toString()).emit("remove member", {
+            userId: data.member._id,
+            conversationData: convo,
+            messageData: populatedMessage
+          });
+
+        case 12:
         case "end":
           return _context.stop();
       }

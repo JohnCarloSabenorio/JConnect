@@ -7,7 +7,6 @@ import {
 import {
   filterArchivedConvo,
   filterRestoredConvo,
-  setActiveConversation,
   setActiveConvoIsArchived,
 } from "../redux/conversation";
 

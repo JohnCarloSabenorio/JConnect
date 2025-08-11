@@ -114,33 +114,31 @@ export default function Chat() {
     // remove members from redux
 
     const handleRemoveMember = (data) => {
-      alert("a user has been removed from the group!");
-      removeConvoMember(data.userId);
-
+      console.log("data user removed:", data);
       // Messages will be updated if the sent messages is for the current conversation
-      if (data.message.sender._id === user._id) {
+      console.log("message data:", data.messageData);
+
+      if (data.messageData.sender._id === user._id) {
         dispatch(setInitialMessageRender(true));
       }
 
-      if (activeConvo == data.conversationId) {
-        dispatch(updateDisplayedMessages(data.message));
+      console.log("the active convo:", activeConvo);
+      console.log("the active convo:", data.conversationData._id);
+      if (activeConvo == data.conversationData._id) {
+        console.log("IT IS FUCKING SHITS");
+        dispatch(updateDisplayedMessages(data.messageData));
       }
       setImages([]);
       setFileInputKey(Date.now());
 
       // This should scroll down the chat ui if the user is the sender (NEEDS TO BE FIXED)
-
       // UPDATES THE CONVERSATION LIST
-      // if (!data.isGroup) {
-      //   dispatch(updateAConvo(data.convo));
-      // } else {
-      //   dispatch(updateAGroupConvo(data.convo));
-      // }
+      dispatch(updateAGroupConvo(data.conversationData));
     };
     socket.on("remove member", (data) => {
       handleRemoveMember(data);
     });
-  }, []);
+  }, [activeConvo]);
 
   useEffect(() => {
     // Check if there is a targeted message to scroll into
@@ -208,9 +206,6 @@ export default function Chat() {
         dispatch(setInitialMessageRender(true));
       }
 
-      console.log("the active conversation:", activeConvo);
-      console.log("the message data:", data);
-
       if (activeConvo == data.convo._id) {
         dispatch(updateDisplayedMessages(data.msg));
       }
@@ -268,12 +263,8 @@ export default function Chat() {
     setImages([]);
   }, [displayedMessages]);
 
-  useEffect(() => {
-    // console.log("MEDIA IMAGES:", mediaImages);
-  }, [mediaImages]);
-  useEffect(() => {
-    // console.log("IMAGES TO BE SENT:", images);
-  }, [images]);
+  useEffect(() => {}, [mediaImages]);
+  useEffect(() => {}, [images]);
 
   // Adds a loading screen if all conversations are not yet retrieved.
   // if (!allInboxConversation) {
@@ -289,13 +280,11 @@ export default function Chat() {
       span.textContent = `@[${span.dataset.memberId}:${span.dataset.username}]`;
     });
 
-    console.log("ALL MENTION SPAN:", allMentionSpans);
     const messageToSend = inputRef.current.textContent.trim();
     inputRef.current.innerHTML = null;
     // IN THE IOCONTROLLER, CHECK IF THE CONVERSATION IS ARCHIVED, IF SO, MOVE IT TO ACTIVE AGAIN
 
     if (messageToSend == "" && images.length == 0) return;
-    // console.log("Socket connected?", socket.connected);
 
     const newMessage = await createMessage({
       message: messageToSend,
@@ -310,9 +299,6 @@ export default function Chat() {
       images: images,
     });
 
-    console.log("the new message id:", newMessage._id);
-
-    console.log("Created a new message:", newMessage);
     if (newMessage.mentions.length > 0) {
       toMention.forEach((userId) => {
         socket.emit("send notification", {
@@ -331,7 +317,6 @@ export default function Chat() {
   // Adds the emoji to the message input
   function addEmojiToInput(emoji) {
     dispatch(setEmojiPickerIsOpen(true));
-    // console.log("THE EMOJI: ", emoji);
 
     inputRef.current.innerHTML += emoji.emoji;
   }
@@ -360,12 +345,10 @@ export default function Chat() {
   }
 
   async function chatAFriend(friendId) {
-    // console.log("THE FRIEND ID:", friendId);
     const response = await findConvoWithUser(friendId);
 
     console.log("chatting a friend:", response);
 
-    // console.log("CHAT A FRIEND RESPONSE:", response);
     // This will get the messages using the id of the response, since if the conversation exists, it's in the allInboxConversation array
     // Create a conversation with the friend if no convo exists
     if (response.length == 0) {
@@ -385,7 +368,6 @@ export default function Chat() {
   }
 
   async function getMessages(convoId, convoName, userConvoId, convoStatus) {
-    console.log("GETTING DA PAKING MESSAGE!");
     // Join a channel for users in the same conversation
     const messages = await getAllUserMessages(convoId);
     dispatch(setActiveConversation([convoName, convoId, userConvoId]));
@@ -412,7 +394,6 @@ export default function Chat() {
         });
       })
     );
-    // console.log("BUFFER FILES: ", selectedFilesBuffer);
     setImages((prev) => [...prev, ...selectedFilesBuffer]);
   }
 
