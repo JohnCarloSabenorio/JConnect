@@ -130,6 +130,10 @@ exports.removeMember = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.removeMultipleMembers = catchAsync(async (req, res, next) => {
+  
+});
+
 // This checking is for a one on one conversation only
 exports.checkConvoExists = catchAsync(async (req, res) => {
   // Check if conversation exists using id of two users

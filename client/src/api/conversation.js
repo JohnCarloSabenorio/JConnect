@@ -260,3 +260,12 @@ export async function addNewMembersToGroup(conversationId, newMembersId) {
     console.log("Failed to add new members in the conversation:", err);
   }
 }
+
+export async function removeMemberFromGroup(conversationId, userId) {
+  try {
+    const response = await axios.delete(`
+      jconnect/api/v1/users/${userId}/conversation/member/${conversationId}`);
+  } catch (err) {
+    console.log("Failed to remove user from conversation:", err);
+  }
+}

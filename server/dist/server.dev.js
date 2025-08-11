@@ -101,6 +101,10 @@ io.on("connection", function (socket) {
     console.log("A user reacted to the message!");
     ioController.reactToMesage(io, socket, data);
   });
+  socket.on("remove member", function (data) {
+    data["actor"] = socket.handshake.auth.userId;
+    ioController.removeMember(io, socket, data);
+  });
 }); // RUN SERVER
 
 server.listen(port, function () {

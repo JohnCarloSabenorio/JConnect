@@ -7,6 +7,44 @@ const sharp = require("sharp"); // For saving and manipulating images
 const fs = require("fs");
 const path = require("path");
 
+exports.removeMember = async (io, socket, data) => {
+  // Remove the user from the conversation
+  const convo = await Conversation.findByIdAndUpdate(
+    data.conversationId,
+    {
+      $pull: {
+        users: data.member._id,
+      },
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  // Remove the user conversation data of the user
+  await UserConversation.findOneAndDelete({
+    conversation: data.conversationId,
+    user: data.member._id,
+  });
+
+  // Create a message for removing the user from the conversation
+  const newMessage = await Message.create({
+    message: `${data.member.username} has been removed from the group.`,
+    conversation: data.conversationId,
+    sender: data.actor,
+    action: "remove_member",
+  });
+
+  console.log("the message created:", newMessage);
+
+  // Emit remove member to the conversation
+  io.to(data.conversationId.toString()).emit("remove member", {
+    conversationId: data.conversationId,
+    message: newMessage,
+  });
+};
+
 exports.inviteToGroupChat = async (io, socket, data) => {
   const userConversation = await UserConversation.findOne({
     user: data.user,
@@ -20,7 +58,9 @@ exports.inviteToGroupChat = async (io, socket, data) => {
 
   console.log("THE DATA USER:", data.user);
 
-  io.to(`user_${data.user}`).emit("invite groupchat", { userConversation });
+  io.to(`user_${data.user}`).emit("invite groupchat", {
+    userId: data.member._id,
+  });
 };
 
 exports.sendMessage = async (io, socket, data) => {

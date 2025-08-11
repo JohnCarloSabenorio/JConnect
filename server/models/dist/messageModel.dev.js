@@ -39,6 +39,11 @@ var messageSchema = new mongoose.Schema({
     "enum": ["deleted", "sent", "updated", "forwarded"],
     select: false
   },
+  action: {
+    type: String,
+    "enum": ["message", "remove_member", "add_member"],
+    "default": "message"
+  },
   images: [String],
   conversation: {
     type: mongoose.Schema.Types.ObjectId,

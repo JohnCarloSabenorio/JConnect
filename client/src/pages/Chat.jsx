@@ -41,6 +41,7 @@ import {
   setConversationStatus,
   removeAConvo,
   setMessage,
+  removeConvoMember,
 } from "../redux/conversation";
 import {
   activateUserConversation,
@@ -108,6 +109,38 @@ export default function Chat() {
   const uiChatRef = useRef(null);
   const fileInputRef = useRef(null);
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    // remove members from redux
+
+    const handleRemoveMember = (data) => {
+      alert("a user has been removed from the group!");
+      removeConvoMember(data.userId);
+
+      // Messages will be updated if the sent messages is for the current conversation
+      if (data.message.sender._id === user._id) {
+        dispatch(setInitialMessageRender(true));
+      }
+
+      if (activeConvo == data.conversationId) {
+        dispatch(updateDisplayedMessages(data.message));
+      }
+      setImages([]);
+      setFileInputKey(Date.now());
+
+      // This should scroll down the chat ui if the user is the sender (NEEDS TO BE FIXED)
+
+      // UPDATES THE CONVERSATION LIST
+      // if (!data.isGroup) {
+      //   dispatch(updateAConvo(data.convo));
+      // } else {
+      //   dispatch(updateAGroupConvo(data.convo));
+      // }
+    };
+    socket.on("remove member", (data) => {
+      handleRemoveMember(data);
+    });
+  }, []);
 
   useEffect(() => {
     // Check if there is a targeted message to scroll into

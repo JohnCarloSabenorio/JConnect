@@ -113,6 +113,11 @@ io.on("connection", (socket) => {
 
     ioController.reactToMesage(io, socket, data);
   });
+
+  socket.on("remove member", (data) => {
+    data["actor"] = socket.handshake.auth.userId;
+    ioController.removeMember(io, socket, data);
+  });
 });
 
 // RUN SERVER

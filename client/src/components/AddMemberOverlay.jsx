@@ -14,8 +14,6 @@ import { socket } from "../socket";
 import { useContext } from "react";
 import { UserContext } from "../App";
 
-
-
 export default function AddMemberOverlay() {
   const dispatch = useDispatch();
   const { hideAddMemberOverlay } = useSelector(
@@ -65,8 +63,6 @@ export default function AddMemberOverlay() {
       console.log("ADDING MEMBERS TO THE GROUP CHAT!");
 
       newMemberIds.forEach((u) => {
-        console.log(`adding member ${u} to the group chat!`);
-
         socket.emit("send notification", {
           message: `${user.username} invited you to a group chat!`,
           receiver: u._id,

@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setIsHidden } from "../redux/overlay";
 import { setHideAddMemberOverlay } from "../redux/addmember_overlay";
+import ConversationMembersCard from "./ConversationMembersCard";
+
 export default function MediaPanel({ getUserConversations }) {
-  const { currentConvoName, activeConvoIsGroup, userIsFriend } = useSelector(
-    (state) => state.conversation
-  );
+  const { currentConvoName, activeConvoIsGroup, userIsFriend, activeConvo } =
+    useSelector((state) => state.conversation);
+
   const dispatch = useDispatch();
   const { mediaImages, displayMediaPanel } = useSelector(
     (state) => state.media
@@ -23,9 +25,6 @@ export default function MediaPanel({ getUserConversations }) {
   const [isMuted, setIsMuted] = useState(false);
   const [isGroup, setIsGroup] = useState(false);
 
-  // console.log("THE MEDIA IMAGES:", mediaImages);
-
-  // console.log("MEDIA PANEL CONVO MEMBERS:", activeConvoMembers);
   return (
     <div
       className={`border-0.5 w-100 h-full overflow-y-scroll ${
@@ -197,36 +196,13 @@ export default function MediaPanel({ getUserConversations }) {
           </div>
 
           <div
-            className={`p-3 flex flex-col gap-3 max-h-100 overflow-y-scroll ${
+            className={`p-3 flex flex-col gap-3 ${
               membersActive ? "block" : "hidden"
             }`}
           >
             {activeConvoMembers &&
               activeConvoMembers.map((member, idx) => (
-                <div
-                  key={idx}
-                  className="flex justify-between p-1 cursor-pointer items-center gap-5 w-full"
-                >
-                  <div className="flex items-center gap-5">
-                    {/* Profile Image */}
-                    <img src="img/avatar.png" className="w-13 h-13"></img>
-
-                    {/* Text */}
-                    <p>{member.username}</p>
-                  </div>
-                  <div>
-                    <button className="cursor-pointer rounded-full hover:bg-gray-200 p-2">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 -960 960 960"
-                        fill="gray"
-                        className="w-7 h-7"
-                      >
-                        <path d="M240-400q-33 0-56.5-23.5T160-480q0-33 23.5-56.5T240-560q33 0 56.5 23.5T320-480q0 33-23.5 56.5T240-400Zm240 0q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm240 0q-33 0-56.5-23.5T640-480q0-33 23.5-56.5T720-560q33 0 56.5 23.5T800-480q0 33-23.5 56.5T720-400Z" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
+                <ConversationMembersCard member={member} key={idx} />
               ))}
           </div>
 
