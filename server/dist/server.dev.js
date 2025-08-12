@@ -69,7 +69,6 @@ io.on("connection", function (socket) {
   }); // Disconnects the user
 
   socket.on("disconnect", function () {
-    delete onlineSockets[userId];
     console.log("A user disconnected");
   }); // Sends real-time messages
 
@@ -79,15 +78,21 @@ io.on("connection", function (socket) {
   // Adds the new user conversation in the sidebar of the invited user
 
   socket.on("invite groupchat", function (data) {
-    console.log("THE DATA:", data);
-    console.log("inviting user to the group chat!");
     var usersocket = onlineSockets[data.user];
 
     if (usersocket) {
-      usersocket.join(data.conversation);
+      try {
+        usersocket.join(data.conversation);
+      } catch (err) {
+        console.error("Error joining room:", err);
+      }
     }
 
-    ioController.inviteToGroupChat(io, socket, data);
+    try {
+      ioController.inviteToGroupChat(io, socket, data);
+    } catch (err) {
+      console.error("Error in inviteToGroupChat:", err);
+    }
   }); // Send notification
 
   socket.on("send notification", function (data) {

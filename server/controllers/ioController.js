@@ -61,7 +61,7 @@ exports.inviteToGroupChat = async (io, socket, data) => {
   console.log("THE DATA USER:", data.user);
 
   io.to(`user_${data.user}`).emit("invite groupchat", {
-    userId: data.member._id,
+    userId: data.user,
   });
 };
 

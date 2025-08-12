@@ -35,7 +35,8 @@ export default function AddMemberOverlay() {
   const filteredUsers = useMemo(() => {
     if (allUsers.length == 0) return [];
 
-    console.log("THE USERS:", allUsers);
+    console.log("ALL THE USERS:", allUsers);
+    console.log("ACTIVE CONVO MEMBERS:", activeConvoMembers);
     return allUsers.filter(
       (u) =>
         u.username
