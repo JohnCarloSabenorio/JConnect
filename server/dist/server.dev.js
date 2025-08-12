@@ -110,6 +110,10 @@ io.on("connection", function (socket) {
     data["actor"] = socket.handshake.auth.userId;
     ioController.removeMember(io, socket, data);
   });
+  socket.on("create message", function (data) {
+    data["actor"] = socket.handshake.auth.userId;
+    ioController.createMessage(io, socket, data);
+  });
 }); // RUN SERVER
 
 server.listen(port, function () {

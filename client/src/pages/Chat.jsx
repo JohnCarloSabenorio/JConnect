@@ -112,18 +112,17 @@ export default function Chat() {
 
   useEffect(() => {
     // remove members from redux
-
     const handleRemoveMember = (data) => {
       console.log("data user removed:", data);
       // Messages will be updated if the sent messages is for the current conversation
       console.log("message data:", data.messageData);
 
+      // Removes the member from the current list of active members
+      dispatch(removeConvoMember(data.userId));
       if (data.messageData.sender._id === user._id) {
         dispatch(setInitialMessageRender(true));
       }
 
-      console.log("the active convo:", activeConvo);
-      console.log("the active convo:", data.conversationData._id);
       if (activeConvo == data.conversationData._id) {
         console.log("IT IS FUCKING SHITS");
         dispatch(updateDisplayedMessages(data.messageData));
@@ -136,6 +135,22 @@ export default function Chat() {
       dispatch(updateAGroupConvo(data.conversationData));
     };
     socket.on("remove member", (data) => {
+      handleRemoveMember(data);
+    });
+  }, [activeConvo]);
+
+  useEffect(() => {
+    const handleRemoveMember = (data) => {
+      if (activeConvo == data.conversationData._id) {
+        console.log("IT IS FUCKING SHITS");
+        dispatch(updateDisplayedMessages(data.messageData));
+      }
+      setImages([]);
+      setFileInputKey(Date.now());
+
+      dispatch(updateAGroupConvo(data.conversationData));
+    };
+    socket.on("create message", (data) => {
       handleRemoveMember(data);
     });
   }, [activeConvo]);

@@ -127,10 +127,8 @@ const conversationSlice = createSlice({
 
     removeConvoMember: (state, action) => {
       state.activeConvoMembers = state.activeConvoMembers.filter((member) => {
-        member._id != action.payload;
+        return member._id != action.payload;
       });
-
-      console.log("ACTIVE CONVO MEMBERS:", state.activeConvoMembers);
     },
 
     setFilteredConvoMembers: (state, action) => {

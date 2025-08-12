@@ -89,7 +89,7 @@ export default function AddMemberOverlay() {
       <div
         className={`${
           hideAddMemberOverlay ? "hidden" : "block"
-        } absolute w-full h-full z-20 bg-black/70 justify-center items-center flex-col flex
+        } absolute w-full h-full z-[9999] bg-black/70 justify-center items-center flex-col flex
         }`}
       >
         <svg

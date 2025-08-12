@@ -124,6 +124,11 @@ io.on("connection", (socket) => {
     data["actor"] = socket.handshake.auth.userId;
     ioController.removeMember(io, socket, data);
   });
+
+  socket.on("create message", (data) => {
+    data["actor"] = socket.handshake.auth.userId;
+    ioController.createMessage(io, socket, data);
+  });
 });
 
 // RUN SERVER

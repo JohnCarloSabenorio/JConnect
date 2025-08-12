@@ -7,6 +7,17 @@ const sharp = require("sharp"); // For saving and manipulating images
 const fs = require("fs");
 const path = require("path");
 
+exports.createMessage = async (io, socket, data) => {
+  const newMessage = await Message.create({
+    message: data.message,
+    conversation: data.conversationId,
+    sender: data.actor,
+    action: "remove_member",
+  });
+
+  const populatedMessage = await newMessage.populate("sender");
+};
+
 exports.removeMember = async (io, socket, data) => {
   // Remove the user from the conversation
   const convo = await Conversation.findByIdAndUpdate(
