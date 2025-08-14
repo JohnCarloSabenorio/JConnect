@@ -13,7 +13,7 @@ exports.createMessage = async (io, socket, data) => {
     message: data.message,
     conversation: data.conversationId,
     sender: data.actor,
-    action: "remove_member",
+    action: data.action,
   });
 
   const populatedMessage = await newMessage.populate("sender");

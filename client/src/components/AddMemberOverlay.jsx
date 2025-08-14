@@ -64,6 +64,13 @@ export default function AddMemberOverlay() {
       console.log("ADDING MEMBERS TO THE GROUP CHAT!");
 
       newMemberIds.forEach((u) => {
+        socket.emit("create message", {
+          message: `${u.username} has been invited to the group.`,
+          conversationId: activeConvo,
+          member: u._id,
+          action: "add_member",
+        });
+
         socket.emit("send notification", {
           message: `${user.username} invited you to a group chat!`,
           receiver: u._id,

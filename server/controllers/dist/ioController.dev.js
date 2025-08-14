@@ -35,7 +35,7 @@ exports.createMessage = function _callee(io, socket, data) {
             message: data.message,
             conversation: data.conversationId,
             sender: data.actor,
-            action: "remove_member"
+            action: data.action
           }));
 
         case 3:
