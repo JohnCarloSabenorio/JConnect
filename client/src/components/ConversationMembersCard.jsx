@@ -22,6 +22,7 @@ export default function ConversationMembersCard({ member }) {
       member,
       action: "remove_member",
     });
+
     socket.emit("remove member", { conversationId, member });
   }
 

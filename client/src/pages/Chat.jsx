@@ -115,20 +115,9 @@ export default function Chat() {
     const handleRemoveMember = (data) => {
       console.log("data user removed:", data);
       // Messages will be updated if the sent messages is for the current conversation
-      console.log("message data:", data.messageData);
 
       // Removes the member from the current list of active members
       dispatch(removeConvoMember(data.userId));
-      if (data.messageData.sender._id === user._id) {
-        dispatch(setInitialMessageRender(true));
-      }
-
-      if (activeConvo == data.conversationData._id) {
-        console.log("IT IS FUCKING SHITS");
-        dispatch(updateDisplayedMessages(data.messageData));
-      }
-      setImages([]);
-      setFileInputKey(Date.now());
 
       // This should scroll down the chat ui if the user is the sender (NEEDS TO BE FIXED)
       // UPDATES THE CONVERSATION LIST
@@ -140,18 +129,19 @@ export default function Chat() {
   }, [activeConvo]);
 
   useEffect(() => {
-    const handleRemoveMember = (data) => {
-      if (activeConvo == data.conversationData._id) {
-        console.log("IT IS FUCKING SHITS");
+    const handleCreateMessage = (data) => {
+      console.log("creating message using this data:", data);
+      if (data.messageData.sender._id === user._id) {
+        dispatch(setInitialMessageRender(true));
+      }
+      if (activeConvo == data.messageData.conversation) {
         dispatch(updateDisplayedMessages(data.messageData));
       }
       setImages([]);
       setFileInputKey(Date.now());
-
-      dispatch(updateAGroupConvo(data.conversationData));
     };
     socket.on("create message", (data) => {
-      handleRemoveMember(data);
+      handleCreateMessage(data);
     });
   }, [activeConvo]);
 

@@ -193,18 +193,23 @@ const conversationSlice = createSlice({
     },
     updateAGroupConvo: (state, action) => {
       const updatedConversation = action.payload;
-      state.allGroupConversation = [
-        ...state.allGroupConversation.map((userConversation) => {
-          if (userConversation.conversation._id === updatedConversation._id) {
-            return {
-              ...userConversation,
-              conversation: updatedConversation,
-            };
-          } else {
-            return userConversation;
-          }
-        }),
-      ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+      console.log("the updated convoreation:", updatedConversation);
+
+      if (updatedConversation) {
+        state.allGroupConversation = [
+          ...state.allGroupConversation.map((userConversation) => {
+            if (userConversation.conversation._id === updatedConversation._id) {
+              return {
+                ...userConversation,
+                conversation: updatedConversation,
+              };
+            } else {
+              return userConversation;
+            }
+          }),
+        ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+      }
     },
 
     addGroupConversation: (state, action) => {

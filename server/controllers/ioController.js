@@ -8,6 +8,7 @@ const fs = require("fs");
 const path = require("path");
 
 exports.createMessage = async (io, socket, data) => {
+  console.log("the data to create message:", data);
   const newMessage = await Message.create({
     message: data.message,
     conversation: data.conversationId,
@@ -16,6 +17,12 @@ exports.createMessage = async (io, socket, data) => {
   });
 
   const populatedMessage = await newMessage.populate("sender");
+
+  console.log("the populated message here:", populatedMessage);
+  io.to(data.conversationId.toString()).emit("create message", {
+    userId: data.member._id,
+    messageData: populatedMessage,
+  });
 };
 
 exports.removeMember = async (io, socket, data) => {
@@ -40,21 +47,12 @@ exports.removeMember = async (io, socket, data) => {
     user: data.member._id,
   });
 
-  // Create a message for removing the user from the conversation
-  const newMessage = await Message.create({
-    message: `${data.member.username} has been removed from the group.`,
-    conversation: data.conversationId,
-    sender: data.actor,
-    action: "remove_member",
-  });
-
-  const populatedMessage = await newMessage.populate("sender");
+  console.log("the freaknig convo data:", convo);
 
   // Emit remove member to the conversation
   io.to(data.conversationId.toString()).emit("remove member", {
     userId: data.member._id,
     conversationData: convo,
-    messageData: populatedMessage,
   });
 };
 

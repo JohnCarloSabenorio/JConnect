@@ -29,7 +29,8 @@ exports.createMessage = function _callee(io, socket, data) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          _context.next = 2;
+          console.log("the data to create message:", data);
+          _context.next = 3;
           return regeneratorRuntime.awrap(Message.create({
             message: data.message,
             conversation: data.conversationId,
@@ -37,15 +38,20 @@ exports.createMessage = function _callee(io, socket, data) {
             action: "remove_member"
           }));
 
-        case 2:
+        case 3:
           newMessage = _context.sent;
-          _context.next = 5;
+          _context.next = 6;
           return regeneratorRuntime.awrap(newMessage.populate("sender"));
 
-        case 5:
-          populatedMessage = _context.sent;
-
         case 6:
+          populatedMessage = _context.sent;
+          console.log("the populated message here:", populatedMessage);
+          io.to(data.conversationId.toString()).emit("create message", {
+            userId: data.member._id,
+            messageData: populatedMessage
+          });
+
+        case 9:
         case "end":
           return _context.stop();
       }
@@ -54,7 +60,7 @@ exports.createMessage = function _callee(io, socket, data) {
 };
 
 exports.removeMember = function _callee2(io, socket, data) {
-  var convo, newMessage, populatedMessage;
+  var convo;
   return regeneratorRuntime.async(function _callee2$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
@@ -79,29 +85,14 @@ exports.removeMember = function _callee2(io, socket, data) {
           }));
 
         case 5:
-          _context2.next = 7;
-          return regeneratorRuntime.awrap(Message.create({
-            message: "".concat(data.member.username, " has been removed from the group."),
-            conversation: data.conversationId,
-            sender: data.actor,
-            action: "remove_member"
-          }));
+          console.log("the freaknig convo data:", convo); // Emit remove member to the conversation
 
-        case 7:
-          newMessage = _context2.sent;
-          _context2.next = 10;
-          return regeneratorRuntime.awrap(newMessage.populate("sender"));
-
-        case 10:
-          populatedMessage = _context2.sent;
-          // Emit remove member to the conversation
           io.to(data.conversationId.toString()).emit("remove member", {
             userId: data.member._id,
-            conversationData: convo,
-            messageData: populatedMessage
+            conversationData: convo
           });
 
-        case 12:
+        case 7:
         case "end":
           return _context2.stop();
       }
