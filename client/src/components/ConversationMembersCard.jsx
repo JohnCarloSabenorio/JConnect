@@ -8,7 +8,9 @@ export default function ConversationMembersCard({ member }) {
   const { user } = useContext(UserContext);
   const { activeMemberMenuId } = useSelector((state) => state.media);
   const [displayMemberCard, setDisplayMemberCard] = useState(true);
-  const { activeConvo } = useSelector((state) => state.conversation);
+  const { activeConvo, conversationRole } = useSelector(
+    (state) => state.conversation
+  );
 
   const dispatch = useDispatch();
   async function removeMember(conversationId, member) {
@@ -43,7 +45,9 @@ export default function ConversationMembersCard({ member }) {
         <button
           className="cursor-pointer rounded-full hover:bg-gray-200 p-2"
           onClick={(e) => {
-            dispatch(setActiveMemberMenuId(member._id));
+            dispatch(
+              setActiveMemberMenuId(activeMemberMenuId == "" ? member._id : "")
+            );
           }}
         >
           <svg
@@ -63,14 +67,15 @@ export default function ConversationMembersCard({ member }) {
           <a className="hover:bg-blue-200 rounded-sm p-2">Message</a>
           <a className="hover:bg-blue-200 rounded-sm p-2">View Profile</a>
 
-          {member._id != user._id && (
-            <a
-              onClick={(e) => removeMember(activeConvo, member)}
-              className="hover:bg-blue-200 rounded-sm p-2"
-            >
-              Remove Member
-            </a>
-          )}
+          {member._id != user._id &&
+            (conversationRole == "admin" || conversationRole == "owner") && (
+              <a
+                onClick={(e) => removeMember(activeConvo, member)}
+                className="hover:bg-blue-200 rounded-sm p-2"
+              >
+                Remove Member
+              </a>
+            )}
         </div>
       </div>
     </div>

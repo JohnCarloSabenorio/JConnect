@@ -21,7 +21,10 @@ import { setConvoViewMode } from "../redux/sidebar";
 import { changeActiveInbox } from "../redux/sidebar";
 import { addANewConvo } from "../redux/conversation";
 import { getAllUserMessages } from "../api/conversation";
-import { setActiveConversation } from "../redux/conversation";
+import {
+  setActiveConversation,
+  setConversationRole,
+} from "../redux/conversation";
 import { initDisplayedMessages } from "../redux/message";
 import { updateSidebar } from "../redux/sidebar";
 import { addGroupConversation } from "../redux/conversation";
@@ -123,12 +126,6 @@ export default function CreateGroupChatOverlay() {
       // Connect all of the new user conversations to socket
 
       selectedUsers.forEach((u) => {
-        console.log(`adding member ${u} to the group chat!`);
-
-        console.log(
-          "THE CHUCHU BRO:",
-          newConversationData.currentUserNewConversation.conversation._id
-        );
         socket.emit("send notification", {
           message: `${user.username} invited you to a group chat!`,
           receiver: u._id,
@@ -144,7 +141,10 @@ export default function CreateGroupChatOverlay() {
             newConversationData.currentUserNewConversation.conversation._id,
         });
       });
-
+      
+      dispatch(
+        setConversationRole(newConversationData.currentUserNewConversation.role)
+      );
       dispatch(
         addGroupConversation(newConversationData.currentUserNewConversation)
       );

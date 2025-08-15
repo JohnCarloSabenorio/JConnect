@@ -31,6 +31,7 @@ import {
   setUserIsFriend,
   addANewConvo,
   setActiveConversation,
+  setConversationRole,
   setActiveConvoIsGroup,
   setActiveDirectUser,
 } from "../redux/conversation";
@@ -191,6 +192,7 @@ export default function ProfileOverlay() {
         })
       );
 
+      dispatch(setConversationRole(userConversation.role));
       dispatch(setActiveDirectUser(displayedUser._id));
       dispatch(setActiveConvoIsGroup(false));
       dispatch(changeActiveInbox("direct"));

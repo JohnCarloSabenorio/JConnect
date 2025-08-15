@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setIsHidden } from "../redux/overlay";
 import { setHideAddMemberOverlay } from "../redux/addmember_overlay";
 import ConversationMembersCard from "./ConversationMembersCard";
-
+import { UserContext } from "../App";
 export default function MediaPanel({ getUserConversations }) {
   const { currentConvoName, activeConvoIsGroup, userIsFriend, activeConvo } =
     useSelector((state) => state.conversation);
-
+  const { user } = useContext(UserContext);
   const dispatch = useDispatch();
   const { mediaImages, displayMediaPanel } = useSelector(
     (state) => state.media
@@ -201,9 +201,10 @@ export default function MediaPanel({ getUserConversations }) {
             }`}
           >
             {activeConvoMembers &&
-              activeConvoMembers.map((member, idx) => (
-                <ConversationMembersCard member={member} key={idx} />
-              ))}
+              activeConvoMembers.map((member, idx) => {
+                if (member._id === user._id) return;
+                return <ConversationMembersCard member={member} key={idx} />;
+              })}
           </div>
 
           <div

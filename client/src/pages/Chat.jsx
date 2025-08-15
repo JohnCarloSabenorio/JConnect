@@ -32,6 +32,7 @@ import {
   activateGroupConversation,
   setToMention,
   setActiveConversation,
+  setConversationRole,
   setFilteredConvoMembers,
   updateAGroupConvo,
   addANewConvo,
@@ -363,6 +364,8 @@ export default function Chat() {
       dispatch(addANewConvo(newConvo));
       return newConvo._id;
     }
+
+    dispatch(setConversationRole("member"));
     getMessages(
       response[0]._id,
       response[0].convoName,

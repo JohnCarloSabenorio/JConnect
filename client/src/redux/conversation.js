@@ -20,12 +20,17 @@ const conversationSlice = createSlice({
     isMentioning: false,
     toMention: [],
     message: "",
+    conversationRole: "member",
   },
   reducers: {
     setMessage: (state, action) => {
       state.message = action.payload;
     },
 
+    setConversationRole: (state, action) => {
+      console.log("SETTING CONVERSATION ROLE TO:", action.payload);
+      state.conversationRole = action.payload;
+    },
     setConversationStatus: (state, action) => {
       state.conversationStatus = action.payload;
     },
@@ -272,6 +277,7 @@ export const {
   removeConvoMember,
   removeAConvo,
   setMessage,
+  setConversationRole,
   setConversationStatus,
   activateGroupConversation,
   setToMention,

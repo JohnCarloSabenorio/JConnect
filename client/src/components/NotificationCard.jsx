@@ -13,6 +13,7 @@ import { setConversationStatus } from "../redux/conversation";
 import {
   setActiveConversation,
   setActiveConvoIsGroup,
+  setConversationRole,
   setActiveDirectUser,
   setActiveConvoMembers,
   setActiveConvoIsArchived,
@@ -80,6 +81,7 @@ export default function NotificationCard({ data }) {
               setActiveConvoMembers(userConversation.conversation.users)
             );
             dispatch(setConversationStatus(userConversation.status));
+            dispatch(setConversationRole(userConversation.role));
             dispatch(
               setActiveConversation([
                 userConversation.conversationName,

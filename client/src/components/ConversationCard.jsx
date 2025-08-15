@@ -16,6 +16,7 @@ import {
   setActiveConvoMembers,
   setActiveConvoIsArchived,
   setToMention,
+  setConversationRole,
 } from "../redux/conversation";
 import { setEmojiPickerIsOpen } from "../redux/chat";
 export default function ConversationCard({
@@ -103,6 +104,7 @@ export default function ConversationCard({
           dispatch(setEmojiPickerIsOpen(false));
           dispatch(setConversationStatus(userConversation.status));
           dispatch(setActiveConvoMembers(userConversation.conversation.users));
+          dispatch(setConversationRole(userConversation.role));
           dispatch(
             setActiveConversation([
               userConversation.conversationName,
