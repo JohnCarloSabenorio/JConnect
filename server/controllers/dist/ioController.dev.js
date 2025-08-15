@@ -127,7 +127,8 @@ exports.inviteToGroupChat = function _callee3(io, socket, data) {
         case 7:
           console.log("THE DATA USER:", data.user);
           io.to("user_".concat(data.user)).emit("invite groupchat", {
-            userId: data.user
+            userId: data.user,
+            userConversation: userConversation
           });
 
         case 9:

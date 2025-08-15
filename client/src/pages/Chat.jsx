@@ -182,6 +182,7 @@ export default function Chat() {
   // This will add a new group conversation to the collection in the navbar
   useEffect(() => {
     const handleAddGroupConversation = (data) => {
+      console.log("INVITED TO GC:", data);
       dispatch(addGroupConversation(data.userConversation));
     };
     socket.on("invite groupchat", handleAddGroupConversation);

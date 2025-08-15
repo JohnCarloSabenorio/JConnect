@@ -10,8 +10,13 @@ import { useContext } from "react";
 import { UserContext } from "../App";
 import { setDisplayGroupChatOverlay } from "../redux/creategroupchat_overlay";
 import { createConversation } from "../api/conversation";
-import { setInitialMessageRender } from "../redux/message";
-import { setActiveConvoIsGroup } from "../redux/conversation";
+import { setInitialMessageRender, setMessageIsLoading } from "../redux/message";
+import {
+  setActiveConvoIsGroup,
+  setActiveConvoMembers,
+  setConversationStatus,
+  setToMention,
+} from "../redux/conversation";
 import { setConvoViewMode } from "../redux/sidebar";
 import { changeActiveInbox } from "../redux/sidebar";
 import { addANewConvo } from "../redux/conversation";
@@ -20,6 +25,7 @@ import { setActiveConversation } from "../redux/conversation";
 import { initDisplayedMessages } from "../redux/message";
 import { updateSidebar } from "../redux/sidebar";
 import { addGroupConversation } from "../redux/conversation";
+import { setEmojiPickerIsOpen } from "../redux/chat";
 export default function CreateGroupChatOverlay() {
   const dispatch = useDispatch();
   const { user } = useContext(UserContext);
@@ -80,7 +86,28 @@ export default function CreateGroupChatOverlay() {
         true,
         convName
       );
-
+      dispatch(setMessageIsLoading(false));
+      dispatch(setInitialMessageRender(true));
+      dispatch(setEmojiPickerIsOpen(false));
+      dispatch(
+        setConversationStatus(
+          newConversationData.currentUserNewConversation.status
+        )
+      );
+      dispatch(setActiveConvoMembers(newConversationData.users));
+      dispatch(
+        setActiveConversation([
+          newConversationData.currentUserNewConversation.conversationName,
+          newConversationData.currentUserNewConversation.conversation._id,
+          newConversationData.currentUserNewConversation._id,
+        ])
+      );
+      dispatch(setToMention([]));
+      dispatch(
+        setActiveConvoIsGroup(
+          newConversationData.currentUserNewConversation.isGroup
+        )
+      );
       // Add the new user conversation of the current user to the redux array
       dispatch(addANewConvo(newConversationData.currentUserNewConversation));
 

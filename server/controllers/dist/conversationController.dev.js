@@ -121,7 +121,8 @@ exports.addMultipleMembers = catchAsync(function _callee2(req, res, next) {
               conversation: convo._id,
               conversationName: newGroupName,
               isGroup: true,
-              status: "pending"
+              status: "pending",
+              role: "member"
             };
           }); // Create new user conversation documents
 
@@ -279,12 +280,15 @@ exports.createConversation = catchAsync(function _callee6(req, res) {
           newGroupName = req.body.conversationName ? req.body.conversationName : "".concat(usersFromDB[0].username, ", ").concat(usersFromDB[1].username, ", ").concat(usersFromDB[2].username, ",..."); // Create an array containing objects of new group conversations
 
           newGroupUserConversationData = usersFromDB.map(function (user) {
+            var userRole = req.user.id == user._id.toString() ? "owner" : "member";
+            var userStatus = req.user.id == user._id.toString() ? "active" : "pending";
             return {
               user: user._id,
               conversation: newConversation._id,
               conversationName: newGroupName,
               isGroup: true,
-              status: "pending"
+              status: userStatus,
+              role: userRole
             };
           }); // Create new user conversation documents
 
@@ -312,7 +316,8 @@ exports.createConversation = catchAsync(function _callee6(req, res) {
             message: "New conversation successfully created!",
             data: {
               newUserConversations: populatedUserConversations,
-              currentUserNewConversation: currentUserNewConvo
+              currentUserNewConversation: currentUserNewConvo,
+              users: newConversation.users
             }
           }));
 

@@ -17,6 +17,12 @@ const userConvoSchema = mongoose.Schema({
     default: "active",
   },
 
+  role: {
+    type: String,
+    enum: ["owner", "admin", "member"],
+    default: "member",
+  },
+
   isGroup: {
     type: Boolean,
     required: true,

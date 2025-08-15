@@ -24,6 +24,11 @@ var userConvoSchema = mongoose.Schema({
     "enum": ["active", "pending", "archived", "muted"],
     "default": "active"
   },
+  role: {
+    type: String,
+    "enum": ["owner", "admin", "member"],
+    "default": "member"
+  },
   isGroup: {
     type: Boolean,
     required: true,

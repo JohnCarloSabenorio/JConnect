@@ -78,6 +78,7 @@ exports.addMultipleMembers = catchAsync(async (req, res, next) => {
       conversationName: newGroupName,
       isGroup: true,
       status: "pending",
+      role: "member",
     };
   });
 
@@ -130,9 +131,7 @@ exports.removeMember = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.removeMultipleMembers = catchAsync(async (req, res, next) => {
-  
-});
+exports.removeMultipleMembers = catchAsync(async (req, res, next) => {});
 
 // This checking is for a one on one conversation only
 exports.checkConvoExists = catchAsync(async (req, res) => {
@@ -174,12 +173,17 @@ exports.createConversation = catchAsync(async (req, res) => {
 
     // Create an array containing objects of new group conversations
     const newGroupUserConversationData = usersFromDB.map((user) => {
+      const userRole = req.user.id == user._id.toString() ? "owner" : "member";
+      const userStatus =
+        req.user.id == user._id.toString() ? "active" : "pending";
+
       return {
         user: user._id,
         conversation: newConversation._id,
         conversationName: newGroupName,
         isGroup: true,
-        status: "pending",
+        status: userStatus,
+        role: userRole,
       };
     });
 
@@ -209,6 +213,7 @@ exports.createConversation = catchAsync(async (req, res) => {
       data: {
         newUserConversations: populatedUserConversations,
         currentUserNewConversation: currentUserNewConvo,
+        users: newConversation.users,
       },
     });
   } else {
