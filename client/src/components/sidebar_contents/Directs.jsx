@@ -27,7 +27,7 @@ export default function Directs({ getMessages }) {
             ref={data._id}
             getMessages={getMessages}
             isGroup={false}
-            chatmateId={chatmate._id}
+            chatmateId={chatmate?._id}
             userConversation={data}
             directArrayId={id}
           />

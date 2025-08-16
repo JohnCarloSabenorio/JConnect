@@ -38,7 +38,7 @@ export default function Inbox({ inputRef, getMessages }) {
             ref={data._id}
             getMessages={getMessages}
             isGroup={data.isGroup}
-            chatmateId={chatmate._id}
+            chatmateId={chatmate?._id}
             userConversation={data}
             directArrayId={id}
             inputRef={inputRef}

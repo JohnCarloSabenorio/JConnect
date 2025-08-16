@@ -202,7 +202,7 @@ export default function MediaPanel({ getUserConversations }) {
           >
             {activeConvoMembers &&
               activeConvoMembers.map((member, idx) => {
-                if (member._id === user._id) return;
+                console.log("THE ACTIVE CONVO MEMBER:", member);
                 return <ConversationMembersCard member={member} key={idx} />;
               })}
           </div>

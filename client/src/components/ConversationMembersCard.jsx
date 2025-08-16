@@ -30,9 +30,7 @@ export default function ConversationMembersCard({ member }) {
 
   return (
     <div
-      className={`${
-        displayMemberCard ? "flex" : "hidden"
-      } justify-between p-1 cursor-pointer items-center gap-5 w-full`}
+      className={`flex justify-between p-1 cursor-pointer items-center gap-5 w-full`}
     >
       <div className="flex items-center gap-5">
         {/* Profile Image */}

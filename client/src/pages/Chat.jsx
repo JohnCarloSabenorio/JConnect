@@ -43,6 +43,7 @@ import {
   removeAConvo,
   setMessage,
   removeConvoMember,
+  setActiveConvoMembers,
 } from "../redux/conversation";
 import {
   activateUserConversation,
@@ -118,11 +119,15 @@ export default function Chat() {
       // Messages will be updated if the sent messages is for the current conversation
 
       // Removes the member from the current list of active members
-      dispatch(removeConvoMember(data.userId));
+      console.log(
+        "the removed updated conversation data:",
+        data.conversationData
+      );
+      dispatch(updateAGroupConvo(data.conversationData));
+      dispatch(setActiveConvoMembers(data.conversationData.users));
 
       // This should scroll down the chat ui if the user is the sender (NEEDS TO BE FIXED)
       // UPDATES THE CONVERSATION LIST
-      dispatch(updateAGroupConvo(data.conversationData));
     };
     socket.on("remove member", (data) => {
       handleRemoveMember(data);
@@ -136,6 +141,7 @@ export default function Chat() {
         dispatch(setInitialMessageRender(true));
       }
       if (activeConvo == data.messageData.conversation) {
+        console.log("updating displayed messages!!");
         dispatch(updateDisplayedMessages(data.messageData));
       }
       setImages([]);
