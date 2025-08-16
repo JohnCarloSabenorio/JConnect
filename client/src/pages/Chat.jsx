@@ -61,7 +61,8 @@ import { createMessage } from "../api/message";
 import { setMediaImages } from "../redux/media";
 import { setTargetScrollMessageId } from "../redux/message";
 import CreateGroupChatOverlay from "../components/CreateGroupChatOverlay";
-
+import ChangeChatNameOverlay from "../components/ChangeChatNameOverlay";
+import MessagesContainer from "../components/MessagesContainer";
 export default function Chat() {
   const dispatch = useDispatch();
   // REDUX STATES
@@ -77,8 +78,6 @@ export default function Chat() {
     toMention,
     conversationStatus,
   } = useSelector((state) => state.conversation);
-
-  console.log("conversation status:", conversationStatus);
 
   console.log("THE ACTIVE CONVERSATION:", activeConvo);
 
@@ -115,14 +114,10 @@ export default function Chat() {
   useEffect(() => {
     // remove members from redux
     const handleRemoveMember = (data) => {
-      console.log("data user removed:", data);
       // Messages will be updated if the sent messages is for the current conversation
 
       // Removes the member from the current list of active members
-      console.log(
-        "the removed updated conversation data:",
-        data.conversationData
-      );
+
       dispatch(updateAGroupConvo(data.conversationData));
       dispatch(setActiveConvoMembers(data.conversationData.users));
 
@@ -136,12 +131,10 @@ export default function Chat() {
 
   useEffect(() => {
     const handleCreateMessage = (data) => {
-      console.log("creating message using this data:", data);
       if (data.messageData.sender._id === user._id) {
         dispatch(setInitialMessageRender(true));
       }
       if (activeConvo == data.messageData.conversation) {
-        console.log("updating displayed messages!!");
         dispatch(updateDisplayedMessages(data.messageData));
       }
       setImages([]);
@@ -175,7 +168,6 @@ export default function Chat() {
   // This will handle notification emits
   useEffect(() => {
     const handleReceiveNotification = (data) => {
-      console.log("new notification data:", data);
       dispatch(addNotification(data));
     };
     socket.on("receive notification", (data) => {
@@ -483,6 +475,7 @@ export default function Chat() {
     <>
       <div className="flex flex-col h-screen overflow-hidden">
         {/* Overlays */}
+        <ChangeChatNameOverlay />
         <ProfileOverlay />
         <ReactionsOverlay />
         <AddMemberOverlay />
@@ -564,35 +557,14 @@ export default function Chat() {
               id="chat-ui"
               className="bg-gray-50 flex-grow overflow-y-scroll overflow-x-hidden"
             >
-              {messageIsLoading ? (
+              {activeConvo == null ? (
                 <div
                   className={`w-full h-full bg-gray-50 flex justify-center items-center`}
                 >
-                  <img src="img/loading.gif" className="w-20 h-20"></img>
+                  <h1 className="text-gray-500 text-3xl font-semibold">Looks quiet here...</h1>
                 </div>
               ) : (
-                displayedMessages?.map((message, i) => {
-                  let blobUrls = [];
-                  if (message.images64) {
-                    message.images64.forEach((base64, idx) => {
-                      const blob = base64ToBlob(base64);
-
-                      if (blob) {
-                        blobUrls.push(URL.createObjectURL(blob));
-                      }
-                    });
-                  }
-
-                  return (
-                    <Message
-                      key={message._id}
-                      imgUrl="img/icons/male-default.jpg"
-                      messageData={message}
-                      imagesSent={blobUrls}
-                      uiChatRef={uiChatRef}
-                    />
-                  );
-                })
+                <MessagesContainer uiChatRef={uiChatRef} />
               )}
             </div>
 

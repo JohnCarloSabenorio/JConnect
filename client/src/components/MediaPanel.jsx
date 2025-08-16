@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setIsHidden } from "../redux/overlay";
 import { setHideAddMemberOverlay } from "../redux/addmember_overlay";
 import ConversationMembersCard from "./ConversationMembersCard";
+import { setChangeChatNameOverlayIsOpen } from "../redux/changechatname_overlay";
 import { UserContext } from "../App";
 export default function MediaPanel({ getUserConversations }) {
   const { currentConvoName, activeConvoIsGroup, userIsFriend, activeConvo } =
@@ -12,6 +13,7 @@ export default function MediaPanel({ getUserConversations }) {
   const { mediaImages, displayMediaPanel } = useSelector(
     (state) => state.media
   );
+
   const { activeConvoMembers, activeConvoIsArchived } = useSelector(
     (state) => state.conversation
   );
@@ -127,20 +129,23 @@ export default function MediaPanel({ getUserConversations }) {
           </button>
 
           {/* Add Member Button */}
-          <button
-            onClick={(e) => dispatch(setHideAddMemberOverlay(false))}
-            className="cursor-pointer shadow-lg p-2 text-sm flex justify-center items-center rounded-full"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 -960 960 960"
-              width="25"
-              height="25"
-              fill="black"
+
+          {activeConvoIsGroup && (
+            <button
+              onClick={(e) => dispatch(setHideAddMemberOverlay(false))}
+              className="cursor-pointer shadow-lg p-2 text-sm flex justify-center items-center rounded-full"
             >
-              <path d="M500-482q29-32 44.5-73t15.5-85q0-44-15.5-85T500-798q60 8 100 53t40 105q0 60-40 105t-100 53Zm220 322v-120q0-36-16-68.5T662-406q51 18 94.5 46.5T800-280v120h-80Zm80-280v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80Zm-480-40q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM0-160v-112q0-34 17.5-62.5T64-378q62-31 126-46.5T320-440q66 0 130 15.5T576-378q29 15 46.5 43.5T640-272v112H0Zm320-400q33 0 56.5-23.5T400-640q0-33-23.5-56.5T320-720q-33 0-56.5 23.5T240-640q0 33 23.5 56.5T320-560ZM80-240h480v-32q0-11-5.5-20T540-306q-54-27-109-40.5T320-360q-56 0-111 13.5T100-306q-9 5-14.5 14T80-272v32Zm240-400Zm0 400Z" />
-            </svg>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 -960 960 960"
+                width="25"
+                height="25"
+                fill="black"
+              >
+                <path d="M500-482q29-32 44.5-73t15.5-85q0-44-15.5-85T500-798q60 8 100 53t40 105q0 60-40 105t-100 53Zm220 322v-120q0-36-16-68.5T662-406q51 18 94.5 46.5T800-280v120h-80Zm80-280v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80Zm-480-40q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM0-160v-112q0-34 17.5-62.5T64-378q62-31 126-46.5T320-440q66 0 130 15.5T576-378q29 15 46.5 43.5T640-272v112H0Zm320-400q33 0 56.5-23.5T400-640q0-33-23.5-56.5T320-720q-33 0-56.5 23.5T240-640q0 33 23.5 56.5T320-560ZM80-240h480v-32q0-11-5.5-20T540-306q-54-27-109-40.5T320-360q-56 0-111 13.5T100-306q-9 5-14.5 14T80-272v32Zm240-400Zm0 400Z" />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
 
@@ -231,8 +236,13 @@ export default function MediaPanel({ getUserConversations }) {
               customizeActive ? "block" : "hidden"
             }`}
           >
-            {/* Change Theme */}
-            <div className="flex gap-2 p-1 cursor-pointer">
+            {/* Change Chat Name */}
+            <div
+              onClick={(e) => {
+                dispatch(setChangeChatNameOverlayIsOpen(true));
+              }}
+              className="group flex gap-2 p-1 cursor-pointer hover:bg-gray-500 rounded-md hover:text-white"
+            >
               {/* Icon */}
               <div>
                 <svg
@@ -240,17 +250,17 @@ export default function MediaPanel({ getUserConversations }) {
                   viewBox="0 -960 960 960"
                   width="25"
                   height="25"
-                  fill="#53575a"
+                  className="group-hover:fill-white fill-[#53575a]"
                 >
-                  <path d="M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 32.5-156t88-127Q256-817 330-848.5T488-880q80 0 151 27.5t124.5 76q53.5 48.5 85 115T880-518q0 115-70 176.5T640-280h-74q-9 0-12.5 5t-3.5 11q0 12 15 34.5t15 51.5q0 50-27.5 74T480-80Zm0-400Zm-220 40q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm120-160q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm200 0q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm120 160q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17ZM480-160q9 0 14.5-5t5.5-13q0-14-15-33t-15-57q0-42 29-67t71-25h70q66 0 113-38.5T800-518q0-121-92.5-201.5T488-800q-136 0-232 93t-96 227q0 133 93.5 226.5T480-160Z" />
+                  <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
                 </svg>
               </div>
               {/* Text */}
-              <div>Change Theme</div>
+              <div>Change Chat Name</div>
             </div>
 
             {/* Change Emoji */}
-            <div className=" flex gap-2 p-1 cursor-pointer">
+            <div className="group flex gap-2 p-1 cursor-pointer hover:bg-gray-500 rounded-md hover:text-white">
               {/* Icon */}
               <div className="">
                 <svg
@@ -258,7 +268,7 @@ export default function MediaPanel({ getUserConversations }) {
                   viewBox="0 -960 960 960"
                   width="25"
                   height="25"
-                  fill="#53575a"
+                  className="group-hover:fill-white fill-[#53575a]"
                 >
                   <path d="m480-120-58-52q-101-91-167-157T150-447.5Q111-500 95.5-544T80-634q0-94 63-157t157-63q52 0 99 22t81 62q34-40 81-62t99-22q94 0 157 63t63 157q0 46-15.5 90T810-447.5Q771-395 705-329T538-172l-58 52Zm0-108q96-86 158-147.5t98-107q36-45.5 50-81t14-70.5q0-60-40-100t-100-40q-47 0-87 26.5T518-680h-76q-15-41-55-67.5T300-774q-60 0-100 40t-40 100q0 35 14 70.5t50 81q36 45.5 98 107T480-228Zm0-273Z" />
                 </svg>
@@ -268,7 +278,7 @@ export default function MediaPanel({ getUserConversations }) {
             </div>
 
             {/* Change Nickname */}
-            <div className="flex gap-2 p-1 cursor-pointer">
+            <div className="group flex gap-2 p-1 cursor-pointer hover:bg-gray-500 rounded-md hover:text-white">
               {/* Icon */}
               <div>
                 <svg
@@ -276,7 +286,7 @@ export default function MediaPanel({ getUserConversations }) {
                   viewBox="0 -960 960 960"
                   width="25"
                   height="25"
-                  fill="#53575a"
+                  className="group-hover:fill-white fill-[#53575a]"
                 >
                   <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
                 </svg>
