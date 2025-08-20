@@ -15,9 +15,11 @@ const notifSlice = createSlice({
       state.allNotifications = action.payload;
       let unreadCount = 0;
 
-      state.allNotifications.forEach((notif) => {
-        if (!notif.seen) unreadCount++;
-      });
+      if (state.allNotifications) {
+        state.allNotifications.forEach((notif) => {
+          if (!notif.seen) unreadCount++;
+        });
+      }
       state.unreadCount = unreadCount;
     },
     addNotification: (state, action) => {

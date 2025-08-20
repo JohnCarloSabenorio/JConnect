@@ -561,7 +561,9 @@ export default function Chat() {
                 <div
                   className={`w-full h-full bg-gray-50 flex justify-center items-center`}
                 >
-                  <h1 className="text-gray-500 text-3xl font-semibold">Looks quiet here...</h1>
+                  <h1 className="text-gray-500 text-3xl font-semibold">
+                    Looks quiet here...
+                  </h1>
                 </div>
               ) : (
                 <MessagesContainer uiChatRef={uiChatRef} />

@@ -92,13 +92,20 @@ export default function ConversationCard({
       <div
         className={`mt-5 flex flex-col gap-2 ${
           // This will control the visibility of the chat based on the user's search query in the sidebar.
-          userConversation?.conversationName
+          (userConversation.conversation.isGroup
+            ? userConversation.conversation.conversationName
+            : userConversation.conversationName
+          )
             .toLowerCase()
             .includes(sidebarSearch.toLowerCase())
             ? "visible"
             : "hidden"
         }`}
         onClick={() => {
+          console.log(
+            "THE USER CONVERSATION CONVERSATION:",
+            userConversation.conversation
+          );
           dispatch(setInitialMessageRender(true));
           inputRef.current.innerHTML = "";
           dispatch(setEmojiPickerIsOpen(false));
@@ -107,7 +114,9 @@ export default function ConversationCard({
           dispatch(setConversationRole(userConversation.role));
           dispatch(
             setActiveConversation([
-              userConversation.conversationName,
+              userConversation.conversation.isGroup
+                ? userConversation.conversation.conversationName
+                : userConversation.conversationName,
               userConversation.conversation._id,
               userConversation._id,
             ])
@@ -141,7 +150,11 @@ export default function ConversationCard({
           />
           <div className="flex flex-grow">
             <div className="px-3  flex-grow">
-              <p className="font-bold">{userConversation.conversationName}</p>
+              <p className="font-bold">
+                {userConversation.conversation.isGroup
+                  ? userConversation.conversation.conversationName
+                  : userConversation.conversationName}
+              </p>
               <p>
                 {displayedLatestMessage.length > 10
                   ? displayedLatestMessage.slice(0, 19) + "..."
