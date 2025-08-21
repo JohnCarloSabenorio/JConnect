@@ -44,6 +44,7 @@ import {
   setMessage,
   removeConvoMember,
   setActiveConvoMembers,
+  setCurrentConvoName,
 } from "../redux/conversation";
 import {
   activateUserConversation,
@@ -132,9 +133,13 @@ export default function Chat() {
   useEffect(() => {
     const handleUpdateConversation = (data) => {
       console.log("conversation is update:", data);
-
       if (data.updatedConversation.isGroup) {
         dispatch(updateAGroupConvo(data.updatedConversation));
+        if (activeConvo == data.updatedConversation._id) {
+          dispatch(
+            setCurrentConvoName(data.updatedConversation.conversationName)
+          );
+        }
       }
     };
 
@@ -147,7 +152,6 @@ export default function Chat() {
 
   useEffect(() => {
     const handleCreateMessage = (data) => {
-      dispatch(updateAGroupConvo(data.conversationData));
       if (data.messageData.sender._id === user._id) {
         dispatch(setInitialMessageRender(true));
       }
