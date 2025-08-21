@@ -3,8 +3,12 @@ import { setChangeChatNameOverlayIsOpen } from "../redux/changechatname_overlay"
 import { useSelector, useDispatch } from "react-redux";
 import { setConversationName } from "../redux/chat";
 import { socket } from "../socket";
+import { UserContext } from "../App";
+import { useContext } from "react";
+import { setCurrentConvoName } from "../redux/conversation";
 export default function ChangeChatNameOverlay() {
   const dispatch = useDispatch();
+  const user = useContext(UserContext);
 
   const [newConversationName, setNewConversationName] = useState("");
 
@@ -12,6 +16,25 @@ export default function ChangeChatNameOverlay() {
     (state) => state.changeChatNameOverlay
   );
   const { activeConvo } = useSelector((state) => state.conversation);
+
+  function handleClick() {
+    console.log("the new convo name:", newConversationName);
+    dispatch(setCurrentConvoName(newConversationName));
+    dispatch(setChangeChatNameOverlayIsOpen(false));
+    socket.emit("update conversation", {
+      conversationId: activeConvo,
+      data: {
+        conversationName: newConversationName,
+      },
+    });
+    socket.emit("create message", {
+      message: `Chat name has been set to ${newConversationName}`,
+      conversationId: activeConvo,
+      member: user,
+      action: "update_chat_name",
+    });
+    setNewConversationName("");
+  }
 
   const inputLength = 500;
   return (
@@ -48,12 +71,7 @@ export default function ChangeChatNameOverlay() {
             </button>
             <button
               onClick={(e) => {
-                socket.emit("update conversation", {
-                  conversationId: activeConvo,
-                  data: {
-                    conversationName: newConversationName,
-                  },
-                });
+                handleClick();
               }}
               className="bg-blue-400 text-white py-2 px-3 rounded-md cursor-pointer"
             >

@@ -161,13 +161,7 @@ export const Message = React.memo(function Message({
     dispatch(setAllMessageReactions(reactions));
   }
 
-  if (action === "remove_member" || action === "add_member") {
-    return (
-      <div className="flex text-center justify-center items-center text-gray-600 font-medium">
-        <p>{message}</p>
-      </div>
-    );
-  } else {
+  if (action == "message") {
     return (
       <div
         className={"flex flex-col p-7"}
@@ -465,6 +459,12 @@ export const Message = React.memo(function Message({
             })}
           </div>
         </div>
+      </div>
+    );
+  } else {
+    return (
+      <div className="flex text-center justify-center items-center text-gray-600 font-medium">
+        <p>{message}</p>
       </div>
     );
   }

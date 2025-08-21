@@ -129,6 +129,10 @@ io.on("connection", (socket) => {
     data["actor"] = socket.handshake.auth.userId;
     ioController.createMessage(io, socket, data);
   });
+  socket.on("update conversation", (data) => {
+    data["actor"] = socket.handshake.auth.userId;
+    ioController.updateConversation(io, socket, data);
+  });
 });
 
 // RUN SERVER

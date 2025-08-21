@@ -130,19 +130,39 @@ export default function Chat() {
   }, [activeConvo]);
 
   useEffect(() => {
+    const handleUpdateConversation = (data) => {
+      console.log("conversation is update:", data);
+
+      if (data.updatedConversation.isGroup) {
+        dispatch(updateAGroupConvo(data.updatedConversation));
+      }
+    };
+
+    socket.on("update conversation", handleUpdateConversation);
+
+    return () => {
+      socket.off("update conversation", handleUpdateConversation);
+    };
+  }, [activeConvo, socket]);
+
+  useEffect(() => {
     const handleCreateMessage = (data) => {
+      dispatch(updateAGroupConvo(data.conversationData));
       if (data.messageData.sender._id === user._id) {
         dispatch(setInitialMessageRender(true));
       }
       if (activeConvo == data.messageData.conversation) {
         dispatch(updateDisplayedMessages(data.messageData));
       }
+
       setImages([]);
       setFileInputKey(Date.now());
     };
     socket.on("create message", (data) => {
       handleCreateMessage(data);
     });
+
+    socket.off("create message", handleCreateMessage);
   }, [activeConvo]);
 
   useEffect(() => {

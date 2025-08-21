@@ -7,8 +7,33 @@ const sharp = require("sharp"); // For saving and manipulating images
 const fs = require("fs");
 const path = require("path");
 
+exports.updateConversation = async (io, socket, data) => {
+  console.log("data data:", data.data);
+  const updatedConversation = await Conversation.findByIdAndUpdate(
+    data.conversationId,
+    data.data,
+    { new: true }
+  );
+
+  console.log("updated conversation done:", updatedConversation);
+
+  io.to(data.conversationId.toString()).emit("update conversation", {
+    updatedConversation,
+  });
+};
+
 exports.createMessage = async (io, socket, data) => {
-  console.log("the data to create message:", data);
+  const convo = await Conversation.findByIdAndUpdate(
+    data.conversationId,
+    {
+      latestMessage: data.message,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
   const newMessage = await Message.create({
     message: data.message,
     conversation: data.conversationId,
@@ -20,8 +45,9 @@ exports.createMessage = async (io, socket, data) => {
 
   console.log("the populated message here:", populatedMessage);
   io.to(data.conversationId.toString()).emit("create message", {
-    userId: data.member._id,
+    userId: data.member._id ? data.member._id : data.actor,
     messageData: populatedMessage,
+    conversationData: convo,
   });
 };
 
