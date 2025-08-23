@@ -128,6 +128,10 @@ export default function Chat() {
     socket.on("remove member", (data) => {
       handleRemoveMember(data);
     });
+
+    return () => {
+      socket.off("remove member", handleRemoveMember);
+    };
   }, [activeConvo]);
 
   useEffect(() => {
@@ -200,6 +204,10 @@ export default function Chat() {
         handleReceiveNotification(data);
       }
     });
+
+    return () => {
+      socket.off("receive notification", handleReceiveNotification);
+    };
   }, []);
 
   // This will add a new group conversation to the collection in the navbar
@@ -209,6 +217,10 @@ export default function Chat() {
       dispatch(addGroupConversation(data.userConversation));
     };
     socket.on("invite groupchat", handleAddGroupConversation);
+
+    return () => {
+      socket.off("invite groupchat", handleAddGroupConversation);
+    };
   }, []);
 
   useEffect(() => {
