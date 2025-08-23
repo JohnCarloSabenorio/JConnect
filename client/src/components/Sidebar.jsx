@@ -81,6 +81,8 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
         allDirectConversation[0]._id,
         allDirectConversation[0].status
       );
+
+      allDirectConversation[0].unifiedEmoji;
     }
   }, [allDirectConversation]);
 

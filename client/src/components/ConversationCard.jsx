@@ -17,6 +17,7 @@ import {
   setActiveConvoIsArchived,
   setToMention,
   setConversationRole,
+  setUnifiedEmojiBtn,
 } from "../redux/conversation";
 import { setEmojiPickerIsOpen } from "../redux/chat";
 export default function ConversationCard({
@@ -120,6 +121,9 @@ export default function ConversationCard({
               userConversation.conversation._id,
               userConversation._id,
             ])
+          );
+          dispatch(
+            setUnifiedEmojiBtn(userConversation.conversation.unifiedEmoji)
           );
           dispatch(setToMention([]));
           getMessages(userConversation.conversation._id);

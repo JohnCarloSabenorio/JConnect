@@ -40,6 +40,10 @@ var convoSchema = new mongoose.Schema({
   latestMessage: {
     type: String,
     "default": ""
+  },
+  unifiedEmoji: {
+    type: String,
+    "default": "1f44d"
   }
 }, {
   timestamps: true

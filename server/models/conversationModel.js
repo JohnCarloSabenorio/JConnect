@@ -35,10 +35,13 @@ const convoSchema = new mongoose.Schema(
         values: ["active", "archived"],
       },
     },
-
     latestMessage: {
       type: String,
       default: "",
+    },
+    unifiedEmoji: {
+      type: String,
+      default: "1f44d",
     },
   },
   {

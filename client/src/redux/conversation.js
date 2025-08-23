@@ -21,10 +21,15 @@ const conversationSlice = createSlice({
     toMention: [],
     message: "",
     conversationRole: "member",
+    unifiedEmojiBtn: "1f44d",
   },
   reducers: {
     setMessage: (state, action) => {
       state.message = action.payload;
+    },
+
+    setUnifiedEmojiBtn: (state, action) => {
+      state.unifiedEmojiBtn = action.payload;
     },
 
     setConversationRole: (state, action) => {
@@ -275,6 +280,7 @@ const conversationSlice = createSlice({
 });
 
 export const {
+  setUnifiedEmojiBtn,
   removeConvoMember,
   removeAConvo,
   setMessage,

@@ -16,6 +16,7 @@ import {
   setActiveConvoMembers,
   setConversationStatus,
   setToMention,
+  setUnifiedEmojiBtn,
 } from "../redux/conversation";
 import { setConvoViewMode } from "../redux/sidebar";
 import { changeActiveInbox } from "../redux/sidebar";
@@ -105,6 +106,12 @@ export default function CreateGroupChatOverlay() {
           newConversationData.currentUserNewConversation._id,
         ])
       );
+      dispatch(
+        setUnifiedEmojiBtn(
+          newConversationData.currentUserNewConversation.conversation
+            .unifiedEmoji
+        )
+      );
       dispatch(setToMention([]));
       dispatch(
         setActiveConvoIsGroup(
@@ -141,7 +148,7 @@ export default function CreateGroupChatOverlay() {
             newConversationData.currentUserNewConversation.conversation._id,
         });
       });
-      
+
       dispatch(
         setConversationRole(newConversationData.currentUserNewConversation.role)
       );

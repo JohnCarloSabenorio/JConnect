@@ -34,6 +34,7 @@ import {
   setConversationRole,
   setActiveConvoIsGroup,
   setActiveDirectUser,
+  setUnifiedEmojiBtn,
 } from "../redux/conversation";
 
 import { createNotification, deleteNotification } from "../api/notification";
@@ -184,6 +185,8 @@ export default function ProfileOverlay() {
         userConversation._id
       );
 
+      dispatch(setUnifiedEmojiBtn(userConversation.conversation.unifiedEmoji));
+
       dispatch(
         updateSidebar({
           sidebarTitle: status === "archived" ? "archived" : "inbox",
@@ -191,7 +194,6 @@ export default function ProfileOverlay() {
           sidebarBtn: status === "archived" ? "archived-btn" : "inbox-btn",
         })
       );
-
 
       dispatch(setConversationRole(userConversation.role));
       dispatch(setActiveDirectUser(displayedUser._id));
