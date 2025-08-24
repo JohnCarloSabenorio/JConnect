@@ -9,7 +9,7 @@ import {
   isFriend,
 } from "../api/friends";
 import { useSelector, useDispatch } from "react-redux";
-import { hideProfileOverlay } from "../redux/profile_overlay";
+import { hideProfileOverlay } from "../redux/profileOverlay";
 import { socket } from "../socket";
 import { useEffect, useState, useContext } from "react";
 import {

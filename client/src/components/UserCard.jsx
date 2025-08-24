@@ -1,9 +1,9 @@
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 
-import { setDisplayedUser } from "../redux/profile_overlay";
+import { setDisplayedUser } from "../redux/profileOverlay";
 
-import { showProfileOverlay } from "../redux/profile_overlay";
+import { showProfileOverlay } from "../redux/profileOverlay";
 
 export default function UserCard({ user, imageUrl }) {
   const { allUsers } = useSelector((state) => state.user);

@@ -15,6 +15,12 @@ exports.updateConversation = async (io, socket, data) => {
     { new: true }
   );
 
+  if (!updatedConversation) {
+    console.log("No conversation has been updated!");
+    console.log("Please check the data sent to the controller:", data);
+    return;
+  }
+
   console.log("updated conversation done:", updatedConversation);
 
   io.to(data.conversationId.toString()).emit("update conversation", {

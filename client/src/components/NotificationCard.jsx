@@ -1,7 +1,7 @@
 import { acceptFriendRequest, rejectFriendRequest } from "../api/friends";
 import { useState } from "react";
-import { setDisplayedUser } from "../redux/profile_overlay";
-import { showProfileOverlay } from "../redux/profile_overlay";
+import { setDisplayedUser } from "../redux/profileOverlay";
+import { showProfileOverlay } from "../redux/profileOverlay";
 import { getAllUserMessages } from "../api/conversation";
 import {
   initDisplayedMessages,

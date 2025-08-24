@@ -7,7 +7,7 @@ import {
 } from "../api/notification";
 import { useSelector, useDispatch } from "react-redux";
 import { setAllNotifications } from "../redux/notification";
-import { setDisplaySettingsOverlay } from "../redux/settings_overlay";
+import { setDisplaySettingsOverlay } from "../redux/settingsOverlay";
 import { setNotifActive } from "../redux/notification";
 export default function Navbar() {
   const [menuActive, setMenuActive] = useState(false);

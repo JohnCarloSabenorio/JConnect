@@ -33,7 +33,6 @@ const conversationSlice = createSlice({
     },
 
     setConversationRole: (state, action) => {
-      console.log("SETTING CONVERSATION ROLE TO:", action.payload);
       state.conversationRole = action.payload;
     },
     setConversationStatus: (state, action) => {
@@ -41,7 +40,6 @@ const conversationSlice = createSlice({
     },
 
     setToMention: (state, action) => {
-      console.log("RESETTING THE MENTIONS!", action.payload);
       state.toMention = action.payload;
     },
 
@@ -52,7 +50,6 @@ const conversationSlice = createSlice({
       if (!currentMentions.includes(userId)) {
         currentMentions.push(userId);
       }
-      console.log("CURRENT MENTIONS:", currentMentions);
 
       state.toMention = currentMentions;
     },
@@ -65,11 +62,9 @@ const conversationSlice = createSlice({
         currentMentions = currentMentions.filter((id) => id != userId);
       }
 
-      console.log("CURRENT MENTIONS:", currentMentions);
       state.toMention = currentMentions;
     },
     setActiveConversation: (state, action) => {
-      console.log("setting the actives:", action.payload);
       state.currentConvoName = action.payload[0];
       state.activeConvo = action.payload[1];
       state.activeUserConvo = action.payload[2];
@@ -81,8 +76,6 @@ const conversationSlice = createSlice({
 
     setActiveConvo: (state, action) => {
       state.activeConvo = action.payload;
-      console.log("ACTIVE CONVERSATION:");
-      console.log(action.payload);
     },
 
     filterArchivedConvo: (state, action) => {
@@ -131,12 +124,10 @@ const conversationSlice = createSlice({
     },
 
     setActiveConvoMembers: (state, action) => {
-      console.log("GROUP MEMBERS:", action.payload);
       state.activeConvoMembers = action.payload;
     },
 
     removeConvoMember: (state, action) => {
-      console.log("the member to be removed:", action.payload);
       state.activeConvoMembers = state.activeConvoMembers.filter(
         (member) => member._id != action.payload
       );
@@ -147,21 +138,15 @@ const conversationSlice = createSlice({
         member.username.toLowerCase().includes(action.payload)
       );
       if (state.filteredConvoMembers.length == 0) {
-        console.log("DIDN'T MATCH ANY");
         state.isMentioning = false;
       }
     },
 
     setActiveDirectUser: (state, action) => {
-      console.log("ACTIVE DIRECT FRIEND:", action.payload);
       state.activeDirectUser = action.payload;
     },
 
     setUserIsFriend: (state, action) => {
-      console.log(
-        "UPDATED STATE OF THE USER.. IS IT A FRIEND?",
-        action.payload
-      );
       state.userIsFriend = action.payload;
     },
 
@@ -187,7 +172,6 @@ const conversationSlice = createSlice({
       state.allDirectConversation = action.payload;
     },
     initAllGroupConversation: (state, action) => {
-      console.log("ALL GROUP CONVERSATION:", action.payload);
       state.allGroupConversation = action.payload;
     },
     initAllArchivedConversation: (state, action) => {
@@ -205,7 +189,7 @@ const conversationSlice = createSlice({
     updateAGroupConvo: (state, action) => {
       const updatedConversation = action.payload;
 
-      console.log("the updated convoreation:", updatedConversation);
+      console.log("Updated group conversation:", updatedConversation);
 
       if (updatedConversation) {
         state.allGroupConversation = [
@@ -239,9 +223,9 @@ const conversationSlice = createSlice({
 
     updateAConvo: (state, action) => {
       // this will find the existing conversation and update it with the new one
-      console.log("updating redux conversation...");
 
       const updatedConversation = action.payload;
+      console.log("updated direct conversation:", updatedConversation);
       state.allDirectConversation = [
         ...state.allDirectConversation.map((userConversation) => {
           if (userConversation.conversation._id === updatedConversation._id) {

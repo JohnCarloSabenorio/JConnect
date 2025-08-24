@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   setHideAddMemberOverlay,
   setSelectedUsers,
-} from "../redux/addmember_overlay";
+} from "../redux/addMemberOverlay";
 import { addNewMembersToGroup } from "../api/conversation";
 import { setAllUsers } from "../redux/user";
 import { getAllUsers } from "../api/user";

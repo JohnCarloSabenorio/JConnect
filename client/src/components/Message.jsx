@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
-import { showProfileOverlay } from "../redux/profile_overlay";
-import { setDisplayedUser } from "../redux/profile_overlay";
+import { showProfileOverlay } from "../redux/profileOverlay";
+import { setDisplayedUser } from "../redux/profileOverlay";
 import { getAllMessageReactions } from "../api/message";
 import Picker, { Emoji } from "emoji-picker-react";
 import { socket } from "../socket";
@@ -62,7 +62,6 @@ export const Message = React.memo(function Message({
   useEffect(() => {
     const chat = uiChatRef.current;
     if (!chat) return;
-    if (action != message) return;
 
     function handleScroll() {
       const rect = buttonRef.current.getBoundingClientRect();

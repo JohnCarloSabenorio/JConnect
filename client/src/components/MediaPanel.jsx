@@ -1,9 +1,10 @@
 import { useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setIsHidden } from "../redux/overlay";
-import { setHideAddMemberOverlay } from "../redux/addmember_overlay";
+import { setHideAddMemberOverlay } from "../redux/addMemberOverlay";
 import ConversationMembersCard from "./ConversationMembersCard";
-import { setChangeChatNameOverlayIsOpen } from "../redux/changechatname_overlay";
+import { setChangeChatNameOverlayIsOpen } from "../redux/changeChatNameOverlay";
+import { setDisplayChangeEmojiOverlay } from "../redux/changeEmojiOverlay";
 import { UserContext } from "../App";
 export default function MediaPanel({ getUserConversations }) {
   const { currentConvoName, activeConvoIsGroup, userIsFriend, activeConvo } =
@@ -207,7 +208,6 @@ export default function MediaPanel({ getUserConversations }) {
           >
             {activeConvoMembers &&
               activeConvoMembers.map((member, idx) => {
-                console.log("THE ACTIVE CONVO MEMBER:", member);
                 return <ConversationMembersCard member={member} key={idx} />;
               })}
           </div>
@@ -260,7 +260,10 @@ export default function MediaPanel({ getUserConversations }) {
             </div>
 
             {/* Change Emoji */}
-            <div className="group flex gap-2 p-1 cursor-pointer hover:bg-gray-500 rounded-md hover:text-white">
+            <div
+              onClick={(e) => dispatch(setDisplayChangeEmojiOverlay(true))}
+              className="group flex gap-2 p-1 cursor-pointer hover:bg-gray-500 rounded-md hover:text-white"
+            >
               {/* Icon */}
               <div className="">
                 <svg

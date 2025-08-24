@@ -37,12 +37,23 @@ exports.updateConversation = function _callee(io, socket, data) {
 
         case 3:
           updatedConversation = _context.sent;
+
+          if (updatedConversation) {
+            _context.next = 8;
+            break;
+          }
+
+          console.log("No conversation has been updated!");
+          console.log("Please check the data sent to the controller:", data);
+          return _context.abrupt("return");
+
+        case 8:
           console.log("updated conversation done:", updatedConversation);
           io.to(data.conversationId.toString()).emit("update conversation", {
             updatedConversation: updatedConversation
           });
 
-        case 6:
+        case 10:
         case "end":
           return _context.stop();
       }

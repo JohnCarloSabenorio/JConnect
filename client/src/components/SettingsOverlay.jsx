@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { setDisplaySettingsOverlay } from "../redux/settings_overlay";
+import { setDisplaySettingsOverlay } from "../redux/settingsOverlay";
 import { changePassword } from "../api/user";
 export default function SettingsOverlay() {
   const [isChangingPassword, setIsChangingPassword] = useState(false);

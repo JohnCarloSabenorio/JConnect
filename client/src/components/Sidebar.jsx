@@ -10,7 +10,7 @@ import Groups from "./sidebar_contents/Groups";
 import ArchivedChat from "./sidebar_contents/ArchivedChat";
 import Discover from "./sidebar_contents/Discover";
 import { useDispatch, useSelector } from "react-redux";
-import { setDisplayGroupChatOverlay } from "../redux/creategroupchat_overlay";
+import { setDisplayGroupChatOverlay } from "../redux/createGroupChatOverlay";
 import { socket } from "../socket";
 import {
   initAllDirectConversation,

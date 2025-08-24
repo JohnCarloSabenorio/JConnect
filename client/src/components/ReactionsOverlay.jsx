@@ -3,8 +3,8 @@ import { getAllMessageReactions } from "../api/message";
 import { useState, useEffect, useMemo } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
-import { setDisplayedUser } from "../redux/profile_overlay";
-import { showProfileOverlay } from "../redux/profile_overlay";
+import { setDisplayedUser } from "../redux/profileOverlay";
+import { showProfileOverlay } from "../redux/profileOverlay";
 import {
   setAllMessageReactions,
   setDisplayReactionsOverlay,

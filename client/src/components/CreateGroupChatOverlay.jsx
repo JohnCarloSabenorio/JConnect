@@ -8,7 +8,7 @@ import { useMemo, useEffect, useState } from "react";
 import { socket } from "../socket";
 import { useContext } from "react";
 import { UserContext } from "../App";
-import { setDisplayGroupChatOverlay } from "../redux/creategroupchat_overlay";
+import { setDisplayGroupChatOverlay } from "../redux/createGroupChatOverlay";
 import { createConversation } from "../api/conversation";
 import { setInitialMessageRender, setMessageIsLoading } from "../redux/message";
 import {

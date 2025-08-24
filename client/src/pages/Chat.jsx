@@ -27,6 +27,7 @@ import Overlay from "../components/Overlay";
 import { toggleMediaPanel } from "../redux/media";
 import { addNotification } from "../redux/notification";
 import { setEmojiPickerIsOpen } from "../redux/chat";
+import ChangeEmojiOverlay from "../components/ChangeEmojiOverlay";
 import {
   setIsMentioning,
   activateGroupConversation,
@@ -45,6 +46,7 @@ import {
   removeConvoMember,
   setActiveConvoMembers,
   setCurrentConvoName,
+  setUnifiedEmojiBtn,
 } from "../redux/conversation";
 import {
   activateUserConversation,
@@ -80,8 +82,6 @@ export default function Chat() {
     conversationStatus,
     unifiedEmojiBtn,
   } = useSelector((state) => state.conversation);
-
-  console.log("THE ACTIVE CONVERSATION:", activeConvo);
 
   // This will get the messages to be displayed from the message slice
   const { displayedMessages, messageIsLoading } = useSelector(
@@ -137,13 +137,20 @@ export default function Chat() {
 
   useEffect(() => {
     const handleUpdateConversation = (data) => {
-      console.log("conversation is update:", data);
       if (data.updatedConversation.isGroup) {
         dispatch(updateAGroupConvo(data.updatedConversation));
         if (activeConvo == data.updatedConversation._id) {
           dispatch(
             setCurrentConvoName(data.updatedConversation.conversationName)
           );
+
+          dispatch(setUnifiedEmojiBtn(data.updatedConversation.unifiedEmoji));
+        }
+      } else {
+        dispatch(updateAConvo(data.updatedConversation));
+
+        if (activeConvo == data.updatedConversation._id) {
+          dispatch(setUnifiedEmojiBtn(data.updatedConversation.unifiedEmoji));
         }
       }
     };
@@ -157,6 +164,7 @@ export default function Chat() {
 
   useEffect(() => {
     const handleCreateMessage = (data) => {
+      console.log("creating message data:", data);
       if (data.messageData.sender._id === user._id) {
         dispatch(setInitialMessageRender(true));
       }
@@ -168,10 +176,13 @@ export default function Chat() {
       setFileInputKey(Date.now());
     };
     socket.on("create message", (data) => {
+      console.log("CREATING MESSAGE!!!!");
       handleCreateMessage(data);
     });
 
-    socket.off("create message", handleCreateMessage);
+    return () => {
+      socket.off("create message", handleCreateMessage);
+    };
   }, [activeConvo]);
 
   useEffect(() => {
@@ -539,6 +550,7 @@ export default function Chat() {
     <>
       <div className="flex flex-col h-screen overflow-hidden">
         {/* Overlays */}
+        <ChangeEmojiOverlay />
         <ChangeChatNameOverlay />
         <ProfileOverlay />
         <ReactionsOverlay />

@@ -1,4 +1,4 @@
-import { removeSelectedUser } from "../redux/addmember_overlay";
+import { removeSelectedUser } from "../redux/addMemberOverlay";
 import { useDispatch } from "react-redux";
 export default function SelectedUserBadge({ user }) {
   const dispatch = useDispatch();

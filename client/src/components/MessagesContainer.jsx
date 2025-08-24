@@ -25,7 +25,7 @@ export default function MessagesContainer({ uiChatRef }) {
 
       return (
         <Message
-          key={message._id}
+          key={i}
           imgUrl="img/icons/male-default.jpg"
           messageData={message}
           imagesSent={blobUrls}

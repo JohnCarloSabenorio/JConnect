@@ -1,5 +1,5 @@
 import { act, useEffect, useState } from "react";
-import { setChangeChatNameOverlayIsOpen } from "../redux/changechatname_overlay";
+import { setChangeChatNameOverlayIsOpen } from "../redux/changeChatNameOverlay";
 import { useSelector, useDispatch } from "react-redux";
 import { setConversationName } from "../redux/chat";
 import { socket } from "../socket";

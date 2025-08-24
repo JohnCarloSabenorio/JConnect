@@ -8,13 +8,14 @@ import messageReducer from "./message";
 import mediaReducer from "./media";
 import overlayReducer from "./overlay";
 import userReducer from "./user";
-import profileOverlayReducer from "./profile_overlay";
+import profileOverlayReducer from "./profileOverlay";
 import notificationReducer from "./notification";
-import addMemberOverlayReducer from "./addmember_overlay";
-import createGroupChatOverlayReducer from "./creategroupchat_overlay";
+import addMemberOverlayReducer from "./addMemberOverlay";
+import createGroupChatOverlayReducer from "./createGroupChatOverlay";
 import chatReducer from "./chat";
-import changeChatNameOverlayReducer from "./changechatname_overlay";
-import settingsOverlayReducer from "./settings_overlay";
+import changeChatNameOverlayReducer from "./changeChatNameOverlay";
+import settingsOverlayReducer from "./settingsOverlay";
+import changeEmojiOverlayReducer from "./changeEmojiOverlay";
 export default configureStore({
   reducer: {
     sidebar: sidebarReducer,
@@ -32,6 +33,7 @@ export default configureStore({
     createGroupChatOverlay: createGroupChatOverlayReducer,
     settingsOverlay: settingsOverlayReducer,
     changeChatNameOverlay: changeChatNameOverlayReducer,
+    changeEmojiOverlay: changeEmojiOverlayReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });

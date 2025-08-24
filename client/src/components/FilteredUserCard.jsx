@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   addSelectedUser,
   removeSelectedUser,
-} from "../redux/addmember_overlay";
+} from "../redux/addMemberOverlay";
 
 import { useRef } from "react";
 export default function FilteredUserCard({ user }) {
