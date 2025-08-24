@@ -24,7 +24,7 @@ var fs = require("fs");
 var path = require("path");
 
 exports.updateConversation = function _callee(io, socket, data) {
-  var updatedConversation;
+  var updatedConversation, resultData, newMessage, populatedMessage;
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -48,12 +48,37 @@ exports.updateConversation = function _callee(io, socket, data) {
           return _context.abrupt("return");
 
         case 8:
-          console.log("updated conversation done:", updatedConversation);
-          io.to(data.conversationId.toString()).emit("update conversation", {
+          // MAKE A CREATE MESSAGE FUNCTION IF A MESSAGE IS PRESENT IN UPDATE CONVERSATION
+          resultData = {
             updatedConversation: updatedConversation
-          });
+          };
 
-        case 10:
+          if (!data.message) {
+            _context.next = 17;
+            break;
+          }
+
+          _context.next = 12;
+          return regeneratorRuntime.awrap(Message.create({
+            message: data.message,
+            conversation: data.conversationId,
+            sender: data.actor,
+            action: data.action
+          }));
+
+        case 12:
+          newMessage = _context.sent;
+          _context.next = 15;
+          return regeneratorRuntime.awrap(newMessage.populate("sender"));
+
+        case 15:
+          populatedMessage = _context.sent;
+          resultData.messageData = populatedMessage;
+
+        case 17:
+          io.to(data.conversationId.toString()).emit("update conversation", resultData);
+
+        case 18:
         case "end":
           return _context.stop();
       }

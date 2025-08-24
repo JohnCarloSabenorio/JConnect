@@ -153,6 +153,18 @@ export default function Chat() {
           dispatch(setUnifiedEmojiBtn(data.updatedConversation.unifiedEmoji));
         }
       }
+
+      if (data.messageData) {
+        if (data.messageData.sender._id === user._id) {
+          dispatch(setInitialMessageRender(true));
+        }
+        if (activeConvo == data.messageData.conversation) {
+          dispatch(updateDisplayedMessages(data.messageData));
+        }
+
+        setImages([]);
+        setFileInputKey(Date.now());
+      }
     };
 
     socket.on("update conversation", handleUpdateConversation);
@@ -164,7 +176,7 @@ export default function Chat() {
 
   useEffect(() => {
     const handleCreateMessage = (data) => {
-      console.log("creating message data:", data);
+      console.log("BRUh");
       if (data.messageData.sender._id === user._id) {
         dispatch(setInitialMessageRender(true));
       }
@@ -175,10 +187,7 @@ export default function Chat() {
       setImages([]);
       setFileInputKey(Date.now());
     };
-    socket.on("create message", (data) => {
-      console.log("CREATING MESSAGE!!!!");
-      handleCreateMessage(data);
-    });
+    socket.on("create message", (data) => handleCreateMessage(data));
 
     return () => {
       socket.off("create message", handleCreateMessage);

@@ -32,20 +32,18 @@ export default function ChangeEmojiOverlay() {
   }
 
   function handleConfirm() {
-    socket.emit("create message", {
-      message: `${user.username} set the emoji to ${selectedEmoji}.`,
-      conversationId: activeConvo,
-      member: user._id,
-      action: "change_emoji",
-    });
-
+    console.log("change emoji confirmed!");
     dispatch(setUnifiedEmojiBtn(selectedEmojiUnified));
     dispatch(setDisplayChangeEmojiOverlay(false));
 
     socket.emit("update conversation", {
       conversationId: activeConvo,
+      message: `${user.username} set the emoji to ${selectedEmoji}.`,
+      member: user._id,
+      action: "change_emoji",
       data: {
         unifiedEmoji: selectedEmojiUnified,
+        latestMessage: `${user.username} set the emoji to ${selectedEmoji}.`,
       },
     });
   }

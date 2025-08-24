@@ -22,15 +22,13 @@ export default function ChangeChatNameOverlay() {
     dispatch(setChangeChatNameOverlayIsOpen(false));
     socket.emit("update conversation", {
       conversationId: activeConvo,
-      data: {
-        conversationName: newConversationName,
-      },
-    });
-    socket.emit("create message", {
       message: `Chat name has been set to ${newConversationName}`,
-      conversationId: activeConvo,
       member: user,
       action: "update_chat_name",
+      data: {
+        conversationName: newConversationName,
+        latestMessage: `Chat name has been set to ${newConversationName}`,
+      },
     });
     setNewConversationName("");
   }

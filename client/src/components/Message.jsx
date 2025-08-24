@@ -64,6 +64,9 @@ export const Message = React.memo(function Message({
     if (!chat) return;
 
     function handleScroll() {
+      if (!buttonRef.current || !chat?.current) {
+        return;
+      }
       const rect = buttonRef.current.getBoundingClientRect();
       const chatRect = chat.getBoundingClientRect();
 

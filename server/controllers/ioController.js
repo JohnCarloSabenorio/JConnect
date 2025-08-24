@@ -21,11 +21,24 @@ exports.updateConversation = async (io, socket, data) => {
     return;
   }
 
-  console.log("updated conversation done:", updatedConversation);
+  // MAKE A CREATE MESSAGE FUNCTION IF A MESSAGE IS PRESENT IN UPDATE CONVERSATION
 
-  io.to(data.conversationId.toString()).emit("update conversation", {
-    updatedConversation,
-  });
+  let resultData = { updatedConversation };
+
+  if (data.message) {
+    const newMessage = await Message.create({
+      message: data.message,
+      conversation: data.conversationId,
+      sender: data.actor,
+      action: data.action,
+    });
+
+    const populatedMessage = await newMessage.populate("sender");
+
+    resultData.messageData = populatedMessage;
+  }
+
+  io.to(data.conversationId.toString()).emit("update conversation", resultData);
 };
 
 exports.createMessage = async (io, socket, data) => {
