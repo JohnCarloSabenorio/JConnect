@@ -66,6 +66,7 @@ import { setTargetScrollMessageId } from "../redux/message";
 import CreateGroupChatOverlay from "../components/CreateGroupChatOverlay";
 import ChangeChatNameOverlay from "../components/ChangeChatNameOverlay";
 import MessagesContainer from "../components/MessagesContainer";
+import NicknamesOverlay from "../components/NicknamesOverlay";
 export default function Chat() {
   const dispatch = useDispatch();
   // REDUX STATES
@@ -559,6 +560,8 @@ export default function Chat() {
     <>
       <div className="flex flex-col h-screen overflow-hidden">
         {/* Overlays */}
+
+        <NicknamesOverlay />
         <ChangeEmojiOverlay />
         <ChangeChatNameOverlay />
         <ProfileOverlay />

@@ -16,6 +16,7 @@ import chatReducer from "./chat";
 import changeChatNameOverlayReducer from "./changeChatNameOverlay";
 import settingsOverlayReducer from "./settingsOverlay";
 import changeEmojiOverlayReducer from "./changeEmojiOverlay";
+import nicknamesOverlayReducer from "./nicknamesOverlay";
 export default configureStore({
   reducer: {
     sidebar: sidebarReducer,
@@ -34,6 +35,7 @@ export default configureStore({
     settingsOverlay: settingsOverlayReducer,
     changeChatNameOverlay: changeChatNameOverlayReducer,
     changeEmojiOverlay: changeEmojiOverlayReducer,
+    nicknamesOverlay: nicknamesOverlayReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });

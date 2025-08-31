@@ -5,6 +5,7 @@ import { setHideAddMemberOverlay } from "../redux/addMemberOverlay";
 import ConversationMembersCard from "./ConversationMembersCard";
 import { setChangeChatNameOverlayIsOpen } from "../redux/changeChatNameOverlay";
 import { setDisplayChangeEmojiOverlay } from "../redux/changeEmojiOverlay";
+import { setDisplayNicknamesOverlay } from "../redux/nicknamesOverlay";
 import { UserContext } from "../App";
 export default function MediaPanel({ getUserConversations }) {
   const { currentConvoName, activeConvoIsGroup, userIsFriend, activeConvo } =
@@ -281,7 +282,10 @@ export default function MediaPanel({ getUserConversations }) {
             </div>
 
             {/* Change Nickname */}
-            <div className="group flex gap-2 p-1 cursor-pointer hover:bg-gray-500 rounded-md hover:text-white">
+            <div
+              onClick={(e) => dispatch(setDisplayNicknamesOverlay(true))}
+              className="group flex gap-2 p-1 cursor-pointer hover:bg-gray-500 rounded-md hover:text-white"
+            >
               {/* Icon */}
               <div>
                 <svg
