@@ -133,6 +133,11 @@ io.on("connection", (socket) => {
     data["actor"] = socket.handshake.auth.userId;
     ioController.updateConversation(io, socket, data);
   });
+
+  socket.on("update nickname", (data) => {
+    data["actor"] = socket.handshake.auth.userId;
+    ioController.updateNickname(io, socket, data);
+  });
 });
 
 // RUN SERVER

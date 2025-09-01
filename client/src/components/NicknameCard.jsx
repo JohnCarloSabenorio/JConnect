@@ -16,6 +16,10 @@ export default function NicknameCard({ userData }) {
   const [newNickname, setNewNickname] = useState("");
 
   function setNickname() {
+    if (newNickname == "") {
+      return;
+    }
+
     console.log("the id:", userData._id);
     updateUserConversation(userData._id, {
       nickname: newNickname,

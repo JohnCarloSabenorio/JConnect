@@ -7,6 +7,11 @@ const sharp = require("sharp"); // For saving and manipulating images
 const fs = require("fs");
 const path = require("path");
 
+exports.updateNickname = async (io, socket, data) => {
+  // Since an api is used to update the nickname, use this io controller to send the new data to the other users
+  
+};
+
 exports.updateConversation = async (io, socket, data) => {
   console.log("data data:", data.data);
   const updatedConversation = await Conversation.findByIdAndUpdate(
