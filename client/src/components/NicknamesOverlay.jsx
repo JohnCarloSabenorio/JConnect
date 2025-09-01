@@ -1,11 +1,29 @@
 import { useDispatch, useSelector } from "react-redux";
 import { setDisplayNicknamesOverlay } from "../redux/nicknamesOverlay";
 import NicknameCard from "./NicknameCard";
+import { useState, useEffect } from "react";
+import { getNamesAndNicknames } from "../api/conversation";
 export default function NicknamesOverlay() {
   const dispatch = useDispatch();
   const { displayNicknamesOverlay } = useSelector(
     (state) => state.nicknamesOverlay
   );
+
+  const [namesAndNicknames, setNamesAndNicknames] = useState([]);
+  const { activeConvo } = useSelector((state) => state.conversation);
+
+  useEffect(() => {
+    async function getConvoNamesAndNicknames(convoId) {
+      const namesAndNicknamesData = await getNamesAndNicknames(convoId);
+
+      console.log("NAMES AND NICKNAMES:", namesAndNicknames);
+
+      setNamesAndNicknames(namesAndNicknamesData);
+    }
+    if (displayNicknamesOverlay) {
+      getConvoNamesAndNicknames(activeConvo);
+    }
+  }, [displayNicknamesOverlay]);
   return (
     <div
       className={`absolute w-full h-full z-50 bg-black/70 justify-center items-center flex-col ${
@@ -27,7 +45,9 @@ export default function NicknamesOverlay() {
         <hr />
 
         {/* Nickname Cards */}
-        <NicknameCard />
+        {namesAndNicknames.map((data, key) => (
+          <NicknameCard key={key} userData={data} />
+        ))}
       </div>
     </div>
   );

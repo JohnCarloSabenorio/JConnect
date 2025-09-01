@@ -1,6 +1,37 @@
 import { useState } from "react";
-export default function NicknameCard() {
+import { useSelector, useDispatch } from "react-redux";
+import { updateUserConversation } from "../api/conversation";
+import { socket } from "../socket";
+import { UserContext } from "../App";
+import { useContext } from "react";
+export default function NicknameCard({ userData }) {
+  const { user } = useContext(UserContext);
+  const dispatch = useDispatch();
+  const { activeConvoMembers, activeConvo } = useSelector(
+    (state) => state.conversation
+  );
+
+  console.log("active conversation members in nickname:", activeConvoMembers);
   const [isEditing, setIsEditing] = useState(false);
+  const [newNickname, setNewNickname] = useState("");
+
+  function setNickname() {
+    console.log("the id:", userData._id);
+    updateUserConversation(userData._id, {
+      nickname: newNickname,
+    });
+    userData.nickname = newNickname;
+
+    socket.emit("update conversation", {
+      conversationId: activeConvo,
+      message: `${user.username} has set the nickname for ${userData.user.username} to ${newNickname}.`,
+      member: user._id,
+      action: "change_nickname",
+      data: {
+        latestMessage: `${user.username} has set the nickname for ${userData.user.username} to ${newNickname}.`,
+      },
+    });
+  }
 
   return (
     <div className="flex gap-3 mt-3 items-center px-2">
@@ -9,11 +40,17 @@ export default function NicknameCard() {
       <div className="flex-1">
         {/* Nickname */}
         {isEditing ? (
-          <input type="text" className="w-full rounded-md border" />
+          <input
+            type="text"
+            className="w-full rounded-md border"
+            onInput={(e) => setNewNickname(e.target.value)}
+          />
         ) : (
-          <p className="">Set Nickname</p>
+          <p className="">
+            {userData.nickname != "" ? userData.nickname : "Set nickname"}
+          </p>
         )}
-        <p className="text-sm">Username</p>
+        <p className="text-sm">{userData.user.username}</p>
 
         {/* <span className="text-md">Nickname</span> */}
         {/* Username */}
@@ -30,7 +67,10 @@ export default function NicknameCard() {
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 -960 960 960"
         className={`${isEditing ? "block" : "hidden"} w-7 h-7 cursor-pointer`}
-        onClick={(e) => setIsEditing(false)}
+        onClick={(e) => {
+          setIsEditing(false);
+          setNickname();
+        }}
       >
         <path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z" />
       </svg>

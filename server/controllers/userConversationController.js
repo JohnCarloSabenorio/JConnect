@@ -143,6 +143,23 @@ exports.activateUserConversation = catchASync(async (req, res, next) => {
   });
 });
 
+exports.getUserNamesAndNicknames = catchASync(async (req, res, next) => {
+  console.log("getting names...");
+  // Find all user-convo data in the conversation
+  const userConversations = await UserConversation.find({
+    conversation: req.params.convoId,
+  })
+    .populate("user", "username")
+    .populate("conversation", "-users -conversationName")
+    .select("user nickname conversation");
+
+  res.status(200).json({
+    status: "success",
+    message: "Successfully retrieved all names and nicknames",
+    userConversations,
+  });
+});
+
 // GENERIC HANDLERS
 exports.createUserConversation = handlerFactory.createOne(UserConversation);
 exports.getAllUserConversation = handlerFactory.getAll(UserConversation);

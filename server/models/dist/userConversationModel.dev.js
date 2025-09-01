@@ -11,6 +11,9 @@ var userConvoSchema = mongoose.Schema({
     ref: "User",
     required: true
   },
+  nickname: {
+    type: String
+  },
   conversation: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Conversation",

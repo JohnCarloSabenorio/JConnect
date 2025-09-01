@@ -52,6 +52,7 @@ const messageSchema = new mongoose.Schema(
         "add_member",
         "update_chat_name",
         "change_emoji",
+        "change_nickname",
       ],
       default: "message",
     },

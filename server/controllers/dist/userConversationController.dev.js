@@ -261,6 +261,34 @@ exports.activateUserConversation = catchASync(function _callee7(req, res, next) 
       }
     }
   });
+});
+exports.getUserNamesAndNicknames = catchASync(function _callee8(req, res, next) {
+  var userConversations;
+  return regeneratorRuntime.async(function _callee8$(_context8) {
+    while (1) {
+      switch (_context8.prev = _context8.next) {
+        case 0:
+          console.log("getting names..."); // Find all user-convo data in the conversation
+
+          _context8.next = 3;
+          return regeneratorRuntime.awrap(UserConversation.find({
+            conversation: req.params.convoId
+          }).populate("user", "username").populate("conversation", "-users -conversationName").select("user nickname conversation"));
+
+        case 3:
+          userConversations = _context8.sent;
+          res.status(200).json({
+            status: "success",
+            message: "Successfully retrieved all names and nicknames",
+            userConversations: userConversations
+          });
+
+        case 5:
+        case "end":
+          return _context8.stop();
+      }
+    }
+  });
 }); // GENERIC HANDLERS
 
 exports.createUserConversation = handlerFactory.createOne(UserConversation);

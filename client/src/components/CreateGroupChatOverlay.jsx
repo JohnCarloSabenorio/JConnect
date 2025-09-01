@@ -1,5 +1,4 @@
 import { useSelector, useDispatch } from "react-redux";
-
 import { setAllUsers } from "../redux/user";
 import { getAllUsers } from "../api/user";
 import SelectedUserBadge from "./SelectedUserBadge";

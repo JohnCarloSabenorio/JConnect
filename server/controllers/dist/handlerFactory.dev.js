@@ -274,7 +274,7 @@ exports.updateOne = function (Model) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
-            console.log("USER MESSAGE:", req.body.message);
+            console.log("updating conversation:", req.body);
             _context6.next = 3;
             return regeneratorRuntime.awrap(Model.findByIdAndUpdate(req.params.id, req.body, {
               "new": true,

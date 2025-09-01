@@ -74,6 +74,7 @@ exports.addMultipleMembers = catchAsync(async (req, res, next) => {
   const newGroupUserConversationData = newUsersFromDB.map((user) => {
     return {
       user: user._id,
+      nickname: "",
       conversation: convo._id,
       conversationName: newGroupName,
       isGroup: true,
@@ -179,6 +180,7 @@ exports.createConversation = catchAsync(async (req, res) => {
 
       return {
         user: user._id,
+        nickname: "",
         conversation: newConversation._id,
         conversationName: newGroupName,
         isGroup: true,
@@ -220,11 +222,13 @@ exports.createConversation = catchAsync(async (req, res) => {
     const newDirectUserConversations = await UserConversation.create([
       {
         user: usersFromDB[0]._id,
+        nickname: "",
         conversation: newConversation._id,
         conversationName: usersFromDB[1].username,
       },
       {
         user: usersFromDB[1]._id,
+        nickname: "",
         conversation: newConversation._id,
         conversationName: usersFromDB[0].username,
       },

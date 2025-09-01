@@ -159,7 +159,9 @@ export async function getUserConversation(convoId) {
 
 export async function updateUserConversation(userConvoId, newData) {
   try {
-    const response = await axios.post(
+    console.log("updating user conversation...", userConvoId);
+    console.log("new data...", newData);
+    const response = await axios.patch(
       `jconnect/api/v1/user-conversation/${userConvoId}`,
       newData,
       {
@@ -173,9 +175,9 @@ export async function updateUserConversation(userConvoId, newData) {
 
     const responseData = response.data;
 
-    // console.log("Updated user conversation response:", responseData);
+    console.log("Updated user conversation response:", responseData);
   } catch (err) {
-    // console.log("Failed to archive conversation");
+    console.log("Failed to update conversation:", err);
   }
 }
 
@@ -267,5 +269,18 @@ export async function removeMemberFromGroup(conversationId, userId) {
       jconnect/api/v1/users/${userId}/conversation/member/${conversationId}`);
   } catch (err) {
     console.log("Failed to remove user from conversation:", err);
+  }
+}
+
+export async function getNamesAndNicknames(convoId) {
+  try {
+    const response = await axios.get(
+      `jconnect/api/v1/user-conversation/get-names-nicknames/${convoId}`
+    );
+
+    const responseData = response.data;
+    return responseData.userConversations;
+  } catch (err) {
+    // console.log("Failed to check if conversation is archived: ", err);
   }
 }

@@ -118,6 +118,7 @@ exports.addMultipleMembers = catchAsync(function _callee2(req, res, next) {
           newGroupUserConversationData = newUsersFromDB.map(function (user) {
             return {
               user: user._id,
+              nickname: "",
               conversation: convo._id,
               conversationName: newGroupName,
               isGroup: true,
@@ -284,6 +285,7 @@ exports.createConversation = catchAsync(function _callee6(req, res) {
             var userStatus = req.user.id == user._id.toString() ? "active" : "pending";
             return {
               user: user._id,
+              nickname: "",
               conversation: newConversation._id,
               conversationName: newGroupName,
               isGroup: true,
@@ -325,10 +327,12 @@ exports.createConversation = catchAsync(function _callee6(req, res) {
           _context6.next = 29;
           return regeneratorRuntime.awrap(UserConversation.create([{
             user: usersFromDB[0]._id,
+            nickname: "",
             conversation: newConversation._id,
             conversationName: usersFromDB[1].username
           }, {
             user: usersFromDB[1]._id,
+            nickname: "",
             conversation: newConversation._id,
             conversationName: usersFromDB[0].username
           }]));

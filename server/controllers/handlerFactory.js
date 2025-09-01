@@ -142,7 +142,7 @@ exports.getAll = (Model) =>
 
 exports.updateOne = (Model) =>
   catchAsync(async (req, res) => {
-    console.log("USER MESSAGE:", req.body.message);
+    console.log("updating conversation:", req.body);
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
