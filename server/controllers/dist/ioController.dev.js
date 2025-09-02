@@ -43,7 +43,9 @@ exports.updateNickname = function _callee(io, socket, data) {
           console.log("updated user conversation:", updatedUserConversation);
           io.to(data.conversationId.toString()).emit("update nickname", {
             userConvoId: data.userConvoId,
-            newNickname: updatedUserConversation.nickname
+            newNickname: updatedUserConversation.nickname,
+            isGroup: updatedUserConversation.isGroup,
+            convoId: updatedUserConversation.conversation._id
           });
 
         case 6:

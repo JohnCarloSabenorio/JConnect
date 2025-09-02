@@ -164,23 +164,39 @@ const conversationSlice = createSlice({
     },
 
     initDirectsAndGroups: (state, action) => {
-      state.allDirectConversation = action.payload[0];
-      state.allGroupConversation = action.payload[1];
+      state.allDirectConversation = action.payload[0].sort(
+        (a, b) => new Date(a.updatedAt) + new Date(b.updatedAt)
+      );
+      state.allGroupConversation = action.payload[1].sort(
+        (a, b) => new Date(a.updatedAt) + new Date(b.updatedAt)
+      );
     },
 
     initAllDirectConversation: (state, action) => {
-      state.allDirectConversation = action.payload;
+      state.allDirectConversation = action.payload.sort(
+        (a, b) => new Date(a.updatedAt) + new Date(b.updatedAt)
+      );
     },
     initAllGroupConversation: (state, action) => {
-      state.allGroupConversation = action.payload;
+      state.allGroupConversation = action.payload.sort(
+        (a, b) => new Date(a.updatedAt) + new Date(b.updatedAt)
+      );
     },
     initAllArchivedConversation: (state, action) => {
-      state.allArchivedConversation = action.payload;
+      state.allArchivedConversation = action.payload.sort(
+        (a, b) => new Date(a.updatedAt) + new Date(b.updatedAt)
+      );
     },
     initAllUserConversation: (state, action) => {
-      state.allDirectConversation = action.payload[0];
-      state.allGroupConversation = action.payload[1];
-      state.allArchivedConversation = action.payload[2];
+      state.allDirectConversation = action.payload[0].sort(
+        (a, b) => new Date(a.updatedAt) + new Date(b.updatedAt)
+      );
+      state.allGroupConversation = action.payload[1].sort(
+        (a, b) => new Date(a.updatedAt) + new Date(b.updatedAt)
+      );
+      state.allArchivedConversation = action.payload[2].sort(
+        (a, b) => new Date(a.updatedAt) + new Date(b.updatedAt)
+      );
     },
 
     initAllUserGroupConvo: (state, action) => {
@@ -219,6 +235,26 @@ const conversationSlice = createSlice({
         action.payload,
         ...state.allDirectConversation,
       ];
+    },
+
+    updateAConvoNickname: (state, action) => {
+      console.log("YEP THIS IS THE ONE:", action.payload);
+
+      state.allDirectConversation = state.allDirectConversation
+        .map((userConversation) => {
+          if (userConversation._id === action.payload[0]) {
+            return {
+              ...userConversation,
+              nickname: action.payload[1],
+            };
+          }
+          return userConversation;
+        })
+        .sort(
+          (a, b) =>
+            new Date(b.conversation.updatedAt) -
+            new Date(a.conversation.updatedAt)
+        );
     },
 
     updateAConvo: (state, action) => {
@@ -294,6 +330,7 @@ export const {
   setActiveConvoMembers,
   addANewConvo,
   updateAConvo,
+  updateAConvoNickname,
   filterArchivedConvo,
   setFilteredConvoMembers,
   addGroupConversation,

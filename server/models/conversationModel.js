@@ -50,6 +50,13 @@ const convoSchema = new mongoose.Schema(
 );
 
 // DOCUMENT MIDDLEWARES
+convoSchema.pre(
+  ["findOneAndUpdate", "updateOne", "updateMany"],
+  function (next) {
+    this.set({ updatedAt: new Date() });
+    next();
+  }
+);
 
 // QUERY MIDDLEWARES
 convoSchema.pre(/^find/, function (next) {

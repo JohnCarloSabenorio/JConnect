@@ -5,7 +5,7 @@ export async function getAllConversations() {
     // console.log("Getting all direct conversations...");
 
     const response = await axios.get(
-      "/jconnect/api/v1/user-conversation?isGroup=false&status=active&status=pending&status=muted",
+      "/jconnect/api/v1/user-conversation?isGroup=false&status=active&status=pending&status=muted&sort=updatedAt",
       { withCredentials: true }
     );
 

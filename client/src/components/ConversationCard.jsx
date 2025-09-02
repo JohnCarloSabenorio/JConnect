@@ -120,7 +120,7 @@ export default function ConversationCard({
             setActiveConversation([
               userConversation.conversation.isGroup
                 ? userConversation.conversation.conversationName
-                : userConversation.conversationName,
+                : userConversation.nickname,
               userConversation.conversation._id,
               userConversation._id,
             ])
@@ -160,7 +160,7 @@ export default function ConversationCard({
               <p className="font-bold">
                 {userConversation.conversation.isGroup
                   ? userConversation.conversation.conversationName
-                  : userConversation.conversationName}
+                  : userConversation.nickname}
               </p>
               <p>
                 {displayedLatestMessage.length > 10

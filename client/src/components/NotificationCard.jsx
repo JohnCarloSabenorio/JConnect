@@ -84,7 +84,9 @@ export default function NotificationCard({ data }) {
             dispatch(setConversationRole(userConversation.role));
             dispatch(
               setActiveConversation([
-                userConversation.conversationName,
+                userConversation.isGroup
+                  ? userConversation.conversationName
+                  : userConversation.nickname,
                 userConversation.conversation._id,
                 userConversation._id,
               ])

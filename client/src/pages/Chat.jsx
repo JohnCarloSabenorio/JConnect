@@ -39,6 +39,7 @@ import {
   updateAGroupConvo,
   addANewConvo,
   updateAConvo,
+  updateAConvoNickname,
   removeToMention,
   addGroupConversation,
   setConversationStatus,
@@ -137,6 +138,14 @@ export default function Chat() {
 
       console.log("NICKNAME UPDATED:", data);
       console.log("all names and nicknames:", namesAndNicknames);
+
+      if (!data.isGroup) {
+        dispatch(updateAConvoNickname([data.userConvoId, data.newNickname]));
+
+        if (activeConvo == data.convoId) {
+          dispatch(setCurrentConvoName(data.newNickname));
+        }
+      }
 
       if (namesAndNicknames) {
         for (let i = 0; i < namesAndNicknames.length; i++) {

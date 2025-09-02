@@ -23,6 +23,8 @@ exports.updateNickname = async (io, socket, data) => {
   io.to(data.conversationId.toString()).emit("update nickname", {
     userConvoId: data.userConvoId,
     newNickname: updatedUserConversation.nickname,
+    isGroup: updatedUserConversation.isGroup,
+    convoId: updatedUserConversation.conversation._id,
   });
 };
 

@@ -327,12 +327,12 @@ exports.createConversation = catchAsync(function _callee6(req, res) {
           _context6.next = 29;
           return regeneratorRuntime.awrap(UserConversation.create([{
             user: usersFromDB[0]._id,
-            nickname: "",
+            nickname: usersFromDB[1].username,
             conversation: newConversation._id,
             conversationName: usersFromDB[1].username
           }, {
             user: usersFromDB[1]._id,
-            nickname: "",
+            nickname: usersFromDB[0].username,
             conversation: newConversation._id,
             conversationName: usersFromDB[0].username
           }]));
