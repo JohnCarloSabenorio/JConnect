@@ -24,10 +24,29 @@ var fs = require("fs");
 var path = require("path");
 
 exports.updateNickname = function _callee(io, socket, data) {
+  var updatedUserConversation;
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
+          console.log("update nickname data:", data);
+          _context.next = 3;
+          return regeneratorRuntime.awrap(UserConversation.findByIdAndUpdate(data.userConvoId, {
+            nickname: data.newNickname != "" ? data.newNickname : data.username
+          }, {
+            "new": true,
+            runValidators: true
+          }));
+
+        case 3:
+          updatedUserConversation = _context.sent;
+          console.log("updated user conversation:", updatedUserConversation);
+          io.to(data.conversationId.toString()).emit("update nickname", {
+            userConvoId: data.userConvoId,
+            newNickname: updatedUserConversation.nickname
+          });
+
+        case 6:
         case "end":
           return _context.stop();
       }

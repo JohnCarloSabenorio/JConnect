@@ -8,8 +8,22 @@ const fs = require("fs");
 const path = require("path");
 
 exports.updateNickname = async (io, socket, data) => {
-  // Since an api is used to update the nickname, use this io controller to send the new data to the other users
-  
+  console.log("update nickname data:", data);
+  const updatedUserConversation = await UserConversation.findByIdAndUpdate(
+    data.userConvoId,
+    { nickname: data.newNickname != "" ? data.newNickname : data.username },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  console.log("updated user conversation:", updatedUserConversation);
+
+  io.to(data.conversationId.toString()).emit("update nickname", {
+    userConvoId: data.userConvoId,
+    newNickname: updatedUserConversation.nickname,
+  });
 };
 
 exports.updateConversation = async (io, socket, data) => {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateUserConversation } from "../api/conversation";
 import { socket } from "../socket";
@@ -7,32 +7,44 @@ import { useContext } from "react";
 export default function NicknameCard({ userData }) {
   const { user } = useContext(UserContext);
   const dispatch = useDispatch();
+  const [displayedNickname, setDisplayedNickname] = useState("");
+
   const { activeConvoMembers, activeConvo } = useSelector(
     (state) => state.conversation
   );
 
-  console.log("active conversation members in nickname:", activeConvoMembers);
   const [isEditing, setIsEditing] = useState(false);
   const [newNickname, setNewNickname] = useState("");
 
-  function setNickname() {
-    if (newNickname == "") {
-      return;
-    }
+  useEffect(() => {
+    setDisplayedNickname(userData.nickname);
+  }, [userData]);
 
+  async function setNickname() {
     console.log("the id:", userData._id);
-    updateUserConversation(userData._id, {
-      nickname: newNickname,
+
+    setDisplayedNickname(
+      newNickname != "" ? newNickname : userData.user.username
+    );
+
+    socket.emit("update nickname", {
+      userConvoId: userData._id,
+      username: userData.user.username,
+      newNickname,
+      conversationId: activeConvo,
     });
-    userData.nickname = newNickname;
 
     socket.emit("update conversation", {
       conversationId: activeConvo,
-      message: `${user.username} has set the nickname for ${userData.user.username} to ${newNickname}.`,
+      message: `${user.username} has set the nickname for ${
+        userData.user.username
+      } to ${newNickname != "" ? newNickname : userData.user.username}.`,
       member: user._id,
       action: "change_nickname",
       data: {
-        latestMessage: `${user.username} has set the nickname for ${userData.user.username} to ${newNickname}.`,
+        latestMessage: `${user.username} has set the nickname for ${
+          userData.user.username
+        } to ${newNickname != "" ? newNickname : userData.user.username}.`,
       },
     });
   }
@@ -50,9 +62,7 @@ export default function NicknameCard({ userData }) {
             onInput={(e) => setNewNickname(e.target.value)}
           />
         ) : (
-          <p className="">
-            {userData.nickname != "" ? userData.nickname : "Set nickname"}
-          </p>
+          <p className="">{displayedNickname}</p>
         )}
         <p className="text-sm">{userData.user.username}</p>
 

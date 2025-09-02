@@ -175,7 +175,7 @@ export async function updateUserConversation(userConvoId, newData) {
 
     const responseData = response.data;
 
-    console.log("Updated user conversation response:", responseData);
+    return responseData.data;
   } catch (err) {
     console.log("Failed to update conversation:", err);
   }

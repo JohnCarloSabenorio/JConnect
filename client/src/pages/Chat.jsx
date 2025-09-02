@@ -18,6 +18,7 @@ import MediaPanel from "../components/MediaPanel";
 import ProfileOverlay from "../components/ProfileOverlay";
 import SettingsOverlay from "../components/SettingsOverlay";
 import AddMemberOverlay from "../components/AddMemberOverlay";
+import { updateANickname } from "../redux/nicknamesOverlay";
 import {
   createConversation,
   findConvoWithUser,
@@ -67,6 +68,8 @@ import CreateGroupChatOverlay from "../components/CreateGroupChatOverlay";
 import ChangeChatNameOverlay from "../components/ChangeChatNameOverlay";
 import MessagesContainer from "../components/MessagesContainer";
 import NicknamesOverlay from "../components/NicknamesOverlay";
+import { setNamesAndNicknames } from "../redux/nicknamesOverlay";
+import { getNamesAndNicknames } from "../api/conversation";
 export default function Chat() {
   const dispatch = useDispatch();
   // REDUX STATES
@@ -85,6 +88,7 @@ export default function Chat() {
   } = useSelector((state) => state.conversation);
 
   // This will get the messages to be displayed from the message slice
+  const { namesAndNicknames } = useSelector((state) => state.nicknamesOverlay);
   const { displayedMessages, messageIsLoading } = useSelector(
     (state) => state.message
   );
@@ -113,6 +117,43 @@ export default function Chat() {
   const uiChatRef = useRef(null);
   const fileInputRef = useRef(null);
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    async function getConvoNamesData() {
+      const namesAndNicknamesData = await getNamesAndNicknames(activeConvo);
+
+      dispatch(setNamesAndNicknames(namesAndNicknamesData));
+    }
+    console.log("changing names bbaby");
+    getConvoNamesData();
+  }, [activeConvo]);
+
+  useEffect(() => {
+    // remove members from redux
+    const handleUpdateNickname = (data) => {
+      // Messages will be updated if the sent messages is for the current conversation
+
+      // Removes the member from the current list of active members
+
+      console.log("NICKNAME UPDATED:", data);
+      console.log("all names and nicknames:", namesAndNicknames);
+
+      if (namesAndNicknames) {
+        for (let i = 0; i < namesAndNicknames.length; i++) {
+          if (namesAndNicknames[i]._id == data.userConvoId) {
+            dispatch(updateANickname([i, data.newNickname]));
+          }
+        }
+      }
+    };
+    socket.on("update nickname", (data) => {
+      handleUpdateNickname(data);
+    });
+
+    return () => {
+      socket.off("update nickname", handleUpdateNickname);
+    };
+  }, [activeConvo, namesAndNicknames]);
 
   useEffect(() => {
     // remove members from redux

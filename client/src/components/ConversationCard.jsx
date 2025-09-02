@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { isFriend } from "../api/friends";
 import { changeSidebarSearch } from "../redux/sidebar";
-import { getAllUserMessages } from "../api/conversation";
+import { getAllUserMessages, getNamesAndNicknames } from "../api/conversation";
 import {
   initDisplayedMessages,
   setInitialMessageRender,
@@ -19,6 +19,7 @@ import {
   setConversationRole,
   setUnifiedEmojiBtn,
 } from "../redux/conversation";
+import { setNamesAndNicknames } from "../redux/nicknamesOverlay";
 import { setEmojiPickerIsOpen } from "../redux/chat";
 export default function ConversationCard({
   chatmateId,
@@ -113,6 +114,8 @@ export default function ConversationCard({
           dispatch(setConversationStatus(userConversation.status));
           dispatch(setActiveConvoMembers(userConversation.conversation.users));
           dispatch(setConversationRole(userConversation.role));
+          // getConvoNamesData(userConversation.conversation._id);
+
           dispatch(
             setActiveConversation([
               userConversation.conversation.isGroup
