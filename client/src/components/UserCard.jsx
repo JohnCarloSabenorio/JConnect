@@ -24,7 +24,10 @@ export default function UserCard({ user, imageUrl }) {
         }}
       >
         <div className="bg-white hover:bg-gray-200 rounded-md flex p-5 shadow-md cursor-pointer">
-          <img src={imageUrl} className="rounded-full w-12 h-12" />
+          <div className="relative">
+            <img src={imageUrl} className="rounded-full w-12 h-12 border-1" />
+            <div className="absolute right-0.5 border-1 bottom-0.5 bg-green-400 w-4 h-4 rounded-full"></div>
+          </div>
           <div className="flex flex-grow">
             <div className="px-3  flex-grow">
               <p className="font-bold">{user.username}</p>
