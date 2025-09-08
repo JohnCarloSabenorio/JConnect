@@ -7,6 +7,27 @@ const sharp = require("sharp"); // For saving and manipulating images
 const fs = require("fs");
 const path = require("path");
 
+exports.changeUserStatus = async (io, socket, data) => {
+  console.log("changing user status...");
+  console.log("the dater:", data);
+  const updatedUser = await User.findByIdAndUpdate(
+    data.actor,
+    {
+      status: data.status,
+    },
+    { new: true }
+  );
+
+  if (!updatedUser) {
+    return;
+  }
+  console.log("after status update:", updatedUser);
+
+  io.emit("change status", {
+    updatedUser,
+  });
+};
+
 exports.updateNickname = async (io, socket, data) => {
   console.log("update nickname data:", data);
   const updatedUserConversation = await UserConversation.findByIdAndUpdate(

@@ -11,7 +11,7 @@ export default function Friends({
   setCurrentActiveId,
 }) {
   const { allFriends } = useSelector((state) => state.friends);
-
+  console.log("ALL MY FRIENDS:", allFriends);
   return (
     <>
       {allFriends.length > 0 &&

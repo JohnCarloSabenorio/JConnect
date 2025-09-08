@@ -143,14 +143,15 @@ exports.logout = function _callee3(req, res) {
       switch (_context3.prev = _context3.next) {
         case 0:
           console.log("the req user:", req.user);
-          _context3.next = 3;
+          console.log("user logged out...");
+          _context3.next = 4;
           return regeneratorRuntime.awrap(User.findOneAndUpdate({
             email: req.user.email
           }, {
             status: "offline"
           }));
 
-        case 3:
+        case 4:
           user = _context3.sent;
           res.cookie("jwt", "loggedout", {
             expires: new Date(Date.now() + 10 * 1000),
@@ -160,7 +161,7 @@ exports.logout = function _callee3(req, res) {
             status: "success"
           });
 
-        case 6:
+        case 7:
         case "end":
           return _context3.stop();
       }

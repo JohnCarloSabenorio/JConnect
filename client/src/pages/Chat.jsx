@@ -71,6 +71,7 @@ import MessagesContainer from "../components/MessagesContainer";
 import NicknamesOverlay from "../components/NicknamesOverlay";
 import { setNamesAndNicknames } from "../redux/nicknamesOverlay";
 import { getNamesAndNicknames } from "../api/conversation";
+import { updateFriendStatus } from "../redux/friend";
 export default function Chat() {
   const dispatch = useDispatch();
   // REDUX STATES
@@ -87,6 +88,7 @@ export default function Chat() {
     conversationStatus,
     unifiedEmojiBtn,
   } = useSelector((state) => state.conversation);
+  const { allFriends } = useSelector((state) => state.friends);
 
   // This will get the messages to be displayed from the message slice
   const { namesAndNicknames } = useSelector((state) => state.nicknamesOverlay);
@@ -118,6 +120,20 @@ export default function Chat() {
   const uiChatRef = useRef(null);
   const fileInputRef = useRef(null);
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    const handleChangeStatus = (data) => {
+      dispatch(updateFriendStatus([data.updatedUser._id, data.status]));
+    };
+
+    socket.on("change status", (data) => {
+      handleChangeStatus(data);
+    });
+
+    return () => {
+      socket.off("change status", handleChangeStatus);
+    };
+  }, []);
 
   useEffect(() => {
     async function getConvoNamesData() {

@@ -9,6 +9,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { setAllNotifications } from "../redux/notification";
 import { setDisplaySettingsOverlay } from "../redux/settingsOverlay";
 import { setNotifActive } from "../redux/notification";
+import { socket } from "../socket";
+
 export default function Navbar() {
   const [menuActive, setMenuActive] = useState(false);
   const { allNotifications, unreadCount, notifActive } = useSelector(
@@ -33,6 +35,9 @@ export default function Navbar() {
 
   async function handleLogout() {
     try {
+      socket.emit("change status", {
+        status: "offline",
+      });
       await logout();
       // socket.disconnect();
       window.location.reload();

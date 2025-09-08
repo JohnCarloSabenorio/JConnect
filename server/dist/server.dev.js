@@ -70,6 +70,11 @@ io.on("connection", function (socket) {
 
   socket.on("disconnect", function () {
     console.log("A user disconnected");
+  }); // Change user status
+
+  socket.on("change status", function (data) {
+    data["actor"] = socket.handshake.auth.userId;
+    ioController.changeUserStatus(io, socket, data);
   }); // Sends real-time messages
 
   socket.on("chat message", function (data) {

@@ -78,6 +78,7 @@ exports.login = async (req, res, next) => {
 
 exports.logout = async (req, res) => {
   console.log("the req user:", req.user);
+  console.log("user logged out...");
   const user = await User.findOneAndUpdate(
     { email: req.user.email },
     {
