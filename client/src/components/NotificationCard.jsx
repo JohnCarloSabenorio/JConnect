@@ -75,6 +75,9 @@ export default function NotificationCard({ data }) {
             const userConversation = data.userconversation;
             dispatch(setConvoViewMode(userConversation.isGroup ? 1 : 0));
 
+            if (!userConversation.isGroup) {
+              dispatch(setActiveDirectUser(data.actor._id));
+            }
             console.log("users:", userConversation.conversation.users);
             dispatch(setToMention([]));
             dispatch(
