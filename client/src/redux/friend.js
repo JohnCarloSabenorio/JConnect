@@ -6,6 +6,7 @@ const friendsSlice = createSlice({
   initialState: {
     allFriends: [],
     allNonFriends: [],
+    activeChatmateId: "",
   },
 
   reducers: {
@@ -16,7 +17,9 @@ const friendsSlice = createSlice({
     setAllNonFriends: (state, action) => {
       console.log("ALL NON FRIENDS:", action.payload);
     },
-
+    setActiveChatmateId: (state, action) => {
+      state.activeChatmateId = action.payload;
+    },
     updateFriendStatus: (state, action) => {
       state.allFriends = state.allFriends.map((data) => {
         if (data.friend._id == action.payload[0]) {
@@ -31,7 +34,11 @@ const friendsSlice = createSlice({
   },
 });
 
-export const { setAllFriends, setAllNonFriends, updateFriendStatus } =
-  friendsSlice.actions;
+export const {
+  setAllFriends,
+  setAllNonFriends,
+  updateFriendStatus,
+  setActiveChatmateId,
+} = friendsSlice.actions;
 
 export default friendsSlice.reducer;

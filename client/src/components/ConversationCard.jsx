@@ -8,6 +8,7 @@ import {
 } from "../redux/message";
 import { useSelector, useDispatch } from "react-redux";
 import { setMessageIsLoading } from "../redux/message";
+import { setActiveChatmateId } from "../redux/friend";
 import {
   setActiveConversation,
   setConversationStatus,
@@ -30,6 +31,10 @@ export default function ConversationCard({
   const { activeConvoMembers, activeConvo, conversationStatus } = useSelector(
     (state) => state.conversation
   );
+
+  const { allFriends } = useSelector((state) => state.friends);
+
+  const [isOnline, setIsOnline] = useState(false);
 
   const { sidebarSearch } = useSelector((state) => state.sidebar);
   const dispatch = useDispatch();
@@ -73,6 +78,18 @@ export default function ConversationCard({
     dispatch(setMessageIsLoading(false));
   }
 
+  function checkStatus(friendId) {
+    const matchedFriend = allFriends.find(
+      (data) => data.friend._id == friendId
+    );
+
+    setIsOnline(matchedFriend?.friend.status == "online");
+  }
+
+  useEffect(() => {
+    checkStatus(chatmateId);
+  }, [allFriends, chatmateId]);
+
   const messageParts = userConversation.conversation.latestMessage.split(
     /(@\[[^:\]]+:[^\]]+\])/g
   );
@@ -104,10 +121,6 @@ export default function ConversationCard({
             : "hidden"
         }`}
         onClick={() => {
-          console.log(
-            "THE USER CONVERSATION CONVERSATION:",
-            userConversation.conversation
-          );
           dispatch(setInitialMessageRender(true));
           inputRef.current.innerHTML = "";
           dispatch(setEmojiPickerIsOpen(false));
@@ -140,6 +153,7 @@ export default function ConversationCard({
 
           if (chatmateId) {
             // Updates the active chatmate
+            console.log("YEP IT'S DIRECT");
             dispatch(setActiveDirectUser(chatmateId));
             // Checks if the chatmate is a user's friend
             dispatch(chatmateIsFriend(chatmateId));
@@ -156,7 +170,13 @@ export default function ConversationCard({
               src="/img/icons/male-default.jpg"
               className="rounded-full w-12 h-12 border-1"
             />
-            <div className="absolute right-0.5 border-1 bottom-0.5 bg-green-400 w-4 h-4 rounded-full"></div>
+            <div
+              className={`${
+                userConversation.conversation.isGroup ? "hidden" : "block"
+              } absolute right-0.5 border-1 bottom-0.5 ${
+                isOnline ? "bg-green-400" : "bg-gray-400"
+              } w-4 h-4 rounded-full`}
+            ></div>
           </div>
           <div className="flex flex-grow">
             <div className="px-3  flex-grow">

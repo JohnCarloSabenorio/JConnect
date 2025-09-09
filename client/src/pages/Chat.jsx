@@ -71,12 +71,14 @@ import MessagesContainer from "../components/MessagesContainer";
 import NicknamesOverlay from "../components/NicknamesOverlay";
 import { setNamesAndNicknames } from "../redux/nicknamesOverlay";
 import { getNamesAndNicknames } from "../api/conversation";
-import { updateFriendStatus } from "../redux/friend";
+import { updateFriendStatus, setAllFriends } from "../redux/friend";
+import { getFriends } from "../api/friends";
 export default function Chat() {
   const dispatch = useDispatch();
   // REDUX STATES
   const {
     currentConvoName,
+    activeDirectUser,
     activeConvo,
     activeUserConvo,
     activeConvoMembers,
@@ -120,6 +122,15 @@ export default function Chat() {
   const uiChatRef = useRef(null);
   const fileInputRef = useRef(null);
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    async function getUserFriends() {
+      const friends = await getFriends();
+      dispatch(setAllFriends(friends));
+    }
+
+    getUserFriends();
+  }, []);
 
   useEffect(() => {
     const handleChangeStatus = (data) => {
@@ -205,6 +216,38 @@ export default function Chat() {
       socket.off("remove member", handleRemoveMember);
     };
   }, [activeConvo]);
+
+  useEffect(() => {
+    if (!activeDirectUser) return;
+
+    function checkStatus(friendId) {
+      const matchedFriend = allFriends.find(
+        (data) => data.friend._id == friendId
+      );
+
+      console.log("matched friend in chat:", matchedFriend);
+    }
+
+    checkStatus(activeDirectUser);
+    console.log("the active direct user id:", activeDirectUser);
+  }, [activeConvo, activeDirectUser, allFriends]);
+
+  function isOnline(friendId) {
+    console.log("checking if friend is online:", friendId);
+
+    const matchedFriend = allFriends.find(
+      (data) => data.friend._id == friendId
+    );
+
+    return matchedFriend?.friend.status === "online";
+  }
+
+  // useEffect(() => {
+  //   if (!activeDirectUser) return;
+
+  //   checkStatus(activeDirectUser);
+  //   console.log("the active direct user id:", activeDirectUser);
+  // }, [activeConvo, activeDirectUser, allFriends]);
 
   useEffect(() => {
     const handleUpdateConversation = (data) => {
@@ -661,7 +704,15 @@ export default function Chat() {
               />
               <div>
                 <p className="font-bold text-md">{currentConvoName}</p>
-                <p className="text-gray-600">Last active 1 hour ago</p>
+                <p
+                  className={`${!activeConvoIsGroup ? "block" : "hidden"} ${
+                    isOnline(activeDirectUser)
+                      ? "text-green-400"
+                      : "text-gray-400"
+                  }`}
+                >
+                  {isOnline(activeDirectUser) ? "Online" : "Offline"}
+                </p>
               </div>
               <div className="flex gap-5 ml-auto items-center justify-center">
                 {/* Voice Call Button */}

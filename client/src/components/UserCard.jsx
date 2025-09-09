@@ -7,7 +7,9 @@ import { showProfileOverlay } from "../redux/profileOverlay";
 
 export default function UserCard({ user, imageUrl }) {
   const { allUsers } = useSelector((state) => state.user);
-  const { sidebarSearch } = useSelector((state) => state.sidebar);
+  const { sidebarSearch, sidebarContent } = useSelector(
+    (state) => state.sidebar
+  );
 
   const dispatch = useDispatch();
   return (
@@ -27,7 +29,9 @@ export default function UserCard({ user, imageUrl }) {
           <div className="relative">
             <img src={imageUrl} className="rounded-full w-12 h-12 border-1" />
             <div
-              className={`absolute right-0.5 border-1 bottom-0.5 ${
+              className={`${
+                sidebarContent == "friends" ? "block" : "hidden"
+              } absolute right-0.5 border-1 bottom-0.5 ${
                 user.status == "online" ? "bg-green-400" : "bg-gray-400"
               } w-4 h-4 rounded-full`}
             ></div>

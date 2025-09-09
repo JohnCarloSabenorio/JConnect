@@ -196,6 +196,7 @@ export default function ProfileOverlay() {
       );
 
       dispatch(setConversationRole(userConversation.role));
+      console.log("the displayed user id:", displayedUser._id);
       dispatch(setActiveDirectUser(displayedUser._id));
       dispatch(setActiveConvoIsGroup(false));
       dispatch(changeActiveInbox("direct"));

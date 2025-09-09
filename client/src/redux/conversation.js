@@ -143,6 +143,7 @@ const conversationSlice = createSlice({
     },
 
     setActiveDirectUser: (state, action) => {
+      console.log("changing direct user id to:", action.payload);
       state.activeDirectUser = action.payload;
     },
 
@@ -152,8 +153,8 @@ const conversationSlice = createSlice({
 
     setActiveConvoIsGroup: (state, action) => {
       state.activeConvoIsGroup = action.payload;
-      state.userIsFriend = false;
-      state.activeDirectUser = null;
+      state.userIsFriend = action.payload;
+      // state.activeDirectUser = action.payload;
     },
     setActiveConvoIsArchived: (state, action) => {
       state.activeConvoIsArchived = action.payload;

@@ -1,5 +1,6 @@
 import { getAllUsers } from "../api/user";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { UserContext } from "../App";
 import Directs from "./sidebar_contents/Directs";
 import Friends from "./sidebar_contents/Friends";
 import { setAllFriends } from "../redux/friend";
@@ -12,10 +13,12 @@ import Discover from "./sidebar_contents/Discover";
 import { useDispatch, useSelector } from "react-redux";
 import { setDisplayGroupChatOverlay } from "../redux/createGroupChatOverlay";
 import { socket } from "../socket";
+
 import {
   initAllDirectConversation,
   initAllGroupConversation,
   initAllArchivedConversation,
+  setActiveDirectUser,
 } from "../redux/conversation";
 import { getAllUserMessages } from "../api/conversation";
 import { initDisplayedMessages } from "../redux/message";
@@ -58,6 +61,7 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
 
   const { allUsers } = useSelector((state) => state.user);
 
+  const { user } = useContext(UserContext);
   const sideOptionStyle = " p-3 rounded-full cursor-pointer ";
   const activeColor = "bg-blue-800";
 
@@ -83,6 +87,12 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
       );
 
       allDirectConversation[0].unifiedEmoji;
+
+      const initialChatmate = allDirectConversation[0].conversation.users.find(
+        (u) => u._id.toString() !== user._id.toString()
+      );
+
+      dispatch(setActiveDirectUser(initialChatmate._id));
     }
   }, [allDirectConversation]);
 
