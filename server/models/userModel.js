@@ -103,8 +103,6 @@ userSchema.set("toJSON", {
   transform: function (doc, ret) {
     delete ret.password;
     delete ret.role;
-    delete ret.status;
-    delete ret.isActive;
     delete ret.lastActiveAt;
     delete ret.updatedAt;
     delete ret.passwordChangedAt;

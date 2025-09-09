@@ -123,7 +123,11 @@ export default function Chat() {
 
   useEffect(() => {
     const handleChangeStatus = (data) => {
-      dispatch(updateFriendStatus([data.updatedUser._id, data.status]));
+      console.log("CHANGING USER STATUS:", data);
+
+      dispatch(
+        updateFriendStatus([data.updatedUser._id, data.updatedUser.status])
+      );
     };
 
     socket.on("change status", (data) => {

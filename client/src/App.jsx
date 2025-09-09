@@ -46,6 +46,9 @@ export default function App() {
       if (response.data.currentUser) {
         socket.auth = { userId: response.data.currentUser._id };
         socket.connect();
+        socket.emit("change status", {
+          status: "online",
+        });
         setUser(response.data.currentUser);
         setLoggedInStatus(true);
       } else {
