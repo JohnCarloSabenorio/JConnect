@@ -55,34 +55,6 @@ export default function SettingsOverlay() {
         {/* Settings Body */}
         <div className="flex grow">
           {/* Settings option */}
-          <div className="flex flex-col p-5 shadow-md">
-            <div className="w-max flex flex-col gap-3 h-full">
-              <button className="shadow-md bg-gray-100 px-3 py-2 cursor-pointer rounded-md hover:bg-gray-400 hover:text-white">
-                User Profile
-              </button>
-              <button
-                onClick={(e) => {
-                  setPasswordUpdated(false);
-                }}
-                className="shadow-md bg-gray-100 px-3 py-2 cursor-pointer rounded-md hover:bg-gray-400 hover:text-white"
-              >
-                Account
-              </button>
-
-              {/* Exit Button */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 -960 960 960"
-                className="w-10 h-8 cursor-pointer hover:fill-gray-500 mt-auto"
-                onClick={(e) => {
-                  dispatch(setDisplaySettingsOverlay(false));
-                  setPasswordUpdated(false);
-                }}
-              >
-                <path d="M200-120q-33 0-56.5-23.5T120-200v-160h80v160h560v-560H200v160h-80v-160q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm220-160-56-58 102-102H120v-80h346L364-622l56-58 200 200-200 200Z" />
-              </svg>
-            </div>
-          </div>
 
           {/* Settings content */}
           <div className="p-3 w-120">
@@ -186,7 +158,19 @@ export default function SettingsOverlay() {
             </div>
             {/* Notifications Form */}
           </div>
-          <div className="bg-[url(/img/backgrounds/settings-bg.jpg)] px-10 bg-fit bg-no-repeat flex-1 flex items-center justify-center">
+          <div className="bg-[url(/img/backgrounds/settings-bg.jpg)] relative px-10 bg-fit bg-no-repeat flex-1 flex items-center justify-center">
+            {/* Exit Button */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 -960 960 960"
+              className="w-10 h-12 cursor-pointer absolute top-3 right-3 fill-white hover:fill-gray-500 mt-auto"
+              onClick={(e) => {
+                dispatch(setDisplaySettingsOverlay(false));
+                setPasswordUpdated(false);
+              }}
+            >
+              <path d="M200-120q-33 0-56.5-23.5T120-200v-160h80v160h560v-560H200v160h-80v-160q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm220-160-56-58 102-102H120v-80h346L364-622l56-58 200 200-200 200Z" />
+            </svg>
             <div
               className={`${
                 errorMessages.length > 0 ? "block" : "hidden"

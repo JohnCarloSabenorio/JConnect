@@ -299,34 +299,43 @@ export default function ProfileOverlay() {
         <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
       </svg>
 
-      <div className="bg-white rounded-md overflow-hidden w-7xl">
-        <div className="w-full h-60 bg-red-400"></div>
-        <div className="bg-white flex gap-5 p-5">
-          <div className="w-40 relative ml-5">
-            <div className="bg-pink-400 absolute rounded-full bottom-1">
-              <img src="/img/avatar.png" className="w-40" alt="profile-img" />
+      <div className="bg-white rounded-md overflow-hidden w-5xl flex">
+        <div className="">
+          <div className="w-full h-60 bg-red-400"></div>
+
+          <div className="bg-white flex gap-5 p-5">
+            <div className="w-40 relative ml-5">
+              <div className="bg-pink-400 absolute rounded-full bottom-1">
+                <img src="/img/avatar.png" className="w-40" alt="profile-img" />
+              </div>
+            </div>
+
+            <div className="text-xl">
+              <p>{displayedUser?.username ?? "Loading..."}</p>
+              <p>69 Friends</p>
+            </div>
+
+            <div className="flex gap-2 ml-auto mr-5 items-center">
+              {renderFriendButtons()}
+              <button
+                className="bg-blue-400 text-white font-bold rounded-sm px-5 py-2 cursor-pointer"
+                onClick={handleChat}
+              >
+                Chat Now!
+              </button>
             </div>
           </div>
-
-          <div className="text-xl">
-            <p>{displayedUser?.username ?? "Loading..."}</p>
-            <p>69 Friends</p>
-          </div>
-
-          <div className="flex gap-2 ml-auto mr-5 items-center">
-            {renderFriendButtons()}
-            <button
-              className="bg-blue-400 text-white font-bold rounded-sm px-5 py-2 cursor-pointer"
-              onClick={handleChat}
-            >
-              Chat Now!
-            </button>
+          <div className="mt-5 text-align-center p-5 min-h-50 m-5">
+            <h3 className="font-bold">About Me</h3>
+            <p className="p-3 min-h-50 text-gray-700 bg-gray-100">bio...</p>
           </div>
         </div>
-
-        <div className="mt-5 text-align-center p-5 min-h-50 m-5">
-          <h3 className="font-bold">About Me</h3>
-          <p className="p-3 min-h-50 text-gray-700 bg-gray-100">bio...</p>
+        <div className=" flex-1 px-3 bg-gray-400 text-white">
+          <div className="flex justify-center gap-3 mt-5">
+            <a className="cursor-pointer hover:border-b-2">Mutual Friends</a>
+            <a className="cursor-pointer hover:border-b-2">Mutual GCs</a>
+          </div>
+          <hr />
         </div>
       </div>
     </div>

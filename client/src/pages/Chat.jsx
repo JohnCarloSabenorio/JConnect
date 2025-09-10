@@ -29,6 +29,7 @@ import { toggleMediaPanel } from "../redux/media";
 import { addNotification } from "../redux/notification";
 import { setEmojiPickerIsOpen } from "../redux/chat";
 import ChangeEmojiOverlay from "../components/ChangeEmojiOverlay";
+import EditProfileOverlay from "../components/EditProfileOverlay";
 import {
   setIsMentioning,
   activateGroupConversation,
@@ -683,6 +684,7 @@ export default function Chat() {
         <SettingsOverlay />
         <CreateGroupChatOverlay />
         <Navbar />
+        <EditProfileOverlay />
         {/* Main Content */}
         <div className="flex flex-grow min-h-0 relative">
           <Overlay />
