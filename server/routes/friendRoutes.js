@@ -43,6 +43,8 @@ router
   .route("/isRequestSent/:userId")
   .get(friendController.isRequestSentToUser);
 
+router.route("/count/id").get(friendController.getFriendCount);
+
 router
   .route("/isRequestReceived/:userId")
   .get(friendController.isRequestReceived);

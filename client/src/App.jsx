@@ -17,11 +17,9 @@ export default function App() {
 
   useEffect(() => {
     const onConnect = () => {
-      console.log("User has connected!");
       setIsConnected(true);
     };
     const onDisconnect = () => {
-      console.log("User has disconnected!");
       setIsConnected(false);
     };
 

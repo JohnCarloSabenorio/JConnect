@@ -135,7 +135,6 @@ export default function Chat() {
 
   useEffect(() => {
     const handleChangeStatus = (data) => {
-      console.log("CHANGING USER STATUS:", data);
 
       dispatch(
         updateFriendStatus([data.updatedUser._id, data.updatedUser.status])
@@ -157,7 +156,6 @@ export default function Chat() {
 
       dispatch(setNamesAndNicknames(namesAndNicknamesData));
     }
-    console.log("changing names bbaby");
     getConvoNamesData();
   }, [activeConvo]);
 
@@ -168,8 +166,6 @@ export default function Chat() {
 
       // Removes the member from the current list of active members
 
-      console.log("NICKNAME UPDATED:", data);
-      console.log("all names and nicknames:", namesAndNicknames);
 
       if (!data.isGroup) {
         dispatch(updateAConvoNickname([data.userConvoId, data.newNickname]));
@@ -226,15 +222,12 @@ export default function Chat() {
         (data) => data.friend._id == friendId
       );
 
-      console.log("matched friend in chat:", matchedFriend);
     }
 
     checkStatus(activeDirectUser);
-    console.log("the active direct user id:", activeDirectUser);
   }, [activeConvo, activeDirectUser, allFriends]);
 
   function isOnline(friendId) {
-    console.log("checking if friend is online:", friendId);
 
     const matchedFriend = allFriends.find(
       (data) => data.friend._id == friendId
@@ -291,7 +284,6 @@ export default function Chat() {
 
   useEffect(() => {
     const handleCreateMessage = (data) => {
-      console.log("BRUh");
       if (data.messageData.sender._id === user._id) {
         dispatch(setInitialMessageRender(true));
       }
@@ -361,7 +353,6 @@ export default function Chat() {
 
   useEffect(() => {
     const handleMessageReact = (data) => {
-      console.log("THE MESSAGE REACTIONS HAVE BEEN UPDATED:", data);
       dispatch(updateMessage(data.message));
     };
 

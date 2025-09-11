@@ -2,8 +2,6 @@ import axios from "axios";
 
 export async function getAllConversations() {
   try {
-    // console.log("Getting all direct conversations...");
-
     const response = await axios.get(
       "/jconnect/api/v1/user-conversation?isGroup=false&status=active&status=pending&status=muted&sort=updatedAt",
       { withCredentials: true }
@@ -11,7 +9,6 @@ export async function getAllConversations() {
 
     const allDirects = response.data.data;
 
-    console.log("ALL DIRECTS:", response.data);
     return allDirects;
   } catch (error) {
     console.error("Error fetching direct conversations:", error);
@@ -20,8 +17,6 @@ export async function getAllConversations() {
 
 export async function getArchivedConversations() {
   try {
-    // console.log("Getting all archived conversations...");
-
     const response = await axios.get(
       "/jconnect/api/v1/user-conversation?status=archived",
       { withCredentials: true }
@@ -37,14 +32,11 @@ export async function getArchivedConversations() {
 
 export async function getAllGroupConversation() {
   try {
-    // console.log("Getting all group conversations...");
-
     const response = await axios.get(
       "/jconnect/api/v1/user-conversation?isGroup=true&status=active&status=pending&status=muted",
       { withCredentials: true }
     );
 
-    console.log("all groups response:", response.data);
     const allGroups = response.data.data;
     return allGroups;
   } catch (error) {
@@ -54,14 +46,12 @@ export async function getAllGroupConversation() {
 
 export async function getFriendsConversation() {
   try {
-    // console.log("Getting friend conversations...");
     // Create an api to get friend conversations
     const response = await axios.get(
       "/jconnect/api/v1/friends/currentUser/allFriends",
       { withCredentials: true }
     );
 
-    // console.log("FRIENDS CONVO:", response);
     return response.data.data;
   } catch (err) {
     console.error("Error fetching user conversations:", err);
@@ -69,8 +59,6 @@ export async function getFriendsConversation() {
 }
 
 export async function getAllUserMessages(convoId) {
-  // console.log("Getting user messages...");
-
   // Retrieve messages by the order of creation
   try {
     // Gets the conversation of the user
@@ -99,7 +87,6 @@ export async function createConversation(users, isGroup, conversationName) {
       }
     );
 
-    console.log("A CONVO HAS BEEN CREATED!", response);
     return response.data.data;
   } catch (err) {
     // console.log("Failed to chat with friend:", err);
@@ -116,11 +103,6 @@ export async function findConvoWithUser(userId) {
       {
         withCredentials: true,
       }
-    );
-
-    console.log(
-      "THE USER CONVERSATION RECORD OF THE CURRENT:",
-      response.data.data
     );
 
     return response.data.data;
@@ -150,8 +132,6 @@ export async function getUserConversation(convoId) {
     );
 
     const responseData = response.data;
-    // console.log(responseData);
-    // return responseData.isArchived;
   } catch (err) {
     // console.log("Failed to check if conversation is archived: ", err);
   }
@@ -159,8 +139,6 @@ export async function getUserConversation(convoId) {
 
 export async function updateUserConversation(userConvoId, newData) {
   try {
-    console.log("updating user conversation...", userConvoId);
-    console.log("new data...", newData);
     const response = await axios.patch(
       `jconnect/api/v1/user-conversation/${userConvoId}`,
       newData,
@@ -192,7 +170,6 @@ export async function archiveConversation(convoId) {
     }
 
     const responseData = response.data;
-    // console.log("CONVERSATION ARCHIVED SUCCESSFULLY!", responseData);
   } catch (err) {
     // console.log("Failed to check if conversation is archived: ", err);
   }
@@ -208,7 +185,6 @@ export async function unarchiveConversation(convoId) {
     }
 
     const responseData = response.data;
-    console.log("CONVERSATION UNARCHIVED!", responseData);
   } catch (err) {
     // console.log("Failed to check if conversation is archived: ", err);
   }
@@ -225,8 +201,6 @@ export async function activateUserConversation(userConvoId) {
     }
 
     const responseData = response.data;
-
-    console.log("activated user conversation:", responseData);
   } catch (err) {
     console.log("Error activating user conversation:", err);
     p;
@@ -243,7 +217,6 @@ export async function leaveConversation(userConvoId) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    console.log("User Conversation Deleted!", response.data);
   } catch (err) {
     console.log("Error leaving conversation:", err);
   }

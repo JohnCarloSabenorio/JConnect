@@ -419,6 +419,59 @@ exports.getNonFriendUsers = catchAsync(function _callee11(req, res) {
       }
     }
   });
+});
+exports.getFriendCount = catchAsync(function _callee12(req, res, next) {
+  var allFriends;
+  return regeneratorRuntime.async(function _callee12$(_context12) {
+    while (1) {
+      switch (_context12.prev = _context12.next) {
+        case 0:
+          _context12.next = 2;
+          return regeneratorRuntime.awrap(Friend.find({
+            $or: [{
+              user1: req.params.id
+            }, {
+              user2: req.params.id
+            }]
+          }));
+
+        case 2:
+          allFriends = _context12.sent;
+          res.status(200).json({
+            status: "success",
+            message: "Successfully retrieved friend count!",
+            friendcount: allFriends.length
+          });
+
+        case 4:
+        case "end":
+          return _context12.stop();
+      }
+    }
+  });
+});
+exports.getMutualFriends = catchAsync(function _callee13(req, res, next) {
+  var mutualFriends;
+  return regeneratorRuntime.async(function _callee13$(_context13) {
+    while (1) {
+      switch (_context13.prev = _context13.next) {
+        case 0:
+          _context13.next = 2;
+          return regeneratorRuntime.awrap(Friend.find({}));
+
+        case 2:
+          mutualFriends = _context13.sent;
+          return _context13.abrupt("return", res.status(200).json({
+            status: "success",
+            message: "Successfully retrieved mutual friends"
+          }));
+
+        case 4:
+        case "end":
+          return _context13.stop();
+      }
+    }
+  });
 }); // GENERIC HANDLERS
 
 exports.getAllFriends = handlerFactory.getAll(Friend);

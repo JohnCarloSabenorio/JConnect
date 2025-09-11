@@ -312,7 +312,6 @@ export default function ProfileOverlay() {
 
             <div className="text-xl">
               <p>{displayedUser?.username ?? "Loading..."}</p>
-              <p>69 Friends</p>
             </div>
 
             <div className="flex gap-2 ml-auto mr-5 items-center">
@@ -327,7 +326,11 @@ export default function ProfileOverlay() {
           </div>
           <div className="mt-5 text-align-center p-5 min-h-50 m-5">
             <h3 className="font-bold">About Me</h3>
-            <p className="p-3 min-h-50 text-gray-700 bg-gray-100">bio...</p>
+            <p className="p-3 min-h-50 text-gray-700 bg-gray-100">
+              {displayedUser?.bio
+                ? displayedUser.bio
+                : `${displayedUser?.username}'s bio is not available.`}
+            </p>
           </div>
         </div>
         <div className=" flex-1 px-3 bg-gray-400 text-white">

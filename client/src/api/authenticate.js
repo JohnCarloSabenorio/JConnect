@@ -12,7 +12,6 @@ export async function login(email, password) {
       }
     );
 
-    console.log("User logged in!");
   } catch (err) {
     console.log(err);
   }
@@ -28,8 +27,6 @@ export async function register(username, email, password, passwordConfirm) {
       }
     );
 
-    console.log("User signed up!");
-    console.log(response.data);
     window.location.assign("/chat");
   } catch (err) {
     console.log(err);

@@ -214,6 +214,28 @@ exports.getNonFriendUsers = catchAsync(async (req, res) => {
   });
 });
 
+exports.getFriendCount = catchAsync(async (req, res, next) => {
+  const allFriends = await Friend.find({
+    $or: [{ user1: req.params.id }, { user2: req.params.id }],
+  });
+
+  res.status(200).json({
+    status: "success",
+    message: "Successfully retrieved friend count!",
+    friendcount: allFriends.length,
+  });
+});
+
+exports.getMutualFriends = catchAsync(async (req, res, next) => {
+  // Get the mutual friends of the current user and selected user
+  const mutualFriends = await Friend.find({});
+
+  return res.status(200).json({
+    status: "success",
+    message: "Successfully retrieved mutual friends",
+  });
+});
+
 // GENERIC HANDLERS
 exports.getAllFriends = handlerFactory.getAll(Friend);
 exports.createFriend = handlerFactory.createOne(Friend);

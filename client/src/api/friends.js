@@ -62,7 +62,6 @@ export async function sendFriendRequest(userId) {
       `jconnect/api/v1/friends/friendRequest/${userId}`
     );
 
-    console.log("Friend request response:", response);
   } catch (err) {
     console.log("Error sending friend request:", err);
   }
@@ -73,7 +72,6 @@ export async function cancelFriendRequest(userId) {
       `jconnect/api/v1/friends/cancelRequest/${userId}`
     );
 
-    console.log("Friend request response:", response);
   } catch (err) {
     console.log("Error sending friend request:", err);
   }
@@ -84,7 +82,6 @@ export async function rejectFriendRequest(userId) {
       `jconnect/api/v1/friends/rejectRequest/${userId}`
     );
 
-    console.log("Friend request response:", response);
   } catch (err) {
     console.log("Error sending friend request:", err);
   }
@@ -93,7 +90,6 @@ export async function removeFriend(userId) {
   try {
     const response = await axios.delete(`jconnect/api/v1/friends/${userId}`);
 
-    console.log("Friend request response:", response);
   } catch (err) {
     console.log("Error sending friend request:", err);
   }

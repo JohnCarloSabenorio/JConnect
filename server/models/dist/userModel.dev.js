@@ -61,6 +61,9 @@ var userSchema = new mongoose.Schema({
   location: {
     type: String
   },
+  bio: {
+    type: String
+  },
   passwordChangedAt: {
     type: Date,
     select: false
