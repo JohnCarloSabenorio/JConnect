@@ -451,22 +451,56 @@ exports.getFriendCount = catchAsync(function _callee12(req, res, next) {
   });
 });
 exports.getMutualFriends = catchAsync(function _callee13(req, res, next) {
-  var mutualFriends;
+  var user1Friends, user2Friends, user1FriendIds, user2FriendIds, user1FriendSet, user2FriendSet, mutualFriends;
   return regeneratorRuntime.async(function _callee13$(_context13) {
     while (1) {
       switch (_context13.prev = _context13.next) {
         case 0:
           _context13.next = 2;
-          return regeneratorRuntime.awrap(Friend.find({}));
-
-        case 2:
-          mutualFriends = _context13.sent;
-          return _context13.abrupt("return", res.status(200).json({
-            status: "success",
-            message: "Successfully retrieved mutual friends"
+          return regeneratorRuntime.awrap(Friend.find({
+            $or: [{
+              user1: req.user.id
+            }, {
+              user2: req.user.id
+            }],
+            status: "accepted"
           }));
 
-        case 4:
+        case 2:
+          user1Friends = _context13.sent;
+          _context13.next = 5;
+          return regeneratorRuntime.awrap(Friend.find({
+            $or: [{
+              user1: req.params.userId
+            }, {
+              user2: req.params.userId
+            }],
+            status: "accepted"
+          }));
+
+        case 5:
+          user2Friends = _context13.sent;
+          // Get the Id's of friends of the users
+          user1FriendIds = user1Friends.map(function (friend) {
+            return friend.user1._id.toString() === req.user.id ? friend.user2._id.toString() : friend.user1._id.toString();
+          });
+          user2FriendIds = user2Friends.map(function (friend) {
+            return friend.user1._id.toString() === req.params.userId ? friend.user2._id.toString() : friend.user1._id.toString();
+          });
+          user1FriendSet = new Set(user1FriendIds);
+          user2FriendSet = new Set(user2FriendIds);
+          console.log("user 1 friends:", user1FriendSet);
+          console.log("user 2 friends:", user2FriendSet);
+          mutualFriends = _toConsumableArray(user2FriendSet).filter(function (id) {
+            return user1FriendSet.has(id);
+          });
+          return _context13.abrupt("return", res.status(200).json({
+            status: "success",
+            message: "Successfully retrieved mutual friends",
+            mutualFriends: mutualFriends
+          }));
+
+        case 14:
         case "end":
           return _context13.stop();
       }

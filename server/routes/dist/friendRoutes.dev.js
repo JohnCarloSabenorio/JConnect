@@ -15,6 +15,7 @@ var convoController = require("../controllers/conversationController");
 router.use(authController.protect);
 router.route("/").get(friendController.getAllFriends).post(friendController.createFriend);
 router.get("/non-friends", friendController.getNonFriendUsers);
+router.get("/mutual-friends/:userId", friendController.getMutualFriends);
 router.route("/:id").get(friendController.getFriend).patch(friendController.updateFriend)["delete"](friendController.deleteFriend);
 router.route("/friendRequest/:friendId").post(friendController.sendFriendRequest);
 router.route("/cancelRequest/:friendId")["delete"](friendController.cancelFriendRequest);

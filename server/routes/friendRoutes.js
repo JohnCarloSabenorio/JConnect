@@ -13,6 +13,8 @@ router
 
 router.get("/non-friends", friendController.getNonFriendUsers);
 
+router.get("/mutual-friends/:userId", friendController.getMutualFriends);
+
 router
   .route("/:id")
   .get(friendController.getFriend)

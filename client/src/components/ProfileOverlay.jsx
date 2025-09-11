@@ -310,7 +310,7 @@ export default function ProfileOverlay() {
               </div>
             </div>
 
-            <div className="text-xl">
+            <div className="text-xl text-center">
               <p>{displayedUser?.username ?? "Loading..."}</p>
             </div>
 

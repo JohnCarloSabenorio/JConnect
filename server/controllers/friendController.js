@@ -228,11 +228,43 @@ exports.getFriendCount = catchAsync(async (req, res, next) => {
 
 exports.getMutualFriends = catchAsync(async (req, res, next) => {
   // Get the mutual friends of the current user and selected user
-  const mutualFriends = await Friend.find({});
+  const user1Friends = await Friend.find({
+    $or: [{ user1: req.user.id }, { user2: req.user.id }],
+    status: "accepted",
+  });
+
+  const user2Friends = await Friend.find({
+    $or: [{ user1: req.params.userId }, { user2: req.params.userId }],
+    status: "accepted",
+  });
+
+  // Get the Id's of friends of the users
+  const user1FriendIds = user1Friends.map((friend) =>
+    friend.user1._id.toString() === req.user.id
+      ? friend.user2._id.toString()
+      : friend.user1._id.toString()
+  );
+
+  const user2FriendIds = user2Friends.map((friend) =>
+    friend.user1._id.toString() === req.params.userId
+      ? friend.user2._id.toString()
+      : friend.user1._id.toString()
+  );
+
+  const user1FriendSet = new Set(user1FriendIds);
+  const user2FriendSet = new Set(user2FriendIds);
+
+  console.log("user 1 friends:", user1FriendSet);
+  console.log("user 2 friends:", user2FriendSet);
+
+  const mutualFriends = [...user2FriendSet].filter((id) =>
+    user1FriendSet.has(id)
+  );
 
   return res.status(200).json({
     status: "success",
     message: "Successfully retrieved mutual friends",
+    mutualFriends,
   });
 });
 
