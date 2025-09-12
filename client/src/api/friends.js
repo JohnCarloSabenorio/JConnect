@@ -61,7 +61,6 @@ export async function sendFriendRequest(userId) {
     const response = await axios.post(
       `jconnect/api/v1/friends/friendRequest/${userId}`
     );
-
   } catch (err) {
     console.log("Error sending friend request:", err);
   }
@@ -71,7 +70,6 @@ export async function cancelFriendRequest(userId) {
     const response = await axios.delete(
       `jconnect/api/v1/friends/cancelRequest/${userId}`
     );
-
   } catch (err) {
     console.log("Error sending friend request:", err);
   }
@@ -81,7 +79,6 @@ export async function rejectFriendRequest(userId) {
     const response = await axios.delete(
       `jconnect/api/v1/friends/rejectRequest/${userId}`
     );
-
   } catch (err) {
     console.log("Error sending friend request:", err);
   }
@@ -89,7 +86,6 @@ export async function rejectFriendRequest(userId) {
 export async function removeFriend(userId) {
   try {
     const response = await axios.delete(`jconnect/api/v1/friends/${userId}`);
-
   } catch (err) {
     console.log("Error sending friend request:", err);
   }
@@ -127,5 +123,17 @@ export async function isRequestReceived(userId) {
     return response.data.isRequestReceived;
   } catch (err) {
     console.log("Error in checking if request is sent to user:", err);
+  }
+}
+
+export async function findMutualFriends(userId) {
+  try {
+    const response = await axios.get(
+      `jconnect/api/v1/friends/mutual-friends/${userId}`
+    );
+
+    return response.data.mutualFriends;
+  } catch (err) {
+    console.log("Error finding mutual friends:", userId);
   }
 }

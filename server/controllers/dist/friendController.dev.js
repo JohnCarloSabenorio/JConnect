@@ -451,7 +451,7 @@ exports.getFriendCount = catchAsync(function _callee12(req, res, next) {
   });
 });
 exports.getMutualFriends = catchAsync(function _callee13(req, res, next) {
-  var user1Friends, user2Friends, user1FriendIds, user2FriendIds, user1FriendSet, user2FriendSet, mutualFriends;
+  var user1Friends, user2Friends, user1FriendData, user2FriendData, user1FriendSet, user2FriendSet, user2FriendIds, mutualFriends;
   return regeneratorRuntime.async(function _callee13$(_context13) {
     while (1) {
       switch (_context13.prev = _context13.next) {
@@ -481,18 +481,19 @@ exports.getMutualFriends = catchAsync(function _callee13(req, res, next) {
         case 5:
           user2Friends = _context13.sent;
           // Get the Id's of friends of the users
-          user1FriendIds = user1Friends.map(function (friend) {
-            return friend.user1._id.toString() === req.user.id ? friend.user2._id.toString() : friend.user1._id.toString();
+          user1FriendData = user1Friends.map(function (friend) {
+            return friend.user1._id.toString() === req.user.id ? friend.user2 : friend.user1;
           });
-          user2FriendIds = user2Friends.map(function (friend) {
-            return friend.user1._id.toString() === req.params.userId ? friend.user2._id.toString() : friend.user1._id.toString();
+          user2FriendData = user2Friends.map(function (friend) {
+            return friend.user1._id.toString() === req.params.userId ? friend.user2 : friend.user1;
           });
-          user1FriendSet = new Set(user1FriendIds);
-          user2FriendSet = new Set(user2FriendIds);
-          console.log("user 1 friends:", user1FriendSet);
-          console.log("user 2 friends:", user2FriendSet);
-          mutualFriends = _toConsumableArray(user2FriendSet).filter(function (id) {
-            return user1FriendSet.has(id);
+          user1FriendSet = new Set(user1FriendData);
+          user2FriendSet = new Set(user2FriendData);
+          user2FriendIds = _toConsumableArray(user2FriendSet).map(function (friend) {
+            return friend._id.toString();
+          });
+          mutualFriends = _toConsumableArray(user1FriendSet).filter(function (friend) {
+            return user2FriendIds.includes(friend._id.toString());
           });
           return _context13.abrupt("return", res.status(200).json({
             status: "success",
@@ -500,7 +501,7 @@ exports.getMutualFriends = catchAsync(function _callee13(req, res, next) {
             mutualFriends: mutualFriends
           }));
 
-        case 14:
+        case 13:
         case "end":
           return _context13.stop();
       }

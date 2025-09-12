@@ -36,8 +36,7 @@ import {
   setActiveDirectUser,
   setUnifiedEmojiBtn,
 } from "../redux/conversation";
-
-import { createNotification, deleteNotification } from "../api/notification";
+import { findMutualFriends } from "../api/friends";
 
 export default function ProfileOverlay() {
   const { user } = useContext(UserContext);
@@ -51,8 +50,20 @@ export default function ProfileOverlay() {
   const { isDisplayed, displayedUser } = useSelector(
     (state) => state.profileOverlay
   );
+  const [mutualSection, setMutualSection] = useState(0);
+
   const dispatch = useDispatch();
 
+  const [mutualFriends, setMutualFriends] = useState([]);
+
+  useEffect(() => {
+    async function getMutualFriends() {
+      const mutuals = await findMutualFriends(displayedUser._id);
+      setMutualFriends(mutuals);
+    }
+
+    getMutualFriends();
+  }, [isDisplayed]);
   useEffect(() => {
     async function checkFriendStatus() {
       // Stop checking the friend status if the overlay is not shown
@@ -201,6 +212,9 @@ export default function ProfileOverlay() {
       dispatch(setActiveConvoIsGroup(false));
       dispatch(changeActiveInbox("direct"));
       dispatch(hideProfileOverlay());
+      setMutualFriends([]);
+      setMutualSection(0);
+
       dispatch(setConvoViewMode(0));
     } catch (error) {
       console.error("Failed to handle conversation click:", error);
@@ -293,14 +307,16 @@ export default function ProfileOverlay() {
         fill="#e3e3e3"
         className="absolute top-5 right-5 w-10 h-10 cursor-pointer"
         onClick={() => {
+          setMutualFriends([]);
+          setMutualSection(0);
           dispatch(hideProfileOverlay());
         }}
       >
         <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
       </svg>
 
-      <div className="bg-white rounded-md overflow-hidden w-5xl flex">
-        <div className="">
+      <div className="bg-white rounded-md overflow-hidden w-5xl flex p-3 gap-2">
+        <div className="rounded-md overflow-hidden shadow-md">
           <div className="w-full h-60 bg-red-400"></div>
 
           <div className="bg-white flex gap-5 p-5">
@@ -333,12 +349,43 @@ export default function ProfileOverlay() {
             </p>
           </div>
         </div>
-        <div className=" flex-1 px-3 bg-gray-400 text-white">
+        <div className=" flex-1 flex flex-col px-3 rounded-md shadow-md">
           <div className="flex justify-center gap-3 mt-5">
-            <a className="cursor-pointer hover:border-b-2">Mutual Friends</a>
-            <a className="cursor-pointer hover:border-b-2">Mutual GCs</a>
+            <a
+              className={`${
+                mutualSection == 0 ? "border-b-2" : ""
+              } cursor-pointer hover:border-b-2`}
+              onClick={(e) => setMutualSection(0)}
+            >
+              Mutual Friends
+            </a>
+            <a
+              className={`${
+                mutualSection == 1 ? "border-b-2" : ""
+              } cursor-pointer hover:border-b-2`}
+              onClick={(e) => setMutualSection(1)}
+            >
+              Mutual GCs
+            </a>
           </div>
           <hr />
+          {/* Mutual Friends list */}
+          <div className="mt-3 flex-1 flex flex-col gap-3 overflow-y-scroll">
+            {mutualSection == 0
+              ? mutualFriends.map((data, idx) => {
+                  return (
+                    <div key={idx} className="flex gap-3 items-center">
+                      <img
+                        src="/img/avatar.png"
+                        className="w-12"
+                        alt="profile-img"
+                      />
+                      <p>{data.username}</p>
+                    </div>
+                  );
+                })
+              : ""}
+          </div>
         </div>
       </div>
     </div>

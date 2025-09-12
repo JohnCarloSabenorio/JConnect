@@ -239,26 +239,24 @@ exports.getMutualFriends = catchAsync(async (req, res, next) => {
   });
 
   // Get the Id's of friends of the users
-  const user1FriendIds = user1Friends.map((friend) =>
-    friend.user1._id.toString() === req.user.id
-      ? friend.user2._id.toString()
-      : friend.user1._id.toString()
+  const user1FriendData = user1Friends.map((friend) =>
+    friend.user1._id.toString() === req.user.id ? friend.user2 : friend.user1
   );
 
-  const user2FriendIds = user2Friends.map((friend) =>
+  const user2FriendData = user2Friends.map((friend) =>
     friend.user1._id.toString() === req.params.userId
-      ? friend.user2._id.toString()
-      : friend.user1._id.toString()
+      ? friend.user2
+      : friend.user1
   );
 
-  const user1FriendSet = new Set(user1FriendIds);
-  const user2FriendSet = new Set(user2FriendIds);
+  const user1FriendSet = new Set(user1FriendData);
+  const user2FriendSet = new Set(user2FriendData);
 
-  console.log("user 1 friends:", user1FriendSet);
-  console.log("user 2 friends:", user2FriendSet);
-
-  const mutualFriends = [...user2FriendSet].filter((id) =>
-    user1FriendSet.has(id)
+  const user2FriendIds = [...user2FriendSet].map((friend) =>
+    friend._id.toString()
+  );
+  const mutualFriends = [...user1FriendSet].filter((friend) =>
+    user2FriendIds.includes(friend._id.toString())
   );
 
   return res.status(200).json({
