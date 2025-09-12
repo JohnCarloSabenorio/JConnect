@@ -22,6 +22,7 @@ router
   .delete(convoController.removeMember);
 
 router.post("/add-many/:convoId", convoController.addMultipleMembers);
+router.get("/mutual-gc/:userId", convoController.getMutualGroupChats);
 
 router
   .route("/:id")

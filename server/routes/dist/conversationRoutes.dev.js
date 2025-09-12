@@ -20,6 +20,7 @@ router.route("/").get(convoController.getAllConversation).post(convoController.c
 router.use("/userConvo", userConvoRouter);
 router.route("/member/:convoId").post(convoController.addMember)["delete"](convoController.removeMember);
 router.post("/add-many/:convoId", convoController.addMultipleMembers);
+router.get("/mutual-gc/:userId", convoController.getMutualGroupChats);
 router.route("/:id").get(convoController.getConversation).patch(convoController.updateConversation)["delete"](convoController.deleteConversation);
 router.get("/find-convo-with-user/:userId", convoController.checkConvoExists);
 router.route("/");

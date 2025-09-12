@@ -360,6 +360,35 @@ exports.createConversation = catchAsync(function _callee6(req, res) {
       }
     }
   });
+});
+exports.getMutualGroupChats = catchAsync(function _callee7(req, res, next) {
+  var mutualConversations;
+  return regeneratorRuntime.async(function _callee7$(_context7) {
+    while (1) {
+      switch (_context7.prev = _context7.next) {
+        case 0:
+          _context7.next = 2;
+          return regeneratorRuntime.awrap(Conversation.find({
+            users: {
+              $all: [req.user.id, req.params.userId]
+            },
+            isGroup: true
+          }));
+
+        case 2:
+          mutualConversations = _context7.sent;
+          res.status(200).json({
+            status: "success",
+            message: "Successfully retrieved mutual conversations.",
+            mutualConversations: mutualConversations
+          });
+
+        case 4:
+        case "end":
+          return _context7.stop();
+      }
+    }
+  });
 }); // GENERIC HANDLERS
 
 exports.getConversation = handleFactory.getOne(Conversation);

@@ -249,6 +249,20 @@ exports.createConversation = catchAsync(async (req, res) => {
   }
 });
 
+exports.getMutualGroupChats = catchAsync(async (req, res, next) => {
+  // Get mutual conversations
+  const mutualConversations = await Conversation.find({
+    users: { $all: [req.user.id, req.params.userId] },
+    isGroup: true,
+  });
+
+  res.status(200).json({
+    status: "success",
+    message: "Successfully retrieved mutual conversations.",
+    mutualConversations,
+  });
+});
+
 // GENERIC HANDLERS
 exports.getConversation = handleFactory.getOne(Conversation);
 exports.getAllConversation = handleFactory.getAll(Conversation);

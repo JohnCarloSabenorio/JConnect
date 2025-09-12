@@ -37,6 +37,7 @@ import {
   setUnifiedEmojiBtn,
 } from "../redux/conversation";
 import { findMutualFriends } from "../api/friends";
+import { findMutualGroupChats } from "../api/conversation";
 
 export default function ProfileOverlay() {
   const { user } = useContext(UserContext);
@@ -55,6 +56,7 @@ export default function ProfileOverlay() {
   const dispatch = useDispatch();
 
   const [mutualFriends, setMutualFriends] = useState([]);
+  const [mutualGroupChats, setMutualGroupChats] = useState([]);
 
   useEffect(() => {
     async function getMutualFriends() {
@@ -62,7 +64,15 @@ export default function ProfileOverlay() {
       setMutualFriends(mutuals);
     }
 
-    getMutualFriends();
+    async function getMutualGroupChats() {
+      const mutuals = await findMutualGroupChats(displayedUser._id);
+      setMutualGroupChats(mutuals);
+    }
+
+    if (displayedUser) {
+      getMutualFriends();
+      getMutualGroupChats();
+    }
   }, [isDisplayed]);
   useEffect(() => {
     async function checkFriendStatus() {
@@ -371,6 +381,7 @@ export default function ProfileOverlay() {
           <hr />
           {/* Mutual Friends list */}
           <div className="mt-3 flex-1 flex flex-col gap-3 overflow-y-scroll">
+            {/* MOVE THESE CARDS TO A SEPARATE COMPONENT FILE */}
             {mutualSection == 0
               ? mutualFriends.map((data, idx) => {
                   return (
@@ -384,7 +395,18 @@ export default function ProfileOverlay() {
                     </div>
                   );
                 })
-              : ""}
+              : mutualGroupChats.map((data, idx) => {
+                  return (
+                    <div key={idx} className="flex gap-3 items-center">
+                      <img
+                        src="/img/avatar.png"
+                        className="w-12"
+                        alt="profile-img"
+                      />
+                      <p>{data.conversationName}</p>
+                    </div>
+                  );
+                })}
           </div>
         </div>
       </div>

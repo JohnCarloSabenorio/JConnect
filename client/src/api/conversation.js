@@ -216,7 +216,6 @@ export async function leaveConversation(userConvoId) {
     if (!response.status === 204) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
-
   } catch (err) {
     console.log("Error leaving conversation:", err);
   }
@@ -253,6 +252,18 @@ export async function getNamesAndNicknames(convoId) {
 
     const responseData = response.data;
     return responseData.userConversations;
+  } catch (err) {
+    // console.log("Failed to check if conversation is archived: ", err);
+  }
+}
+
+export async function findMutualGroupChats(userId) {
+  try {
+    const response = await axios.get(
+      `jconnect/api/v1/conversation/mutual-gc/${userId}`
+    );
+
+    return response.data.mutualConversations;
   } catch (err) {
     // console.log("Failed to check if conversation is archived: ", err);
   }
