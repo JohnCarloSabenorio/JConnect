@@ -38,6 +38,8 @@ import {
 } from "../redux/conversation";
 import { findMutualFriends } from "../api/friends";
 import { findMutualGroupChats } from "../api/conversation";
+import MutualFriendCard from "./MutualFriendCard";
+import MutualGroupChatCard from "./MutualGroupChatCard";
 
 export default function ProfileOverlay() {
   const { user } = useContext(UserContext);
@@ -384,28 +386,10 @@ export default function ProfileOverlay() {
             {/* MOVE THESE CARDS TO A SEPARATE COMPONENT FILE */}
             {mutualSection == 0
               ? mutualFriends.map((data, idx) => {
-                  return (
-                    <div key={idx} className="flex gap-3 items-center">
-                      <img
-                        src="/img/avatar.png"
-                        className="w-12"
-                        alt="profile-img"
-                      />
-                      <p>{data.username}</p>
-                    </div>
-                  );
+                  return <MutualFriendCard key={idx} userData={data} />;
                 })
               : mutualGroupChats.map((data, idx) => {
-                  return (
-                    <div key={idx} className="flex gap-3 items-center">
-                      <img
-                        src="/img/avatar.png"
-                        className="w-12"
-                        alt="profile-img"
-                      />
-                      <p>{data.conversationName}</p>
-                    </div>
-                  );
+                  return <MutualGroupChatCard key={idx} groupData={data} />;
                 })}
           </div>
         </div>
