@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { logout } from "../api/authenticate";
 import NotificationCard from "./NotificationCard";
+import { setEditDisplayProfileOverlay } from "../redux/editProfileOverlay";
 import {
   getAllNotifications,
   updateAllUserNotifications,
@@ -150,7 +151,15 @@ export default function Navbar() {
               menuActive ? "flex" : "hidden"
             } absolute top-full mt-3 right-0 rounded-sm w-50 bg-gray-50 shadow-lg origin-top duration-100 flex-col justify-start`}
           >
-            <a className="hover:bg-blue-200 rounded-sm p-2">Profile</a>
+            <a
+              className="hover:bg-blue-200 rounded-sm p-2"
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(setEditDisplayProfileOverlay(true));
+              }}
+            >
+              Profile
+            </a>
             <a
               className="hover:bg-blue-200 rounded-sm p-2"
               onClick={(e) => {
