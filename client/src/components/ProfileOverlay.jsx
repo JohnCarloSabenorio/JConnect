@@ -75,7 +75,7 @@ export default function ProfileOverlay() {
       getMutualFriends();
       getMutualGroupChats();
     }
-  }, [isDisplayed]);
+  }, [isDisplayed, displayedUser]);
   useEffect(() => {
     async function checkFriendStatus() {
       // Stop checking the friend status if the overlay is not shown
