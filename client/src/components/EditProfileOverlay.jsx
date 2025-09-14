@@ -93,7 +93,7 @@ export default function EditProfileOverlay() {
               )}
             </div>
           </div>
-          <div className="mt-5 text-align-center p-5 min-h-50 m-5">
+          <div className=" text-align-center px-5 min-h-50">
             <h3 className="font-bold">About Me</h3>
 
             {disableBio ? (

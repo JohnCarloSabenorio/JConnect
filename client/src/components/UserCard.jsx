@@ -4,12 +4,18 @@ import { useSelector } from "react-redux";
 import { setDisplayedUser } from "../redux/profileOverlay";
 
 import { showProfileOverlay } from "../redux/profileOverlay";
-
+import { getUser } from "../api/user";
 export default function UserCard({ user, imageUrl }) {
   const { allUsers } = useSelector((state) => state.user);
   const { sidebarSearch, sidebarContent } = useSelector(
     (state) => state.sidebar
   );
+
+  async function handleDisplayProfile() {
+    const userData = await getUser(user._id);
+    dispatch(showProfileOverlay());
+    dispatch(setDisplayedUser(userData));
+  }
 
   const dispatch = useDispatch();
   return (
@@ -21,8 +27,7 @@ export default function UserCard({ user, imageUrl }) {
             : "hidden"
         }`}
         onClick={async () => {
-          dispatch(showProfileOverlay());
-          dispatch(setDisplayedUser(user));
+          handleDisplayProfile();
         }}
       >
         <div className="bg-white hover:bg-gray-200 rounded-md flex p-5 shadow-md cursor-pointer">
