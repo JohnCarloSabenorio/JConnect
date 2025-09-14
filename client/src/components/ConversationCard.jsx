@@ -22,15 +22,35 @@ import {
 } from "../redux/conversation";
 import { setNamesAndNicknames } from "../redux/nicknamesOverlay";
 import { setEmojiPickerIsOpen } from "../redux/chat";
+
+import { UserContext } from "../App";
 export default function ConversationCard({
   chatmateId,
   userConversation,
   isArchived,
   inputRef,
 }) {
+  const { user } = useContext(UserContext);
   const { activeConvoMembers, activeConvo, conversationStatus } = useSelector(
     (state) => state.conversation
   );
+
+  const [chatmateName, setChatmateName] = useState("");
+
+  useEffect(() => {
+    {
+      if (userConversation && !userConversation.conversation.isGroup) {
+      }
+      console.log("the user conversation:", userConversation);
+      const chatmate = userConversation.conversation.users.find(
+        (u) => u._id != user._id
+      );
+      if (chatmate) {
+        setChatmateName(chatmate.username);
+      }
+      console.log("the chatmate:", chatmate);
+    }
+  }, [userConversation]);
 
   const { allFriends } = useSelector((state) => state.friends);
 
@@ -183,7 +203,9 @@ export default function ConversationCard({
               <p className="font-bold">
                 {userConversation.conversation.isGroup
                   ? userConversation.conversation.conversationName
-                  : userConversation.nickname}
+                  : userConversation.nickname != ""
+                  ? userConversation.nickname
+                  : chatmateName}
               </p>
               <p>
                 {displayedLatestMessage.length > 10

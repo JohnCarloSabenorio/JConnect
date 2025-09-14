@@ -9,6 +9,7 @@ const handlerFactory = require("./handlerFactory.js");
 // Update the data of the current user
 exports.updateMe = catchAsync(async (req, res, next) => {
   // Check if the payload has password and password confirm
+  console.log("UPDATING MYSELF...");
   if (req.body.password || req.body.passwordConfirm)
     return next(
       new AppError(

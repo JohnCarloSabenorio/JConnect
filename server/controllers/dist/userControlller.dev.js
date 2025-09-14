@@ -20,21 +20,24 @@ exports.updateMe = catchAsync(function _callee(req, res, next) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
+          // Check if the payload has password and password confirm
+          console.log("UPDATING MYSELF...");
+
           if (!(req.body.password || req.body.passwordConfirm)) {
-            _context.next = 2;
+            _context.next = 3;
             break;
           }
 
           return _context.abrupt("return", next(new AppError("Please use a different endpoint for updating the password!", 400)));
 
-        case 2:
-          _context.next = 4;
+        case 3:
+          _context.next = 5;
           return regeneratorRuntime.awrap(User.findByIdAndUpdate(req.user.id, req.body, {
             "new": true,
             runValidators: true
           }));
 
-        case 4:
+        case 5:
           updatedUser = _context.sent;
           console.log("Updated:", updatedUser);
           res.status(200).json({
@@ -43,7 +46,7 @@ exports.updateMe = catchAsync(function _callee(req, res, next) {
             data: updatedUser
           });
 
-        case 7:
+        case 8:
         case "end":
           return _context.stop();
       }

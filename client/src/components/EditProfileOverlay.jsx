@@ -1,13 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setDisplaySettingsOverlay } from "../redux/settingsOverlay";
-import { changePassword } from "../api/user";
 import { setEditDisplayProfileOverlay } from "../redux/editProfileOverlay";
+import { updateCurrentUser } from "../api/user";
+import { UserContext } from "../App";
 export default function EditProfileOverlay() {
+  const { user } = useContext(UserContext);
   const dispatch = useDispatch();
   const { displayEditProfileOverlay } = useSelector(
     (state) => state.editProfileOverlay
   );
+
+  async function updateMyUsername(data) {
+    const newData = await updateCurrentUser({ username: username });
+    user.username = username;
+    setEditUsername(false);
+  }
+
+  async function updateMyBio(data) {
+    const newData = await updateCurrentUser({ bio: bio });
+    user.bio = bio;
+    setDisableBio(true);
+  }
+
+  const [username, setUsername] = useState("");
+  const [bio, setBio] = useState("");
+
+  const [disableBio, setDisableBio] = useState(true);
+  const [editUsername, setEditUsername] = useState(false);
+
+  useEffect(() => {
+    setBio(user.bio);
+    setUsername(user.username);
+  }, [user]);
+
   return (
     // The background
     <div
@@ -31,15 +57,74 @@ export default function EditProfileOverlay() {
               </div>
             </div>
 
-            <div className="text-xl text-center">
-              <p>Username</p>
+            <div className="text-xl text-center flex items-center gap-2">
+              {editUsername ? (
+                <input
+                  placeholder=""
+                  className="shadow-md max-w-50 rounded-md"
+                  onInput={(e) => {
+                    setUsername(e.target.value);
+                    console.log("the username:", username);
+                  }}
+                />
+              ) : (
+                <p>{user.username}</p>
+              )}
+              {editUsername ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 -960 960 960"
+                  className="fill-black w-7 h-7 cursor-pointer hover:fill-gray-400"
+                  onClick={(e) => {
+                    updateMyUsername();
+                  }}
+                >
+                  <path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z" />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 -960 960 960"
+                  className="fill-black w-7 h-7 cursor-pointer hover:fill-gray-400"
+                  onClick={(e) => setEditUsername(true)}
+                >
+                  <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z" />
+                </svg>
+              )}
             </div>
           </div>
           <div className="mt-5 text-align-center p-5 min-h-50 m-5">
             <h3 className="font-bold">About Me</h3>
-            <p className="p-3 min-h-30 text-gray-700 bg-gray-100 rounded-md">
-              Bio goes here
-            </p>
+
+            {disableBio ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 -960 960 960"
+                className="fill-black w-7 h-7 cursor-pointer hover:fill-gray-400"
+                onClick={(e) => setDisableBio(false)}
+              >
+                <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z" />
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 -960 960 960"
+                className="fill-black w-7 h-7 cursor-pointer hover:fill-gray-400"
+                onClick={(e) => {
+                  updateMyBio({ bio: bio });
+                }}
+              >
+                <path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z" />
+              </svg>
+            )}
+            <textarea
+              className="p-3 min-h-30 w-full resize-none text-gray-700 bg-gray-100 rounded-md"
+              disabled={disableBio}
+              onChange={(e) => {
+                setBio(e.target.value);
+              }}
+              value={bio}
+            />
           </div>
         </div>
         <svg

@@ -21,11 +21,8 @@ export default function NicknameCard({ userData }) {
   }, [userData]);
 
   async function setNickname() {
-    console.log("the id:", userData._id);
-
-    setDisplayedNickname(
-      newNickname != "" ? newNickname : userData.user.username
-    );
+    if (newNickname == displayedNickname) return;
+    setDisplayedNickname(newNickname);
 
     socket.emit("update nickname", {
       userConvoId: userData._id,
@@ -36,15 +33,17 @@ export default function NicknameCard({ userData }) {
 
     socket.emit("update conversation", {
       conversationId: activeConvo,
-      message: `${user.username} has set the nickname for ${
-        userData.user.username
-      } to ${newNickname != "" ? newNickname : userData.user.username}.`,
+      message:
+        newNickname != ""
+          ? `${user.username} has set the nickname for ${userData.user.username} to ${newNickname}.`
+          : `${user.username} cleared the nickname for ${userData.user.username}.`,
       member: user._id,
       action: "change_nickname",
       data: {
-        latestMessage: `${user.username} has set the nickname for ${
-          userData.user.username
-        } to ${newNickname != "" ? newNickname : userData.user.username}.`,
+        latestMessage:
+          newNickname != ""
+            ? `${user.username} has set the nickname for ${userData.user.username} to ${newNickname}.`
+            : `${user.username} cleared the nickname for ${userData.user.username}.`,
       },
     });
   }

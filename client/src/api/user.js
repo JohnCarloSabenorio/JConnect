@@ -24,6 +24,19 @@ export async function getUser(userId) {
   }
 }
 
+export async function updateCurrentUser(data) {
+  try {
+    const response = await axios.patch(`jconnect/api/v1/users/updateMe`, data, {
+      withCredentials: true,
+    });
+
+    const responseData = response.data;
+    console.log("updated current user:", responseData);
+  } catch (err) {
+    console.log("Error updating users:", err);
+  }
+}
+
 export async function changePassword(
   currentPassword,
   newPassword,
