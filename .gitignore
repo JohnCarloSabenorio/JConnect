@@ -146,3 +146,8 @@ vite.config.ts.timestamp-*
 # Server
 server/public/img/profileImages/*
 server/public/img/profileBanners/*
+
+# But keep the placeholder files
+!/server/public/img/profileImages/.gitkeep
+!/server/public/img/profileBanners/.gitkeep
+!/server/public/img/sentImages/.gitkeep
