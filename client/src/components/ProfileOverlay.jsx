@@ -236,7 +236,7 @@ export default function ProfileOverlay() {
   const renderFriendButtons = () => {
     if (isLoading) {
       return (
-        <img src="/img/loading.gif" className="w-10 h-10" alt="Loading..." />
+        <img src="/images/loading.gif" className="w-10 h-10" alt="Loading..." />
       );
     }
 
@@ -334,7 +334,7 @@ export default function ProfileOverlay() {
           <div className="bg-white flex gap-5 p-5">
             <div className="w-40 relative ml-5">
               <div className="bg-pink-400 absolute rounded-full bottom-1">
-                <img src="/img/avatar.png" className="w-40" alt="profile-img" />
+                <img src="/images/avatar.png" className="w-40" alt="profile-img" />
               </div>
             </div>
 

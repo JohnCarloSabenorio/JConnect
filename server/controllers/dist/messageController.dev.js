@@ -25,6 +25,8 @@ var sharp = require("sharp"); // For saving and manipulating images
 var multerstorage = multer.memoryStorage(); // For now, messages wil only accept images as file inputs
 
 var multerFilter = function multerFilter(req, file, cb) {
+  console.log("FILE:", file);
+
   if (file.mimetype.startsWith("image")) {
     cb(null, true);
   } else {
@@ -38,8 +40,6 @@ var upload = multer({
 });
 
 exports.initSenderConvo = function (req, res, next) {
-  console.log("going next!!");
-  console.log("");
   req.body.sender = req.user.id;
   req.body.conversation = req.params.convoId;
   return next();
@@ -56,17 +56,15 @@ exports.resizeImages = catchAsync(function _callee2(req, res, next) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
-          // Check if image exists in the request
-          console.log("resizing images...");
-
           if (!(!req.files || !req.files.images)) {
-            _context2.next = 3;
+            _context2.next = 2;
             break;
           }
 
           return _context2.abrupt("return", next());
 
-        case 3:
+        case 2:
+          console.log("the files do exist!");
           req.body.images = [];
           _context2.next = 6;
           return regeneratorRuntime.awrap(Promise.all(req.files.images.map(function _callee(image, idx) {

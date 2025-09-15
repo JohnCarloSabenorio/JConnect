@@ -16,9 +16,9 @@ export default function Login() {
 
   return (
     <>
-      <div className="bg-[url(/img/backgrounds/sky.jpg)] bg-no-repeat bg-cover bg-right-bottom flex flex-col items-center justify-center h-screen">
+      <div className="bg-[url(/images/backgrounds/sky.jpg)] bg-no-repeat bg-cover bg-right-bottom flex flex-col items-center justify-center h-screen">
         <div className="flex bg-gray-50 w-5xl rounded overflow-hidden border-black border-1 shadow-2xl">
-          <div className="w-4xl bg-[url(/img/backgrounds/blue-bg.png)] bg-center bg-cover flex flex-col items-center justify-center">
+          <div className="w-4xl bg-[url(/images/backgrounds/blue-bg.png)] bg-center bg-cover flex flex-col items-center justify-center">
             <h1 className="text-5xl font-bold text-green-400">JConnect</h1>
             <p className="text-green-400 text-xl mt-3 text-center px-12">
               Welcome back! Reconnect, chat, and share moments with your friends

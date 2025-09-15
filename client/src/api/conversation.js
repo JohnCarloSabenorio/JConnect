@@ -67,6 +67,7 @@ export async function getAllUserMessages(convoId) {
       { withCredentials: true }
     );
 
+    console.log("ALL MESSAGES:", response.data.data);
     return response.data.data;
   } catch (err) {
     console.log(err);

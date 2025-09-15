@@ -111,7 +111,7 @@ export default function ReactionsOverlay() {
                   }}
                 >
                   <div className="flex items-center gap-4">
-                    <img src="img/avatar.png" className="w-13 h-13" />
+                    <img src="images/avatar.png" className="w-13 h-13" />
                     <p>{reaction.user.username}</p>
                   </div>
                   <div className="flex justify-end">

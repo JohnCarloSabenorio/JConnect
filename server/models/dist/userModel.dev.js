@@ -69,6 +69,11 @@ var userSchema = new mongoose.Schema({
     select: false
   },
   profilePicture: {
+    "default": "default.png",
+    type: String
+  },
+  profileBanner: {
+    "default": "default.png",
     type: String
   },
   status: {

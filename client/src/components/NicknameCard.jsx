@@ -51,7 +51,7 @@ export default function NicknameCard({ userData }) {
   return (
     <div className="flex gap-3 mt-3 items-center px-2">
       {" "}
-      <img src="img/avatar.png" className="w-15 h-15" alt="profile img" />
+      <img src="images/avatar.png" className="w-15 h-15" alt="profile img" />
       <div className="flex-1">
         {/* Nickname */}
         {isEditing ? (

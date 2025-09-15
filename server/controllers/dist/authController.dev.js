@@ -482,6 +482,7 @@ exports.isLoggedIn = catchAsync(function _callee8(req, res, next) {
 
         case 11:
           currentUser = _context8.sent;
+          currentUser.profilePicture = "img/profileImages/".concat(currentUser.profilePicture);
 
           if (!currentUser) {
             next(new AppError("User no longer exists!", 404));
@@ -497,7 +498,7 @@ exports.isLoggedIn = catchAsync(function _callee8(req, res, next) {
 
           next();
 
-        case 16:
+        case 17:
         case "end":
           return _context8.stop();
       }
@@ -535,6 +536,7 @@ exports.isLoggedInBool = catchAsync(function _callee9(req, res, next) {
 
         case 9:
           currentUser = _context9.sent;
+          currentUser.profilePicture = "img/profileImages/".concat(currentUser.profilePicture);
 
           if (!currentUser) {
             next(new AppError("User no longer exists!", 404));
@@ -551,7 +553,7 @@ exports.isLoggedInBool = catchAsync(function _callee9(req, res, next) {
             currentUser: currentUser
           });
 
-        case 13:
+        case 14:
         case "end":
           return _context9.stop();
       }

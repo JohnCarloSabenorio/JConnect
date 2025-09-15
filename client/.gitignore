@@ -22,3 +22,17 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+# Server
+
+# Ignore files inside these folders
+/server/public/img/profileBanners/*
+/server/public/img/profileImages/*
+/server/public/img/sentImages/*
+
+# Keep the folders
+!/server/public/img/profileBanners/.gitkeep
+!/server/public/img/profileImages/.gitkeep
+!/server/public/img/sentImages/.gitkeep
+

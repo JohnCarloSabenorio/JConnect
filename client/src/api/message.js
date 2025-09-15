@@ -49,18 +49,23 @@ export async function getAllMessageReactions(messageId) {
 
 export async function createMessage(data) {
   try {
-    const response = await axios.post(
-      "jconnect/api/v1/message",
-      {
-        message: data.message || "",
-        sender: data.sender,
-        conversation: data.conversation,
-        mentions: data.mentions,
+    const formData = new FormData();
+    formData.append("message", data.message);
+    formData.append("sender", data.sender);
+    formData.append("conversation", data.conversation);
+    formData.append("mentions", data.mentions);
+
+    console.log("the images:", data.images);
+    data.images.forEach((img) => {
+      formData.append("images", img);
+    });
+
+    const response = await axios.post("jconnect/api/v1/message", formData, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
-      {
-        withCredentials: true,
-      }
-    );
+    });
 
     return response.data.data;
   } catch (err) {

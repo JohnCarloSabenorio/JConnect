@@ -146,7 +146,6 @@ export const Message = React.memo(function Message({
   }
 
   async function handleEmojiClick(emojiData) {
-    console.log("THE EMOJI DATA:", emojiData);
     setDisplayReactionPicker(false);
 
     // Emit using socket instead
@@ -154,7 +153,6 @@ export const Message = React.memo(function Message({
     // const updatedReactions = await reactToMessage(messageId, emojiData.unified);
 
     if (sender._id != user._id) {
-      console.log("reacted to a message!");
       socket.emit("send notification", {
         message: `${user.username} reacted ${emojiData.emoji} to your message.`,
         receiver: sender._id,
@@ -470,15 +468,13 @@ export const Message = React.memo(function Message({
 
         <div className={`flex mt-2 ${isCurrentUser ? "ml-auto mr-0" : "ml-0"}`}>
           <div className=" w-70 gap-0.5 grid grid-cols-[repeat(auto-fit,minmax(70px,1fr))]">
-            {imagesSent.map((blobUrl, idx) => {
+            {messageData.images.map((imgUrl, idx) => {
               return (
                 <img
                   key={idx}
-                  src={blobUrl}
-                  className={`bg-transparent rounded-sm ${
-                    imagesSent.length > 1 ? "aspect-square" : ""
-                  }`}
-                  alt="sent image"
+                  src={`${imgUrl}`}
+                  className={`bg-transparent rounded-sm w-20 h-20`}
+                  alt="TANGINA image"
                 />
               );
             })}

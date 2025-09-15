@@ -11,8 +11,10 @@ import { setAllNotifications } from "../redux/notification";
 import { setDisplaySettingsOverlay } from "../redux/settingsOverlay";
 import { setNotifActive } from "../redux/notification";
 import { socket } from "../socket";
-
+import { useContext } from "react";
+import { UserContext } from "../App";
 export default function Navbar() {
+  const { user } = useContext(UserContext);
   const [menuActive, setMenuActive] = useState(false);
   const { allNotifications, unreadCount, notifActive } = useSelector(
     (state) => state.notification
@@ -141,10 +143,7 @@ export default function Navbar() {
             setNotifActive(false);
           }}
         >
-          <img
-            src="/img/icons/male-default.jpg"
-            className="rounded-full w-12 h-12"
-          />
+          <img src={user.profilePicture} className="rounded-full w-12 h-12" />
 
           <div
             className={`${

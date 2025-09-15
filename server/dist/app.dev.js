@@ -3,14 +3,16 @@
 // REQUIRE PACKAGES
 var express = require("express");
 
-var morgan = require("morgan"); // The main application
+var morgan = require("morgan");
+
+var path = require("path"); // The main application
 
 
 var app = express();
 
 var AppError = require("./utils/appError");
 
-var globalErrorHandler = require("./controllers/errorController"); // DEFINE ROUTERS
+var globalErrorHandler = require("./controllers/errorController"); // DEFINED ROUTERS
 
 
 var userRouter = require("./routes/userRoutes");
@@ -22,6 +24,8 @@ var friendRouter = require("./routes/friendRoutes");
 var convoRouter = require("./routes/conversationRoutes");
 
 var userConvoRouter = require("./routes/userConversationRoutes");
+
+var notificationRouter = require("./routes/notificationRoutes");
 
 var rateLimit = require("express-rate-limit");
 
@@ -83,7 +87,8 @@ app.use("/jconnect/api/v1/users", userRouter);
 app.use("/jconnect/api/v1/message", messageRouter);
 app.use("/jconnect/api/v1/friends", friendRouter);
 app.use("/jconnect/api/v1/conversation", convoRouter);
-app.use("/jconnect/api/v1/user-conversation", userConvoRouter); // This will handle undefined routes
+app.use("/jconnect/api/v1/user-conversation", userConvoRouter);
+app.use("/jconnect/api/v1/notification", notificationRouter); // This will handle undefined routes
 
 app.all("*", function (req, res, next) {
   next(new AppError("Cannot find ".concat(req.originalUrl, " on the server!"), 404));

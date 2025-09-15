@@ -8,27 +8,27 @@ export default function MessagesContainer({ uiChatRef }) {
     <div
       className={`w-full h-full bg-gray-50 flex justify-center items-center`}
     >
-      <img src="img/loading.gif" className="w-20 h-20"></img>
+      <img src="images/loading.gif" className="w-20 h-20"></img>
     </div>
   ) : (
     displayedMessages?.map((message, i) => {
       let blobUrls = [];
-      if (message.images64) {
-        message.images64.forEach((base64, idx) => {
-          const blob = base64ToBlob(base64);
+      // if (message.images64) {
+      //   message.images64.forEach((base64, idx) => {
+      //     const blob = base64ToBlob(base64);
 
-          if (blob) {
-            blobUrls.push(URL.createObjectURL(blob));
-          }
-        });
-      }
+      //     if (blob) {
+      //       blobUrls.push(URL.createObjectURL(blob));
+      //     }
+      //   });
+      // }
 
       return (
         <Message
           key={i}
           imgUrl="img/icons/male-default.jpg"
           messageData={message}
-          imagesSent={blobUrls}
+          imagesSent={message.images}
           uiChatRef={uiChatRef}
         />
       );

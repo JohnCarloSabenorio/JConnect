@@ -82,7 +82,7 @@ export default function MutualGroupChatCard({ groupData }) {
       className="flex gap-3 items-center bg-gray-100 p-3 shadow-md cursor-pointer rounded-md"
       onClick={(e) => openGroupChat()}
     >
-      <img src="/img/avatar.png" className="w-12" alt="profile-img" />
+      <img src="/images/avatar.png" className="w-12" alt="profile-img" />
       <p>{groupData.conversationName}</p>
     </div>
   );

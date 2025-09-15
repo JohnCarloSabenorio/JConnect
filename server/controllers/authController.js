@@ -297,7 +297,8 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
   }
 
   // 2. Check if the user still exists
-  const currentUser = await User.findById(decoded.id);
+  let currentUser = await User.findById(decoded.id);
+  currentUser.profilePicture = `img/profileImages/${currentUser.profilePicture}`;
 
   if (!currentUser) {
     next(new AppError("User no longer exists!", 404));
@@ -330,7 +331,8 @@ exports.isLoggedInBool = catchAsync(async (req, res, next) => {
   );
 
   // 2. Check if the user still exists
-  const currentUser = await User.findById(decoded.id);
+  let currentUser = await User.findById(decoded.id);
+  currentUser.profilePicture = `img/profileImages/${currentUser.profilePicture}`;
 
   if (!currentUser) {
     next(new AppError("User no longer exists!", 404));

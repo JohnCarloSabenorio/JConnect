@@ -118,6 +118,7 @@ export default function Chat() {
   const [updatedReactions, setUpdatedReactions] = useState([]);
   const [updatedMessageId, setUpdatedMessageId] = useState("");
   // This will store the images to be sent by the user
+  const [imageBuffers, setImageBuffers] = useState([]);
   const [images, setImages] = useState([]);
 
   const uiChatRef = useRef(null);
@@ -135,7 +136,6 @@ export default function Chat() {
 
   useEffect(() => {
     const handleChangeStatus = (data) => {
-
       dispatch(
         updateFriendStatus([data.updatedUser._id, data.updatedUser.status])
       );
@@ -165,7 +165,6 @@ export default function Chat() {
       // Messages will be updated if the sent messages is for the current conversation
 
       // Removes the member from the current list of active members
-
 
       if (!data.isGroup) {
         dispatch(updateAConvoNickname([data.userConvoId, data.newNickname]));
@@ -221,14 +220,12 @@ export default function Chat() {
       const matchedFriend = allFriends.find(
         (data) => data.friend._id == friendId
       );
-
     }
 
     checkStatus(activeDirectUser);
   }, [activeConvo, activeDirectUser, allFriends]);
 
   function isOnline(friendId) {
-
     const matchedFriend = allFriends.find(
       (data) => data.friend._id == friendId
     );
@@ -269,8 +266,8 @@ export default function Chat() {
         if (activeConvo == data.messageData.conversation) {
           dispatch(updateDisplayedMessages(data.messageData));
         }
-
         setImages([]);
+        setImageBuffers([]);
         setFileInputKey(Date.now());
       }
     };
@@ -292,6 +289,7 @@ export default function Chat() {
       }
 
       setImages([]);
+      setImageBuffers([]);
       setFileInputKey(Date.now());
     };
     socket.on("create message", (data) => handleCreateMessage(data));
@@ -377,7 +375,9 @@ export default function Chat() {
       if (activeConvo == data.convo._id) {
         dispatch(updateDisplayedMessages(data.msg));
       }
+
       setImages([]);
+      setImageBuffers([]);
       setFileInputKey(Date.now());
 
       // This should scroll down the chat ui if the user is the sender (NEEDS TO BE FIXED)
@@ -398,22 +398,6 @@ export default function Chat() {
   }, [activeConvo]);
 
   useEffect(() => {
-    const mediaBlobUrls = [];
-
-    if (displayedMessages?.length > 0) {
-      displayedMessages.forEach((message, idx) => {
-        if (message.images64) {
-          message.images64.forEach((base64, idx) => {
-            const blob = base64ToBlob(base64);
-
-            if (blob) {
-              mediaBlobUrls.push(URL.createObjectURL(blob));
-            }
-          });
-        }
-      });
-      dispatch(setMediaImages(mediaBlobUrls));
-    }
     const isNearBottom =
       uiChatRef.current?.scrollHeight -
         uiChatRef.current?.clientHeight -
@@ -429,10 +413,11 @@ export default function Chat() {
     }
 
     setImages([]);
+    setImageBuffers([]);
   }, [displayedMessages]);
 
   useEffect(() => {}, [mediaImages]);
-  useEffect(() => {}, [images]);
+  useEffect(() => {}, [imageBuffers]);
 
   // Adds a loading screen if all conversations are not yet retrieved.
   // if (!allInboxConversation) {
@@ -453,7 +438,6 @@ export default function Chat() {
 
     socket.emit("chat message", {
       messageId: newMessage._id,
-      images: images,
     });
 
     dispatch(setToMention([]));
@@ -479,7 +463,7 @@ export default function Chat() {
     inputRef.current.innerHTML = null;
     // IN THE IOCONTROLLER, CHECK IF THE CONVERSATION IS ARCHIVED, IF SO, MOVE IT TO ACTIVE AGAIN
 
-    if (messageToSend == "" && images.length == 0) return;
+    if (messageToSend == "" && imageBuffers.length == 0) return;
 
     const newMessage = await createMessage({
       message: messageToSend,
@@ -487,11 +471,11 @@ export default function Chat() {
       conversation: activeConvo,
       mentions: toMention,
       latestMessage: latestMessage,
+      images: images,
     });
 
     socket.emit("chat message", {
       messageId: newMessage._id,
-      images: images,
     });
 
     if (newMessage.mentions.length > 0) {
@@ -581,7 +565,6 @@ export default function Chat() {
     e.target.value = "";
 
     // const blobUrls = selectedFiles.map((file) => URL.createObjectURL(file));
-
     const selectedFilesBuffer = await Promise.all(
       selectedFiles.map((image) => {
         return new Promise((resolve) => {
@@ -591,7 +574,9 @@ export default function Chat() {
         });
       })
     );
-    setImages((prev) => [...prev, ...selectedFilesBuffer]);
+
+    setImages((prev) => [...prev, ...selectedFiles]);
+    setImageBuffers((prev) => [...prev, ...selectedFilesBuffer]);
   }
 
   function getElementBeforeCursor(range) {
@@ -658,6 +643,7 @@ export default function Chat() {
 
   function removeImage(idx) {
     // console.log("image removed!");
+    setImageBuffers((prev) => prev.filter((_, index) => index !== idx));
     setImages((prev) => prev.filter((_, index) => index !== idx));
   }
 
@@ -709,7 +695,7 @@ export default function Chat() {
               </div>
               <div className="flex gap-5 ml-auto items-center justify-center">
                 {/* Voice Call Button */}
-                <button className="cursor-pointer">
+                {/* <button className="cursor-pointer">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 -960 960 960"
@@ -719,10 +705,10 @@ export default function Chat() {
                   >
                     <path d="M798-120q-125 0-247-54.5T329-329Q229-429 174.5-551T120-798q0-18 12-30t30-12h162q14 0 25 9.5t13 22.5l26 140q2 16-1 27t-11 19l-97 98q20 37 47.5 71.5T387-386q31 31 65 57.5t72 48.5l94-94q9-9 23.5-13.5T670-390l138 28q14 4 23 14.5t9 23.5v162q0 18-12 30t-30 12ZM241-600l66-66-17-94h-89q5 41 14 81t26 79Zm358 358q39 17 79.5 27t81.5 13v-88l-94-19-67 67ZM241-600Zm358 358Z" />
                   </svg>
-                </button>
+                </button> */}
 
                 {/* Video Call Button */}
-                <button className="cursor-pointer">
+                {/* <button className="cursor-pointer">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 -960 960 960"
@@ -732,7 +718,7 @@ export default function Chat() {
                   >
                     <path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h480q33 0 56.5 23.5T720-720v180l160-160v440L720-420v180q0 33-23.5 56.5T640-160H160Zm0-80h480v-480H160v480Zm0 0v-480 480Z" />
                   </svg>
-                </button>
+                </button> */}
 
                 {/* Media Panel Button */}
                 <button
@@ -775,10 +761,10 @@ export default function Chat() {
             <div>
               <div
                 className={`p-2 flex gap-3 overflow-x-scroll ${
-                  images.length === 0 ? "hidden" : "visible"
+                  imageBuffers.length === 0 ? "hidden" : "visible"
                 }`}
               >
-                {images.map((img, idx) => (
+                {imageBuffers.map((img, idx) => (
                   <div
                     key={idx}
                     className="relative w-20 h-20 rounded-md bg-gray-100 flex-shrink-0"
@@ -879,7 +865,7 @@ export default function Chat() {
                   </button>
                   <div
                     ref={inputRef}
-                    className={`w-200 max-h-50 overflow-y-scroll mx-4 p-2 ml-0
+                    className={`flex-1 max-h-50 overflow-y-scroll mx-4 p-2 ml-0
                       text-black
                     `}
                     // if user presses space, check if it is mentioning, it is.. then create a new span and move the caret

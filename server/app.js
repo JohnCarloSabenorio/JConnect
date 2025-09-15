@@ -1,6 +1,7 @@
 // REQUIRE PACKAGES
 const express = require("express");
 const morgan = require("morgan");
+const path = require("path");
 // The main application
 const app = express();
 const AppError = require("./utils/appError");

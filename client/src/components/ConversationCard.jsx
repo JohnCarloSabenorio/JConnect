@@ -36,19 +36,19 @@ export default function ConversationCard({
   );
 
   const [chatmateName, setChatmateName] = useState("");
+  const [chatmateImage, setChatmateImage] = useState("");
 
   useEffect(() => {
     {
       if (userConversation && !userConversation.conversation.isGroup) {
       }
-      console.log("the user conversation:", userConversation);
       const chatmate = userConversation.conversation.users.find(
         (u) => u._id != user._id
       );
       if (chatmate) {
         setChatmateName(chatmate.username);
+        setChatmateImage(chatmate.profilePicture);
       }
-      console.log("the chatmate:", chatmate);
     }
   }, [userConversation]);
 
@@ -187,7 +187,7 @@ export default function ConversationCard({
         >
           <div className="relative">
             <img
-              src="/img/icons/male-default.jpg"
+              src={chatmateImage}
               className="rounded-full w-12 h-12 border-1"
             />
             <div

@@ -3,7 +3,6 @@ const Conversation = require("../models/conversationModel");
 const Notification = require("../models/notificationModel");
 const UserConversation = require("../models/userConversationModel");
 const User = require("../models/userModel");
-const sharp = require("sharp"); // For saving and manipulating images
 const fs = require("fs");
 const path = require("path");
 
@@ -169,31 +168,6 @@ exports.sendMessage = async (io, socket, data) => {
     .populate("mentions");
 
   console.log("new message:", newMessage);
-  // Remove this in the future (Images should be sent in db not via socket)
-
-  // 2. Create filenames for sent images
-  if (data.images.length > 0) {
-    console.log("filenames exist!");
-    const filenames = await Promise.all(
-      data.images.map(async (img, idx) => {
-        const buffer = Buffer.from(img);
-        const filename = `image-${
-          newMessage.sender._id
-        }-${Date.now()}-${idx}.jpeg`;
-
-        await sharp(buffer)
-          .resize(800)
-          .toFormat("jpeg")
-          .jpeg({ quality: 70 })
-          .toFile(`public/img/sentImages/${filename}`);
-        return filename;
-      })
-    );
-
-    newMessage.images = filenames;
-    await newMessage.save();
-    console.log("Array of image file names:", filenames);
-  }
 
   // 3. Update the user conversation
   const updatedUserConversation = await UserConversation.findOne({
@@ -203,18 +177,8 @@ exports.sendMessage = async (io, socket, data) => {
 
   console.log("updated user conversation:", updatedUserConversation);
 
-  // 4. Convert images to base64 (This is not recommended.. Change this)
-  const imageBase64Array = await Promise.all(
-    newMessage.images.map(async (filename) => {
-      const imagePath = path.join("public/img/sentImages", filename);
-      const buffer = await sharp(imagePath).toBuffer();
-      return `data:image/jpeg;base64,${buffer.toString("base64")}`;
-    })
-  );
-
   const messageObject = {
     ...newMessage.toObject(),
-    images64: imageBase64Array,
   };
 
   io.to(newMessage.conversation.toString()).emit("chat message", {

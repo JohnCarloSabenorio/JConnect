@@ -21,16 +21,18 @@ Create generic handlers for:
 
 exports.createOne = (Model) =>
   catchAsync(async (req, res) => {
+    if (Model === Message) {
+      if (req.body.mentions == "") {
+        req.body.mentions = [];
+      } else {
+        req.body.mentions = req.body.mentions.split(",");
+      }
+    }
     let newDoc = await Model.create(req.body);
-    console.log("creating a new document!");
     // This will update the latest message in the conversation model
 
     // Updating the latest message
-    console.log("the MODEL:", Model);
     if (Model === Message) {
-      console.log("updating the convo...");
-      console.log("conversation id:", req.body.conversation);
-      console.log("the reqbody message:", req.body.message);
       const updatedConvo = await Conversation.findByIdAndUpdate(
         req.body.conversation,
         {
@@ -38,8 +40,6 @@ exports.createOne = (Model) =>
         },
         { new: true }
       );
-
-      console.log("updated convo:", updatedConvo);
     }
 
     res.status(200).json({
@@ -74,7 +74,6 @@ exports.getAll = (Model) =>
 
     // If the request came from user-conversation model, filter it with the user's id
     if (Model === UserConversation) {
-      console.log("MODEL IS USERCONVERSATION");
       filter = { user: req.user._id };
     }
 
@@ -93,56 +92,32 @@ exports.getAll = (Model) =>
 
     let featureQuery = features.query;
     if (Model == Notification) {
-      console.log("THIS IS NOTIFICATION");
       featureQuery = featureQuery.populate("actor").lean();
     }
 
-    const docs = await featureQuery;
+    let docs = await featureQuery;
 
-    if (Model === Notification) {
-      return res.status(200).json({
-        status: "success",
-        message: "Successfully retrieved all documents",
-        data: docs,
+    if (Model === Message) {
+      docs.forEach((doc) => {
+        doc.images = doc.images.map((img) => `img/sentImages/${img}`);
       });
     }
 
-    const docsWithBase = await Promise.all(
-      docs.map(async (doc) => {
-        // doc.users = doc.users.filter(user => user._id.toString() === req.user.id);
-        if (!doc.images || !Array.isArray(doc.images)) {
-          console.log("THE DOC:", docs);
-          return { ...doc._doc, imageBase64Array: [] }; // Handle missing images
-        }
-
-        const images64 = await Promise.all(
-          doc.images.map(async (filename) => {
-            const imagePath = path.join("public/img/sentImages", filename);
-
-            try {
-              const buffer = await sharp(imagePath).toBuffer();
-              return `data:image/jpeg;base64,${buffer.toString("base64")}`;
-            } catch (error) {
-              console.error("Error processing image:", filename, error);
-              return null; // Handle error gracefully
-            }
-          })
-        );
-
-        return { ...doc._doc, images64 };
-      })
-    );
+    if (Model === User) {
+      docs.forEach((doc) => {
+        doc.profilePicture = `img/profileImages/${doc.profilePicture}`;
+      });
+    }
 
     res.status(200).json({
       status: "success",
       message: "Successfully retrieved all documents",
-      data: docsWithBase,
+      data: docs,
     });
   });
 
 exports.updateOne = (Model) =>
   catchAsync(async (req, res) => {
-    console.log("updating conversation:", req.body);
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
@@ -170,17 +145,11 @@ exports.deleteOne = (Model) =>
 
     if (Model === UserConversation) {
       const userConvo = await UserConversation.findById(req.params.id);
-      console.log("user convo to delete:", userConvo);
 
       if (userConvo) {
-        console.log("the req user id:", req.user.id);
         const updatedConversation = await Conversation.findByIdAndUpdate(
           userConvo.conversation,
           { $pull: { users: req.user.id } }
-        );
-        console.log(
-          "updated conversation after leaving convo:",
-          updatedConversation
         );
       }
     }

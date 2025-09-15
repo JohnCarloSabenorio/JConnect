@@ -32,7 +32,10 @@ export default function UserCard({ user, imageUrl }) {
       >
         <div className="bg-white hover:bg-gray-200 rounded-md flex p-5 shadow-md cursor-pointer">
           <div className="relative">
-            <img src={imageUrl} className="rounded-full w-12 h-12 border-1" />
+            <img
+              src={user.profilePicture}
+              className="rounded-full w-12 h-12 border-1"
+            />
             <div
               className={`${
                 sidebarContent == "friends" ? "block" : "hidden"

@@ -108,7 +108,7 @@ export default function NotificationCard({ data }) {
           }
         }}
       >
-        <img src="img/avatar.png" className="w-10 h-10"></img>
+        <img src="images/avatar.png" className="w-10 h-10"></img>
         <div className="w-full">
           <p>{data.message}</p>
         </div>
