@@ -95,15 +95,21 @@ var userSchema = new mongoose.Schema({
 }, {
   timestamps: true,
   toJSON: {
-    virtuals: false
+    virtuals: true
   },
   toObject: {
-    virtuals: false
+    virtuals: true
   }
 }); // VIRTUAL PROPERTIES
 
-userSchema.virtual("fullname").get(function () {
-  return "".concat(this.fname, " ").concat(this.mname, " ").concat(this.lname);
+userSchema.virtual("profilePictureUrl").get(function () {
+  if (!this.profilePicture) return null;
+
+  if (this.profilePicture.startsWith("img/profileImages")) {
+    return this.profilePicture;
+  }
+
+  return "img/profileImages/".concat(this.profilePicture);
 }); // DOCUMENT MIDDLEWARES
 // Removes unnecessary fields when creating a user
 

@@ -46,7 +46,19 @@ var convoSchema = new mongoose.Schema({
     "default": "1f44d"
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: {
+    virtuals: true
+  },
+  toObject: {
+    virtuals: true
+  }
+}); // Virtual Properties
+
+convoSchema.virtual("gcImageUrl").get(function () {
+  if (!this.convoImage) return null;
+  if (this.convoImage.startsWith("img/convoImages")) return this.convoImage;
+  return "img/gcImages/".concat(this.convoImage);
 }); // DOCUMENT MIDDLEWARES
 
 convoSchema.pre(["findOneAndUpdate", "updateOne", "updateMany"], function (next) {

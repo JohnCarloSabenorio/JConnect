@@ -98,26 +98,23 @@ exports.getOne = function (Model) {
           case 2:
             doc = _context2.sent;
 
-            if (Model === User) {
-              doc.profilePicture = "img/profileImages/".concat(doc.profilePicture);
-              console.log("the doc:", doc);
-            }
-
             if (doc) {
-              _context2.next = 6;
+              _context2.next = 5;
               break;
             }
 
             return _context2.abrupt("return", next(new AppError("No document found with the id: ".concat(req.params.id), 404)));
 
-          case 6:
+          case 5:
             res.status(200).json({
               status: "success",
               message: "Document found!",
-              data: doc
+              data: doc.toObject({
+                virtuals: true
+              })
             });
 
-          case 7:
+          case 6:
           case "end":
             return _context2.stop();
         }
@@ -164,45 +161,37 @@ exports.getAll = function (Model) {
             featureQuery = features.query;
 
             if (Model == Notification) {
-              featureQuery = featureQuery.populate("actor").lean();
+              featureQuery = featureQuery.populate("actor").lean({
+                virtuals: true
+              });
             }
 
-            _context3.next = 10;
+            if (Model == UserConversation) {
+              featureQuery = featureQuery.populate({
+                path: "conversation",
+                options: {
+                  lean: true
+                }
+              });
+            }
+
+            _context3.next = 11;
             return regeneratorRuntime.awrap(featureQuery);
 
-          case 10:
+          case 11:
             docs = _context3.sent;
-
-            if (Model === Message) {
-              docs.forEach(function (doc) {
-                doc.images = doc.images.map(function (img) {
-                  return "img/sentImages/".concat(img);
-                });
+            objectDocs = docs.map(function (doc) {
+              return doc.toObject({
+                virtuals: true
               });
-            }
-
-            if (Model === User) {
-              docs.forEach(function (doc) {
-                doc.profilePicture = "img/profileImages/".concat(doc.profilePicture);
-              });
-            }
-
-            if (Model === UserConversation) {
-              docs.forEach(function (doc) {
-                doc.conversation.convoImage = "img/gcImages/".concat(doc.conversation.convoImage);
-                doc.conversation.users.forEach(function (user) {
-                  user.profilePicture = "img/profileImages/".concat(user.profilePicture);
-                });
-              });
-            }
-
+            });
             res.status(200).json({
               status: "success",
               message: "Successfully retrieved all documents",
-              data: docs
+              data: objectDocs
             });
 
-          case 15:
+          case 14:
           case "end":
             return _context3.stop();
         }

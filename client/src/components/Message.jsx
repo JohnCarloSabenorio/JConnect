@@ -468,7 +468,7 @@ export const Message = React.memo(function Message({
 
         <div className={`flex mt-2 ${isCurrentUser ? "ml-auto mr-0" : "ml-0"}`}>
           <div className=" w-70 gap-0.5 grid grid-cols-[repeat(auto-fit,minmax(70px,1fr))]">
-            {messageData.images.map((imgUrl, idx) => {
+            {messageData.imageUrls.map((imgUrl, idx) => {
               return (
                 <img
                   key={idx}

@@ -273,17 +273,26 @@ exports.getUserNamesAndNicknames = catchASync(function _callee8(req, res, next) 
           _context8.next = 3;
           return regeneratorRuntime.awrap(UserConversation.find({
             conversation: req.params.convoId
-          }).populate("user", "username").populate("conversation", "-users -conversationName").select("user nickname conversation"));
+          }).populate({
+            path: "user",
+            select: "username profilePicture"
+          }));
 
         case 3:
           userConversations = _context8.sent;
+          userConversations = userConversations.map(function (doc) {
+            return doc.toObject({
+              virtuals: true
+            });
+          });
+          console.log("the nicknames data:", userConversations);
           res.status(200).json({
             status: "success",
             message: "Successfully retrieved all names and nicknames",
             userConversations: userConversations
           });
 
-        case 5:
+        case 7:
         case "end":
           return _context8.stop();
       }

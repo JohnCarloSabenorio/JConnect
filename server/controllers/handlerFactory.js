@@ -53,10 +53,6 @@ exports.getOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.findById(req.params.id);
 
-    if (Model === User) {
-      doc.profilePicture = `img/profileImages/${doc.profilePicture}`;
-      console.log("the doc:", doc);
-    }
     if (!doc) {
       return next(
         new AppError(`No document found with the id: ${req.params.id}`, 404)
@@ -65,7 +61,7 @@ exports.getOne = (Model) =>
     res.status(200).json({
       status: "success",
       message: "Document found!",
-      data: doc,
+      data: doc.toObject({ virtuals: true }),
     });
   });
 
@@ -97,37 +93,25 @@ exports.getAll = (Model) =>
 
     let featureQuery = features.query;
     if (Model == Notification) {
-      featureQuery = featureQuery.populate("actor").lean();
+      featureQuery = featureQuery.populate("actor").lean({ virtuals: true });
+    }
+
+    if (Model == UserConversation) {
+      featureQuery = featureQuery.populate({
+        path: "conversation",
+        options: {
+          lean: true,
+        },
+      });
     }
 
     let docs = await featureQuery;
 
-    if (Model === Message) {
-      docs.forEach((doc) => {
-        doc.images = doc.images.map((img) => `img/sentImages/${img}`);
-      });
-    }
-
-    if (Model === User) {
-      docs.forEach((doc) => {
-        doc.profilePicture = `img/profileImages/${doc.profilePicture}`;
-      });
-    }
-
-    if (Model === UserConversation) {
-      docs.forEach((doc) => {
-        doc.conversation.convoImage = `img/gcImages/${doc.conversation.convoImage}`;
-
-        doc.conversation.users.forEach((user) => {
-          user.profilePicture = `img/profileImages/${user.profilePicture}`;
-        });
-      });
-    }
-
+    objectDocs = docs.map((doc) => doc.toObject({ virtuals: true }));
     res.status(200).json({
       status: "success",
       message: "Successfully retrieved all documents",
-      data: docs,
+      data: objectDocs,
     });
   });
 

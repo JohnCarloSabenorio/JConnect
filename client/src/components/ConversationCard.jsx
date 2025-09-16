@@ -38,8 +38,9 @@ export default function ConversationCard({
   const [chatmate, setChatmate] = useState("");
   useEffect(() => {
     {
+      console.log(userConversation.conversation.conversationName);
+      console.log(userConversation.conversation);
       if (userConversation && !userConversation.conversation.isGroup) {
-        console.log("this is a direct convo");
         const otherUser = userConversation.conversation.users.find(
           (u) => u._id != user._id
         );
@@ -58,8 +59,6 @@ export default function ConversationCard({
 
   const { sidebarSearch } = useSelector((state) => state.sidebar);
   const dispatch = useDispatch();
-
-  useEffect(() => {}, [userConversation]);
   const isActive = activeConvo === userConversation.conversation._id;
 
   useEffect(() => {}, [activeConvoMembers]);
@@ -146,6 +145,10 @@ export default function ConversationCard({
           dispatch(setEmojiPickerIsOpen(false));
           dispatch(setConversationStatus(userConversation.status));
           dispatch(setActiveConvoMembers(userConversation.conversation.users));
+          console.log(
+            "the conversation users:",
+            userConversation.conversation.users
+          );
           dispatch(setConversationRole(userConversation.role));
           // getConvoNamesData(userConversation.conversation._id);
 
@@ -189,8 +192,8 @@ export default function ConversationCard({
             <img
               src={
                 userConversation.conversation.isGroup
-                  ? userConversation.conversation.convoImage
-                  : chatmate.profilePicture
+                  ? userConversation.conversation.gcImageUrl
+                  : chatmate.profilePictureUrl
               }
               className="rounded-full w-12 h-12 border-1"
             />

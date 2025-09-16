@@ -378,16 +378,18 @@ exports.getMutualGroupChats = catchAsync(function _callee7(req, res, next) {
         case 2:
           mutualConversations = _context7.sent;
           mutualConversations = mutualConversations.map(function (convoData) {
-            convoData.convoImage = "img/gcImages/".concat(convoData.convoImage);
-            return convoData;
+            return convoData.toObject({
+              virtuals: true
+            });
           });
+          console.log("mutual conversations:", mutualConversations);
           res.status(200).json({
             status: "success",
             message: "Successfully retrieved mutual conversations.",
             mutualConversations: mutualConversations
           });
 
-        case 5:
+        case 6:
         case "end":
           return _context7.stop();
       }

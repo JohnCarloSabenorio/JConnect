@@ -335,7 +335,7 @@ export default function ProfileOverlay() {
             <div className="w-40 relative ml-5">
               <div className="bg-white border-1 absolute rounded-full bottom-1">
                 <img
-                  src={displayedUser?.profilePicture}
+                  src={displayedUser?.profilePictureUrl}
                   className="w-30"
                   alt="profile-img"
                 />

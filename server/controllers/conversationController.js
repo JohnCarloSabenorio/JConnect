@@ -256,11 +256,11 @@ exports.getMutualGroupChats = catchAsync(async (req, res, next) => {
     isGroup: true,
   });
 
-  mutualConversations = mutualConversations.map((convoData) => {
-    convoData.convoImage = `img/gcImages/${convoData.convoImage}`;
-    return convoData;
-  });
+  mutualConversations = mutualConversations.map((convoData) =>
+    convoData.toObject({ virtuals: true })
+  );
 
+  console.log("mutual conversations:", mutualConversations);
   res.status(200).json({
     status: "success",
     message: "Successfully retrieved mutual conversations.",

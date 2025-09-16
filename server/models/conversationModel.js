@@ -46,8 +46,17 @@ const convoSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
+
+// Virtual Properties
+convoSchema.virtual("gcImageUrl").get(function () {
+  if (!this.convoImage) return null;
+  if (this.convoImage.startsWith("img/convoImages")) return this.convoImage;
+  return `img/gcImages/${this.convoImage}`;
+});
 
 // DOCUMENT MIDDLEWARES
 convoSchema.pre(

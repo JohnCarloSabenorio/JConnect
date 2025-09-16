@@ -261,10 +261,7 @@ exports.getMutualFriends = catchAsync(async (req, res, next) => {
     user2FriendIds.includes(friend._id.toString())
   );
 
-  mutualFriends = mutualFriends.map((friend) => {
-    friend.profilePicture = `img/profileImages/${friend.profilePicture}`;
-    return friend;
-  });
+  mutualFriends = mutualFriends.map((doc) => doc.toObject({ virtuals: true }));
 
   return res.status(200).json({
     status: "success",

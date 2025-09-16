@@ -66,8 +66,27 @@ const messageSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
   }
 );
+
+// Virtual Properties
+
+messageSchema.virtual("imageUrls").get(function () {
+  // Check if there is no images property
+  if (!this.images) return null;
+
+  const imageUrls = this.images.map((img) => {
+    if (img.startsWith("img/sentImages")) {
+      return img;
+    } else {
+      return `img/sentImages/${img}`;
+    }
+  });
+
+  return imageUrls;
+});
 
 // Document Middlewares
 

@@ -54,7 +54,7 @@ export default function NicknameCard({ userData }) {
     <div className="flex gap-3 mt-3 items-center px-2">
       {" "}
       <img
-        src={userData.profilePicture}
+        src={userData.user.profilePictureUrl}
         className="w-15 h-15"
         alt="profile img"
       />

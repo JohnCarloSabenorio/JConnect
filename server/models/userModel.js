@@ -93,14 +93,18 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    toJSON: { virtuals: false },
-    toObject: { virtuals: false },
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
 
 // VIRTUAL PROPERTIES
-userSchema.virtual("fullname").get(function () {
-  return `${this.fname} ${this.mname} ${this.lname}`;
+userSchema.virtual("profilePictureUrl").get(function () {
+  if (!this.profilePicture) return null;
+  if (this.profilePicture.startsWith("img/profileImages")) {
+    return this.profilePicture;
+  }
+  return `img/profileImages/${this.profilePicture}`;
 });
 
 // DOCUMENT MIDDLEWARES

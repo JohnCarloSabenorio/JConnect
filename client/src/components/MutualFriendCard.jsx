@@ -13,7 +13,11 @@ export default function MutualFriendCard({ userData }) {
         openProfile();
       }}
     >
-      <img src={userData.profilePicture} className="w-12 border-1 rounded-full" alt="profile-img" />
+      <img
+        src={userData.profilePictureUrl}
+        className="w-12 border-1 rounded-full"
+        alt="profile-img"
+      />
       <p>{userData.username}</p>
     </div>
   );

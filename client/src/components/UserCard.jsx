@@ -14,8 +14,6 @@ export default function UserCard({ user, imageUrl }) {
   async function handleDisplayProfile() {
     const userData = await getUser(user._id);
 
-    console.log("the userData:", userData);
-    console.log("the user:", user);
     dispatch(showProfileOverlay());
     dispatch(setDisplayedUser(userData));
   }
@@ -36,8 +34,9 @@ export default function UserCard({ user, imageUrl }) {
         <div className="bg-white hover:bg-gray-200 rounded-md flex p-5 shadow-md cursor-pointer">
           <div className="relative">
             <img
-              src={user.profilePicture}
+              src={user.profilePictureUrl}
               className="rounded-full w-12 h-12 border-1"
+              alt="bro"
             />
             <div
               className={`${
