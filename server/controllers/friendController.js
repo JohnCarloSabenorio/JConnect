@@ -255,9 +255,14 @@ exports.getMutualFriends = catchAsync(async (req, res, next) => {
   const user2FriendIds = [...user2FriendSet].map((friend) =>
     friend._id.toString()
   );
-  const mutualFriends = [...user1FriendSet].filter((friend) =>
+  let mutualFriends = [...user1FriendSet].filter((friend) =>
     user2FriendIds.includes(friend._id.toString())
   );
+
+  mutualFriends = mutualFriends.map((friend) => {
+    friend.profilePicture = `img/profileImages/${friend.profilePicture}`;
+    return friend;
+  });
 
   return res.status(200).json({
     status: "success",

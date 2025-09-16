@@ -495,13 +495,17 @@ exports.getMutualFriends = catchAsync(function _callee13(req, res, next) {
           mutualFriends = _toConsumableArray(user1FriendSet).filter(function (friend) {
             return user2FriendIds.includes(friend._id.toString());
           });
+          mutualFriends = mutualFriends.map(function (friend) {
+            friend.profilePicture = "img/profileImages/".concat(friend.profilePicture);
+            return friend;
+          });
           return _context13.abrupt("return", res.status(200).json({
             status: "success",
             message: "Successfully retrieved mutual friends",
             mutualFriends: mutualFriends
           }));
 
-        case 13:
+        case 14:
         case "end":
           return _context13.stop();
       }

@@ -35,19 +35,19 @@ export default function ConversationCard({
     (state) => state.conversation
   );
 
-  const [chatmateName, setChatmateName] = useState("");
-  const [chatmateImage, setChatmateImage] = useState("");
-
+  const [chatmate, setChatmate] = useState("");
   useEffect(() => {
     {
       if (userConversation && !userConversation.conversation.isGroup) {
-      }
-      const chatmate = userConversation.conversation.users.find(
-        (u) => u._id != user._id
-      );
-      if (chatmate) {
-        setChatmateName(chatmate.username);
-        setChatmateImage(chatmate.profilePicture);
+        console.log("this is a direct convo");
+        const otherUser = userConversation.conversation.users.find(
+          (u) => u._id != user._id
+        );
+
+        // GET THE NICKNAME OF THE OTHER USER
+        if (otherUser) {
+          setChatmate(otherUser);
+        }
       }
     }
   }, [userConversation]);
@@ -187,7 +187,11 @@ export default function ConversationCard({
         >
           <div className="relative">
             <img
-              src={chatmateImage}
+              src={
+                userConversation.conversation.isGroup
+                  ? userConversation.conversation.convoImage
+                  : chatmate.profilePicture
+              }
               className="rounded-full w-12 h-12 border-1"
             />
             <div
@@ -203,9 +207,9 @@ export default function ConversationCard({
               <p className="font-bold">
                 {userConversation.conversation.isGroup
                   ? userConversation.conversation.conversationName
-                  : userConversation.nickname != ""
-                  ? userConversation.nickname
-                  : chatmateName}
+                  : userConversation.nickname == ""
+                  ? chatmate.username
+                  : userConversation.nickname}
               </p>
               <p>
                 {displayedLatestMessage.length > 10

@@ -251,9 +251,14 @@ exports.createConversation = catchAsync(async (req, res) => {
 
 exports.getMutualGroupChats = catchAsync(async (req, res, next) => {
   // Get mutual conversations
-  const mutualConversations = await Conversation.find({
+  let mutualConversations = await Conversation.find({
     users: { $all: [req.user.id, req.params.userId] },
     isGroup: true,
+  });
+
+  mutualConversations = mutualConversations.map((convoData) => {
+    convoData.convoImage = `img/gcImages/${convoData.convoImage}`;
+    return convoData;
   });
 
   res.status(200).json({

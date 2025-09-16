@@ -31,7 +31,7 @@ exports.updateNickname = async (io, socket, data) => {
   console.log("update nickname data:", data);
   const updatedUserConversation = await UserConversation.findByIdAndUpdate(
     data.userConvoId,
-    { nickname: data.newNickname != "" ? data.newNickname : data.username },
+    { nickname: data.newNickname },
     {
       new: true,
       runValidators: true,

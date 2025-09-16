@@ -68,7 +68,7 @@ exports.updateNickname = function _callee2(io, socket, data) {
           console.log("update nickname data:", data);
           _context2.next = 3;
           return regeneratorRuntime.awrap(UserConversation.findByIdAndUpdate(data.userConvoId, {
-            nickname: data.newNickname != "" ? data.newNickname : data.username
+            nickname: data.newNickname
           }, {
             "new": true,
             runValidators: true

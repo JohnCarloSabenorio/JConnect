@@ -52,6 +52,11 @@ exports.createOne = (Model) =>
 exports.getOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.findById(req.params.id);
+
+    if (Model === User) {
+      doc.profilePicture = `img/profileImages/${doc.profilePicture}`;
+      console.log("the doc:", doc);
+    }
     if (!doc) {
       return next(
         new AppError(`No document found with the id: ${req.params.id}`, 404)
@@ -106,6 +111,12 @@ exports.getAll = (Model) =>
     if (Model === User) {
       docs.forEach((doc) => {
         doc.profilePicture = `img/profileImages/${doc.profilePicture}`;
+      });
+    }
+
+    if (Model === UserConversation) {
+      docs.forEach((doc) => {
+        doc.conversation.convoImage = `img/gcImages/${doc.conversation.convoImage}`;
       });
     }
 

@@ -98,21 +98,26 @@ exports.getOne = function (Model) {
           case 2:
             doc = _context2.sent;
 
+            if (Model === User) {
+              doc.profilePicture = "img/profileImages/".concat(doc.profilePicture);
+              console.log("the doc:", doc);
+            }
+
             if (doc) {
-              _context2.next = 5;
+              _context2.next = 6;
               break;
             }
 
             return _context2.abrupt("return", next(new AppError("No document found with the id: ".concat(req.params.id), 404)));
 
-          case 5:
+          case 6:
             res.status(200).json({
               status: "success",
               message: "Document found!",
               data: doc
             });
 
-          case 6:
+          case 7:
           case "end":
             return _context2.stop();
         }
@@ -182,13 +187,19 @@ exports.getAll = function (Model) {
               });
             }
 
+            if (Model === UserConversation) {
+              docs.forEach(function (doc) {
+                doc.conversation.convoImage = "img/gcImages/".concat(doc.conversation.convoImage);
+              });
+            }
+
             res.status(200).json({
               status: "success",
               message: "Successfully retrieved all documents",
               data: docs
             });
 
-          case 14:
+          case 15:
           case "end":
             return _context3.stop();
         }

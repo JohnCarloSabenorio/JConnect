@@ -17,13 +17,14 @@ export default function NicknameCard({ userData }) {
   const [newNickname, setNewNickname] = useState("");
 
   useEffect(() => {
+    console.log("the user data:", userData);
     setDisplayedNickname(userData.nickname);
   }, [userData]);
 
   async function setNickname() {
-    if (newNickname == displayedNickname) return;
     setDisplayedNickname(newNickname);
 
+    // Update nickname
     socket.emit("update nickname", {
       userConvoId: userData._id,
       username: userData.user.username,
@@ -31,6 +32,7 @@ export default function NicknameCard({ userData }) {
       conversationId: activeConvo,
     });
 
+    // Update the conversation
     socket.emit("update conversation", {
       conversationId: activeConvo,
       message:
@@ -51,7 +53,11 @@ export default function NicknameCard({ userData }) {
   return (
     <div className="flex gap-3 mt-3 items-center px-2">
       {" "}
-      <img src="images/avatar.png" className="w-15 h-15" alt="profile img" />
+      <img
+        src={userData.profilePicture}
+        className="w-15 h-15"
+        alt="profile img"
+      />
       <div className="flex-1">
         {/* Nickname */}
         {isEditing ? (

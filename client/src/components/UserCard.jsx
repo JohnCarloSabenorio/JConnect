@@ -13,6 +13,9 @@ export default function UserCard({ user, imageUrl }) {
 
   async function handleDisplayProfile() {
     const userData = await getUser(user._id);
+
+    console.log("the userData:", userData);
+    console.log("the user:", user);
     dispatch(showProfileOverlay());
     dispatch(setDisplayedUser(userData));
   }

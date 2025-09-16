@@ -77,12 +77,13 @@ export default function MutualGroupChatCard({ groupData }) {
 
     // dispatch(setActiveConvoMembers());
   };
+
   return (
     <div
       className="flex gap-3 items-center bg-gray-100 p-3 shadow-md cursor-pointer rounded-md"
       onClick={(e) => openGroupChat()}
     >
-      <img src="/images/avatar.png" className="w-12" alt="profile-img" />
+      <img src={groupData.convoImage} className="w-12 rounded-full border-1" alt="profile-img" />
       <p>{groupData.conversationName}</p>
     </div>
   );

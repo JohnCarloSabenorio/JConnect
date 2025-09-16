@@ -52,8 +52,12 @@ export default function EditProfileOverlay() {
 
           <div className="bg-white flex p-3">
             <div className="w-40 relative ml-0">
-              <div className="bg-pink-400 absolute rounded-full bottom-1">
-                <img src="/images/avatar.png" className="w-35" alt="profile-img" />
+              <div className=" absolute rounded-full bottom-1">
+                <img
+                  src={user.profilePicture}
+                  className="w-30 bg-white rounded-full border-1"
+                  alt="profile-img"
+                />
               </div>
             </div>
 

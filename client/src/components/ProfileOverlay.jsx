@@ -333,8 +333,12 @@ export default function ProfileOverlay() {
 
           <div className="bg-white flex gap-5 p-5">
             <div className="w-40 relative ml-5">
-              <div className="bg-pink-400 absolute rounded-full bottom-1">
-                <img src="/images/avatar.png" className="w-40" alt="profile-img" />
+              <div className="bg-white border-1 absolute rounded-full bottom-1">
+                <img
+                  src={displayedUser?.profilePicture}
+                  className="w-30"
+                  alt="profile-img"
+                />
               </div>
             </div>
 
