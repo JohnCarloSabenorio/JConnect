@@ -334,7 +334,7 @@ export const Message = React.memo(function Message({
                     <p className="ml-3">{senderText}</p>
                     <div className="flex gap-1 items-center">
                       <img
-                        src={imgUrl}
+                        src={sender.profilePictureUrl}
                         className="rounded-full w-12 h-12 bg-white"
                         alt="User Image"
                       />

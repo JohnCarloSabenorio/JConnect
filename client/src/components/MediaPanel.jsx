@@ -8,8 +8,13 @@ import { setDisplayChangeEmojiOverlay } from "../redux/changeEmojiOverlay";
 import { setDisplayNicknamesOverlay } from "../redux/nicknamesOverlay";
 import { UserContext } from "../App";
 export default function MediaPanel({ getUserConversations }) {
-  const { currentConvoName, activeConvoIsGroup, userIsFriend, activeConvo } =
-    useSelector((state) => state.conversation);
+  const {
+    currentConvoName,
+    currentConvoImage,
+    activeConvoIsGroup,
+    userIsFriend,
+    activeConvo,
+  } = useSelector((state) => state.conversation);
   const { user } = useContext(UserContext);
   const dispatch = useDispatch();
   const { mediaImages, displayMediaPanel } = useSelector(
@@ -36,10 +41,7 @@ export default function MediaPanel({ getUserConversations }) {
       }`}
     >
       <div className="flex flex-col items-center justify-center p-10 pb-5">
-        <img
-          src="/img/icons/male-default.jpg"
-          className="rounded-full w-30 h-30"
-        />
+        <img src={currentConvoImage} className="rounded-full w-30 h-30" />
         <p className="font-bold text-lg">{currentConvoName}</p>
         <p className="text-gray-500 text-center text-sm italic"></p>
         {/* Media Panel Buttons */}

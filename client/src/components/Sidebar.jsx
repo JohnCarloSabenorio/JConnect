@@ -19,6 +19,7 @@ import {
   initAllGroupConversation,
   initAllArchivedConversation,
   setActiveDirectUser,
+  setCurrentConvoImage,
 } from "../redux/conversation";
 import { getAllUserMessages } from "../api/conversation";
 import { initDisplayedMessages } from "../redux/message";
@@ -91,7 +92,9 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
         (u) => u._id.toString() !== user._id.toString()
       );
 
+      console.log("the initial chatmate:", initialChatmate);
       dispatch(setActiveDirectUser(initialChatmate._id));
+      dispatch(setCurrentConvoImage(initialChatmate.profilePictureUrl));
     }
   }, [allDirectConversation]);
 

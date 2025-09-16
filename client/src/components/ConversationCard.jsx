@@ -19,6 +19,7 @@ import {
   setToMention,
   setConversationRole,
   setUnifiedEmojiBtn,
+  setCurrentConvoImage,
 } from "../redux/conversation";
 import { setNamesAndNicknames } from "../redux/nicknamesOverlay";
 import { setEmojiPickerIsOpen } from "../redux/chat";
@@ -145,6 +146,7 @@ export default function ConversationCard({
           dispatch(setEmojiPickerIsOpen(false));
           dispatch(setConversationStatus(userConversation.status));
           dispatch(setActiveConvoMembers(userConversation.conversation.users));
+
           console.log(
             "the conversation users:",
             userConversation.conversation.users
@@ -160,6 +162,14 @@ export default function ConversationCard({
               userConversation.conversation._id,
               userConversation._id,
             ])
+          );
+
+          dispatch(
+            setCurrentConvoImage(
+              userConversation.conversation.isGroup
+                ? userConversation.conversation.gcImageUrl
+                : chatmate.profilePictureUrl
+            )
           );
           dispatch(
             setUnifiedEmojiBtn(userConversation.conversation.unifiedEmoji)

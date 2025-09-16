@@ -50,6 +50,7 @@ import {
   setActiveConvoMembers,
   setCurrentConvoName,
   setUnifiedEmojiBtn,
+  setCurrentConvoImage,
 } from "../redux/conversation";
 import {
   activateUserConversation,
@@ -78,6 +79,7 @@ export default function Chat() {
   const dispatch = useDispatch();
   // REDUX STATES
   const {
+    currentConvoImage,
     currentConvoName,
     activeDirectUser,
     activeConvo,
@@ -325,7 +327,6 @@ export default function Chat() {
       dispatch(addNotification(data));
     };
     socket.on("receive notification", (data) => {
-      console.log("new notification data:", data);
       if (!notifActive) {
         handleReceiveNotification(data);
       }
@@ -339,7 +340,6 @@ export default function Chat() {
   // This will add a new group conversation to the collection in the navbar
   useEffect(() => {
     const handleAddGroupConversation = (data) => {
-      console.log("INVITED TO GC:", data);
       dispatch(addGroupConversation(data.userConversation));
     };
     socket.on("invite groupchat", handleAddGroupConversation);
@@ -526,8 +526,6 @@ export default function Chat() {
   async function chatAFriend(friendId) {
     const response = await findConvoWithUser(friendId);
 
-    console.log("chatting a friend:", response);
-
     // This will get the messages using the id of the response, since if the conversation exists, it's in the allInboxConversation array
     // Create a conversation with the friend if no convo exists
     if (response.length == 0) {
@@ -544,7 +542,7 @@ export default function Chat() {
       response[0].userConvoId,
       response[0].status
     );
-
+    dispatch(setCurrentConvoImage(response[0].profilePictureUrl));
     return response[0]._id;
   }
 
@@ -628,7 +626,6 @@ export default function Chat() {
 
       const blob = new Blob([byteNumbers], { type: mimeType });
 
-      // console.log("Generated Blob:", blob);
       return blob;
     } catch (error) {
       console.error("Error converting Base64 to Blob:", error);
@@ -642,7 +639,6 @@ export default function Chat() {
   }
 
   function removeImage(idx) {
-    // console.log("image removed!");
     setImageBuffers((prev) => prev.filter((_, index) => index !== idx));
     setImages((prev) => prev.filter((_, index) => index !== idx));
   }
@@ -677,12 +673,10 @@ export default function Chat() {
           {/* Chat Interface */}
           <div className="flex flex-grow flex-col w-4xl bg-gray-50 h-full">
             <div className="border-b-8-gray-800 flex p-3 gap-5 px-10 bg-white">
-              <img
-                src="/img/icons/male-default.jpg"
-                className="rounded-full w-12 h-12"
-              />
+              <img src={currentConvoImage} className="rounded-full w-12 h-12" />
               <div>
                 <p className="font-bold text-md">{currentConvoName}</p>
+
                 <p
                   className={`${!activeConvoIsGroup ? "block" : "hidden"} ${
                     isOnline(activeDirectUser)

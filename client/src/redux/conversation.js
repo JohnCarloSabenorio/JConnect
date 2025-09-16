@@ -3,6 +3,7 @@ import { createSlice, current } from "@reduxjs/toolkit";
 const conversationSlice = createSlice({
   name: "conversation",
   initialState: {
+    currentConvoImage: "",
     currentConvoName: "",
     conversationStatus: "",
     activeUserConvo: null,
@@ -70,6 +71,9 @@ const conversationSlice = createSlice({
       state.activeUserConvo = action.payload[2];
     },
 
+    setCurrentConvoImage: (state, action) => {
+      state.currentConvoImage = action.payload;
+    },
     setCurrentConvoName: (state, action) => {
       state.currentConvoName = action.payload;
     },
@@ -314,6 +318,7 @@ export const {
   setIsMentioning,
   setActiveConversation,
   setActiveConvoArrayId,
+  setCurrentConvoImage,
   setCurrentConvoName,
   setActiveConvo,
   filterRestoredConvo,
