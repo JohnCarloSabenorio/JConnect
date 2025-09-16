@@ -43,7 +43,7 @@ export default function ConversationCard({
         const otherUser = userConversation.conversation.users.find(
           (u) => u._id != user._id
         );
-
+        console.log("the other user:", otherUser);
         // GET THE NICKNAME OF THE OTHER USER
         if (otherUser) {
           setChatmate(otherUser);

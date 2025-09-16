@@ -115,6 +115,8 @@ exports.getMyFriends = catchAsync(async (req, res) => {
       delete friend.user1;
     }
 
+    friend.friend.profilePicture = `img/profileImages/${friend.friend.profilePicture}`;
+
     return friend;
   });
 

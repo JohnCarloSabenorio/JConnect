@@ -117,6 +117,10 @@ exports.getAll = (Model) =>
     if (Model === UserConversation) {
       docs.forEach((doc) => {
         doc.conversation.convoImage = `img/gcImages/${doc.conversation.convoImage}`;
+
+        doc.conversation.users.forEach((user) => {
+          user.profilePicture = `img/profileImages/${user.profilePicture}`;
+        });
       });
     }
 

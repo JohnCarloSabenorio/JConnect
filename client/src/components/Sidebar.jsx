@@ -73,7 +73,6 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
 
   useEffect(() => {
     // This will get the initial messages to be displayed (if the currentConvo is null)
-    console.log("All direct conversation:", allDirectConversation);
     if (
       allDirectConversation &&
       activeConvo === null &&
@@ -109,6 +108,7 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
 
   async function getUserFriends() {
     const friends = await getFriends();
+    console.log("friends data:", friends);
     dispatch(setAllFriends(friends));
   }
 
@@ -132,7 +132,6 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
     // Group conversations
     const groupData = await getAllGroupConversation();
 
-    console.log("group data:", groupData);
     let groupConversations = [];
     groupData.forEach((data) => {
       data.conversation.userConvoId = data._id;

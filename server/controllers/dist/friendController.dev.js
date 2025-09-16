@@ -220,6 +220,7 @@ exports.getMyFriends = catchAsync(function _callee5(req, res) {
               delete friend.user1;
             }
 
+            friend.friend.profilePicture = "img/profileImages/".concat(friend.friend.profilePicture);
             return friend;
           });
           res.status(200).json({

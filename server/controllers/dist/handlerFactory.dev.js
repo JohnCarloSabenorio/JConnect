@@ -190,6 +190,9 @@ exports.getAll = function (Model) {
             if (Model === UserConversation) {
               docs.forEach(function (doc) {
                 doc.conversation.convoImage = "img/gcImages/".concat(doc.conversation.convoImage);
+                doc.conversation.users.forEach(function (user) {
+                  user.profilePicture = "img/profileImages/".concat(user.profilePicture);
+                });
               });
             }
 
