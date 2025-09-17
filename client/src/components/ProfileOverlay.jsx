@@ -35,6 +35,7 @@ import {
   setActiveConvoIsGroup,
   setActiveDirectUser,
   setUnifiedEmojiBtn,
+  setCurrentConvoImage,
 } from "../redux/conversation";
 import { findMutualFriends } from "../api/friends";
 import { findMutualGroupChats } from "../api/conversation";
@@ -217,6 +218,8 @@ export default function ProfileOverlay() {
         user: displayedUser._id,
         conversation: userConversation.conversation._id,
       });
+
+      dispatch(setCurrentConvoImage(displayedUser.profilePictureUrl));
 
       dispatch(setUnifiedEmojiBtn(userConversation.conversation.unifiedEmoji));
 
