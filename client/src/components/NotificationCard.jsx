@@ -53,62 +53,65 @@ export default function NotificationCard({ data }) {
     dispatch(setMessageIsLoading(false));
   }
 
+  function handleClick() {
+    dispatch(setInitialMessageRender(true));
+    if (
+      data.notification_type == "fr_received" ||
+      data.notification_type == "fr_accepted"
+    ) {
+      dispatch(setDisplayedUser(data.actor));
+      dispatch(showProfileOverlay());
+    } else if (
+      data.notification_type == "group_invite" ||
+      data.notification_type == "mention" ||
+      data.notification_type == "reaction"
+    ) {
+      dispatch(setConvoViewMode(1));
+      // inputRef.current.innerHTML = "";
+      const userConversation = data.userconversation;
+      dispatch(setConvoViewMode(userConversation.isGroup ? 1 : 0));
+
+      if (!userConversation.isGroup) {
+        dispatch(setActiveDirectUser(data.actor._id));
+      }
+      console.log("users:", userConversation.conversation.users);
+      dispatch(setToMention([]));
+      dispatch(setActiveConvoMembers(userConversation.conversation.users));
+      dispatch(setConversationStatus(userConversation.status));
+      dispatch(setConversationRole(userConversation.role));
+      dispatch(
+        setActiveConversation([
+          userConversation.isGroup
+            ? userConversation.conversationName
+            : userConversation.nickname,
+          userConversation.conversation._id,
+          userConversation._id,
+        ])
+      );
+      console.log("the user convo in notif:", userConversation);
+
+      getMessages(userConversation.conversation._id);
+      dispatch(setActiveConvoIsArchived(userConversation.status == "archived"));
+      dispatch(setActiveConvoIsGroup(userConversation.isGroup));
+
+      if (data.messageId) {
+        dispatch(setTargetScrollMessageId(data.messageId));
+      }
+    }
+  }
+
   return (
     <>
       <div
-        className="p-3 text-left gap-5 flex justify-between hover:bg-blue-500 cursor-pointer hover:text-white align-middle"
-        onClick={(e) => {
-          dispatch(setInitialMessageRender(true));
-          if (
-            data.notification_type == "fr_received" ||
-            data.notification_type == "fr_accepted"
-          ) {
-            dispatch(setDisplayedUser(data.actor));
-            dispatch(showProfileOverlay());
-          } else if (
-            data.notification_type == "group_invite" ||
-            data.notification_type == "mention" ||
-            data.notification_type == "reaction"
-          ) {
-            dispatch(setConvoViewMode(1));
-            // inputRef.current.innerHTML = "";
-            const userConversation = data.userconversation;
-            dispatch(setConvoViewMode(userConversation.isGroup ? 1 : 0));
-
-            if (!userConversation.isGroup) {
-              dispatch(setActiveDirectUser(data.actor._id));
-            }
-            console.log("users:", userConversation.conversation.users);
-            dispatch(setToMention([]));
-            dispatch(
-              setActiveConvoMembers(userConversation.conversation.users)
-            );
-            dispatch(setConversationStatus(userConversation.status));
-            dispatch(setConversationRole(userConversation.role));
-            dispatch(
-              setActiveConversation([
-                userConversation.isGroup
-                  ? userConversation.conversationName
-                  : userConversation.nickname,
-                userConversation.conversation._id,
-                userConversation._id,
-              ])
-            );
-            console.log("the user convo in notif:", userConversation);
-
-            getMessages(userConversation.conversation._id);
-            dispatch(
-              setActiveConvoIsArchived(userConversation.status == "archived")
-            );
-            dispatch(setActiveConvoIsGroup(userConversation.isGroup));
-
-            if (data.messageId) {
-              dispatch(setTargetScrollMessageId(data.messageId));
-            }
-          }
-        }}
+        className="p-3 text-left gap-5 flex justify-between items-center hover:bg-blue-500 cursor-pointer hover:text-white align-middle"
+        onClick={(e) => handleClick()}
       >
-        <img src="images/avatar.png" className="w-10 h-10"></img>
+        {data.actor && (
+          <img
+            src={data.actor.profilePictureUrl}
+            className="w-10 h-10 border-1 rounded-full"
+          ></img>
+        )}
         <div className="w-full">
           <p>{data.message}</p>
         </div>

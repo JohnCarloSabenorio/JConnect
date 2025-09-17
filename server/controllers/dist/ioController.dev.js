@@ -500,13 +500,12 @@ exports.sendNotification = function _callee10(io, socket, data) {
       switch (_context10.prev = _context10.next) {
         case 0:
           _context10.prev = 0;
-          console.log("THE SEND NOTIF DATA:", data);
           notificationData = {
             message: data.message,
             receiver: data.receiver,
             notification_type: data.notification_type,
-            actor: data.actor,
-            messageId: data.messageId ? data.messageId : undefined
+            actor: data.actor // messageId: data.messageId ? data.messageId : undefined,
+
           };
 
           if (!(data.notification_type == "fr_received" || data.notification_type == "fr_accepted")) {
@@ -514,6 +513,7 @@ exports.sendNotification = function _callee10(io, socket, data) {
             break;
           }
 
+          console.log("sending friend request...");
           _context10.next = 6;
           return regeneratorRuntime.awrap(Notification.findOne({
             receiver: data.receiver,
@@ -610,20 +610,28 @@ exports.sendNotification = function _callee10(io, socket, data) {
           newNotification = _context10.sent;
 
         case 40:
-          console.log("the new notification:", newNotification);
+          _context10.next = 42;
+          return regeneratorRuntime.awrap(newNotification.populate("actor"));
+
+        case 42:
+          newNotification = _context10.sent;
+          newNotification = newNotification.toObject({
+            virtuals: true
+          });
+          console.log("new notification data:", newNotification);
           io.to("user_".concat(data.receiver)).emit("receive notification", newNotification);
-          _context10.next = 47;
+          _context10.next = 51;
           break;
 
-        case 44:
-          _context10.prev = 44;
+        case 48:
+          _context10.prev = 48;
           _context10.t0 = _context10["catch"](0);
           console.log("Failed to create new notification:", _context10.t0);
 
-        case 47:
+        case 51:
         case "end":
           return _context10.stop();
       }
     }
-  }, null, null, [[0, 44]]);
+  }, null, null, [[0, 48]]);
 };

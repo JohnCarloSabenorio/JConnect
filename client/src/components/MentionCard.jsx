@@ -82,7 +82,7 @@ export default function MentionCard({ member, inputRef }) {
       >
         <div className="flex items-center gap-5">
           {/* Profile Image */}
-          <img src="images/avatar.png" className="w-13 h-13"></img>
+          <img src={member.profilePictureUrl} className="w-13 h-13"></img>
 
           {/* Text */}
           <p>{member.username}</p>

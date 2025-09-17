@@ -93,7 +93,7 @@ exports.getAll = (Model) =>
 
     let featureQuery = features.query;
     if (Model == Notification) {
-      featureQuery = featureQuery.populate("actor").lean({ virtuals: true });
+      featureQuery = featureQuery.populate("actor");
     }
 
     if (Model == UserConversation) {

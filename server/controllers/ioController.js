@@ -306,20 +306,19 @@ exports.sendNotification = async (io, socket, data) => {
   // Create notification
 
   try {
-    console.log("THE SEND NOTIF DATA:", data);
-
     let notificationData = {
       message: data.message,
       receiver: data.receiver,
       notification_type: data.notification_type,
       actor: data.actor,
-      messageId: data.messageId ? data.messageId : undefined,
+      // messageId: data.messageId ? data.messageId : undefined,
     };
 
     if (
       data.notification_type == "fr_received" ||
       data.notification_type == "fr_accepted"
     ) {
+      console.log("sending friend request...");
       const existingNotification = await Notification.findOne({
         receiver: data.receiver,
         notification_type: data.notification_type,
@@ -374,7 +373,10 @@ exports.sendNotification = async (io, socket, data) => {
     if (newNotification.userconversation) {
       newNotification = await newNotification.populate("userconversation");
     }
-    console.log("the new notification:", newNotification);
+    newNotification = await newNotification.populate("actor");
+    newNotification = newNotification.toObject({ virtuals: true });
+
+    console.log("new notification data:", newNotification);
     io.to(`user_${data.receiver}`).emit(
       "receive notification",
       newNotification
