@@ -53,6 +53,8 @@ export default function ProfileOverlay() {
   const { isDisplayed, displayedUser } = useSelector(
     (state) => state.profileOverlay
   );
+  const { activeConvoIsGroup } = useSelector((state) => state.conversation);
+
   const [mutualSection, setMutualSection] = useState(0);
 
   const dispatch = useDispatch();
@@ -199,7 +201,6 @@ export default function ProfileOverlay() {
           false
         );
 
-        console.log("CREATED A CONVERSATION:", userConversation);
         dispatch(addANewConvo(userConversation));
       }
 
@@ -228,13 +229,13 @@ export default function ProfileOverlay() {
       );
 
       dispatch(setConversationRole(userConversation.role));
-      console.log("the displayed user id:", displayedUser._id);
       dispatch(setActiveDirectUser(displayedUser._id));
       dispatch(setActiveConvoIsGroup(false));
       dispatch(changeActiveInbox("direct"));
       dispatch(hideProfileOverlay());
       setMutualFriends([]);
       setMutualSection(0);
+      dispatch(setUserIsFriend(friendState == "friend"));
 
       dispatch(setConvoViewMode(0));
     } catch (error) {

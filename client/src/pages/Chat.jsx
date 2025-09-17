@@ -46,6 +46,7 @@ import {
   setConversationStatus,
   removeAConvo,
   setMessage,
+  setUserIsFriend,
   removeConvoMember,
   setActiveConvoMembers,
   setCurrentConvoName,
@@ -88,6 +89,7 @@ export default function Chat() {
     filteredConvoMembers,
     activeConvoIsGroup,
     isMentioning,
+    userIsFriend,
     message,
     toMention,
     conversationStatus,
@@ -696,10 +698,11 @@ export default function Chat() {
 
               <div>
                 <p className="font-bold text-md">{currentConvoName}</p>
-
                 <p
                   className={`${
-                    !activeConvoIsGroup && activeConvo ? "block" : "hidden"
+                    !activeConvoIsGroup && activeConvo && userIsFriend
+                      ? "block"
+                      : "hidden"
                   } ${
                     isOnline(activeDirectUser)
                       ? "text-green-400"

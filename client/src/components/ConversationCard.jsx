@@ -20,6 +20,7 @@ import {
   setConversationRole,
   setUnifiedEmojiBtn,
   setCurrentConvoImage,
+  setUserIsFriend,
 } from "../redux/conversation";
 import { setNamesAndNicknames } from "../redux/nicknamesOverlay";
 import { setEmojiPickerIsOpen } from "../redux/chat";
@@ -39,6 +40,15 @@ export default function ConversationCard({
   const [chatmate, setChatmate] = useState("");
   useEffect(() => {
     {
+      async function chatmateIsFriend(chatmateId) {
+        try {
+          const isAFriend = await isFriend(chatmateId);
+          setIsAFriend(isAFriend);
+        } catch (error) {
+          console.error("Error checking friend status:", error);
+        }
+      }
+
       console.log(userConversation.conversation.conversationName);
       console.log(userConversation.conversation);
       if (userConversation && !userConversation.conversation.isGroup) {
@@ -49,6 +59,9 @@ export default function ConversationCard({
         // GET THE NICKNAME OF THE OTHER USER
         if (otherUser) {
           setChatmate(otherUser);
+
+          console.log("the other user:", otherUser);
+          chatmateIsFriend(otherUser._id);
         }
       }
     }
@@ -57,13 +70,10 @@ export default function ConversationCard({
   const { allFriends } = useSelector((state) => state.friends);
 
   const [isOnline, setIsOnline] = useState(false);
-  const [isFriend, setIsFriend] = useState(false);
-
+  const [isAFriend, setIsAFriend] = useState(false);
   const { sidebarSearch } = useSelector((state) => state.sidebar);
   const dispatch = useDispatch();
   const isActive = activeConvo === userConversation.conversation._id;
-
-  useEffect(() => {}, [activeConvoMembers]);
 
   const formatTime = (time) => {
     const date = new Date(time);
@@ -75,20 +85,6 @@ export default function ConversationCard({
     hours = hours % 12 || 12;
 
     return `${hours}:${minutes} ${ampm}`;
-  };
-
-  const chatmateIsFriend = (chatmateId) => async (dispatch) => {
-    // Check if the person the user is having a conversation with is on his/her friends list
-    try {
-      const isAFriend = await isFriend(chatmateId);
-
-      dispatch({
-        type: "conversation/setUserIsFriend",
-        payload: isAFriend,
-      });
-    } catch (error) {
-      console.error("Error checking friend status:", error);
-    }
   };
 
   async function getMessages(convoId) {
@@ -105,7 +101,6 @@ export default function ConversationCard({
     );
 
     setIsOnline(matchedFriend?.friend.status == "online");
-    setIsFriend(matchedFriend);
   }
 
   useEffect(() => {
@@ -191,7 +186,8 @@ export default function ConversationCard({
             console.log("YEP IT'S DIRECT");
             dispatch(setActiveDirectUser(chatmateId));
             // Checks if the chatmate is a user's friend
-            dispatch(chatmateIsFriend(chatmateId));
+            console.log("is it a friend?", isAFriend);
+            dispatch(setUserIsFriend(isAFriend));
           }
         }}
       >
@@ -211,10 +207,10 @@ export default function ConversationCard({
             />
             <div
               className={`${
-                userConversation.conversation.isGroup || !isFriend
+                userConversation.conversation.isGroup || !isAFriend
                   ? "hidden"
                   : "block"
-              } absolute right-0.5 border-1 bottom-0.5 ${
+              } absolute right-0.5 border-1 bottom-1 ${
                 isOnline ? "bg-green-400" : "bg-gray-400"
               } w-4 h-4 rounded-full`}
             ></div>
