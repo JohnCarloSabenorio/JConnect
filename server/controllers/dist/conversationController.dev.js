@@ -248,37 +248,39 @@ exports.createConversation = catchAsync(function _callee6(req, res) {
       switch (_context6.prev = _context6.next) {
         case 0:
           console.log("Creating Conversation...");
-          console.log("THE BODY;", req.body);
-          _context6.next = 4;
+          _context6.next = 3;
           return regeneratorRuntime.awrap(Conversation.create(req.body));
 
-        case 4:
+        case 3:
           newConversation = _context6.sent;
-          _context6.next = 7;
+          _context6.next = 6;
           return regeneratorRuntime.awrap(Conversation.findById(newConversation._id).populate("users"));
 
-        case 7:
+        case 6:
           newConversation = _context6.sent;
-          _context6.next = 10;
+          _context6.next = 9;
           return regeneratorRuntime.awrap(User.find({
             _id: {
               $in: req.body.users
             }
           }));
 
-        case 10:
+        case 9:
           usersFromDB = _context6.sent;
-          // Create user-conversation
-          // Check if it is a group conversation or not
-          console.log("IS IT A GROUP?", req.body.isGroup);
 
           if (!req.body.isGroup) {
-            _context6.next = 27;
+            _context6.next = 28;
             break;
           }
 
           // Create Group Name using first three usernames
-          newGroupName = req.body.conversationName ? req.body.conversationName : "".concat(usersFromDB[0].username, ", ").concat(usersFromDB[1].username, ", ").concat(usersFromDB[2].username, ",..."); // Create an array containing objects of new group conversations
+          newGroupName = req.body.conversationName ? req.body.conversationName : usersFromDB.length >= 3 ? "".concat(usersFromDB[0].username, ", ").concat(usersFromDB[1].username, ", ").concat(usersFromDB[2].username, ",...") : "".concat(usersFromDB[0].username, ", ").concat(usersFromDB[1].username, ",...");
+          newConversation.conversationName = newGroupName;
+          _context6.next = 15;
+          return regeneratorRuntime.awrap(newConversation.save());
+
+        case 15:
+          console.log("the new conversation name:", newGroupName); // Create an array containing objects of new group conversations
 
           newGroupUserConversationData = usersFromDB.map(function (user) {
             var userRole = req.user.id == user._id.toString() ? "owner" : "member";
@@ -294,25 +296,24 @@ exports.createConversation = catchAsync(function _callee6(req, res) {
             };
           }); // Create new user conversation documents
 
-          _context6.next = 17;
+          _context6.next = 19;
           return regeneratorRuntime.awrap(UserConversation.create(newGroupUserConversationData));
 
-        case 17:
+        case 19:
           newUserConversations = _context6.sent;
           console.log("new user conversations from group:", newUserConversations); // Populate the new user  conversations
 
-          _context6.next = 21;
+          _context6.next = 23;
           return regeneratorRuntime.awrap(UserConversation.populate(newUserConversations, {
             path: "conversation"
           }));
 
-        case 21:
+        case 23:
           populatedUserConversations = _context6.sent;
           // Find the document of the current user
           currentUserNewConvo = populatedUserConversations.find(function (userconvo) {
             return userconvo.user.toString() === req.user.id;
           });
-          console.log("current new user convo:", currentUserNewConvo);
           return _context6.abrupt("return", res.status(200).json({
             status: "success",
             message: "New conversation successfully created!",
@@ -323,8 +324,8 @@ exports.createConversation = catchAsync(function _callee6(req, res) {
             }
           }));
 
-        case 27:
-          _context6.next = 29;
+        case 28:
+          _context6.next = 30;
           return regeneratorRuntime.awrap(UserConversation.create([{
             user: usersFromDB[0]._id,
             nickname: usersFromDB[1].username,
@@ -337,9 +338,8 @@ exports.createConversation = catchAsync(function _callee6(req, res) {
             conversationName: usersFromDB[0].username
           }]));
 
-        case 29:
+        case 30:
           newDirectUserConversations = _context6.sent;
-          console.log("NEW DIRECTS:", newDirectUserConversations);
           _context6.next = 33;
           return regeneratorRuntime.awrap(newDirectUserConversations.find(function (convo) {
             return convo.user.toString() === req.user.id;
@@ -347,14 +347,15 @@ exports.createConversation = catchAsync(function _callee6(req, res) {
 
         case 33:
           _currentUserNewConvo = _context6.sent;
-          console.log("FOUND USER CONVO:", _currentUserNewConvo);
           return _context6.abrupt("return", res.status(200).json({
             status: "success",
             message: "New conversation successfully created!",
-            data: _currentUserNewConvo
+            data: _currentUserNewConvo.toObject({
+              virtuals: true
+            })
           }));
 
-        case 36:
+        case 35:
         case "end":
           return _context6.stop();
       }

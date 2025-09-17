@@ -98,6 +98,27 @@ io.on("connection", function (socket) {
     } catch (err) {
       console.error("Error in inviteToGroupChat:", err);
     }
+  }); // Chat a user
+
+  socket.on("chat user", function (data) {
+    var usersocket = onlineSockets[data.user];
+
+    if (!socket.rooms.has(data.conversation)) {
+      if (usersocket) {
+        try {
+          console.log("".concat(data.user, " joined the conversation chuness"));
+          usersocket.join(data.conversation);
+        } catch (err) {
+          console.error("Error joining room:", err);
+        }
+      }
+
+      try {
+        ioController.chatAUser(io, socket, data);
+      } catch (err) {
+        console.error("Error chatting a user:", err);
+      }
+    }
   }); // Send notification
 
   socket.on("send notification", function (data) {

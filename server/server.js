@@ -110,6 +110,28 @@ io.on("connection", (socket) => {
     }
   });
 
+  // Chat a user
+  socket.on("chat user", (data) => {
+    const usersocket = onlineSockets[data.user];
+
+    if (!socket.rooms.has(data.conversation)) {
+      if (usersocket) {
+        try {
+          console.log(`${data.user} joined the conversation chuness`);
+          usersocket.join(data.conversation);
+        } catch (err) {
+          console.error("Error joining room:", err);
+        }
+      }
+
+      try {
+        ioController.chatAUser(io, socket, data);
+      } catch (err) {
+        console.error("Error chatting a user:", err);
+      }
+    }
+  });
+
   // Send notification
   socket.on("send notification", (data) => {
     data["actor"] = socket.handshake.auth.userId;

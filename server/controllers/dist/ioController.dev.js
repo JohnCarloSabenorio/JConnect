@@ -242,7 +242,7 @@ exports.removeMember = function _callee5(io, socket, data) {
   });
 };
 
-exports.inviteToGroupChat = function _callee6(io, socket, data) {
+exports.chatAUser = function _callee6(io, socket, data) {
   var userConversation;
   return regeneratorRuntime.async(function _callee6$(_context6) {
     while (1) {
@@ -256,7 +256,9 @@ exports.inviteToGroupChat = function _callee6(io, socket, data) {
 
         case 2:
           userConversation = _context6.sent;
-          console.log("invited user to conversation:", data.conversation);
+          userConversation = userConversation.toObject({
+            virtual: true
+          });
 
           if (userConversation) {
             _context6.next = 7;
@@ -267,6 +269,46 @@ exports.inviteToGroupChat = function _callee6(io, socket, data) {
           return _context6.abrupt("return");
 
         case 7:
+          console.log("chatting a user data:", userConversation);
+          console.log("the users:", userConversation.conversation.users);
+          io.to("user_".concat(data.user)).emit("chat user", {
+            userId: data.user,
+            userConversation: userConversation
+          });
+
+        case 10:
+        case "end":
+          return _context6.stop();
+      }
+    }
+  });
+};
+
+exports.inviteToGroupChat = function _callee7(io, socket, data) {
+  var userConversation;
+  return regeneratorRuntime.async(function _callee7$(_context7) {
+    while (1) {
+      switch (_context7.prev = _context7.next) {
+        case 0:
+          _context7.next = 2;
+          return regeneratorRuntime.awrap(UserConversation.findOne({
+            user: data.user,
+            conversation: data.conversation
+          }));
+
+        case 2:
+          userConversation = _context7.sent;
+          console.log("invited user to conversation:", data.conversation);
+
+          if (userConversation) {
+            _context7.next = 7;
+            break;
+          }
+
+          console.log("there is no existing user conversation!");
+          return _context7.abrupt("return");
+
+        case 7:
           console.log("THE DATA USER:", data.user);
           io.to("user_".concat(data.user)).emit("invite groupchat", {
             userId: data.user,
@@ -275,70 +317,72 @@ exports.inviteToGroupChat = function _callee6(io, socket, data) {
 
         case 9:
         case "end":
-          return _context6.stop();
-      }
-    }
-  });
-};
-
-exports.sendMessage = function _callee7(io, socket, data) {
-  var newMessage, updatedUserConversation, messageObject;
-  return regeneratorRuntime.async(function _callee7$(_context7) {
-    while (1) {
-      switch (_context7.prev = _context7.next) {
-        case 0:
-          _context7.next = 2;
-          return regeneratorRuntime.awrap(Message.findById(data.messageId).populate("sender").populate("mentions"));
-
-        case 2:
-          newMessage = _context7.sent;
-          console.log("new message:", newMessage); // 3. Update the user conversation
-
-          _context7.next = 6;
-          return regeneratorRuntime.awrap(UserConversation.findOne({
-            user: newMessage.sender._id,
-            conversation: newMessage.conversation
-          }));
-
-        case 6:
-          updatedUserConversation = _context7.sent;
-          console.log("updated user conversation:", updatedUserConversation);
-          messageObject = _objectSpread({}, newMessage.toObject());
-          io.to(newMessage.conversation.toString()).emit("chat message", {
-            msg: messageObject,
-            convo: updatedUserConversation.conversation,
-            isGroup: updatedUserConversation.isGroup // conversation
-            // latest message
-
-          });
-
-        case 10:
-        case "end":
           return _context7.stop();
       }
     }
   });
 };
 
-exports.reactToMesage = function _callee8(io, socket, data) {
-  var message, messageReactions, existingUserReaction, reactionIdx, theReceiver, deleteNotif, existingNotification;
+exports.sendMessage = function _callee8(io, socket, data) {
+  var newMessage, updatedUserConversation, messageObject, updatedUserConvoObject;
   return regeneratorRuntime.async(function _callee8$(_context8) {
     while (1) {
       switch (_context8.prev = _context8.next) {
         case 0:
           _context8.next = 2;
+          return regeneratorRuntime.awrap(Message.findById(data.messageId).populate("sender").populate("mentions"));
+
+        case 2:
+          newMessage = _context8.sent;
+          console.log("new message:", newMessage); // 3. Update the user conversation
+
+          _context8.next = 6;
+          return regeneratorRuntime.awrap(UserConversation.findOne({
+            user: newMessage.sender._id,
+            conversation: newMessage.conversation
+          }));
+
+        case 6:
+          updatedUserConversation = _context8.sent;
+          messageObject = _objectSpread({}, newMessage.toObject());
+          updatedUserConvoObject = updatedUserConversation.toObject({
+            virtuals: true
+          });
+          io.to(newMessage.conversation.toString()).emit("chat message", {
+            msg: messageObject,
+            convo: updatedUserConvoObject.conversation,
+            isGroup: updatedUserConvoObject.isGroup // conversation
+            // latest message
+
+          });
+
+        case 10:
+        case "end":
+          return _context8.stop();
+      }
+    }
+  });
+};
+
+exports.reactToMesage = function _callee9(io, socket, data) {
+  var message, messageReactions, existingUserReaction, reactionIdx, theReceiver, deleteNotif, existingNotification;
+  return regeneratorRuntime.async(function _callee9$(_context9) {
+    while (1) {
+      switch (_context9.prev = _context9.next) {
+        case 0:
+          _context9.next = 2;
           return regeneratorRuntime.awrap(Message.findById(data.messageId));
 
         case 2:
-          message = _context8.sent;
+          message = _context9.sent;
           console.log("the message:", message);
 
           if (message) {
-            _context8.next = 6;
+            _context9.next = 6;
             break;
           }
 
-          return _context8.abrupt("return");
+          return _context9.abrupt("return");
 
         case 6:
           // Extract the message reactions
@@ -354,12 +398,12 @@ exports.reactToMesage = function _callee8(io, socket, data) {
           // console.log(reactionIdx);
 
           if (!existingUserReaction) {
-            _context8.next = 33;
+            _context9.next = 33;
             break;
           }
 
           if (!(existingUserReaction.unified == data.emojiUnified)) {
-            _context8.next = 25;
+            _context9.next = 25;
             break;
           }
 
@@ -367,20 +411,20 @@ exports.reactToMesage = function _callee8(io, socket, data) {
 
           messageReactions.splice(reactionIdx, 1); // This will remove the notification if the receiver is not online
 
-          _context8.next = 15;
+          _context9.next = 15;
           return regeneratorRuntime.awrap(User.findById(data.receiver));
 
         case 15:
-          theReceiver = _context8.sent;
+          theReceiver = _context9.sent;
           console.log("the receiver:", theReceiver); // NEED TESTING
 
           if (!(theReceiver.status != "online")) {
-            _context8.next = 23;
+            _context9.next = 23;
             break;
           }
 
           console.log("THE RECEIVER IS NOT ONLINE!");
-          _context8.next = 21;
+          _context9.next = 21;
           return regeneratorRuntime.awrap(Notification.findOneAndDelete({
             actor: data.actor,
             messageId: data.messageId,
@@ -389,11 +433,11 @@ exports.reactToMesage = function _callee8(io, socket, data) {
           }));
 
         case 21:
-          deleteNotif = _context8.sent;
+          deleteNotif = _context9.sent;
           console.log("deleted!");
 
         case 23:
-          _context8.next = 31;
+          _context9.next = 31;
           break;
 
         case 25:
@@ -403,7 +447,7 @@ exports.reactToMesage = function _callee8(io, socket, data) {
           messageReactions[reactionIdx] = existingUserReaction; // This will update the notification if the receiver is not online
           // NEED TESTING
 
-          _context8.next = 30;
+          _context9.next = 30;
           return regeneratorRuntime.awrap(Notification.findOneAndUpdate({
             actor: data.actor,
             messageId: data.messageId,
@@ -415,10 +459,10 @@ exports.reactToMesage = function _callee8(io, socket, data) {
           }));
 
         case 30:
-          existingNotification = _context8.sent;
+          existingNotification = _context9.sent;
 
         case 31:
-          _context8.next = 36;
+          _context9.next = 36;
           break;
 
         case 33:
@@ -431,7 +475,7 @@ exports.reactToMesage = function _callee8(io, socket, data) {
           message.reactions = messageReactions;
 
         case 36:
-          _context8.next = 38;
+          _context9.next = 38;
           return regeneratorRuntime.awrap(message.save());
 
         case 38:
@@ -442,20 +486,20 @@ exports.reactToMesage = function _callee8(io, socket, data) {
 
         case 39:
         case "end":
-          return _context8.stop();
+          return _context9.stop();
       }
     }
   });
 };
 
-exports.sendNotification = function _callee9(io, socket, data) {
+exports.sendNotification = function _callee10(io, socket, data) {
   var notificationData, existingNotification, userConversation, _existingNotification, newNotification;
 
-  return regeneratorRuntime.async(function _callee9$(_context9) {
+  return regeneratorRuntime.async(function _callee10$(_context10) {
     while (1) {
-      switch (_context9.prev = _context9.next) {
+      switch (_context10.prev = _context10.next) {
         case 0:
-          _context9.prev = 0;
+          _context10.prev = 0;
           console.log("THE SEND NOTIF DATA:", data);
           notificationData = {
             message: data.message,
@@ -466,11 +510,11 @@ exports.sendNotification = function _callee9(io, socket, data) {
           };
 
           if (!(data.notification_type == "fr_received" || data.notification_type == "fr_accepted")) {
-            _context9.next = 16;
+            _context10.next = 16;
             break;
           }
 
-          _context9.next = 6;
+          _context10.next = 6;
           return regeneratorRuntime.awrap(Notification.findOne({
             receiver: data.receiver,
             notification_type: data.notification_type,
@@ -478,47 +522,47 @@ exports.sendNotification = function _callee9(io, socket, data) {
           }));
 
         case 6:
-          existingNotification = _context9.sent;
+          existingNotification = _context10.sent;
           console.log("the existing notif:", existingNotification);
 
           if (!existingNotification) {
-            _context9.next = 14;
+            _context10.next = 14;
             break;
           }
 
           existingNotification.updatedAt = Date.now();
           existingNotification.seen = false;
-          _context9.next = 13;
+          _context10.next = 13;
           return regeneratorRuntime.awrap(existingNotification.save());
 
         case 13:
-          return _context9.abrupt("return");
+          return _context10.abrupt("return");
 
         case 14:
-          _context9.next = 32;
+          _context10.next = 32;
           break;
 
         case 16:
           if (!(data.notification_type == "group_invite" || data.notification_type == "mention" || data.notification_type == "reaction")) {
-            _context9.next = 32;
+            _context10.next = 32;
             break;
           }
 
-          _context9.next = 19;
+          _context10.next = 19;
           return regeneratorRuntime.awrap(UserConversation.findOne({
             user: data.receiver,
             conversation: data.conversation
           }));
 
         case 19:
-          userConversation = _context9.sent;
+          userConversation = _context10.sent;
 
           if (!(data.notification_type == "reaction")) {
-            _context9.next = 31;
+            _context10.next = 31;
             break;
           }
 
-          _context9.next = 23;
+          _context10.next = 23;
           return regeneratorRuntime.awrap(Notification.findOne({
             receiver: data.receiver,
             notification_type: data.notification_type,
@@ -527,58 +571,58 @@ exports.sendNotification = function _callee9(io, socket, data) {
           }));
 
         case 23:
-          _existingNotification = _context9.sent;
+          _existingNotification = _context10.sent;
 
           if (!_existingNotification) {
-            _context9.next = 31;
+            _context10.next = 31;
             break;
           }
 
           _existingNotification.updatedAt = Date.now();
           _existingNotification.seen = false;
           _existingNotification.message = data.message;
-          _context9.next = 30;
+          _context10.next = 30;
           return regeneratorRuntime.awrap(_existingNotification.save());
 
         case 30:
-          return _context9.abrupt("return");
+          return _context10.abrupt("return");
 
         case 31:
           notificationData["userconversation"] = userConversation._id;
 
         case 32:
-          _context9.next = 34;
+          _context10.next = 34;
           return regeneratorRuntime.awrap(Notification.create(notificationData));
 
         case 34:
-          newNotification = _context9.sent;
+          newNotification = _context10.sent;
           console.log("THE USER CONVO IN NOTIF:", newNotification.userconversation);
 
           if (!newNotification.userconversation) {
-            _context9.next = 40;
+            _context10.next = 40;
             break;
           }
 
-          _context9.next = 39;
+          _context10.next = 39;
           return regeneratorRuntime.awrap(newNotification.populate("userconversation"));
 
         case 39:
-          newNotification = _context9.sent;
+          newNotification = _context10.sent;
 
         case 40:
           console.log("the new notification:", newNotification);
           io.to("user_".concat(data.receiver)).emit("receive notification", newNotification);
-          _context9.next = 47;
+          _context10.next = 47;
           break;
 
         case 44:
-          _context9.prev = 44;
-          _context9.t0 = _context9["catch"](0);
-          console.log("Failed to create new notification:", _context9.t0);
+          _context10.prev = 44;
+          _context10.t0 = _context10["catch"](0);
+          console.log("Failed to create new notification:", _context10.t0);
 
         case 47:
         case "end":
-          return _context9.stop();
+          return _context10.stop();
       }
     }
   }, null, null, [[0, 44]]);

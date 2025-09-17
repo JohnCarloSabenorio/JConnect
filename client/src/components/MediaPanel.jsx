@@ -41,7 +41,13 @@ export default function MediaPanel({ getUserConversations }) {
       }`}
     >
       <div className="flex flex-col items-center justify-center p-10 pb-5">
-        <img src={currentConvoImage} className="rounded-full w-30 h-30" />
+        {currentConvoImage && (
+          <img
+            src={currentConvoImage}
+            className="rounded-full w-30 h-30 border-1"
+            alt="conversation image"
+          />
+        )}
         <p className="font-bold text-lg">{currentConvoName}</p>
         <p className="text-gray-500 text-center text-sm italic"></p>
         {/* Media Panel Buttons */}

@@ -142,6 +142,27 @@ exports.removeMember = async (io, socket, data) => {
   });
 };
 
+exports.chatAUser = async (io, socket, data) => {
+  // Find the user conversation
+  let userConversation = await UserConversation.findOne({
+    user: data.user,
+    conversation: data.conversation,
+  });
+
+  userConversation = userConversation.toObject({ virtual: true });
+  if (!userConversation) {
+    console.log("there is no existing user conversation!");
+    return;
+  }
+
+  console.log("chatting a user data:", userConversation);
+  console.log("the users:", userConversation.conversation.users);
+  io.to(`user_${data.user}`).emit("chat user", {
+    userId: data.user,
+    userConversation,
+  });
+};
+
 exports.inviteToGroupChat = async (io, socket, data) => {
   const userConversation = await UserConversation.findOne({
     user: data.user,
@@ -175,16 +196,18 @@ exports.sendMessage = async (io, socket, data) => {
     conversation: newMessage.conversation,
   });
 
-  console.log("updated user conversation:", updatedUserConversation);
-
   const messageObject = {
     ...newMessage.toObject(),
   };
 
+  const updatedUserConvoObject = updatedUserConversation.toObject({
+    virtuals: true,
+  });
+
   io.to(newMessage.conversation.toString()).emit("chat message", {
     msg: messageObject,
-    convo: updatedUserConversation.conversation,
-    isGroup: updatedUserConversation.isGroup,
+    convo: updatedUserConvoObject.conversation,
+    isGroup: updatedUserConvoObject.isGroup,
     // conversation
     // latest message
   });

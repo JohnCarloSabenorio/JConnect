@@ -184,11 +184,15 @@ export default function ProfileOverlay() {
     socket.emit("send notification", data);
   };
 
+  // This will be called when the "Chat Now" button is clicked
   const handleChat = async () => {
     try {
       dispatch(setInitialMessageRender(true));
+
+      // find user conversation
       let userConversation = await findConvoWithUser(displayedUser._id);
 
+      // create a new user if there's no existing user conversation data
       if (!userConversation) {
         userConversation = await createConversation(
           [user._id, displayedUser._id],
@@ -207,6 +211,11 @@ export default function ProfileOverlay() {
         conversationName,
         userConversation._id
       );
+
+      socket.emit("chat user", {
+        user: displayedUser._id,
+        conversation: userConversation.conversation._id,
+      });
 
       dispatch(setUnifiedEmojiBtn(userConversation.conversation.unifiedEmoji));
 

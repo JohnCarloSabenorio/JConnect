@@ -29,6 +29,7 @@ import { initDisplayedMessages } from "../redux/message";
 import { updateSidebar } from "../redux/sidebar";
 import { addGroupConversation } from "../redux/conversation";
 import { setEmojiPickerIsOpen } from "../redux/chat";
+import { setSelectedUsers } from "../redux/addMemberOverlay";
 export default function CreateGroupChatOverlay() {
   const dispatch = useDispatch();
   const { user } = useContext(UserContext);
@@ -37,6 +38,8 @@ export default function CreateGroupChatOverlay() {
   const { displayGroupChatOverlay } = useSelector(
     (state) => state.createGroupChatOverlay
   );
+
+  const { allGroupConversation } = useSelector((state) => state.conversation);
   const [searchString, setSearchString] = useState("");
   const [convName, setConversationName] = useState("");
 
@@ -47,7 +50,6 @@ export default function CreateGroupChatOverlay() {
   const filteredUsers = useMemo(() => {
     if (allUsers.length == 0) return [];
 
-    console.log("the search string:", searchString);
     return allUsers.filter(
       (u) =>
         user._id != u._id &&
@@ -89,6 +91,9 @@ export default function CreateGroupChatOverlay() {
         true,
         convName
       );
+
+      console.log("the new conversation data:", newConversationData);
+
       dispatch(setMessageIsLoading(false));
       dispatch(setInitialMessageRender(true));
       dispatch(setEmojiPickerIsOpen(false));
@@ -118,7 +123,6 @@ export default function CreateGroupChatOverlay() {
         )
       );
       // Add the new user conversation of the current user to the redux array
-      dispatch(addANewConvo(newConversationData.currentUserNewConversation));
 
       const { conversation, conversationName, status } =
         newConversationData.currentUserNewConversation;
@@ -148,9 +152,14 @@ export default function CreateGroupChatOverlay() {
         });
       });
 
+      dispatch(setSelectedUsers([]));
+
       dispatch(
         setConversationRole(newConversationData.currentUserNewConversation.role)
       );
+
+      console.log("the new conversation data:", newConversationData);
+      console.log("all group conversation:", allGroupConversation);
       dispatch(
         addGroupConversation(newConversationData.currentUserNewConversation)
       );
@@ -244,6 +253,9 @@ export default function CreateGroupChatOverlay() {
             <button
               onClick={(e) => {
                 dispatch(setDisplayGroupChatOverlay(false));
+                dispatch(setSelectedUsers([]));
+                setConversationName("");
+                setSearchString("");
               }}
               className="bg-gray-100 hover:bg-blue-400 rounded-full px-4 py-2 text-md shadow-md cursor-pointer font-semibold"
             >
@@ -256,7 +268,8 @@ export default function CreateGroupChatOverlay() {
                 setSearchString("");
                 setConversationName("");
               }}
-              className="bg-blue-500 hover:bg-blue-400 rounded-full px-4 py-2 text-md text-white shadow-md cursor-pointer font-semibold"
+              className="disabled:bg-gray-400 bg-blue-500 hover:bg-blue-400 rounded-full px-4 py-2 text-md text-white shadow-md cursor-pointer font-semibold"
+              disabled={selectedUsers.length < 2}
             >
               Create Conversation
             </button>

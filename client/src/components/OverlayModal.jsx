@@ -8,10 +8,10 @@ import {
   filterArchivedConvo,
   filterRestoredConvo,
   setActiveConvoIsArchived,
+  setConversationStatus,
 } from "../redux/conversation";
 
 import { setConvoViewMode, updateSidebar } from "../redux/sidebar";
-
 export default function OverlayModal() {
   const {
     activeConvo,
@@ -28,6 +28,7 @@ export default function OverlayModal() {
     console.log("ARCHIVING CONVERSATION:", convoId);
     dispatch(filterArchivedConvo(convoId));
     dispatch(setActiveConvoIsArchived(true));
+    setConversationStatus("archived");
     archiveConversation(convoId);
     dispatch(setConvoViewMode(activeConvoIsGroup ? 1 : 0));
 
@@ -44,6 +45,7 @@ export default function OverlayModal() {
   function unarchiveConvo(convoId) {
     dispatch(filterRestoredConvo(convoId));
     dispatch(setActiveConvoIsArchived(false));
+    setConversationStatus("active");
     unarchiveConversation(convoId);
     dispatch(setConvoViewMode(activeConvoIsGroup ? 1 : 0));
 

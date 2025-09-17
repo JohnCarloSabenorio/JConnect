@@ -194,7 +194,7 @@ export default function SettingsOverlay() {
               <h1 className="text-center font-bold text-green-800 font text-2xl">
                 Password Updated Sucessfully!
               </h1>
-              <img src="/img/cats-dancing.gif"></img>
+              <img src="/images/cats-dancing.gif"></img>
             </div>
           </div>
         </div>

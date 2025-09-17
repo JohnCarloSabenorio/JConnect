@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { isFriend } from "../api/friends";
 import { changeSidebarSearch } from "../redux/sidebar";
-import { getAllUserMessages, getNamesAndNicknames } from "../api/conversation";
+import { getAllUserMessages } from "../api/conversation";
 import {
   initDisplayedMessages,
   setInitialMessageRender,
@@ -57,6 +57,7 @@ export default function ConversationCard({
   const { allFriends } = useSelector((state) => state.friends);
 
   const [isOnline, setIsOnline] = useState(false);
+  const [isFriend, setIsFriend] = useState(false);
 
   const { sidebarSearch } = useSelector((state) => state.sidebar);
   const dispatch = useDispatch();
@@ -104,6 +105,7 @@ export default function ConversationCard({
     );
 
     setIsOnline(matchedFriend?.friend.status == "online");
+    setIsFriend(matchedFriend);
   }
 
   useEffect(() => {
@@ -209,7 +211,9 @@ export default function ConversationCard({
             />
             <div
               className={`${
-                userConversation.conversation.isGroup ? "hidden" : "block"
+                userConversation.conversation.isGroup || !isFriend
+                  ? "hidden"
+                  : "block"
               } absolute right-0.5 border-1 bottom-0.5 ${
                 isOnline ? "bg-green-400" : "bg-gray-400"
               } w-4 h-4 rounded-full`}

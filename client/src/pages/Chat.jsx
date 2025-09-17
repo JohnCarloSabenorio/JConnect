@@ -154,6 +154,7 @@ export default function Chat() {
 
   useEffect(() => {
     async function getConvoNamesData() {
+      if (activeConvo == null) return;
       const namesAndNicknamesData = await getNamesAndNicknames(activeConvo);
 
       dispatch(setNamesAndNicknames(namesAndNicknamesData));
@@ -346,6 +347,19 @@ export default function Chat() {
 
     return () => {
       socket.off("invite groupchat", handleAddGroupConversation);
+    };
+  }, []);
+
+  // This will add a chat conversation for the other party
+  useEffect(() => {
+    const handleChatAUser = (data) => {
+      console.log("chatting with user:", data);
+      dispatch(addANewConvo(data.userConversation));
+    };
+    socket.on("chat user", handleChatAUser);
+
+    return () => {
+      socket.off("chat user", handleChatAUser);
     };
   }, []);
 
@@ -673,12 +687,20 @@ export default function Chat() {
           {/* Chat Interface */}
           <div className="flex flex-grow flex-col w-4xl bg-gray-50 h-full">
             <div className="border-b-8-gray-800 flex p-3 gap-5 px-10 bg-white">
-              <img src={currentConvoImage} className="rounded-full w-12 h-12" />
+              {currentConvoImage != "" && (
+                <img
+                  src={currentConvoImage ? currentConvoImage : ""}
+                  className="rounded-full w-12 h-12 border-1"
+                />
+              )}
+
               <div>
                 <p className="font-bold text-md">{currentConvoName}</p>
 
                 <p
-                  className={`${!activeConvoIsGroup ? "block" : "hidden"} ${
+                  className={`${
+                    !activeConvoIsGroup && activeConvo ? "block" : "hidden"
+                  } ${
                     isOnline(activeDirectUser)
                       ? "text-green-400"
                       : "text-gray-400"

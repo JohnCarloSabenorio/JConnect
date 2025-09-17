@@ -25,6 +25,10 @@ const addMemberOverlaySlice = createSlice({
       );
     },
 
+    setSelectedUsers: (state, action) => {
+      state.selectedUsers = [];
+    },
+
     removeSelectedUser: (state, action) => {
       let updatedSelectedUsers = JSON.parse(
         JSON.stringify(state.selectedUsers)
