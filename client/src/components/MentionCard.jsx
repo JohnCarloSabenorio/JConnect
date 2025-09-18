@@ -51,8 +51,6 @@ export default function MentionCard({ member, inputRef }) {
     // check if there are no child nodes
     if (!elChildNodes.length) return;
 
-    console.log("CHILD NODES:", el.childNodes);
-
     // get the last node
     const lastNode = elChildNodes[elChildNodes.length - 1];
 
@@ -61,7 +59,6 @@ export default function MentionCard({ member, inputRef }) {
       lastNode.nodeType == Node.TEXT_NODE ||
       lastNode.nodeType == Node.ELEMENT_NODE
     ) {
-      console.log("REMOVING THE LAST CHARACTER...");
       lastNode.textContent = lastNode.textContent.slice(0, -1);
     }
   }
@@ -69,7 +66,6 @@ export default function MentionCard({ member, inputRef }) {
   function handleClick() {
     addElement(member.username);
     dispatch(setIsMentioning(false));
-    console.log("the member id:", member._id);
     dispatch(addToMention(member._id));
   }
 

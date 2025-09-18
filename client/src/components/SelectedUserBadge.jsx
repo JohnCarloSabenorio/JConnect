@@ -18,7 +18,9 @@ export default function SelectedUserBadge({ user }) {
           <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
         </svg>
       </div>
-      <div className="w-20 h-20 bg-blue-400 rounded-full"></div>
+      <div className="w-20 h-20 border-1 p-2 rounded-full">
+        <img src={user.profilePictureUrl} />
+      </div>
       <p className="text-center">{user.username}</p>
     </div>
   );

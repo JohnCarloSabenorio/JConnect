@@ -688,7 +688,7 @@ export default function Chat() {
 
           {/* Chat Interface */}
           <div className="flex flex-grow flex-col w-4xl bg-gray-50 h-full">
-            <div className="border-b-8-gray-800 flex p-3 gap-5 px-10 bg-white">
+            <div className="border-b-8-gray-800 flex p-3 items-center gap-5 px-10 bg-white">
               {currentConvoImage != "" && (
                 <img
                   src={currentConvoImage ? currentConvoImage : ""}

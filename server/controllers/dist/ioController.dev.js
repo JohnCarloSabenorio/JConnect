@@ -227,14 +227,18 @@ exports.removeMember = function _callee5(io, socket, data) {
           }));
 
         case 5:
-          console.log("the freaknig convo data:", convo); // Emit remove member to the conversation
+          console.log("the freaknig convo data:", convo); // Turn the convo to an object to include virtual data
+
+          convo = convo.toObject({
+            virtuals: true
+          }); // Emit remove member to the conversation
 
           io.to(data.conversationId.toString()).emit("remove member", {
             userId: data.member._id,
             conversationData: convo
           });
 
-        case 7:
+        case 8:
         case "end":
           return _context5.stop();
       }
@@ -298,17 +302,19 @@ exports.inviteToGroupChat = function _callee7(io, socket, data) {
 
         case 2:
           userConversation = _context7.sent;
-          console.log("invited user to conversation:", data.conversation);
 
           if (userConversation) {
-            _context7.next = 7;
+            _context7.next = 6;
             break;
           }
 
           console.log("there is no existing user conversation!");
           return _context7.abrupt("return");
 
-        case 7:
+        case 6:
+          userConversation = userConversation.toObject({
+            virtuals: true
+          });
           console.log("THE DATA USER:", data.user);
           io.to("user_".concat(data.user)).emit("invite groupchat", {
             userId: data.user,

@@ -142,6 +142,7 @@ export default function ConversationCard({
           inputRef.current.innerHTML = "";
           dispatch(setEmojiPickerIsOpen(false));
           dispatch(setConversationStatus(userConversation.status));
+          
           dispatch(setActiveConvoMembers(userConversation.conversation.users));
 
           console.log(

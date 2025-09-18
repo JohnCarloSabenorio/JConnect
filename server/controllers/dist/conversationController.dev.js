@@ -59,8 +59,7 @@ exports.addMultipleMembers = catchAsync(function _callee2(req, res, next) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
-          console.log("NEW MEMBERS TO ADD:", req.body.newUsers);
-          _context2.next = 3;
+          _context2.next = 2;
           return regeneratorRuntime.awrap(Conversation.findByIdAndUpdate(req.params.convoId, {
             $addToSet: {
               users: {
@@ -72,8 +71,11 @@ exports.addMultipleMembers = catchAsync(function _callee2(req, res, next) {
             runValidators: true
           }));
 
-        case 3:
+        case 2:
           convo = _context2.sent;
+          convo = convo.toObject({
+            virtuals: true
+          }); // Return an error if the conversation does not exist
 
           if (convo) {
             _context2.next = 6;
@@ -280,7 +282,9 @@ exports.createConversation = catchAsync(function _callee6(req, res) {
           return regeneratorRuntime.awrap(newConversation.save());
 
         case 15:
-          console.log("the new conversation name:", newGroupName); // Create an array containing objects of new group conversations
+          newConversation = newConversation.toObject({
+            virtuals: true
+          }); // Create an array containing objects of new group conversations
 
           newGroupUserConversationData = usersFromDB.map(function (user) {
             var userRole = req.user.id == user._id.toString() ? "owner" : "member";
@@ -301,16 +305,19 @@ exports.createConversation = catchAsync(function _callee6(req, res) {
 
         case 19:
           newUserConversations = _context6.sent;
-          console.log("new user conversations from group:", newUserConversations); // Populate the new user  conversations
-
-          _context6.next = 23;
+          _context6.next = 22;
           return regeneratorRuntime.awrap(UserConversation.populate(newUserConversations, {
             path: "conversation"
           }));
 
-        case 23:
+        case 22:
           populatedUserConversations = _context6.sent;
-          // Find the document of the current user
+          populatedUserConversations = populatedUserConversations.map(function (data) {
+            return data.toObject({
+              virtuals: true
+            });
+          }); // Find the document of the current user
+
           currentUserNewConvo = populatedUserConversations.find(function (userconvo) {
             return userconvo.user.toString() === req.user.id;
           });
@@ -383,14 +390,13 @@ exports.getMutualGroupChats = catchAsync(function _callee7(req, res, next) {
               virtuals: true
             });
           });
-          console.log("mutual conversations:", mutualConversations);
           res.status(200).json({
             status: "success",
             message: "Successfully retrieved mutual conversations.",
             mutualConversations: mutualConversations
           });
 
-        case 6:
+        case 5:
         case "end":
           return _context7.stop();
       }

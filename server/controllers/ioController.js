@@ -113,7 +113,7 @@ exports.createMessage = async (io, socket, data) => {
 
 exports.removeMember = async (io, socket, data) => {
   // Remove the user from the conversation
-  const convo = await Conversation.findByIdAndUpdate(
+  let convo = await Conversation.findByIdAndUpdate(
     data.conversationId,
     {
       $pull: {
@@ -135,6 +135,9 @@ exports.removeMember = async (io, socket, data) => {
 
   console.log("the freaknig convo data:", convo);
 
+  // Turn the convo to an object to include virtual data
+
+  convo = convo.toObject({ virtuals: true });
   // Emit remove member to the conversation
   io.to(data.conversationId.toString()).emit("remove member", {
     userId: data.member._id,
@@ -164,16 +167,16 @@ exports.chatAUser = async (io, socket, data) => {
 };
 
 exports.inviteToGroupChat = async (io, socket, data) => {
-  const userConversation = await UserConversation.findOne({
+  let userConversation = await UserConversation.findOne({
     user: data.user,
     conversation: data.conversation,
   });
-  console.log("invited user to conversation:", data.conversation);
   if (!userConversation) {
     console.log("there is no existing user conversation!");
     return;
   }
 
+  userConversation = userConversation.toObject({ virtuals: true });
   console.log("THE DATA USER:", data.user);
 
   io.to(`user_${data.user}`).emit("invite groupchat", {

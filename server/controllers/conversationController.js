@@ -33,8 +33,7 @@ exports.addMember = catchAsync(async (req, res, next) => {
 });
 
 exports.addMultipleMembers = catchAsync(async (req, res, next) => {
-  console.log("NEW MEMBERS TO ADD:", req.body.newUsers);
-  const convo = await Conversation.findByIdAndUpdate(
+  let convo = await Conversation.findByIdAndUpdate(
     req.params.convoId,
     {
       $addToSet: {
@@ -46,6 +45,8 @@ exports.addMultipleMembers = catchAsync(async (req, res, next) => {
       runValidators: true,
     }
   );
+
+  convo = convo.toObject({ virtuals: true });
 
   // Return an error if the conversation does not exist
   if (!convo) {
@@ -172,7 +173,7 @@ exports.createConversation = catchAsync(async (req, res) => {
 
     await newConversation.save();
 
-    console.log("the new conversation name:", newGroupName);
+    newConversation = newConversation.toObject({ virtuals: true });
 
     // Create an array containing objects of new group conversations
     const newGroupUserConversationData = usersFromDB.map((user) => {
@@ -196,13 +197,16 @@ exports.createConversation = catchAsync(async (req, res) => {
       newGroupUserConversationData
     );
 
-    console.log("new user conversations from group:", newUserConversations);
-    // Populate the new user  conversations
-    const populatedUserConversations = await UserConversation.populate(
+    // Populate the new user conversations
+    let populatedUserConversations = await UserConversation.populate(
       newUserConversations,
       {
         path: "conversation",
       }
+    );
+
+    populatedUserConversations = populatedUserConversations.map((data) =>
+      data.toObject({ virtuals: true })
     );
     // Find the document of the current user
     currentUserNewConvo = populatedUserConversations.find(
@@ -257,7 +261,6 @@ exports.getMutualGroupChats = catchAsync(async (req, res, next) => {
     convoData.toObject({ virtuals: true })
   );
 
-  console.log("mutual conversations:", mutualConversations);
   res.status(200).json({
     status: "success",
     message: "Successfully retrieved mutual conversations.",
