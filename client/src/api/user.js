@@ -28,10 +28,11 @@ export async function updateCurrentUser(data) {
   try {
     const response = await axios.patch(`jconnect/api/v1/users/updateMe`, data, {
       withCredentials: true,
+      headers: { "Content-Type": "multipart/form-data" },
     });
 
     const responseData = response.data;
-    console.log("updated current user:", responseData);
+    return responseData.data;
   } catch (err) {
     console.log("Error updating users:", err);
   }

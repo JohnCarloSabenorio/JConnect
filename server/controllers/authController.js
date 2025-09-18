@@ -317,9 +317,7 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
 
 exports.isLoggedInBool = catchAsync(async (req, res, next) => {
   // 1. Get the decoded cookie
-  console.log("AHH");
   if (!req.cookies.jwt) {
-    console.log("HE");
     return res.status(404).json({
       status: "failed",
       message: "JWT not present!",
@@ -332,8 +330,6 @@ exports.isLoggedInBool = catchAsync(async (req, res, next) => {
 
   // 2. Check if the user still exists
   let currentUser = await User.findById(decoded.id);
-  currentUser.profilePicture = `img/profileImages/${currentUser.profilePicture}`;
-
   if (!currentUser) {
     next(new AppError("User no longer exists!", 404));
   }
@@ -342,6 +338,8 @@ exports.isLoggedInBool = catchAsync(async (req, res, next) => {
   if (currentUser.passwordChangedAfter(decoded.iat)) {
     next(new AppError("User changed his/her password!", 404));
   }
+
+  currentUser = currentUser.toObject({ virtuals: true });
 
   res.status(200).json({
     status: "success",

@@ -27,7 +27,9 @@ router.route("/updatePassword").patch(authController.updatePassword);
 
 router.route("/").get(controller.getAllUsers).post(controller.createUser);
 
-router.route("/updateMe").patch(controller.updateMe);
+router
+  .route("/updateMe")
+  .patch(controller.uploadImage, controller.resizeImage, controller.updateMe);
 router.route("/getMe").get(controller.getMe);
 router.route("/deleteMe").delete(controller.deleteMe);
 // Modifies a user

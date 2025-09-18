@@ -69,7 +69,8 @@ export default function App() {
       <UserContext.Provider
         value={{
           loggedInStatus: loggedInStatus,
-          user: user,
+          user,
+          setUser,
         }}
       >
         <BrowserRouter>

@@ -73,7 +73,7 @@ var userSchema = new mongoose.Schema({
     type: String
   },
   profileBanner: {
-    "default": "default.png",
+    "default": "default.jpg",
     type: String
   },
   status: {
@@ -110,6 +110,11 @@ userSchema.virtual("profilePictureUrl").get(function () {
   }
 
   return "img/profileImages/".concat(this.profilePicture);
+});
+userSchema.virtual("profileBannerUrl").get(function () {
+  if (!this.profileBanner) return null;
+  if (this.profileBanner.startsWith("img/profileBanners")) return this.profileBanner;
+  return "img/profileBanners/".concat(this.profileBanner);
 }); // DOCUMENT MIDDLEWARES
 // Removes unnecessary fields when creating a user
 

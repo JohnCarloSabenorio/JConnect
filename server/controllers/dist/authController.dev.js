@@ -511,32 +511,27 @@ exports.isLoggedInBool = catchAsync(function _callee9(req, res, next) {
     while (1) {
       switch (_context9.prev = _context9.next) {
         case 0:
-          // 1. Get the decoded cookie
-          console.log("AHH");
-
           if (req.cookies.jwt) {
-            _context9.next = 4;
+            _context9.next = 2;
             break;
           }
 
-          console.log("HE");
           return _context9.abrupt("return", res.status(404).json({
             status: "failed",
             message: "JWT not present!"
           }));
 
-        case 4:
-          _context9.next = 6;
+        case 2:
+          _context9.next = 4;
           return regeneratorRuntime.awrap(promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET));
 
-        case 6:
+        case 4:
           decoded = _context9.sent;
-          _context9.next = 9;
+          _context9.next = 7;
           return regeneratorRuntime.awrap(User.findById(decoded.id));
 
-        case 9:
+        case 7:
           currentUser = _context9.sent;
-          currentUser.profilePicture = "img/profileImages/".concat(currentUser.profilePicture);
 
           if (!currentUser) {
             next(new AppError("User no longer exists!", 404));
@@ -547,13 +542,16 @@ exports.isLoggedInBool = catchAsync(function _callee9(req, res, next) {
             next(new AppError("User changed his/her password!", 404));
           }
 
+          currentUser = currentUser.toObject({
+            virtuals: true
+          });
           res.status(200).json({
             status: "success",
             message: "User is logged in",
             currentUser: currentUser
           });
 
-        case 14:
+        case 12:
         case "end":
           return _context9.stop();
       }

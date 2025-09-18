@@ -143,7 +143,10 @@ export default function Navbar() {
             setNotifActive(false);
           }}
         >
-          <img src={user.profilePicture} className="rounded-full w-12 h-12" />
+          <img
+            src={user.profilePictureUrl}
+            className="rounded-full w-12 h-12 border-1"
+          />
 
           <div
             className={`${
