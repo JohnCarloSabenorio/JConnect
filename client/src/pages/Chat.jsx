@@ -254,6 +254,8 @@ export default function Chat() {
             setCurrentConvoName(data.updatedConversation.conversationName)
           );
 
+          dispatch(setCurrentConvoImage(data.updatedConversation.gcImageUrl));
+
           dispatch(setUnifiedEmojiBtn(data.updatedConversation.unifiedEmoji));
         }
       } else {

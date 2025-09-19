@@ -14,6 +14,7 @@ import {
   setActiveConvoIsGroup,
   setActiveConvoMembers,
   setConversationStatus,
+  setCurrentConvoImage,
   setToMention,
   setUnifiedEmojiBtn,
 } from "../redux/conversation";
@@ -113,6 +114,16 @@ export default function CreateGroupChatOverlay() {
           newConversationData.currentUserNewConversation.conversation._id,
           newConversationData.currentUserNewConversation._id,
         ])
+      );
+
+      console.log(
+        "created conversation data:",
+        newConversationData.currentUserNewConversation
+      );
+      dispatch(
+        setCurrentConvoImage(
+          newConversationData.currentUserNewConversation.conversation.gcImageUrl
+        )
       );
       dispatch(
         setUnifiedEmojiBtn(

@@ -74,6 +74,25 @@ export async function getAllUserMessages(convoId) {
   }
 }
 
+export async function updateConversation(convoId, formData) {
+  try {
+    const response = await axios.patch(
+      `jconnect/api/v1/conversation/${convoId}`,
+      formData,
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
+
+    const responseData = response.data;
+
+    return responseData.data;
+  } catch (err) {
+    console.log("error in updating conversation:", err);
+  }
+}
+
 export async function createConversation(
   users,
   isGroup,

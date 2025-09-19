@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setIsHidden } from "../redux/overlay";
 import { setHideAddMemberOverlay } from "../redux/addMemberOverlay";
@@ -7,6 +7,8 @@ import { setChangeChatNameOverlayIsOpen } from "../redux/changeChatNameOverlay";
 import { setDisplayChangeEmojiOverlay } from "../redux/changeEmojiOverlay";
 import { setDisplayNicknamesOverlay } from "../redux/nicknamesOverlay";
 import { UserContext } from "../App";
+import { updateConversation } from "../api/conversation";
+import { socket } from "../socket";
 export default function MediaPanel({ getUserConversations }) {
   const {
     currentConvoName,
@@ -14,15 +16,13 @@ export default function MediaPanel({ getUserConversations }) {
     activeConvoIsGroup,
     userIsFriend,
     activeConvo,
+    activeConvoMembers,
+    activeConvoIsArchived,
   } = useSelector((state) => state.conversation);
   const { user } = useContext(UserContext);
   const dispatch = useDispatch();
   const { mediaImages, displayMediaPanel } = useSelector(
     (state) => state.media
-  );
-
-  const { activeConvoMembers, activeConvoIsArchived } = useSelector(
-    (state) => state.conversation
   );
 
   const [imagesActive, setImagesActive] = useState(false);
@@ -33,6 +33,32 @@ export default function MediaPanel({ getUserConversations }) {
 
   const [isMuted, setIsMuted] = useState(false);
   const [isGroup, setIsGroup] = useState(false);
+
+  const changePhotoRef = useRef();
+  function handleChangePhotoClick() {
+    changePhotoRef.current.click();
+  }
+
+  async function handleChangePhotoUpdate(file) {
+    console.log("new group photo file:", file);
+    const formData = new FormData();
+    formData.append("convoImage", file);
+
+    const updatedConversation = await updateConversation(activeConvo, formData);
+
+    console.log("changed group photo:", updatedConversation);
+
+    socket.emit("update conversation", {
+      conversationId: updatedConversation._id,
+      message: `${user.username} has changed the group photo.`,
+      member: user,
+      action: "change_photo",
+      data: {
+        convoImage: updatedConversation.convoImage,
+        latestMessage: `${user.username} has changed the group photo.`,
+      },
+    });
+  }
 
   return (
     <div
@@ -220,8 +246,18 @@ export default function MediaPanel({ getUserConversations }) {
             </div>
 
             {/* Change Photo */}
+            <input
+              type="file"
+              id="change-photo"
+              name="change-photo"
+              ref={changePhotoRef}
+              className="hidden"
+              onChange={(e) => handleChangePhotoUpdate(e.target.files[0])}
+            />
             <div
-              onClick={(e) => {}}
+              onClick={(e) => {
+                handleChangePhotoClick();
+              }}
               className={`group ${
                 activeConvoIsGroup ? "flex" : "hidden"
               } gap-2 p-1 cursor-pointer hover:bg-gray-500 rounded-md hover:text-white`}
@@ -235,7 +271,7 @@ export default function MediaPanel({ getUserConversations }) {
                   height="25"
                   className="group-hover:fill-white fill-[#53575a]"
                 >
-                  <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
+                  <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm40-80h480L570-480 450-320l-90-120-120 160Zm-40 80v-560 560Z" />
                 </svg>
               </div>
               {/* Text */}

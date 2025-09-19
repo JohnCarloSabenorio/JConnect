@@ -41,7 +41,7 @@ var messageSchema = new mongoose.Schema({
   },
   action: {
     type: String,
-    "enum": ["message", "remove_member", "add_member", "update_chat_name", "change_emoji", "change_nickname"],
+    "enum": ["message", "remove_member", "add_member", "update_chat_name", "change_emoji", "change_nickname", "change_photo"],
     "default": "message"
   },
   images: [String],

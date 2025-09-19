@@ -31,7 +31,11 @@ router.get("/mutual-gc/:userId", convoController.getMutualGroupChats);
 router
   .route("/:id")
   .get(convoController.getConversation)
-  .patch(convoController.updateConversation)
+  .patch(
+    convoController.uploadImage,
+    convoController.resizeImage,
+    convoController.updateConversation
+  )
   .delete(convoController.deleteConversation);
 
 router.get("/find-convo-with-user/:userId", convoController.checkConvoExists);
