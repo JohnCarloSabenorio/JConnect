@@ -28,6 +28,7 @@ export default function NicknameCard({ userData }) {
     socket.emit("update nickname", {
       userConvoId: userData._id,
       username: userData.user.username,
+      userId: userData._id,
       newNickname,
       conversationId: activeConvo,
     });
@@ -67,7 +68,7 @@ export default function NicknameCard({ userData }) {
             onInput={(e) => setNewNickname(e.target.value)}
           />
         ) : (
-          <p className="">{displayedNickname}</p>
+          <p className="">{userData.nickname}</p>
         )}
         <p className="text-sm">{userData.user.username}</p>
 

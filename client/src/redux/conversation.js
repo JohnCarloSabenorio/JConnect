@@ -17,7 +17,7 @@ const conversationSlice = createSlice({
     allGroupConversation: null,
     allArchivedConversation: [],
     activeDirectUser: null,
-    userIsFriend: true,
+    userIsFriend: false,
     isMentioning: false,
     toMention: [],
     message: "",

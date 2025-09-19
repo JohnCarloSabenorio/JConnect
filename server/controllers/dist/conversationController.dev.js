@@ -404,12 +404,10 @@ exports.createConversation = catchAsync(function _callee7(req, res) {
           _context7.next = 33;
           return regeneratorRuntime.awrap(UserConversation.create([{
             user: usersFromDB[0]._id,
-            nickname: usersFromDB[1].username,
             conversation: newConversation._id,
             conversationName: usersFromDB[1].username
           }, {
             user: usersFromDB[1]._id,
-            nickname: usersFromDB[0].username,
             conversation: newConversation._id,
             conversationName: usersFromDB[0].username
           }]));

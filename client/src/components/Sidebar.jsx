@@ -20,9 +20,11 @@ import {
   initAllArchivedConversation,
   setActiveDirectUser,
   setCurrentConvoImage,
+  setUserIsFriend,
 } from "../redux/conversation";
 import { getAllUserMessages } from "../api/conversation";
 import { initDisplayedMessages } from "../redux/message";
+import { isFriend } from "../api/friends";
 import {
   getAllConversations,
   getAllGroupConversation,
@@ -74,6 +76,15 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
 
   useEffect(() => {
     // This will get the initial messages to be displayed (if the currentConvo is null)
+    async function chatmateIsFriend(chatmateId) {
+      try {
+        const isAFriend = await isFriend(chatmateId);
+        dispatch(setUserIsFriend(isAFriend));
+      } catch (error) {
+        console.error("Error checking friend status:", error);
+      }
+    }
+
     if (
       allDirectConversation &&
       activeConvo === null &&
@@ -81,7 +92,7 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
     ) {
       getMessages(
         allDirectConversation[0].conversation._id,
-        allDirectConversation[0].nickname,
+        allDirectConversation[0].conversationName,
         allDirectConversation[0]._id,
         allDirectConversation[0].status
       );
@@ -92,7 +103,7 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
         (u) => u._id.toString() !== user._id.toString()
       );
 
-      console.log("the initial chatmate:", initialChatmate);
+      chatmateIsFriend(initialChatmate._id);
       dispatch(setActiveDirectUser(initialChatmate._id));
       dispatch(setCurrentConvoImage(initialChatmate.profilePictureUrl));
     }

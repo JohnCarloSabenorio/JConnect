@@ -12,7 +12,8 @@ var userConvoSchema = mongoose.Schema({
     required: true
   },
   nickname: {
-    type: String
+    type: String,
+    "default": ""
   },
   conversation: {
     type: mongoose.Schema.Types.ObjectId,

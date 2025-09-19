@@ -3,7 +3,7 @@ const { bool } = require("sharp");
 
 const userConvoSchema = mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  nickname: { type: String },
+  nickname: { type: String, default: "" },
   conversation: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Conversation",

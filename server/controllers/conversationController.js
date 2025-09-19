@@ -267,13 +267,11 @@ exports.createConversation = catchAsync(async (req, res) => {
     const newDirectUserConversations = await UserConversation.create([
       {
         user: usersFromDB[0]._id,
-        nickname: usersFromDB[1].username,
         conversation: newConversation._id,
         conversationName: usersFromDB[1].username,
       },
       {
         user: usersFromDB[1]._id,
-        nickname: usersFromDB[0].username,
         conversation: newConversation._id,
         conversationName: usersFromDB[0].username,
       },

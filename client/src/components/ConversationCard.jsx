@@ -142,7 +142,7 @@ export default function ConversationCard({
           inputRef.current.innerHTML = "";
           dispatch(setEmojiPickerIsOpen(false));
           dispatch(setConversationStatus(userConversation.status));
-          
+
           dispatch(setActiveConvoMembers(userConversation.conversation.users));
 
           console.log(
@@ -152,11 +152,12 @@ export default function ConversationCard({
           dispatch(setConversationRole(userConversation.role));
           // getConvoNamesData(userConversation.conversation._id);
 
+          console.log("the current user conversation:", userConversation);
           dispatch(
             setActiveConversation([
               userConversation.conversation.isGroup
                 ? userConversation.conversation.conversationName
-                : userConversation.nickname,
+                : userConversation.conversationName,
               userConversation.conversation._id,
               userConversation._id,
             ])
@@ -221,9 +222,7 @@ export default function ConversationCard({
               <p className="font-bold">
                 {userConversation.conversation.isGroup
                   ? userConversation.conversation.conversationName
-                  : userConversation.nickname == ""
-                  ? chatmate.username
-                  : userConversation.nickname}
+                  : userConversation.conversationName}
               </p>
               <p>
                 {displayedLatestMessage.length > 10
