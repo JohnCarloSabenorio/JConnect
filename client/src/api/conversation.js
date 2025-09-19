@@ -74,19 +74,35 @@ export async function getAllUserMessages(convoId) {
   }
 }
 
-export async function createConversation(users, isGroup, conversationName) {
+export async function createConversation(
+  users,
+  isGroup,
+  conversationName,
+  convoImage
+) {
   try {
+    const formData = new FormData();
+    console.log("users:", users);
+
+    users.forEach((user) => formData.append("users", user));
+    formData.append("isGroup", String(isGroup));
+    formData.append("conversationName", conversationName);
+
+    console.log("the convo image:", convoImage);
+    if (convoImage) {
+      formData.append("convoImage", convoImage);
+    }
+
     const response = await axios.post(
       `/jconnect/api/v1/conversation`,
-      {
-        users,
-        isGroup,
-        conversationName,
-      },
+      formData,
       {
         withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
       }
     );
+
+    console.log("the response for creating a convo:", response.data);
 
     return response.data.data;
   } catch (err) {

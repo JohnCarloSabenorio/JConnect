@@ -12,7 +12,11 @@ router.use(authController.protect);
 router
   .route("/")
   .get(convoController.getAllConversation)
-  .post(convoController.createConversation);
+  .post(
+    convoController.uploadImage,
+    convoController.resizeImage,
+    convoController.createConversation
+  );
 
 router.use("/userConvo", userConvoRouter);
 

@@ -3,7 +3,7 @@ import { setAllUsers } from "../redux/user";
 import { getAllUsers } from "../api/user";
 import SelectedUserBadge from "./SelectedUserBadge";
 import FilteredUserCard from "./FilteredUserCard";
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useEffect, useState, useRef } from "react";
 import { socket } from "../socket";
 import { useContext } from "react";
 import { UserContext } from "../App";
@@ -34,6 +34,9 @@ export default function CreateGroupChatOverlay() {
   const dispatch = useDispatch();
   const { user } = useContext(UserContext);
   const { allUsers } = useSelector((state) => state.user);
+  const groupChatPhotoRef = useRef();
+  const [gcPhotoPreviewUrl, setGCPhotoPreviewUrl] = useState("");
+  const [gcPhotoFile, setGCPhotoFile] = useState(null);
 
   const { displayGroupChatOverlay } = useSelector(
     (state) => state.createGroupChatOverlay
@@ -89,7 +92,8 @@ export default function CreateGroupChatOverlay() {
           user._id,
         ],
         true,
-        convName
+        convName,
+        gcPhotoFile
       );
 
       console.log("the new conversation data:", newConversationData);
@@ -187,6 +191,23 @@ export default function CreateGroupChatOverlay() {
     }
   }
 
+  function handleClickUploadGCPhoto() {
+    groupChatPhotoRef.current.click();
+  }
+
+  function handleChangeGCPhoto(file) {
+    // Create object url and use it to display the image gc
+    const pictureURL = URL.createObjectURL(file);
+    setGCPhotoPreviewUrl(pictureURL);
+    setGCPhotoFile(file);
+    console.log("the gc photo file:", file);
+  }
+
+  function clearGCPhoto() {
+    setGCPhotoPreviewUrl("");
+    setGCPhotoFile(null);
+  }
+
   return (
     <>
       <div
@@ -198,6 +219,52 @@ export default function CreateGroupChatOverlay() {
         <div className="bg-white p-10 rounded-xl w-170">
           <h3 className="font-bold text-3xl">Create Group Conversation</h3>
 
+          {/* Group Chat Picture */}
+          <div className="flex flex-col justify-center items-center">
+            <div className="relative rounded-full flex justify-center items-center mt-3 border-1 p-1">
+              <input
+                type="file"
+                accept="image/png, image/jpeg"
+                className="hidden"
+                id="gc-picture"
+                name="gc-picture"
+                ref={groupChatPhotoRef}
+                onChange={(e) => handleChangeGCPhoto(e.target.files[0])}
+              />
+              <img
+                src={
+                  gcPhotoPreviewUrl != ""
+                    ? gcPhotoPreviewUrl
+                    : "images/icons/default-gc.png"
+                }
+                className="w-30 h-30 rounded-full"
+                alt="gc-picture"
+              />
+              <div
+                onClick={(e) => handleClickUploadGCPhoto()}
+                className="bg-gray-500/60 absolute w-full h-full rounded-full opacity-0 hover:opacity-100 cursor-pointer flex items-center justify-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="24px"
+                  viewBox="0 -960 960 960"
+                  width="24px"
+                  className="fill-white w-9 h-9"
+                >
+                  <path d="M440-320v-326L336-542l-56-58 200-200 200 200-56 58-104-104v326h-80ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z" />
+                </svg>
+              </div>
+            </div>
+            <button
+              onClick={(e) => clearGCPhoto()}
+              className={`bg-green-200 rounded-md p-1 ${
+                gcPhotoFile != null ? "block" : "hidden"
+              }`}
+            >
+              Clear Image
+            </button>
+          </div>
+          {/* Conversation Name */}
           <div className="mt-5">
             <p className="">Conversation Name</p>
             <input

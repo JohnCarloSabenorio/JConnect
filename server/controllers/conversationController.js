@@ -4,6 +4,45 @@ const User = require("../models/userModel");
 const handleFactory = require("./handlerFactory");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const multer = require("multer");
+const sharp = require("sharp");
+const multerstorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  console.log("the file:", file);
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Not an image! Please try again.", 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerstorage,
+  fileFilter: multerFilter,
+});
+
+exports.uploadImage = upload.single("convoImage");
+exports.resizeImage = catchAsync(async (req, res, next) => {
+  if (!req.file) return next();
+
+  console.log("the req file uploaded:", req.file);
+  // Create a filename
+  const filename = `convo-image-${Date.now()}-${req.user.id}.jpeg`;
+  // Resize the image and upload
+  try {
+    await sharp(req.file.buffer)
+      .toFormat("jpeg")
+      .jpeg({ quality: 90 })
+      .toFile(`public/img/gcImages/${filename}`);
+  } catch (err) {
+    console.log("error in uploading gc:", err);
+  }
+  // Add the filename to the body
+  req.body.convoImage = filename;
+  next();
+  
+});
 
 // Add a person to an existing conversation
 exports.addMember = catchAsync(async (req, res, next) => {
@@ -151,6 +190,7 @@ exports.checkConvoExists = catchAsync(async (req, res) => {
 
 exports.createConversation = catchAsync(async (req, res) => {
   console.log("Creating Conversation...");
+  console.log("the req body:", req.body);
   let newConversation = await Conversation.create(req.body);
 
   // Populate the user data

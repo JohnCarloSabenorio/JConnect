@@ -16,7 +16,7 @@ var userConvoRouter = require("./userConversationRoutes");
 
 router.use("/:convoId/message", messageRouter);
 router.use(authController.protect);
-router.route("/").get(convoController.getAllConversation).post(convoController.createConversation);
+router.route("/").get(convoController.getAllConversation).post(convoController.uploadImage, convoController.resizeImage, convoController.createConversation);
 router.use("/userConvo", userConvoRouter);
 router.route("/member/:convoId").post(convoController.addMember)["delete"](convoController.removeMember);
 router.post("/add-many/:convoId", convoController.addMultipleMembers);

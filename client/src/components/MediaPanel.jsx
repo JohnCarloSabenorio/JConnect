@@ -162,65 +162,14 @@ export default function MediaPanel({ getUserConversations }) {
       <div className="flex flex-col p-3">
         <h1 className="font-bold mb-5">Chat Info</h1>
 
-        <input
+        {/* <input
           placeholder="Search in conversation"
           className="bg-white shadow-md p-1 rounded-full px-3"
           // style={{ fontFamily: "Arial", "FontAwesome" }}
-        />
+        /> */}
 
         <div className="pt-3">
-          <div
-            className="p-3 flex shadow-md cursor-pointer"
-            onClick={() => setChatinfoActive((prev) => !prev)}
-          >
-            <p className="align-middle">Chat Info</p>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 320 512"
-              width="30"
-              height="30"
-              fill="#53575a"
-              className={`ml-auto transition-transform ${
-                chatInfoActive ? "rotate-180" : "rotate-0"
-              }`}
-            >
-              <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
-            </svg>
-          </div>
-
-          {/* Group members list */}
-          <div
-            className={`p-3 flex shadow-md cursor-pointer ${
-              activeConvoIsGroup ? "block" : "hidden"
-            }`}
-            onClick={() => setMembersActive((prev) => !prev)}
-          >
-            <p className="align-middle">Members</p>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 320 512"
-              width="30"
-              height="30"
-              fill="#53575a"
-              className={`ml-auto transition-transform ${
-                membersActive ? "rotate-180" : "rotate-0"
-              }`}
-            >
-              <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
-            </svg>
-          </div>
-
-          <div
-            className={`p-3 flex flex-col gap-3 ${
-              membersActive ? "block" : "hidden"
-            }`}
-          >
-            {activeConvoMembers &&
-              activeConvoMembers.map((member, idx) => {
-                return <ConversationMembersCard member={member} key={idx} />;
-              })}
-          </div>
-
+          {/* Customizing Chat */}
           <div
             className="p-3 flex shadow-md cursor-pointer"
             onClick={() => setCustomizeActive((prev) => !prev)}
@@ -250,7 +199,9 @@ export default function MediaPanel({ getUserConversations }) {
               onClick={(e) => {
                 dispatch(setChangeChatNameOverlayIsOpen(true));
               }}
-              className="group flex gap-2 p-1 cursor-pointer hover:bg-gray-500 rounded-md hover:text-white"
+              className={`${
+                activeConvoIsGroup ? "flex" : "hidden"
+              } group  gap-2 p-1 cursor-pointer hover:bg-gray-500 rounded-md hover:text-white`}
             >
               {/* Icon */}
               <div>
@@ -268,10 +219,35 @@ export default function MediaPanel({ getUserConversations }) {
               <div>Change Chat Name</div>
             </div>
 
+            {/* Change Photo */}
+            <div
+              onClick={(e) => {}}
+              className={`group ${
+                activeConvoIsGroup ? "flex" : "hidden"
+              } gap-2 p-1 cursor-pointer hover:bg-gray-500 rounded-md hover:text-white`}
+            >
+              {/* Icon */}
+              <div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 -960 960 960"
+                  width="25"
+                  height="25"
+                  className="group-hover:fill-white fill-[#53575a]"
+                >
+                  <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
+                </svg>
+              </div>
+              {/* Text */}
+              <div>Change Photo</div>
+            </div>
+
             {/* Change Emoji */}
             <div
               onClick={(e) => dispatch(setDisplayChangeEmojiOverlay(true))}
-              className="group flex gap-2 p-1 cursor-pointer hover:bg-gray-500 rounded-md hover:text-white"
+              className={`group ${
+                activeConvoIsGroup ? "flex" : "hidden"
+              } gap-2 p-1 cursor-pointer hover:bg-gray-500 rounded-md hover:text-white`}
             >
               {/* Icon */}
               <div className="">
@@ -311,6 +287,40 @@ export default function MediaPanel({ getUserConversations }) {
             </div>
           </div>
 
+          {/* Group members list */}
+          <div
+            className={`p-3 flex shadow-md cursor-pointer ${
+              activeConvoIsGroup ? "block" : "hidden"
+            }`}
+            onClick={() => setMembersActive((prev) => !prev)}
+          >
+            <p className="align-middle">Members</p>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 320 512"
+              width="30"
+              height="30"
+              fill="#53575a"
+              className={`ml-auto transition-transform ${
+                membersActive ? "rotate-180" : "rotate-0"
+              }`}
+            >
+              <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
+            </svg>
+          </div>
+
+          <div
+            className={`p-3 flex flex-col gap-3 ${
+              membersActive ? "block" : "hidden"
+            }`}
+          >
+            {activeConvoMembers &&
+              activeConvoMembers.map((member, idx) => {
+                return <ConversationMembersCard member={member} key={idx} />;
+              })}
+          </div>
+
+          {/* Files */}
           <div
             className="p-3 flex shadow-md cursor-pointer"
             onClick={() => setFilesActive((prev) => !prev)}
