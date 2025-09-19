@@ -41,7 +41,6 @@ exports.resizeImage = catchAsync(async (req, res, next) => {
   // Add the filename to the body
   req.body.convoImage = filename;
   next();
-  
 });
 
 // Add a person to an existing conversation
@@ -191,6 +190,7 @@ exports.checkConvoExists = catchAsync(async (req, res) => {
 exports.createConversation = catchAsync(async (req, res) => {
   console.log("Creating Conversation...");
   console.log("the req body:", req.body);
+  console.log("is it a group:", req.body.isGroup);
   let newConversation = await Conversation.create(req.body);
 
   // Populate the user data
@@ -201,7 +201,7 @@ exports.createConversation = catchAsync(async (req, res) => {
   const usersFromDB = await User.find({ _id: { $in: req.body.users } });
 
   // Check if the conversation is a group chat or not
-  if (req.body.isGroup) {
+  if (JSON.parse(req.body.isGroup)) {
     // Create Group Name using first three usernames
     const newGroupName = req.body.conversationName
       ? req.body.conversationName
@@ -263,6 +263,7 @@ exports.createConversation = catchAsync(async (req, res) => {
       },
     });
   } else {
+    console.log("creating a direct conversation!!");
     const newDirectUserConversations = await UserConversation.create([
       {
         user: usersFromDB[0]._id,

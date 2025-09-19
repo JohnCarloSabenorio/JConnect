@@ -317,38 +317,39 @@ exports.createConversation = catchAsync(function _callee7(req, res) {
         case 0:
           console.log("Creating Conversation...");
           console.log("the req body:", req.body);
-          _context7.next = 4;
+          console.log("is it a group:", req.body.isGroup);
+          _context7.next = 5;
           return regeneratorRuntime.awrap(Conversation.create(req.body));
 
-        case 4:
+        case 5:
           newConversation = _context7.sent;
-          _context7.next = 7;
+          _context7.next = 8;
           return regeneratorRuntime.awrap(Conversation.findById(newConversation._id).populate("users"));
 
-        case 7:
+        case 8:
           newConversation = _context7.sent;
-          _context7.next = 10;
+          _context7.next = 11;
           return regeneratorRuntime.awrap(User.find({
             _id: {
               $in: req.body.users
             }
           }));
 
-        case 10:
+        case 11:
           usersFromDB = _context7.sent;
 
-          if (!req.body.isGroup) {
-            _context7.next = 29;
+          if (!JSON.parse(req.body.isGroup)) {
+            _context7.next = 30;
             break;
           }
 
           // Create Group Name using first three usernames
           newGroupName = req.body.conversationName ? req.body.conversationName : usersFromDB.length >= 3 ? "".concat(usersFromDB[0].username, ", ").concat(usersFromDB[1].username, ", ").concat(usersFromDB[2].username, ",...") : "".concat(usersFromDB[0].username, ", ").concat(usersFromDB[1].username, ",...");
           newConversation.conversationName = newGroupName;
-          _context7.next = 16;
+          _context7.next = 17;
           return regeneratorRuntime.awrap(newConversation.save());
 
-        case 16:
+        case 17:
           newConversation = newConversation.toObject({
             virtuals: true
           }); // Create an array containing objects of new group conversations
@@ -367,17 +368,17 @@ exports.createConversation = catchAsync(function _callee7(req, res) {
             };
           }); // Create new user conversation documents
 
-          _context7.next = 20;
+          _context7.next = 21;
           return regeneratorRuntime.awrap(UserConversation.create(newGroupUserConversationData));
 
-        case 20:
+        case 21:
           newUserConversations = _context7.sent;
-          _context7.next = 23;
+          _context7.next = 24;
           return regeneratorRuntime.awrap(UserConversation.populate(newUserConversations, {
             path: "conversation"
           }));
 
-        case 23:
+        case 24:
           populatedUserConversations = _context7.sent;
           populatedUserConversations = populatedUserConversations.map(function (data) {
             return data.toObject({
@@ -398,8 +399,9 @@ exports.createConversation = catchAsync(function _callee7(req, res) {
             }
           }));
 
-        case 29:
-          _context7.next = 31;
+        case 30:
+          console.log("creating a direct conversation!!");
+          _context7.next = 33;
           return regeneratorRuntime.awrap(UserConversation.create([{
             user: usersFromDB[0]._id,
             nickname: usersFromDB[1].username,
@@ -412,14 +414,14 @@ exports.createConversation = catchAsync(function _callee7(req, res) {
             conversationName: usersFromDB[0].username
           }]));
 
-        case 31:
+        case 33:
           newDirectUserConversations = _context7.sent;
-          _context7.next = 34;
+          _context7.next = 36;
           return regeneratorRuntime.awrap(newDirectUserConversations.find(function (convo) {
             return convo.user.toString() === req.user.id;
           }).populate("conversation"));
 
-        case 34:
+        case 36:
           _currentUserNewConvo = _context7.sent;
           return _context7.abrupt("return", res.status(200).json({
             status: "success",
@@ -429,7 +431,7 @@ exports.createConversation = catchAsync(function _callee7(req, res) {
             })
           }));
 
-        case 36:
+        case 38:
         case "end":
           return _context7.stop();
       }

@@ -193,15 +193,19 @@ export default function ProfileOverlay() {
       dispatch(setInitialMessageRender(true));
 
       // find user conversation
+
+      console.log("the displayed user Id:", displayedUser);
       let userConversation = await findConvoWithUser(displayedUser._id);
 
       // create a new user if there's no existing user conversation data
       if (!userConversation) {
         userConversation = await createConversation(
           [user._id, displayedUser._id],
-          false
+          false,
+          "direct"
         );
 
+        console.log("created a new direct conversation:", userConversation);
         dispatch(addANewConvo(userConversation));
       }
 
