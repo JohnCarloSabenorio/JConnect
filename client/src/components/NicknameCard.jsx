@@ -9,15 +9,19 @@ export default function NicknameCard({ userData }) {
   const dispatch = useDispatch();
   const [displayedNickname, setDisplayedNickname] = useState("");
 
-  const { activeConvoMembers, activeConvo } = useSelector(
-    (state) => state.conversation
-  );
+  const {
+    activeConvoMembers,
+    activeConvo,
+    activeUserConvo,
+    activeConvoIsGroup,
+  } = useSelector((state) => state.conversation);
 
   const [isEditing, setIsEditing] = useState(false);
   const [newNickname, setNewNickname] = useState("");
 
   useEffect(() => {
     console.log("the user data:", userData);
+    console.log("the active user convo:", activeUserConvo);
     setDisplayedNickname(userData.nickname);
   }, [userData]);
 
@@ -27,10 +31,10 @@ export default function NicknameCard({ userData }) {
     // Update nickname
     socket.emit("update nickname", {
       userConvoId: userData._id,
-      username: userData.user.username,
-      userId: userData._id,
+      activeUserConvoId: activeUserConvo,
       newNickname,
       conversationId: activeConvo,
+      activeConvoIsGroup,
     });
 
     // Update the conversation

@@ -60,13 +60,77 @@ exports.changeUserStatus = function _callee(io, socket, data) {
 };
 
 exports.updateNickname = function _callee2(io, socket, data) {
-  var updatedUserConversation;
+  var userConversations, userConvoIds, update1, update2, updateUserConvo1, updateUserConvo2, updatedUserConversation;
   return regeneratorRuntime.async(function _callee2$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
           console.log("update nickname data:", data);
-          _context2.next = 3;
+
+          if (data.activeConvoIsGroup) {
+            _context2.next = 20;
+            break;
+          }
+
+          _context2.next = 4;
+          return regeneratorRuntime.awrap(UserConversation.find({
+            conversation: data.conversationId
+          }));
+
+        case 4:
+          userConversations = _context2.sent;
+          userConvoIds = [userConversations[0]._id, userConversations[1]._id];
+          console.log("user convo ids:", userConvoIds);
+          update1 = {};
+          update2 = {};
+
+          if (userConvoIds[0].toString() == data.userConvoId) {
+            update1.nickname = data.newNickname;
+          } else {
+            update1.conversationName = data.newNickname;
+          }
+
+          if (userConvoIds[1].toString() == data.userConvoId) {
+            update2.nickname = data.newNickname;
+          } else {
+            update2.conversationName = data.newNickname;
+          }
+
+          _context2.next = 13;
+          return regeneratorRuntime.awrap(UserConversation.findByIdAndUpdate(userConvoIds[0], {
+            $set: update1
+          }, {
+            "new": true
+          }).populate("conversation user"));
+
+        case 13:
+          updateUserConvo1 = _context2.sent;
+          _context2.next = 16;
+          return regeneratorRuntime.awrap(UserConversation.findByIdAndUpdate(userConvoIds[1], {
+            $set: update2
+          }, {
+            "new": true
+          }).populate("conversation user"));
+
+        case 16:
+          updateUserConvo2 = _context2.sent;
+          // Update the user convo of the other user
+          io.to(data.conversationId.toString()).emit("update nickname", {
+            userConvoId: data.userConvoId,
+            newNickname: data.newNickname,
+            isGroup: false,
+            updateUserConvo1: updateUserConvo1.toObject({
+              virtuals: true
+            }),
+            updateUserConvo2: updateUserConvo2.toObject({
+              virtuals: true
+            })
+          });
+          _context2.next = 24;
+          break;
+
+        case 20:
+          _context2.next = 22;
           return regeneratorRuntime.awrap(UserConversation.findByIdAndUpdate(data.userConvoId, {
             nickname: data.newNickname
           }, {
@@ -74,9 +138,9 @@ exports.updateNickname = function _callee2(io, socket, data) {
             runValidators: true
           }));
 
-        case 3:
+        case 22:
           updatedUserConversation = _context2.sent;
-          console.log("updated user conversation:", updatedUserConversation);
+          // Update the conversation name of the active user convo
           io.to(data.conversationId.toString()).emit("update nickname", {
             userConvoId: data.userConvoId,
             newNickname: updatedUserConversation.nickname,
@@ -84,7 +148,7 @@ exports.updateNickname = function _callee2(io, socket, data) {
             convoId: updatedUserConversation.conversation._id
           });
 
-        case 6:
+        case 24:
         case "end":
           return _context2.stop();
       }

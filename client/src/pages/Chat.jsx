@@ -52,6 +52,7 @@ import {
   setCurrentConvoName,
   setUnifiedEmojiBtn,
   setCurrentConvoImage,
+  updateAConvoConvoName,
 } from "../redux/conversation";
 import {
   activateUserConversation,
@@ -172,13 +173,22 @@ export default function Chat() {
       // Removes the member from the current list of active members
 
       if (!data.isGroup) {
-        dispatch(updateAConvoNickname([data.userConvoId, data.newNickname]));
-
-        if (activeConvo == data.convoId) {
-          dispatch(setCurrentConvoName(data.newNickname));
+        if (user._id == data.updateUserConvo1.user._id) {
+          dispatch(
+            updateAConvoConvoName([
+              data.updateUserConvo1._id,
+              data.updateUserConvo1.conversationName,
+            ])
+          );
+        } else {
+          dispatch(
+            updateAConvoConvoName([
+              data.updateUserConvo2._id,
+              data.updateUserConvo2.conversationName,
+            ])
+          );
         }
       }
-
       if (namesAndNicknames) {
         for (let i = 0; i < namesAndNicknames.length; i++) {
           if (namesAndNicknames[i]._id == data.userConvoId) {

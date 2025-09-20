@@ -261,6 +261,25 @@ const conversationSlice = createSlice({
             new Date(a.conversation.updatedAt)
         );
     },
+    updateAConvoConvoName: (state, action) => {
+      console.log("YEP THIS IS THE ONE:", action.payload);
+
+      state.allDirectConversation = state.allDirectConversation
+        .map((userConversation) => {
+          if (userConversation._id === action.payload[0]) {
+            return {
+              ...userConversation,
+              conversationName: action.payload[1],
+            };
+          }
+          return userConversation;
+        })
+        .sort(
+          (a, b) =>
+            new Date(b.conversation.updatedAt) -
+            new Date(a.conversation.updatedAt)
+        );
+    },
 
     updateAConvo: (state, action) => {
       // this will find the existing conversation and update it with the new one
@@ -305,6 +324,7 @@ const conversationSlice = createSlice({
 });
 
 export const {
+  updateAConvoConvoName,
   setUnifiedEmojiBtn,
   removeConvoMember,
   removeAConvo,

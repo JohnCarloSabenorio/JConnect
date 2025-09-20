@@ -50,7 +50,7 @@ export default function ConversationCard({
       }
 
       console.log(userConversation.conversation.conversationName);
-      console.log(userConversation.conversation);
+      console.log("the freaking user convo:", userConversation);
       if (userConversation && !userConversation.conversation.isGroup) {
         const otherUser = userConversation.conversation.users.find(
           (u) => u._id != user._id

@@ -29,23 +29,71 @@ exports.changeUserStatus = async (io, socket, data) => {
 
 exports.updateNickname = async (io, socket, data) => {
   console.log("update nickname data:", data);
-  const updatedUserConversation = await UserConversation.findByIdAndUpdate(
-    data.userConvoId,
-    { nickname: data.newNickname },
-    {
-      new: true,
-      runValidators: true,
+
+  if (!data.activeConvoIsGroup) {
+    // Find the user conversations for the current conversation
+    const userConversations = await UserConversation.find({
+      conversation: data.conversationId,
+    });
+
+    const userConvoIds = [userConversations[0]._id, userConversations[1]._id];
+
+    console.log("user convo ids:", userConvoIds);
+
+    const update1 = {};
+    const update2 = {};
+
+    if (userConvoIds[0].toString() == data.userConvoId) {
+      update1.nickname = data.newNickname;
+    } else {
+      update1.conversationName = data.newNickname;
     }
-  );
+    if (userConvoIds[1].toString() == data.userConvoId) {
+      update2.nickname = data.newNickname;
+    } else {
+      update2.conversationName = data.newNickname;
+    }
 
-  console.log("updated user conversation:", updatedUserConversation);
+    const updateUserConvo1 = await UserConversation.findByIdAndUpdate(
+      userConvoIds[0],
+      { $set: update1 },
+      { new: true }
+    ).populate("conversation user");
+    const updateUserConvo2 = await UserConversation.findByIdAndUpdate(
+      userConvoIds[1],
+      { $set: update2 },
+      { new: true }
+    ).populate("conversation user");
 
-  io.to(data.conversationId.toString()).emit("update nickname", {
-    userConvoId: data.userConvoId,
-    newNickname: updatedUserConversation.nickname,
-    isGroup: updatedUserConversation.isGroup,
-    convoId: updatedUserConversation.conversation._id,
-  });
+    // Update the user convo of the other user
+
+    io.to(data.conversationId.toString()).emit("update nickname", {
+      userConvoId: data.userConvoId,
+      newNickname: data.newNickname,
+      isGroup: false,
+      updateUserConvo1: updateUserConvo1.toObject({ virtuals: true }),
+      updateUserConvo2: updateUserConvo2.toObject({ virtuals: true }),
+    });
+  } else {
+    const updatedUserConversation = await UserConversation.findByIdAndUpdate(
+      data.userConvoId,
+
+      { nickname: data.newNickname },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    // Update the conversation name of the active user convo
+
+    io.to(data.conversationId.toString()).emit("update nickname", {
+      userConvoId: data.userConvoId,
+      newNickname: updatedUserConversation.nickname,
+      isGroup: updatedUserConversation.isGroup,
+      convoId: updatedUserConversation.conversation._id,
+    });
+  }
 };
 
 exports.updateConversation = async (io, socket, data) => {
