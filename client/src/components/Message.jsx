@@ -479,12 +479,11 @@ export const Message = React.memo(function Message({
               isCurrentUser ? "justify-items-end" : "justify-items-start"
             } gap-1`}
           >
-            {messageData.imageUrls.map((imgUrl, idx) => {
-              return (
-                <PhotoProvider>
-                  <PhotoView>
+            <PhotoProvider>
+              {messageData.imageUrls.map((imgUrl, idx) => {
+                return (
+                  <PhotoView src={`${imgUrl}`} key={idx}>
                     <img
-                      key={idx}
                       src={`${imgUrl}`}
                       className={`bg-transparent rounded-sm cursor-pointer ${
                         messageData.imageUrls.length == 1
@@ -496,9 +495,9 @@ export const Message = React.memo(function Message({
                       alt="sent images"
                     />
                   </PhotoView>
-                </PhotoProvider>
-              );
-            })}
+                );
+              })}
+            </PhotoProvider>
           </div>
         </div>
       </div>

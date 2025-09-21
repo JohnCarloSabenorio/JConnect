@@ -9,6 +9,9 @@ import { setDisplayNicknamesOverlay } from "../redux/nicknamesOverlay";
 import { UserContext } from "../App";
 import { updateConversation } from "../api/conversation";
 import { socket } from "../socket";
+import { PhotoProvider, PhotoView } from "react-photo-view";
+import "react-photo-view/dist/react-photo-view.css";
+
 export default function MediaPanel({ getUserConversations }) {
   const {
     currentConvoName,
@@ -402,13 +405,17 @@ export default function MediaPanel({ getUserConversations }) {
               imagesActive ? "block" : "hidden"
             }`}
           >
-            {mediaImages.map((imageBlob, idx) => (
-              <img
-                key={idx}
-                src={imageBlob}
-                className="w-30 h-30 object-cover cursor-pointer"
-              ></img>
-            ))}
+            <PhotoProvider>
+              {mediaImages.map((imageBlob, idx) => (
+                <PhotoView src={imageBlob}>
+                  <img
+                    key={idx}
+                    src={imageBlob}
+                    className="w-30 h-30 object-cover cursor-pointer"
+                  ></img>
+                </PhotoView>
+              ))}
+            </PhotoProvider>
           </div>
         </div>
       </div>
