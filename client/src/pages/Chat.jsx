@@ -468,6 +468,8 @@ export default function Chat() {
       latestMessage: emojiMessage,
     });
 
+    console.log("the new message created:", newMessage);
+
     socket.emit("chat message", {
       messageId: newMessage._id,
     });

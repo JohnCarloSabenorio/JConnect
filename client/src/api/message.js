@@ -55,10 +55,11 @@ export async function createMessage(data) {
     formData.append("conversation", data.conversation);
     formData.append("mentions", data.mentions);
 
-    console.log("the images:", data.images);
-    data.images.forEach((img) => {
-      formData.append("images", img);
-    });
+    if (data.images) {
+      data.images.forEach((img) => {
+        formData.append("images", img);
+      });
+    }
 
     const response = await axios.post("jconnect/api/v1/message", formData, {
       withCredentials: true,
