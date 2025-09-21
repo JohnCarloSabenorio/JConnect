@@ -103,6 +103,8 @@ export default function Chat() {
   const { displayedMessages, messageIsLoading } = useSelector(
     (state) => state.message
   );
+
+  const [inputMessage, setInputMessage] = useState("");
   const { emojiPickerIsOpen } = useSelector((state) => state.chat);
 
   const { allNotifications } = useSelector((state) => state.notification);
@@ -486,6 +488,7 @@ export default function Chat() {
 
   async function sendMessage(e) {
     e.preventDefault();
+    setInputMessage("");
     const allMentionSpans = inputRef.current.querySelectorAll(".mention-span");
 
     const latestMessage = inputRef.current.textContent.trim();
@@ -1109,6 +1112,7 @@ export default function Chat() {
                         }
                       }
                     }}
+                    onInput={(e) => setInputMessage(e.target.textContent)}
                     contentEditable={conversationStatus == "active"}
                     suppressContentEditableWarning={true}
                   ></div>
@@ -1148,7 +1152,7 @@ export default function Chat() {
                           </svg>
                         </button>
 
-                        {inputRef.current?.textContent == "" ? (
+                        {inputMessage == "" && images.length == 0 ? (
                           <span
                             className="cursor-pointer"
                             onClick={(e) => {
