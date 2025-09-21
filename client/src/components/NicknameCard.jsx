@@ -32,7 +32,7 @@ export default function NicknameCard({ userData }) {
     socket.emit("update nickname", {
       userConvoId: userData._id,
       activeUserConvoId: activeUserConvo,
-      newNickname,
+      newNickname: newNickname != "" ? newNickname : userData.user.username,
       conversationId: activeConvo,
       activeConvoIsGroup,
     });
@@ -53,6 +53,8 @@ export default function NicknameCard({ userData }) {
             : `${user.username} cleared the nickname for ${userData.user.username}.`,
       },
     });
+
+    setNewNickname("");
   }
 
   return (

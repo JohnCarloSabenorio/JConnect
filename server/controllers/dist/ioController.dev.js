@@ -157,7 +157,7 @@ exports.updateNickname = function _callee2(io, socket, data) {
 };
 
 exports.updateConversation = function _callee3(io, socket, data) {
-  var updatedConversation, resultData, newMessage, populatedMessage;
+  var updatedConversation, updateConvoObject, resultData, newMessage, populatedMessage;
   return regeneratorRuntime.async(function _callee3$(_context3) {
     while (1) {
       switch (_context3.prev = _context3.next) {
@@ -182,16 +182,19 @@ exports.updateConversation = function _callee3(io, socket, data) {
 
         case 8:
           // MAKE A CREATE MESSAGE FUNCTION IF A MESSAGE IS PRESENT IN UPDATE CONVERSATION
+          updateConvoObject = updatedConversation.toObject({
+            virtuals: true
+          });
           resultData = {
-            updatedConversation: updatedConversation
+            updatedConversation: updateConvoObject
           };
 
           if (!data.message) {
-            _context3.next = 17;
+            _context3.next = 18;
             break;
           }
 
-          _context3.next = 12;
+          _context3.next = 13;
           return regeneratorRuntime.awrap(Message.create({
             message: data.message,
             conversation: data.conversationId,
@@ -199,19 +202,19 @@ exports.updateConversation = function _callee3(io, socket, data) {
             action: data.action
           }));
 
-        case 12:
+        case 13:
           newMessage = _context3.sent;
-          _context3.next = 15;
+          _context3.next = 16;
           return regeneratorRuntime.awrap(newMessage.populate("sender"));
 
-        case 15:
+        case 16:
           populatedMessage = _context3.sent;
           resultData.messageData = populatedMessage;
 
-        case 17:
+        case 18:
           io.to(data.conversationId.toString()).emit("update conversation", resultData);
 
-        case 18:
+        case 19:
         case "end":
           return _context3.stop();
       }

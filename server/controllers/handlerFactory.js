@@ -107,7 +107,8 @@ exports.getAll = (Model) =>
 
     let docs = await featureQuery;
 
-    objectDocs = docs.map((doc) => doc.toObject({ virtuals: true }));
+    let objectDocs = docs.map((doc) => doc.toObject({ virtuals: true }));
+
     res.status(200).json({
       status: "success",
       message: "Successfully retrieved all documents",

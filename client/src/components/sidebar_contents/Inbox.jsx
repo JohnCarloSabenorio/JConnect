@@ -17,6 +17,8 @@ export default function Inbox({ inputRef, getMessages }) {
     filteredConversations = allDirectConversation.filter(
       (uc) => uc.conversation.users.length === 2
     );
+
+    console.log("direct conversations bro:", filteredConversations);
   } else {
     filteredConversations = allGroupConversation.filter((uc) => uc.isGroup);
   }
@@ -38,7 +40,6 @@ export default function Inbox({ inputRef, getMessages }) {
             ref={data._id}
             getMessages={getMessages}
             isGroup={data.isGroup}
-            chatmateId={chatmate?._id}
             userConversation={data}
             directArrayId={id}
             inputRef={inputRef}

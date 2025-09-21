@@ -180,6 +180,7 @@ export default function Chat() {
               data.updateUserConvo1.conversationName,
             ])
           );
+          dispatch(setCurrentConvoName(data.updateUserConvo1.conversationName));
         } else {
           dispatch(
             updateAConvoConvoName([
@@ -187,8 +188,10 @@ export default function Chat() {
               data.updateUserConvo2.conversationName,
             ])
           );
+          dispatch(setCurrentConvoName(data.updateUserConvo2.conversationName));
         }
       }
+
       if (namesAndNicknames) {
         for (let i = 0; i < namesAndNicknames.length; i++) {
           if (namesAndNicknames[i]._id == data.userConvoId) {
@@ -269,6 +272,7 @@ export default function Chat() {
           dispatch(setUnifiedEmojiBtn(data.updatedConversation.unifiedEmoji));
         }
       } else {
+        console.log("the updated conversation chu:", data.updatedConversation);
         dispatch(updateAConvo(data.updatedConversation));
 
         if (activeConvo == data.updatedConversation._id) {

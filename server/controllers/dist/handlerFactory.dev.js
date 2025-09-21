@@ -125,7 +125,7 @@ exports.getOne = function (Model) {
 
 exports.getAll = function (Model) {
   return catchAsync(function _callee3(req, res) {
-    var filter, featureQuery, docs;
+    var filter, featureQuery, docs, objectDocs;
     return regeneratorRuntime.async(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {

@@ -14,7 +14,6 @@ export default function Directs({ getMessages }) {
       {allDirectConversation.map((data, id) => {
         let chatmate = null;
 
-        console.log("DIRECT CONVERSATION:", data);
         chatmate = data.conversation.users.find(
           (u) => u._id.toString() !== user._id.toString()
         );
@@ -27,7 +26,7 @@ export default function Directs({ getMessages }) {
             ref={data._id}
             getMessages={getMessages}
             isGroup={false}
-            chatmateId={chatmate?._id}
+            chatmate={chatmate}
             userConversation={data}
             directArrayId={id}
           />

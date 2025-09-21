@@ -112,7 +112,9 @@ exports.updateConversation = async (io, socket, data) => {
 
   // MAKE A CREATE MESSAGE FUNCTION IF A MESSAGE IS PRESENT IN UPDATE CONVERSATION
 
-  let resultData = { updatedConversation };
+  let updateConvoObject = updatedConversation.toObject({ virtuals: true });
+
+  let resultData = { updatedConversation: updateConvoObject };
 
   if (data.message) {
     const newMessage = await Message.create({

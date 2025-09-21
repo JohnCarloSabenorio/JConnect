@@ -27,7 +27,6 @@ import { setEmojiPickerIsOpen } from "../redux/chat";
 
 import { UserContext } from "../App";
 export default function ConversationCard({
-  chatmateId,
   userConversation,
   isArchived,
   inputRef,
@@ -37,7 +36,8 @@ export default function ConversationCard({
     (state) => state.conversation
   );
 
-  const [chatmate, setChatmate] = useState("");
+  const [chatmate, setChatmate] = useState(null);
+
   useEffect(() => {
     {
       async function chatmateIsFriend(chatmateId) {
@@ -49,19 +49,14 @@ export default function ConversationCard({
         }
       }
 
-      console.log(userConversation.conversation.conversationName);
-      console.log("the freaking user convo:", userConversation);
       if (userConversation && !userConversation.conversation.isGroup) {
-        const otherUser = userConversation.conversation.users.find(
+        let chatmate = userConversation.conversation.users.find(
           (u) => u._id != user._id
         );
-        console.log("the other user:", otherUser);
-        // GET THE NICKNAME OF THE OTHER USER
-        if (otherUser) {
-          setChatmate(otherUser);
 
-          console.log("the other user:", otherUser);
-          chatmateIsFriend(otherUser._id);
+        setChatmate(chatmate);
+        if (chatmate) {
+          chatmateIsFriend(chatmate._id);
         }
       }
     }
@@ -104,8 +99,10 @@ export default function ConversationCard({
   }
 
   useEffect(() => {
-    checkStatus(chatmateId);
-  }, [allFriends, chatmateId]);
+    if (chatmate) {
+      checkStatus(chatmate._id);
+    }
+  }, [allFriends, chatmate]);
 
   const messageParts = userConversation.conversation.latestMessage.split(
     /(@\[[^:\]]+:[^\]]+\])/g
@@ -145,14 +142,9 @@ export default function ConversationCard({
 
           dispatch(setActiveConvoMembers(userConversation.conversation.users));
 
-          console.log(
-            "the conversation users:",
-            userConversation.conversation.users
-          );
           dispatch(setConversationRole(userConversation.role));
           // getConvoNamesData(userConversation.conversation._id);
 
-          console.log("the current user conversation:", userConversation);
           dispatch(
             setActiveConversation([
               userConversation.conversation.isGroup
@@ -167,7 +159,7 @@ export default function ConversationCard({
             setCurrentConvoImage(
               userConversation.conversation.isGroup
                 ? userConversation.conversation.gcImageUrl
-                : chatmate.profilePictureUrl
+                : chatmate?.profilePictureUrl
             )
           );
           dispatch(
@@ -183,12 +175,10 @@ export default function ConversationCard({
 
           dispatch(setActiveConvoIsGroup(userConversation.isGroup));
 
-          if (chatmateId) {
+          if (chatmate._id) {
             // Updates the active chatmate
-            console.log("YEP IT'S DIRECT");
-            dispatch(setActiveDirectUser(chatmateId));
+            dispatch(setActiveDirectUser(chatmate._id));
             // Checks if the chatmate is a user's friend
-            console.log("is it a friend?", isAFriend);
             dispatch(setUserIsFriend(isAFriend));
           }
         }}
@@ -203,7 +193,7 @@ export default function ConversationCard({
               src={
                 userConversation.conversation.isGroup
                   ? userConversation.conversation.gcImageUrl
-                  : chatmate.profilePictureUrl
+                  : chatmate?.profilePictureUrl
               }
               className="rounded-full w-12 h-12 border-1"
             />

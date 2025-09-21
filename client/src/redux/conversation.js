@@ -262,8 +262,6 @@ const conversationSlice = createSlice({
         );
     },
     updateAConvoConvoName: (state, action) => {
-      console.log("YEP THIS IS THE ONE:", action.payload);
-
       state.allDirectConversation = state.allDirectConversation
         .map((userConversation) => {
           if (userConversation._id === action.payload[0]) {
