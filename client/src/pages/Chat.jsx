@@ -586,6 +586,13 @@ export default function Chat() {
   async function getMessages(convoId, convoName, userConvoId, convoStatus) {
     // Join a channel for users in the same conversation
     const messages = await getAllUserMessages(convoId);
+    let allImages = [];
+    messages.forEach((messageData) => {
+      allImages = [...allImages, ...messageData.imageUrls];
+    });
+
+    dispatch(setMediaImages(allImages));
+
     dispatch(setActiveConversation([convoName, convoId, userConvoId]));
     dispatch(initDisplayedMessages(messages));
     dispatch(setMessageIsLoading(false));

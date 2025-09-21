@@ -26,6 +26,7 @@ import { setNamesAndNicknames } from "../redux/nicknamesOverlay";
 import { setEmojiPickerIsOpen } from "../redux/chat";
 
 import { UserContext } from "../App";
+import { setMediaImages } from "../redux/media";
 export default function ConversationCard({
   userConversation,
   isArchived,
@@ -86,6 +87,14 @@ export default function ConversationCard({
     // Join a channel for users in the same conversation
     dispatch(setMessageIsLoading(true));
     const messages = await getAllUserMessages(convoId);
+    console.log("all the user messages:", messages);
+
+    let allImages = [];
+    messages.forEach((messageData) => {
+      allImages = [...allImages, ...messageData.imageUrls];
+    });
+
+    dispatch(setMediaImages(allImages));
     dispatch(initDisplayedMessages(messages));
     dispatch(setMessageIsLoading(false));
   }

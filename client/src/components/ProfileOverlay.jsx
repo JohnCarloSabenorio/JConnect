@@ -41,6 +41,7 @@ import { findMutualFriends } from "../api/friends";
 import { findMutualGroupChats } from "../api/conversation";
 import MutualFriendCard from "./MutualFriendCard";
 import MutualGroupChatCard from "./MutualGroupChatCard";
+import { setMediaImages } from "../redux/media";
 
 export default function ProfileOverlay() {
   const { user } = useContext(UserContext);
@@ -129,6 +130,13 @@ export default function ProfileOverlay() {
 
   const getMessages = async (convoId, convoName, userConvoId) => {
     const messages = await getAllUserMessages(convoId);
+
+    let allImages = [];
+    messages.forEach((messageData) => {
+      allImages = [...allImages, ...messageData.imageUrls];
+    });
+
+    dispatch(setMediaImages(allImages));
     dispatch(setActiveConversation([convoName, convoId, userConvoId]));
     dispatch(initDisplayedMessages(messages));
   };

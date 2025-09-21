@@ -12,6 +12,10 @@ const mediaSlice = createSlice({
       state.mediaImages = action.payload;
     },
 
+    addToMediaImages: (state, action) => {
+      state.mediaImages = [...state.mediaImages, ...action.payload];
+    },
+
     toggleMediaPanel: (state, action) => {
       state.displayMediaPanel = !state.displayMediaPanel;
     },

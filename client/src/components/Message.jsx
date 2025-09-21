@@ -14,6 +14,8 @@ import {
 } from "../redux/message";
 import { useEffect, useState, useContext, useRef } from "react";
 import { UserContext } from "../App";
+import { PhotoProvider, PhotoView } from "react-photo-view";
+import "react-photo-view/dist/react-photo-view.css";
 
 export const Message = React.memo(function Message({
   messageData,
@@ -479,18 +481,22 @@ export const Message = React.memo(function Message({
           >
             {messageData.imageUrls.map((imgUrl, idx) => {
               return (
-                <img
-                  key={idx}
-                  src={`${imgUrl}`}
-                  className={`bg-transparent rounded-sm cursor-pointer ${
-                    messageData.imageUrls.length == 1
-                      ? "max-h-80"
-                      : messageData.imageUrls.length === 2
-                      ? "w-50 h-50"
-                      : "w-35 h-35"
-                  } `}
-                  alt="sent images"
-                />
+                <PhotoProvider>
+                  <PhotoView>
+                    <img
+                      key={idx}
+                      src={`${imgUrl}`}
+                      className={`bg-transparent rounded-sm cursor-pointer ${
+                        messageData.imageUrls.length == 1
+                          ? "max-h-80"
+                          : messageData.imageUrls.length === 2
+                          ? "w-50 h-50"
+                          : "w-35 h-35"
+                      } `}
+                      alt="sent images"
+                    />
+                  </PhotoView>
+                </PhotoProvider>
               );
             })}
           </div>
