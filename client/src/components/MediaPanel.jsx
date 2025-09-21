@@ -401,7 +401,7 @@ export default function MediaPanel({ getUserConversations }) {
             </svg>
           </div>
           <div
-            className={`grid grid-cols-3 bg-amber-200 transition-all duration-500 ${
+            className={`grid grid-cols-3 rounded-md overflow-hidden transition-all duration-500 ${
               imagesActive ? "block" : "hidden"
             }`}
           >
