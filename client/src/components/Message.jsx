@@ -16,7 +16,6 @@ import { useEffect, useState, useContext, useRef } from "react";
 import { UserContext } from "../App";
 
 export const Message = React.memo(function Message({
-  imgUrl,
   messageData,
   imagesSent,
   uiChatRef,
@@ -467,14 +466,30 @@ export const Message = React.memo(function Message({
         </div>
 
         <div className={`flex mt-2 ${isCurrentUser ? "ml-auto mr-0" : "ml-0"}`}>
-          <div className=" w-70 gap-0.5 grid grid-cols-[repeat(auto-fit,minmax(70px,1fr))]">
+          <div
+            className={`w-100 grid ${
+              messageData.imageUrls.length === 1
+                ? "grid-cols-1"
+                : messageData.imageUrls.length === 2
+                ? "grid-cols-2"
+                : "grid-cols-3"
+            } ${
+              isCurrentUser ? "justify-items-end" : "justify-items-start"
+            } gap-1`}
+          >
             {messageData.imageUrls.map((imgUrl, idx) => {
               return (
                 <img
                   key={idx}
                   src={`${imgUrl}`}
-                  className={`bg-transparent rounded-sm w-20 h-20`}
-                  alt="TANGINA image"
+                  className={`bg-transparent rounded-sm cursor-pointer ${
+                    messageData.imageUrls.length == 1
+                      ? "max-h-80"
+                      : messageData.imageUrls.length === 2
+                      ? "w-50 h-50"
+                      : "w-35 h-35"
+                  } `}
+                  alt="sent images"
                 />
               );
             })}

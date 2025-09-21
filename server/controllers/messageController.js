@@ -28,7 +28,7 @@ exports.initSenderConvo = (req, res, next) => {
 };
 
 // Upload images
-exports.uploadImages = upload.fields([{ name: "images", maxCount: 3 }]);
+exports.uploadImages = upload.fields([{ name: "images", maxCount: 10 }]);
 
 // Resize images (try to refcator it so that the resolution of the iamge remains the same)
 exports.resizeImages = catchAsync(async (req, res, next) => {

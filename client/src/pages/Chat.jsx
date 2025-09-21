@@ -596,8 +596,13 @@ export default function Chat() {
     // Get the array of files selected by the user
     const selectedFiles = Array.from(e.target.files);
 
-    // Resets the value of the input files (This way, you can add the image you previously selected);
     e.target.value = "";
+    if ([...images, selectedFiles].length > 10) {
+      alert("You can only send up to 10 images at a time!");
+
+      return;
+    }
+    // Resets the value of the input files (This way, you can add the image you previously selected);
 
     // const blobUrls = selectedFiles.map((file) => URL.createObjectURL(file));
     const selectedFilesBuffer = await Promise.all(
