@@ -97,7 +97,14 @@ export default function Login() {
                   />
                   <label htmlFor="remember">Remember Me</label>
                 </div>
-                <a className="ml-auto">Forgot Password?</a>
+                <a
+                  className="ml-auto cursor-pointer hover:font-semibold"
+                  onClick={() => {
+                    window.location.assign("/forgot-password");
+                  }}
+                >
+                  Forgot Password?
+                </a>
               </div>
               <div className="flex flex-col items-center">
                 <button className="cursor-pointer bg-green-400 uppercase font-semibold tracking-wider border-black rounded-md border-1 py-2 px-10 text-xl mt-5 shadow-md">

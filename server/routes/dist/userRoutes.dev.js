@@ -12,12 +12,12 @@ var router = express.Router({
   mergeParams: true
 });
 router.route("/signup").post(authController.signup);
-router.route("/login").post(authController.login); // User conversation api with the id of a user
-
-router.use("/:userId/conversation", convoRouter);
+router.route("/login").post(authController.login);
 router.route("/isLoggedIn").get(authController.isLoggedInBool);
 router.route("/forgotPassword").post(authController.forgotPassword);
-router.route("/resetPassword/:token").patch(authController.resetPassword);
+router.route("/resetPassword/:token").patch(authController.resetPassword); // User conversation api with the id of a user
+
+router.use("/:userId/conversation", convoRouter);
 router.use(authController.protect);
 router.route("/logout").get(authController.logout);
 router.use("/allConvo", convoRouter);

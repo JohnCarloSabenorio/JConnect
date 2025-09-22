@@ -4,6 +4,7 @@ import { createContext, useState, useEffect, Component } from "react";
 import Chat from "./pages/Chat";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
 import NoPage from "./pages/NoPage";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import ProtectedFormRoutes from "./utils/ProtectedFormRoutes";
@@ -79,6 +80,7 @@ export default function App() {
             <Route element={<ProtectedFormRoutes />}>
               <Route index element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
             </Route>
             <Route element={<ProtectedRoutes />}>
               <Route path="/chat" element={<Chat />} />

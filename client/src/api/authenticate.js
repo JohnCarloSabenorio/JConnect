@@ -58,3 +58,23 @@ export async function isLoggedIn() {
     console.log("Failed to check if user is logged in!");
   }
 }
+
+export async function forgotPassword(email) {
+  try {
+    const response = await axios.post(
+      "/jconnect/api/v1/users/forgotPassword",
+      {
+        email,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+
+    console.log("response data:", response);
+
+    return response;
+  } catch (err) {
+    return err.response;
+  }
+}
