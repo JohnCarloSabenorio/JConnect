@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const validator = require("validator");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const { match } = require("assert");
@@ -15,12 +14,6 @@ const userSchema = new mongoose.Schema(
   {
     username: {
       type: String,
-      required: [true, "A user must have a username!"],
-      unique: true,
-      maxlength: [
-        20,
-        "A username must have less than or equal to 20 characters.",
-      ],
     },
     role: {
       type: String,
@@ -33,27 +26,19 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: [true, "A user must have an email!"],
-      unique: true,
-      validate: [validator.isEmail, "Please provide a valid email!"],
     },
-
     password: {
       type: String,
-      required: [true, "A user must have a password!"],
-      minlength: 8,
       select: false, // This sets password to cannot be queried
     },
 
     passwordConfirm: {
       type: String,
-      required: [true, "Please confirm your password!"],
       select: false,
     },
 
     phone_number: {
       type: String,
-      match: [/^\+?[0-9]{10,15}$/, "Please enter a valid phone number."],
     },
 
     location: {

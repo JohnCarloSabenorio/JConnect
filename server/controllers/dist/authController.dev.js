@@ -50,12 +50,68 @@ var createSignToken = function createSignToken(user, statusCode, res) {
 };
 
 exports.signup = catchAsync(function _callee(req, res, next) {
-  var newUser;
+  var errors, usernameRegex, passwordRegex, user, newUser;
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          _context.next = 2;
+          errors = [];
+          usernameRegex = /^[a-zA-Z0-9_]+$/;
+          passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+          console.log("the req body:", req.body.username.length); // Check if user provided an email
+
+          if (!req.body.email) {
+            errors.push("Email must be provided.");
+          } // Check if email already exists
+
+
+          _context.next = 7;
+          return regeneratorRuntime.awrap(User.findOne({
+            email: req.body.email
+          }));
+
+        case 7:
+          user = _context.sent;
+          console.log("the user:", user);
+
+          if (user) {
+            errors.push("The email you provided already exists.");
+          } // Check the length of the username
+
+
+          if (req.body.username.length == 0 || req.body.username.length > 20) {
+            errors.push("Username must be between 0 to 20 characters.");
+          } // Check if the username contains invalid characters
+
+
+          if (!usernameRegex.test(req.body.username)) {
+            errors.push("Username can only contain letters, numbers, and underscores.");
+          } // Check if password is strong enough
+
+
+          if (!passwordRegex.test(req.body.password)) {
+            errors.push("Password must be 8–20 characters long and include at least 1 uppercase, 1 lowercase, 1 digit, and 1 special character.");
+          } // Check if password matches
+
+
+          if (!(req.body.password == req.body.passwordConfirm)) {
+            errors.push("Your passwords do not match.");
+          } // Sign token (This will log the user in after signing up)
+
+
+          if (!(errors.length > 0)) {
+            _context.next = 18;
+            break;
+          }
+
+          return _context.abrupt("return", res.status(400).json({
+            status: "failed",
+            message: "User registration failed",
+            errors: errors
+          }));
+
+        case 18:
+          _context.next = 20;
           return regeneratorRuntime.awrap(User.create({
             username: req.body.username,
             email: req.body.email,
@@ -63,12 +119,11 @@ exports.signup = catchAsync(function _callee(req, res, next) {
             passwordConfirm: req.body.passwordConfirm
           }));
 
-        case 2:
+        case 20:
           newUser = _context.sent;
-          // Sign token (This will log the user in after signing up)
           createSignToken(newUser, 200, res);
 
-        case 4:
+        case 22:
         case "end":
           return _context.stop();
       }

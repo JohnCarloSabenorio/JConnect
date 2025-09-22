@@ -2,8 +2,6 @@
 
 var mongoose = require("mongoose");
 
-var validator = require("validator");
-
 var bcrypt = require("bcrypt");
 
 var crypto = require("crypto");
@@ -22,10 +20,7 @@ var _require = require("assert"),
 
 var userSchema = new mongoose.Schema({
   username: {
-    type: String,
-    required: [true, "A user must have a username!"],
-    unique: true,
-    maxlength: [20, "A username must have less than or equal to 20 characters."]
+    type: String
   },
   role: {
     type: String,
@@ -37,26 +32,19 @@ var userSchema = new mongoose.Schema({
     select: false
   },
   email: {
-    type: String,
-    required: [true, "A user must have an email!"],
-    unique: true,
-    validate: [validator.isEmail, "Please provide a valid email!"]
+    type: String
   },
   password: {
     type: String,
-    required: [true, "A user must have a password!"],
-    minlength: 8,
     select: false // This sets password to cannot be queried
 
   },
   passwordConfirm: {
     type: String,
-    required: [true, "Please confirm your password!"],
     select: false
   },
   phone_number: {
-    type: String,
-    match: [/^\+?[0-9]{10,15}$/, "Please enter a valid phone number."]
+    type: String
   },
   location: {
     type: String

@@ -4,11 +4,19 @@ import { login } from "../api/authenticate.js";
 export default function Login() {
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
+  let [isInvalid, setIsInvalid] = useState(false);
   async function handleSubmit(event) {
     event.preventDefault();
     try {
-      await login(email, password);
-      window.location.assign("/chat");
+      const response = await login(email, password);
+      console.log("response data login:", response);
+
+      if (response.status == 200) {
+        setIsInvalid(false);
+        window.location.assign("/chat");
+      } else {
+        setIsInvalid(true);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -16,8 +24,8 @@ export default function Login() {
 
   return (
     <>
-      <div className="bg-[url(/images/backgrounds/sky.jpg)] bg-no-repeat bg-cover bg-right-bottom flex flex-col items-center justify-center h-screen">
-        <div className="flex bg-gray-50 w-5xl rounded overflow-hidden border-black border-1 shadow-2xl">
+      <div className="bg-[url(/images/backgrounds/auth-bg.jpg)] bg-no-repeat bg-cover bg-right-bottom flex flex-col items-center justify-center h-screen">
+        <div className="flex bg-gray-50 w-4xl rounded-lg overflow-hidden border-black shadow-2xl">
           <div className="w-4xl bg-[url(/images/backgrounds/blue-bg.png)] bg-center bg-cover flex flex-col items-center justify-center">
             <h1 className="text-5xl font-bold text-green-400">JConnect</h1>
             <p className="text-green-400 text-xl mt-3 text-center px-12">
@@ -29,7 +37,7 @@ export default function Login() {
               Don't have an account?
             </p>
             <button
-              className="bg-green-400 cursor-pointer uppercase font-semibold tracking-wider border-black rounded-md border-1 py-2 px-10 text-xl mt-5 shadow-md"
+              className="bg-green-400 cursor-pointer uppercase font-semibold tracking-wider border-black rounded-md py-2 px-10 text-xl mt-5 shadow-md"
               type="button"
               onClick={() => {
                 window.location.assign("/register");
@@ -39,14 +47,22 @@ export default function Login() {
             </button>
           </div>
 
-          <div className="flex flex-col w-full p-20 px-24">
+          <div className="flex flex-col w-full p-20 py-20 px-10">
             <h1 className="text-5xl font-bold text-green-500">Sign In</h1>
 
             <form
               onSubmit={handleSubmit}
               id="login-form"
-              className="flex flex-col mt-12"
+              className="flex flex-col mt-7"
             >
+              <p
+                className={`mb-3 text-center text-red-600 ${
+                  isInvalid ? "block" : "hidden"
+                }`}
+              >
+                Invalid email or password
+              </p>
+
               <label htmlFor="email">Email</label>
               <input
                 className="border-black border-1 rounded-sm text-md p-2 bg-gray-50 shadow-md"
@@ -72,7 +88,7 @@ export default function Login() {
                 }}
               />
               <div className="flex mt-5">
-                <div className="justify-self-end">
+                <div className="justify-self-end flex items-center gap-1">
                   <input type="checkbox" name="remember" />
                   <label htmlFor="remember">Remember Me</label>
                 </div>

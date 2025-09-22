@@ -12,8 +12,9 @@ export async function login(email, password) {
       }
     );
 
+    return response;
   } catch (err) {
-    console.log(err);
+    return err.response;
   }
 }
 
@@ -27,9 +28,9 @@ export async function register(username, email, password, passwordConfirm) {
       }
     );
 
-    window.location.assign("/chat");
+    return response;
   } catch (err) {
-    console.log(err);
+    return err.response;
   }
 }
 
@@ -47,12 +48,9 @@ export async function logout() {
 
 export async function isLoggedIn() {
   try {
-    const response = await axios.get(
-      "/jconnect/api/v1/users/isLoggedIn",
-      {
-        withCredentials: true,
-      }
-    );
+    const response = await axios.get("/jconnect/api/v1/users/isLoggedIn", {
+      withCredentials: true,
+    });
 
     return response;
   } catch (err) {
