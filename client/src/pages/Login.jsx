@@ -5,10 +5,11 @@ export default function Login() {
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
   let [isInvalid, setIsInvalid] = useState(false);
+  let [isRemembered, setIsRemembered] = useState(false);
   async function handleSubmit(event) {
     event.preventDefault();
     try {
-      const response = await login(email, password);
+      const response = await login(email, password, isRemembered);
       console.log("response data login:", response);
 
       if (response.status == 200) {
@@ -89,7 +90,11 @@ export default function Login() {
               />
               <div className="flex mt-5">
                 <div className="justify-self-end flex items-center gap-1">
-                  <input type="checkbox" name="remember" />
+                  <input
+                    type="checkbox"
+                    name="remember"
+                    onChange={(e) => setIsRemembered(e.target.checked)}
+                  />
                   <label htmlFor="remember">Remember Me</label>
                 </div>
                 <a className="ml-auto">Forgot Password?</a>

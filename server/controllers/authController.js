@@ -14,18 +14,21 @@ const signToken = (id) => {
   });
 };
 
-const createSignToken = (user, statusCode, res) => {
+const createSignToken = (isRemembered, user, statusCode, res) => {
   const token = signToken(user._id);
   // Create options for the cookie
   const cookieOptions = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 // 24 Hours
-    ),
     httpOnly: true,
     // sameSite: "None",
     // domain: "localhost",
     // path: "/",
   };
+
+  if (isRemembered) {
+    cookieOptions.expires = new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 // 24 Hours
+    );
+  }
 
   // If environment is in production, use https
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
@@ -99,14 +102,15 @@ exports.signup = catchAsync(async (req, res, next) => {
       passwordConfirm: req.body.passwordConfirm,
     });
 
-    createSignToken(newUser, 200, res);
+    createSignToken(false, newUser, 200, res);
   }
 });
 
 exports.login = async (req, res, next) => {
   // 1. Check if password or email exists
-  const { email, password } = req.body;
+  const { email, password, isRemembered } = req.body;
 
+  console.log("is user remembered:", isRemembered);
   if (!email || !password) {
     return next(new AppError("Please provide your email and password!", 400));
   }
@@ -123,7 +127,7 @@ exports.login = async (req, res, next) => {
     return next(new AppError("Invalid email or password", 401));
   }
   // 3. Create Token and send response
-  createSignToken(user, 200, res);
+  createSignToken(isRemembered, user, 200, res);
 };
 
 exports.logout = async (req, res) => {

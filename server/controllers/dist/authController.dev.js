@@ -26,17 +26,21 @@ var signToken = function signToken(id) {
   });
 };
 
-var createSignToken = function createSignToken(user, statusCode, res) {
+var createSignToken = function createSignToken(isRemembered, user, statusCode, res) {
   var token = signToken(user._id); // Create options for the cookie
 
   var cookieOptions = {
-    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 // 24 Hours
-    ),
     httpOnly: true // sameSite: "None",
     // domain: "localhost",
     // path: "/",
 
-  }; // If environment is in production, use https
+  };
+
+  if (isRemembered) {
+    cookieOptions.expires = new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 // 24 Hours
+    );
+  } // If environment is in production, use https
+
 
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true; // Stores the JWT token in a cookie
 
@@ -121,7 +125,7 @@ exports.signup = catchAsync(function _callee(req, res, next) {
 
         case 20:
           newUser = _context.sent;
-          createSignToken(newUser, 200, res);
+          createSignToken(false, newUser, 200, res);
 
         case 22:
         case "end":
@@ -132,58 +136,59 @@ exports.signup = catchAsync(function _callee(req, res, next) {
 });
 
 exports.login = function _callee2(req, res, next) {
-  var _req$body, email, password, user;
+  var _req$body, email, password, isRemembered, user;
 
   return regeneratorRuntime.async(function _callee2$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
           // 1. Check if password or email exists
-          _req$body = req.body, email = _req$body.email, password = _req$body.password;
+          _req$body = req.body, email = _req$body.email, password = _req$body.password, isRemembered = _req$body.isRemembered;
+          console.log("is user remembered:", isRemembered);
 
           if (!(!email || !password)) {
-            _context2.next = 3;
+            _context2.next = 4;
             break;
           }
 
           return _context2.abrupt("return", next(new AppError("Please provide your email and password!", 400)));
 
-        case 3:
-          _context2.next = 5;
+        case 4:
+          _context2.next = 6;
           return regeneratorRuntime.awrap(User.findOneAndUpdate({
             email: email
           }, {
             status: "online"
           }).select("+password"));
 
-        case 5:
+        case 6:
           user = _context2.sent;
           _context2.t0 = !user;
 
           if (_context2.t0) {
-            _context2.next = 11;
+            _context2.next = 12;
             break;
           }
 
-          _context2.next = 10;
+          _context2.next = 11;
           return regeneratorRuntime.awrap(user.correctPassword(password, user.password));
 
-        case 10:
+        case 11:
           _context2.t0 = !_context2.sent;
 
-        case 11:
+        case 12:
           if (!_context2.t0) {
-            _context2.next = 13;
+            _context2.next = 14;
             break;
           }
 
           return _context2.abrupt("return", next(new AppError("Invalid email or password", 401)));
 
-        case 13:
-          // 3. Create Token and send response
-          createSignToken(user, 200, res);
-
         case 14:
+          // 3. Create Token and send response
+          createSignToken(isRemembered, user, 200, res);
+
+        case 15:
         case "end":
           return _context2.stop();
       }

@@ -1,11 +1,12 @@
 import axios from "axios";
-export async function login(email, password) {
+export async function login(email, password, isRemembered) {
   try {
     const response = await axios.post(
       "/jconnect/api/v1/users/login",
       {
         email,
         password,
+        isRemembered,
       },
       {
         withCredentials: true,
