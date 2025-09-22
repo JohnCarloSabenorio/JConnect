@@ -346,6 +346,15 @@ export default function Chat() {
   useEffect(() => {
     const handleReceiveNotification = (data) => {
       dispatch(addNotification(data));
+
+      if (document.hidden) {
+        const audio = new Audio("audios/notif.wav");
+        audio.play().catch((err) => {
+          console.log("error playing notification sound:", err);
+        });
+      }
+
+      // Play notification sound
     };
     socket.on("receive notification", (data) => {
       if (!notifActive) {
