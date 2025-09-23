@@ -12,6 +12,7 @@ router.route("/login").post(authController.login);
 router.route("/isLoggedIn").get(authController.isLoggedInBool);
 router.route("/forgotPassword").post(authController.forgotPassword);
 router.route("/resetPassword/:token").patch(authController.resetPassword);
+router.route("/isTokenValid/:token").get(authController.isTokenValid);
 
 // User conversation api with the id of a user
 router.use("/:userId/conversation", convoRouter);

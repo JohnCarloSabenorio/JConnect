@@ -62,3 +62,38 @@ export async function changePassword(
     return error;
   }
 }
+export async function resetPassword(newPassword, confirmNewPassword, token) {
+  try {
+    const response = await axios.patch(
+      `/jconnect/api/v1/users/resetPassword/${token}`,
+      {
+        newPassword,
+        confirmNewPassword,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+
+    return response;
+  } catch (error) {
+    return error.response;
+  }
+}
+
+export async function isTokenValid(token) {
+  try {
+    console.log("using the token:", token);
+    const response = await axios.get(
+      `/jconnect/api/v1/users/isTokenValid/${token}`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    return response.data.isTokenValid;
+  } catch (err) {
+    console.log("Token is invalid:", err.response.data.istokenValid);
+    return err.response.data.isTokenValid;
+  }
+}

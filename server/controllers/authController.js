@@ -223,17 +223,25 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   // 3. Compose message
-  const resetURL = `${req.protocol}://${req.get(
-    "host"
-  )}/jconnect/v1/users/resetPassword/${resetToken}`;
-  const message = `Please send a PATCH request to this url: ${resetURL}. \n if you didn't forget your password, please ignore this message.`;
+  const resetURL = `${req.protocol}://${process.env.CLIENT_HOST}/reset-password/${resetToken}`;
+  const message = `
+You are receiving this email because a password reset request was made for your account.
+
+To reset your password, please click the link below or copy and paste it into your browser:
+${resetURL}
+
+This link will expire in 10 minutes. If you did not request a password reset, you can safely ignore this email and no changes will be made to your account.
+
+Thank you,
+The JConnect Team
+`;
 
   // 4. send email
 
   try {
     await sendEmail({
       email: user.email,
-      subject: "Test email",
+      subject: "Password Reset",
       message,
     });
 
@@ -253,6 +261,67 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
 // Resets the password of the user
 exports.resetPassword = catchAsync(async (req, res, next) => {
+  console.log("resetting password...");
+  // hash token so that it matches the one in the db
+  const resetToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+
+  // Get user based on token
+  const user = await User.findOne({
+    passwordResetToken: resetToken,
+  });
+
+  if (!user) {
+    return next(new AppError("User does not exist!", 404));
+  }
+
+  const { newPassword, confirmNewPassword } = req.body;
+  const errorMessages = [];
+
+  // 1. Check if the password is atleast 8 characters long
+  if (newPassword.length < 8) {
+    errorMessages.push("Password must be at least 8 characters long.");
+  }
+
+  // 2. Check if the password contains atleast 1 uppercase, 1 lowercase, 1 digit, and 1 special character
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).+$/;
+  if (!regex.test(req.body.newPassword)) {
+    errorMessages.push(
+      "Password must contain atleast 1 uppercase, 1 lowercase, 1 digit, and 1 special character."
+    );
+  }
+  // 3. Check if the password and confirm password matches
+
+  if (newPassword != confirmNewPassword) {
+    errorMessages.push("Passwords provided must match.");
+  }
+
+  // 4. If there is at least 1 error message, return an error
+  if (errorMessages.length > 0) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Failed to update user password!",
+      errorMessages,
+    });
+  }
+
+  // 5. Save the password if all the conditions are met
+  user.password = req.body.newPassword;
+  user.passwordConfirm = req.body.confirmNewPassword;
+  await user.save();
+
+  res.status(200).json({
+    status: "success",
+    message: "User password successfully updated!",
+  });
+});
+
+// Controller to check if password reset token is valid
+
+exports.isTokenValid = catchAsync(async (req, res, next) => {
+  console.log("validating password reset token...");
   // 1. hash token so that it matches the one in the db
   const resetToken = crypto
     .createHash("sha256")
@@ -269,19 +338,18 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
   // 3. If token has not expired and there is a user, set the new password
   if (!user) {
-    return next(new AppError("The token is invalid or expired!", 404));
+    return res.status(400).json({
+      status: "failed",
+      message: "Token is invalid!",
+      isTokenValid: false,
+    });
   }
 
-  user.password = req.body.password;
-  user.passwordConfirm = req.body.passwordConfirm;
-  user.passwordResetToken = undefined;
-  user.tokenExpirationDate = undefined;
-  await user.save();
-
-  // 4. Log the user in, send JWT to the client
   res.status(200).json({
     status: "success",
-    token: "token",
+    message: "Token is valid!",
+    user,
+    isTokenValid: true,
   });
 });
 

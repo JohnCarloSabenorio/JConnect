@@ -13,7 +13,7 @@ const sendEmail = async (options) => {
 
   // 2. Define email options
   const mailOptions = {
-    from: "Testing USER <user@example.com>",
+    from: "JConnect Team",
     to: options.email,
     subject: options.subject,
     text: options.message,

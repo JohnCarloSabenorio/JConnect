@@ -339,14 +339,14 @@ exports.forgotPassword = catchAsync(function _callee5(req, res, next) {
 
         case 8:
           // 3. Compose message
-          resetURL = "".concat(req.protocol, "://").concat(req.get("host"), "/jconnect/v1/users/resetPassword/").concat(resetToken);
-          message = "Please send a PATCH request to this url: ".concat(resetURL, ". \n if you didn't forget your password, please ignore this message."); // 4. send email
+          resetURL = "".concat(req.protocol, "://").concat(process.env.CLIENT_HOST, "/reset-password/").concat(resetToken);
+          message = "\nYou are receiving this email because a password reset request was made for your account.\n\nTo reset your password, please click the link below or copy and paste it into your browser:\n".concat(resetURL, "\n\nThis link will expire in 10 minutes. If you did not request a password reset, you can safely ignore this email and no changes will be made to your account.\n\nThank you,\nThe JConnect Team\n"); // 4. send email
 
           _context5.prev = 10;
           _context5.next = 13;
           return regeneratorRuntime.awrap(sendEmail({
             email: user.email,
-            subject: "Test email",
+            subject: "Password Reset",
             message: message
           }));
 
@@ -380,15 +380,95 @@ exports.forgotPassword = catchAsync(function _callee5(req, res, next) {
 }); // Resets the password of the user
 
 exports.resetPassword = catchAsync(function _callee6(req, res, next) {
-  var resetToken, user;
+  var resetToken, user, _req$body2, newPassword, confirmNewPassword, errorMessages, regex;
+
   return regeneratorRuntime.async(function _callee6$(_context6) {
     while (1) {
       switch (_context6.prev = _context6.next) {
         case 0:
-          // 1. hash token so that it matches the one in the db
+          console.log("resetting password..."); // hash token so that it matches the one in the db
+
+          resetToken = crypto.createHash("sha256").update(req.params.token).digest("hex"); // Get user based on token
+
+          _context6.next = 4;
+          return regeneratorRuntime.awrap(User.findOne({
+            passwordResetToken: resetToken
+          }));
+
+        case 4:
+          user = _context6.sent;
+
+          if (user) {
+            _context6.next = 7;
+            break;
+          }
+
+          return _context6.abrupt("return", next(new AppError("User does not exist!", 404)));
+
+        case 7:
+          _req$body2 = req.body, newPassword = _req$body2.newPassword, confirmNewPassword = _req$body2.confirmNewPassword;
+          errorMessages = []; // 1. Check if the password is atleast 8 characters long
+
+          if (newPassword.length < 8) {
+            errorMessages.push("Password must be at least 8 characters long.");
+          } // 2. Check if the password contains atleast 1 uppercase, 1 lowercase, 1 digit, and 1 special character
+
+
+          regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).+$/;
+
+          if (!regex.test(req.body.newPassword)) {
+            errorMessages.push("Password must contain atleast 1 uppercase, 1 lowercase, 1 digit, and 1 special character.");
+          } // 3. Check if the password and confirm password matches
+
+
+          if (newPassword != confirmNewPassword) {
+            errorMessages.push("Passwords provided must match.");
+          } // 4. If there is at least 1 error message, return an error
+
+
+          if (!(errorMessages.length > 0)) {
+            _context6.next = 15;
+            break;
+          }
+
+          return _context6.abrupt("return", res.status(400).json({
+            status: "failed",
+            message: "Failed to update user password!",
+            errorMessages: errorMessages
+          }));
+
+        case 15:
+          // 5. Save the password if all the conditions are met
+          user.password = req.body.newPassword;
+          user.passwordConfirm = req.body.confirmNewPassword;
+          _context6.next = 19;
+          return regeneratorRuntime.awrap(user.save());
+
+        case 19:
+          res.status(200).json({
+            status: "success",
+            message: "User password successfully updated!"
+          });
+
+        case 20:
+        case "end":
+          return _context6.stop();
+      }
+    }
+  });
+}); // Controller to check if password reset token is valid
+
+exports.isTokenValid = catchAsync(function _callee7(req, res, next) {
+  var resetToken, user;
+  return regeneratorRuntime.async(function _callee7$(_context7) {
+    while (1) {
+      switch (_context7.prev = _context7.next) {
+        case 0:
+          console.log("validating password reset token..."); // 1. hash token so that it matches the one in the db
+
           resetToken = crypto.createHash("sha256").update(req.params.token).digest("hex"); // 2. Get user based on token
 
-          _context6.next = 3;
+          _context7.next = 4;
           return regeneratorRuntime.awrap(User.findOne({
             passwordResetToken: resetToken,
             tokenExpirationDate: {
@@ -396,70 +476,67 @@ exports.resetPassword = catchAsync(function _callee6(req, res, next) {
             }
           }));
 
-        case 3:
-          user = _context6.sent;
+        case 4:
+          user = _context7.sent;
 
           if (user) {
-            _context6.next = 6;
+            _context7.next = 7;
             break;
           }
 
-          return _context6.abrupt("return", next(new AppError("The token is invalid or expired!", 404)));
+          return _context7.abrupt("return", res.status(400).json({
+            status: "failed",
+            message: "Token is invalid!",
+            isTokenValid: false
+          }));
 
-        case 6:
-          user.password = req.body.password;
-          user.passwordConfirm = req.body.passwordConfirm;
-          user.passwordResetToken = undefined;
-          user.tokenExpirationDate = undefined;
-          _context6.next = 12;
-          return regeneratorRuntime.awrap(user.save());
-
-        case 12:
-          // 4. Log the user in, send JWT to the client
+        case 7:
           res.status(200).json({
             status: "success",
-            token: "token"
+            message: "Token is valid!",
+            user: user,
+            isTokenValid: true
           });
 
-        case 13:
+        case 8:
         case "end":
-          return _context6.stop();
+          return _context7.stop();
       }
     }
   });
 });
-exports.updatePassword = catchAsync(function _callee7(req, res, next) {
-  var _req$body2, newPassword, confirmNewPassword, currentPassword, errorMessages, user, regex;
+exports.updatePassword = catchAsync(function _callee8(req, res, next) {
+  var _req$body3, newPassword, confirmNewPassword, currentPassword, errorMessages, user, regex;
 
-  return regeneratorRuntime.async(function _callee7$(_context7) {
+  return regeneratorRuntime.async(function _callee8$(_context8) {
     while (1) {
-      switch (_context7.prev = _context7.next) {
+      switch (_context8.prev = _context8.next) {
         case 0:
-          _req$body2 = req.body, newPassword = _req$body2.newPassword, confirmNewPassword = _req$body2.confirmNewPassword, currentPassword = _req$body2.currentPassword;
+          _req$body3 = req.body, newPassword = _req$body3.newPassword, confirmNewPassword = _req$body3.confirmNewPassword, currentPassword = _req$body3.currentPassword;
           errorMessages = [];
           console.log("the bodehh", req.body); // 1. Get user from collection
 
           console.log("the req user:", req.user);
-          _context7.next = 6;
+          _context8.next = 6;
           return regeneratorRuntime.awrap(User.findById(req.user._id).select("+password"));
 
         case 6:
-          user = _context7.sent;
+          user = _context8.sent;
 
           if (user) {
-            _context7.next = 9;
+            _context8.next = 9;
             break;
           }
 
-          return _context7.abrupt("return", next(new AppError("User does not exist!", 404)));
+          return _context8.abrupt("return", next(new AppError("User does not exist!", 404)));
 
         case 9:
-          _context7.next = 11;
+          _context8.next = 11;
           return regeneratorRuntime.awrap(user.correctPassword(currentPassword, user.password));
 
         case 11:
-          if (_context7.sent) {
-            _context7.next = 13;
+          if (_context8.sent) {
+            _context8.next = 13;
             break;
           }
 
@@ -485,11 +562,11 @@ exports.updatePassword = catchAsync(function _callee7(req, res, next) {
 
 
           if (!(errorMessages.length > 0)) {
-            _context7.next = 19;
+            _context8.next = 19;
             break;
           }
 
-          return _context7.abrupt("return", res.status(400).json({
+          return _context8.abrupt("return", res.status(400).json({
             status: "failed",
             message: "Failed to update user password!",
             errorMessages: errorMessages
@@ -499,7 +576,7 @@ exports.updatePassword = catchAsync(function _callee7(req, res, next) {
           // 7. Save the password if all the conditions are met
           user.password = req.body.newPassword;
           user.passwordConfirm = req.body.confirmNewPassword;
-          _context7.next = 23;
+          _context8.next = 23;
           return regeneratorRuntime.awrap(user.save());
 
         case 23:
@@ -510,38 +587,38 @@ exports.updatePassword = catchAsync(function _callee7(req, res, next) {
 
         case 24:
         case "end":
-          return _context7.stop();
+          return _context8.stop();
       }
     }
   });
 });
-exports.isLoggedIn = catchAsync(function _callee8(req, res, next) {
+exports.isLoggedIn = catchAsync(function _callee9(req, res, next) {
   var _decoded, currentUser;
 
-  return regeneratorRuntime.async(function _callee8$(_context8) {
+  return regeneratorRuntime.async(function _callee9$(_context9) {
     while (1) {
-      switch (_context8.prev = _context8.next) {
+      switch (_context9.prev = _context9.next) {
         case 0:
-          _context8.prev = 0;
-          _context8.next = 3;
+          _context9.prev = 0;
+          _context9.next = 3;
           return regeneratorRuntime.awrap(promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET));
 
         case 3:
-          _decoded = _context8.sent;
-          _context8.next = 9;
+          _decoded = _context9.sent;
+          _context9.next = 9;
           break;
 
         case 6:
-          _context8.prev = 6;
-          _context8.t0 = _context8["catch"](0);
+          _context9.prev = 6;
+          _context9.t0 = _context9["catch"](0);
           next(new AppError("JWT is expired."));
 
         case 9:
-          _context8.next = 11;
+          _context9.next = 11;
           return regeneratorRuntime.awrap(User.findById(decoded.id));
 
         case 11:
-          currentUser = _context8.sent;
+          currentUser = _context9.sent;
           currentUser.profilePicture = "img/profileImages/".concat(currentUser.profilePicture);
 
           if (!currentUser) {
@@ -560,38 +637,38 @@ exports.isLoggedIn = catchAsync(function _callee8(req, res, next) {
 
         case 17:
         case "end":
-          return _context8.stop();
+          return _context9.stop();
       }
     }
   }, null, null, [[0, 6]]);
 });
-exports.isLoggedInBool = catchAsync(function _callee9(req, res, next) {
+exports.isLoggedInBool = catchAsync(function _callee10(req, res, next) {
   var decoded, currentUser;
-  return regeneratorRuntime.async(function _callee9$(_context9) {
+  return regeneratorRuntime.async(function _callee10$(_context10) {
     while (1) {
-      switch (_context9.prev = _context9.next) {
+      switch (_context10.prev = _context10.next) {
         case 0:
           if (req.cookies.jwt) {
-            _context9.next = 2;
+            _context10.next = 2;
             break;
           }
 
-          return _context9.abrupt("return", res.status(404).json({
+          return _context10.abrupt("return", res.status(404).json({
             status: "failed",
             message: "JWT not present!"
           }));
 
         case 2:
-          _context9.next = 4;
+          _context10.next = 4;
           return regeneratorRuntime.awrap(promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET));
 
         case 4:
-          decoded = _context9.sent;
-          _context9.next = 7;
+          decoded = _context10.sent;
+          _context10.next = 7;
           return regeneratorRuntime.awrap(User.findById(decoded.id));
 
         case 7:
-          currentUser = _context9.sent;
+          currentUser = _context10.sent;
 
           if (!currentUser) {
             next(new AppError("User no longer exists!", 404));
@@ -613,7 +690,7 @@ exports.isLoggedInBool = catchAsync(function _callee9(req, res, next) {
 
         case 12:
         case "end":
-          return _context9.stop();
+          return _context10.stop();
       }
     }
   });
