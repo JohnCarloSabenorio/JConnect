@@ -45,6 +45,7 @@ var messageSchema = new mongoose.Schema({
     "default": "message"
   },
   images: [String],
+  files: [String],
   conversation: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Conversation",

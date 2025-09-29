@@ -64,7 +64,7 @@ exports.resizeImages = catchAsync(function _callee2(req, res, next) {
           return _context2.abrupt("return", next());
 
         case 2:
-          console.log("the files do exist!");
+          console.log("the files do exist:", req.files);
           req.body.images = [];
           _context2.next = 6;
           return regeneratorRuntime.awrap(Promise.all(req.files.images.map(function _callee(image, idx) {

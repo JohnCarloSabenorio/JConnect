@@ -59,6 +59,7 @@ const messageSchema = new mongoose.Schema(
     },
 
     images: [String],
+    files: [String],
     conversation: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Conversation",

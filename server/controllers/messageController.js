@@ -34,7 +34,7 @@ exports.uploadImages = upload.fields([{ name: "images", maxCount: 10 }]);
 exports.resizeImages = catchAsync(async (req, res, next) => {
   // Check if image exists in the request
   if (!req.files || !req.files.images) return next();
-  console.log("the files do exist!");
+  console.log("the files do exist:", req.files);
   req.body.images = [];
   await Promise.all(
     req.files.images.map(async (image, idx) => {
