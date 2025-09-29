@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateUserConversation } from "../api/conversation";
 import { socket } from "../socket";
 import { UserContext } from "../App";
 import { useContext } from "react";

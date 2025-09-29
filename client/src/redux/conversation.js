@@ -243,8 +243,6 @@ const conversationSlice = createSlice({
     },
 
     updateAConvoNickname: (state, action) => {
-      console.log("YEP THIS IS THE ONE:", action.payload);
-
       state.allDirectConversation = state.allDirectConversation
         .map((userConversation) => {
           if (userConversation._id === action.payload[0]) {
@@ -261,6 +259,42 @@ const conversationSlice = createSlice({
             new Date(a.conversation.updatedAt)
         );
     },
+
+    updateConvoStatus: (state, action) => {
+      state.allDirectConversation = state.allDirectConversation
+        .map((userConversation) => {
+          if (userConversation._id === action.payload[0]) {
+            return {
+              ...userConversation,
+              status: action.payload[1],
+            };
+          }
+          return userConversation;
+        })
+        .sort(
+          (a, b) =>
+            new Date(b.conversation.updatedAt) -
+            new Date(a.conversation.updatedAt)
+        );
+    },
+    updateConvoStatusGroup: (state, action) => {
+      state.allGroupConversation = state.allGroupConversation
+        .map((userConversation) => {
+          if (userConversation._id === action.payload[0]) {
+            return {
+              ...userConversation,
+              status: action.payload[1],
+            };
+          }
+          return userConversation;
+        })
+        .sort(
+          (a, b) =>
+            new Date(b.conversation.updatedAt) -
+            new Date(a.conversation.updatedAt)
+        );
+    },
+
     updateAConvoConvoName: (state, action) => {
       state.allDirectConversation = state.allDirectConversation
         .map((userConversation) => {
@@ -358,6 +392,8 @@ export const {
   filterArchivedConvo,
   setFilteredConvoMembers,
   addGroupConversation,
+  updateConvoStatus,
+  updateConvoStatusGroup,
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

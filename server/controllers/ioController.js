@@ -357,7 +357,7 @@ exports.reactToMesage = async (io, socket, data) => {
 
 exports.sendNotification = async (io, socket, data) => {
   // Create notification
-
+  let isMuted = false;
   try {
     let notificationData = {
       message: data.message,
@@ -416,24 +416,30 @@ exports.sendNotification = async (io, socket, data) => {
       }
 
       notificationData["userconversation"] = userConversation._id;
+
+      console.log("the user conversation:", userConversation);
+      isMuted = userConversation.status == "muted";
     }
 
     // Retrieve the "user convo" of the conversation
 
     let newNotification = await Notification.create(notificationData);
 
-    console.log("THE USER CONVO IN NOTIF:", newNotification.userconversation);
     if (newNotification.userconversation) {
       newNotification = await newNotification.populate("userconversation");
     }
     newNotification = await newNotification.populate("actor");
     newNotification = newNotification.toObject({ virtuals: true });
 
-    console.log("new notification data:", newNotification);
-    io.to(`user_${data.receiver}`).emit(
-      "receive notification",
-      newNotification
-    );
+    console.log("new notification data:", {
+      ...newNotification,
+      isMuted: isMuted,
+    });
+
+    io.to(`user_${data.receiver}`).emit("receive notification", {
+      ...newNotification,
+      isMuted: isMuted,
+    });
   } catch (err) {
     console.log("Failed to create new notification:", err);
   }

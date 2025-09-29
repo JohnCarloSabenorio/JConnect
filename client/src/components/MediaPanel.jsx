@@ -1,4 +1,4 @@
-import { useState, useContext, useRef } from "react";
+import { useState, useContext, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setIsHidden } from "../redux/overlay";
 import { setHideAddMemberOverlay } from "../redux/addMemberOverlay";
@@ -10,8 +10,13 @@ import { UserContext } from "../App";
 import { updateConversation } from "../api/conversation";
 import { socket } from "../socket";
 import { PhotoProvider, PhotoView } from "react-photo-view";
+import { updateUserConversation } from "../api/conversation";
 import "react-photo-view/dist/react-photo-view.css";
-
+import {
+  setConversationStatus,
+  updateConvoStatus,
+  updateConvoStatusGroup,
+} from "../redux/conversation";
 export default function MediaPanel({ getUserConversations }) {
   const {
     currentConvoName,
@@ -19,8 +24,10 @@ export default function MediaPanel({ getUserConversations }) {
     activeConvoIsGroup,
     userIsFriend,
     activeConvo,
+    activeUserConvo,
     activeConvoMembers,
     activeConvoIsArchived,
+    conversationStatus,
   } = useSelector((state) => state.conversation);
   const { user } = useContext(UserContext);
   const dispatch = useDispatch();
@@ -40,6 +47,31 @@ export default function MediaPanel({ getUserConversations }) {
   const changePhotoRef = useRef();
   function handleChangePhotoClick() {
     changePhotoRef.current.click();
+  }
+
+  async function handleUpdateNotification() {
+    dispatch(setConversationStatus(isMuted ? "active" : "muted"));
+
+    if (activeConvoIsGroup) {
+      console.log("updating chuchu:");
+      dispatch(
+        updateConvoStatusGroup([activeUserConvo, isMuted ? "active" : "muted"])
+      );
+    } else {
+      console.log("updating direct:", isMuted ? "active" : "muted");
+      dispatch(
+        updateConvoStatus([activeUserConvo, isMuted ? "active" : "muted"])
+      );
+    }
+
+    const updatedUserConversation = await updateUserConversation(
+      activeUserConvo,
+      { status: isMuted ? "active" : "muted" }
+    );
+
+    setIsMuted((prev) => !prev);
+
+    console.log("updated user conversation status:", updatedUserConversation);
   }
 
   async function handleChangePhotoUpdate(file) {
@@ -63,6 +95,11 @@ export default function MediaPanel({ getUserConversations }) {
     });
   }
 
+  useEffect(() => {
+    console.log("conversation status changed:", conversationStatus);
+    setIsMuted(conversationStatus == "muted");
+  }, [activeUserConvo]);
+
   return (
     <div
       className={`border-0.5 w-100 h-full overflow-y-scroll ${
@@ -83,8 +120,10 @@ export default function MediaPanel({ getUserConversations }) {
         <div className="flex justify-center gap-3 mt-5">
           {/* Notifications Button */}
           <button
-            onClick={(e) => setIsMuted((prev) => !prev)}
-            className="cursor-pointer shadow-lg p-2 text-sm flex justify-center items-center rounded-full"
+            onClick={(e) => handleUpdateNotification()}
+            className={`${
+              activeConvoIsArchived ? "hidden" : "flex"
+            } cursor-pointer shadow-lg p-2 text-sm justify-center items-center rounded-full`}
           >
             {isMuted ? (
               <svg
@@ -394,9 +433,8 @@ export default function MediaPanel({ getUserConversations }) {
           >
             <PhotoProvider>
               {mediaImages.map((imageBlob, idx) => (
-                <PhotoView src={imageBlob}>
+                <PhotoView src={imageBlob} key={idx}>
                   <img
-                    key={idx}
                     src={imageBlob}
                     className="w-30 h-30 object-cover cursor-pointer"
                   ></img>

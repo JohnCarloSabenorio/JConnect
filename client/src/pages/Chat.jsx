@@ -345,9 +345,10 @@ export default function Chat() {
   // This will handle notification emits
   useEffect(() => {
     const handleReceiveNotification = (data) => {
+      console.log("the notification data:", data);
       dispatch(addNotification(data));
 
-      if (document.hidden) {
+      if (!data.isMuted) {
         const audio = new Audio("audios/notif.wav");
         audio.play().catch((err) => {
           console.log("error playing notification sound:", err);
@@ -911,7 +912,7 @@ export default function Chat() {
                   <button
                     type="button"
                     className={"cursor-pointer"}
-                    disabled={conversationStatus != "active"}
+                    disabled={conversationStatus == "archived"}
                     onClick={handleFileInputClick}
                   >
                     <svg
@@ -1134,7 +1135,7 @@ export default function Chat() {
                       }
                     }}
                     onInput={(e) => setInputMessage(e.target.textContent)}
-                    contentEditable={conversationStatus == "active"}
+                    contentEditable={conversationStatus != "archived"}
                     suppressContentEditableWarning={true}
                   ></div>
 
@@ -1160,7 +1161,7 @@ export default function Chat() {
                             dispatch(setEmojiPickerIsOpen(!emojiPickerIsOpen));
                           }}
                           className="cursor-pointer"
-                          disabled={conversationStatus != "active"}
+                          disabled={conversationStatus == "archived"}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"

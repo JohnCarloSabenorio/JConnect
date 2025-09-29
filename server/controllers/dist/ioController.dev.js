@@ -566,13 +566,15 @@ exports.reactToMesage = function _callee9(io, socket, data) {
 };
 
 exports.sendNotification = function _callee10(io, socket, data) {
-  var notificationData, existingNotification, userConversation, _existingNotification, newNotification;
+  var isMuted, notificationData, existingNotification, userConversation, _existingNotification, newNotification;
 
   return regeneratorRuntime.async(function _callee10$(_context10) {
     while (1) {
       switch (_context10.prev = _context10.next) {
         case 0:
-          _context10.prev = 0;
+          // Create notification
+          isMuted = false;
+          _context10.prev = 1;
           notificationData = {
             message: data.message,
             receiver: data.receiver,
@@ -582,60 +584,60 @@ exports.sendNotification = function _callee10(io, socket, data) {
           };
 
           if (!(data.notification_type == "fr_received" || data.notification_type == "fr_accepted")) {
-            _context10.next = 16;
+            _context10.next = 17;
             break;
           }
 
           console.log("sending friend request...");
-          _context10.next = 6;
+          _context10.next = 7;
           return regeneratorRuntime.awrap(Notification.findOne({
             receiver: data.receiver,
             notification_type: data.notification_type,
             actor: data.actor
           }));
 
-        case 6:
+        case 7:
           existingNotification = _context10.sent;
           console.log("the existing notif:", existingNotification);
 
           if (!existingNotification) {
-            _context10.next = 14;
+            _context10.next = 15;
             break;
           }
 
           existingNotification.updatedAt = Date.now();
           existingNotification.seen = false;
-          _context10.next = 13;
+          _context10.next = 14;
           return regeneratorRuntime.awrap(existingNotification.save());
 
-        case 13:
+        case 14:
           return _context10.abrupt("return");
 
-        case 14:
-          _context10.next = 32;
+        case 15:
+          _context10.next = 35;
           break;
 
-        case 16:
+        case 17:
           if (!(data.notification_type == "group_invite" || data.notification_type == "mention" || data.notification_type == "reaction")) {
-            _context10.next = 32;
+            _context10.next = 35;
             break;
           }
 
-          _context10.next = 19;
+          _context10.next = 20;
           return regeneratorRuntime.awrap(UserConversation.findOne({
             user: data.receiver,
             conversation: data.conversation
           }));
 
-        case 19:
+        case 20:
           userConversation = _context10.sent;
 
           if (!(data.notification_type == "reaction")) {
-            _context10.next = 31;
+            _context10.next = 32;
             break;
           }
 
-          _context10.next = 23;
+          _context10.next = 24;
           return regeneratorRuntime.awrap(Notification.findOne({
             receiver: data.receiver,
             notification_type: data.notification_type,
@@ -643,68 +645,73 @@ exports.sendNotification = function _callee10(io, socket, data) {
             messageId: data.messageId
           }));
 
-        case 23:
+        case 24:
           _existingNotification = _context10.sent;
 
           if (!_existingNotification) {
-            _context10.next = 31;
+            _context10.next = 32;
             break;
           }
 
           _existingNotification.updatedAt = Date.now();
           _existingNotification.seen = false;
           _existingNotification.message = data.message;
-          _context10.next = 30;
+          _context10.next = 31;
           return regeneratorRuntime.awrap(_existingNotification.save());
 
-        case 30:
+        case 31:
           return _context10.abrupt("return");
 
-        case 31:
-          notificationData["userconversation"] = userConversation._id;
-
         case 32:
-          _context10.next = 34;
+          notificationData["userconversation"] = userConversation._id;
+          console.log("the user conversation:", userConversation);
+          isMuted = userConversation.status == "muted";
+
+        case 35:
+          _context10.next = 37;
           return regeneratorRuntime.awrap(Notification.create(notificationData));
 
-        case 34:
+        case 37:
           newNotification = _context10.sent;
-          console.log("THE USER CONVO IN NOTIF:", newNotification.userconversation);
 
           if (!newNotification.userconversation) {
-            _context10.next = 40;
+            _context10.next = 42;
             break;
           }
 
-          _context10.next = 39;
+          _context10.next = 41;
           return regeneratorRuntime.awrap(newNotification.populate("userconversation"));
 
-        case 39:
+        case 41:
           newNotification = _context10.sent;
 
-        case 40:
-          _context10.next = 42;
+        case 42:
+          _context10.next = 44;
           return regeneratorRuntime.awrap(newNotification.populate("actor"));
 
-        case 42:
+        case 44:
           newNotification = _context10.sent;
           newNotification = newNotification.toObject({
             virtuals: true
           });
-          console.log("new notification data:", newNotification);
-          io.to("user_".concat(data.receiver)).emit("receive notification", newNotification);
-          _context10.next = 51;
+          console.log("new notification data:", _objectSpread({}, newNotification, {
+            isMuted: isMuted
+          }));
+          io.to("user_".concat(data.receiver)).emit("receive notification", _objectSpread({}, newNotification, {
+            isMuted: isMuted
+          }));
+          _context10.next = 53;
           break;
 
-        case 48:
-          _context10.prev = 48;
-          _context10.t0 = _context10["catch"](0);
+        case 50:
+          _context10.prev = 50;
+          _context10.t0 = _context10["catch"](1);
           console.log("Failed to create new notification:", _context10.t0);
 
-        case 51:
+        case 53:
         case "end":
           return _context10.stop();
       }
     }
-  }, null, null, [[0, 48]]);
+  }, null, null, [[1, 50]]);
 };
