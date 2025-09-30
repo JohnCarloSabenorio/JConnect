@@ -107,10 +107,9 @@ exports.archiveConversation = catchAsync(function _callee3(req, res, next) {
       }
     }
   });
-}); // Unarchive an existing conversation
-
-exports.unarchiveConversation = catchASync(function _callee4(req, res, next) {
-  var unarchivedConvo;
+});
+exports.blockConversation = catchAsync(function _callee4(req, res, next) {
+  var blockedConvo;
   return regeneratorRuntime.async(function _callee4$(_context4) {
     while (1) {
       switch (_context4.prev = _context4.next) {
@@ -120,18 +119,57 @@ exports.unarchiveConversation = catchASync(function _callee4(req, res, next) {
             user: req.user.id,
             conversation: req.params.id
           }, {
-            status: "active"
+            status: "blocked"
           }));
 
         case 2:
-          unarchivedConvo = _context4.sent;
+          blockedConvo = _context4.sent;
 
-          if (unarchivedConvo) {
+          if (archivedConvo) {
             _context4.next = 5;
             break;
           }
 
-          return _context4.abrupt("return", next(new AppError("Failed to restore archived conversation!", 400)));
+          return _context4.abrupt("return", next(new AppError("Failed to archive conversation!", 400)));
+
+        case 5:
+          console.log("BLOCKED CONVERASTION");
+          res.status(200).json({
+            status: "success",
+            blockedConvo: blockedConvo
+          });
+
+        case 7:
+        case "end":
+          return _context4.stop();
+      }
+    }
+  });
+}); // Unarchive an existing conversation
+
+exports.unarchiveConversation = catchASync(function _callee5(req, res, next) {
+  var unarchivedConvo;
+  return regeneratorRuntime.async(function _callee5$(_context5) {
+    while (1) {
+      switch (_context5.prev = _context5.next) {
+        case 0:
+          _context5.next = 2;
+          return regeneratorRuntime.awrap(UserConversation.findOneAndUpdate({
+            user: req.user.id,
+            conversation: req.params.id
+          }, {
+            status: "active"
+          }));
+
+        case 2:
+          unarchivedConvo = _context5.sent;
+
+          if (unarchivedConvo) {
+            _context5.next = 5;
+            break;
+          }
+
+          return _context5.abrupt("return", next(new AppError("Failed to restore archived conversation!", 400)));
 
         case 5:
           res.status(200).json({
@@ -141,25 +179,62 @@ exports.unarchiveConversation = catchASync(function _callee4(req, res, next) {
 
         case 6:
         case "end":
-          return _context4.stop();
+          return _context5.stop();
       }
     }
   });
 });
-exports.getConversationName = catchASync(function _callee5(req, res, next) {
-  var conversation;
-  return regeneratorRuntime.async(function _callee5$(_context5) {
+exports.unblockConversation = catchAsync(function _callee6(req, res, next) {
+  var unblockedConvo;
+  return regeneratorRuntime.async(function _callee6$(_context6) {
     while (1) {
-      switch (_context5.prev = _context5.next) {
+      switch (_context6.prev = _context6.next) {
         case 0:
-          _context5.next = 2;
+          _context6.next = 2;
+          return regeneratorRuntime.awrap(UserConversation.findOneAndUpdate({
+            user: req.user.id,
+            conversation: req.params.id
+          }, {
+            status: "active"
+          }));
+
+        case 2:
+          unblockedConvo = _context6.sent;
+
+          if (unblockedConvo) {
+            _context6.next = 5;
+            break;
+          }
+
+          return _context6.abrupt("return", next(new AppError("Failed to restore archived conversation!", 400)));
+
+        case 5:
+          res.status(200).json({
+            status: "success",
+            unblockedConvo: unblockedConvo
+          });
+
+        case 6:
+        case "end":
+          return _context6.stop();
+      }
+    }
+  });
+});
+exports.getConversationName = catchASync(function _callee7(req, res, next) {
+  var conversation;
+  return regeneratorRuntime.async(function _callee7$(_context7) {
+    while (1) {
+      switch (_context7.prev = _context7.next) {
+        case 0:
+          _context7.next = 2;
           return regeneratorRuntime.awrap(UserConversation.find({
             user: req.user.id,
             conversation: req.params.convoId
           }));
 
         case 2:
-          conversation = _context5.sent;
+          conversation = _context7.sent;
           console.log("THE CONVERSATION:", conversation);
           res.status(200).json({
             status: "success",
@@ -168,21 +243,21 @@ exports.getConversationName = catchASync(function _callee5(req, res, next) {
 
         case 5:
         case "end":
-          return _context5.stop();
+          return _context7.stop();
       }
     }
   });
 });
-exports.getConversationWithUser = catchAsync(function _callee6(req, res, next) {
+exports.getConversationWithUser = catchAsync(function _callee8(req, res, next) {
   var convo, userConversation;
-  return regeneratorRuntime.async(function _callee6$(_context6) {
+  return regeneratorRuntime.async(function _callee8$(_context8) {
     while (1) {
-      switch (_context6.prev = _context6.next) {
+      switch (_context8.prev = _context8.next) {
         case 0:
           console.log("GETTING user conversation record...");
           console.log("THE FCKIN USER:", req.params.userId); // Check if conversation exists using id of two users
 
-          _context6.next = 4;
+          _context8.next = 4;
           return regeneratorRuntime.awrap(Conversation.findOne({
             users: {
               $all: [req.params.userId, req.user.id]
@@ -195,22 +270,22 @@ exports.getConversationWithUser = catchAsync(function _callee6(req, res, next) {
           }));
 
         case 4:
-          convo = _context6.sent;
+          convo = _context8.sent;
           userConversation = null; // Get the user conversation record that matches the current user and conversation
 
           if (!convo) {
-            _context6.next = 10;
+            _context8.next = 10;
             break;
           }
 
-          _context6.next = 9;
+          _context8.next = 9;
           return regeneratorRuntime.awrap(UserConversation.findOne({
             user: req.user.id,
             conversation: convo._id
           }).populate("conversation"));
 
         case 9:
-          userConversation = _context6.sent;
+          userConversation = _context8.sent;
 
         case 10:
           console.log("THE USER CONVERSATION:", userConversation);
@@ -222,31 +297,31 @@ exports.getConversationWithUser = catchAsync(function _callee6(req, res, next) {
 
         case 12:
         case "end":
-          return _context6.stop();
+          return _context8.stop();
       }
     }
   });
 });
-exports.activateUserConversation = catchASync(function _callee7(req, res, next) {
+exports.activateUserConversation = catchASync(function _callee9(req, res, next) {
   var userConversation;
-  return regeneratorRuntime.async(function _callee7$(_context7) {
+  return regeneratorRuntime.async(function _callee9$(_context9) {
     while (1) {
-      switch (_context7.prev = _context7.next) {
+      switch (_context9.prev = _context9.next) {
         case 0:
-          _context7.next = 2;
+          _context9.next = 2;
           return regeneratorRuntime.awrap(UserConversation.findByIdAndUpdate(req.params.userConvoId, {
             status: "active"
           }));
 
         case 2:
-          userConversation = _context7.sent;
+          userConversation = _context9.sent;
 
           if (userConversation) {
-            _context7.next = 5;
+            _context9.next = 5;
             break;
           }
 
-          return _context7.abrupt("return", next(new AppError("Failed to activate user conversation!", 400)));
+          return _context9.abrupt("return", next(new AppError("Failed to activate user conversation!", 400)));
 
         case 5:
           res.status(200).json({
@@ -257,20 +332,20 @@ exports.activateUserConversation = catchASync(function _callee7(req, res, next) 
 
         case 6:
         case "end":
-          return _context7.stop();
+          return _context9.stop();
       }
     }
   });
 });
-exports.getUserNamesAndNicknames = catchASync(function _callee8(req, res, next) {
+exports.getUserNamesAndNicknames = catchASync(function _callee10(req, res, next) {
   var userConversations;
-  return regeneratorRuntime.async(function _callee8$(_context8) {
+  return regeneratorRuntime.async(function _callee10$(_context10) {
     while (1) {
-      switch (_context8.prev = _context8.next) {
+      switch (_context10.prev = _context10.next) {
         case 0:
           console.log("getting names..."); // Find all user-convo data in the conversation
 
-          _context8.next = 3;
+          _context10.next = 3;
           return regeneratorRuntime.awrap(UserConversation.find({
             conversation: req.params.convoId
           }).populate({
@@ -279,7 +354,7 @@ exports.getUserNamesAndNicknames = catchASync(function _callee8(req, res, next) 
           }));
 
         case 3:
-          userConversations = _context8.sent;
+          userConversations = _context10.sent;
           userConversations = userConversations.map(function (doc) {
             return doc.toObject({
               virtuals: true
@@ -294,7 +369,7 @@ exports.getUserNamesAndNicknames = catchASync(function _callee8(req, res, next) 
 
         case 7:
         case "end":
-          return _context8.stop();
+          return _context10.stop();
       }
     }
   });
