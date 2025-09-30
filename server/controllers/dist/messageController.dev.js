@@ -22,16 +22,13 @@ var multer = require("multer"); // For handling form data
 var sharp = require("sharp"); // For saving and manipulating images
 
 
-var multerstorage = multer.memoryStorage(); // For now, messages wil only accept images as file inputs
+var multerstorage = multer.memoryStorage();
+
+var fs = require("fs"); // For now, messages wil only accept images as file inputs
+
 
 var multerFilter = function multerFilter(req, file, cb) {
-  console.log("FILE:", file);
-
-  if (file.mimetype.startsWith("image")) {
-    cb(null, true);
-  } else {
-    cb(new AppError("Not an image! Please try again.", 400), false);
-  }
+  cb(null, true);
 };
 
 var upload = multer({
@@ -49,24 +46,36 @@ exports.initSenderConvo = function (req, res, next) {
 exports.uploadImages = upload.fields([{
   name: "images",
   maxCount: 10
+}, {
+  name: "files",
+  maxCount: 5
 }]); // Resize images (try to refcator it so that the resolution of the iamge remains the same)
 
-exports.resizeImages = catchAsync(function _callee2(req, res, next) {
-  return regeneratorRuntime.async(function _callee2$(_context2) {
+exports.resizeImages = catchAsync(function _callee3(req, res, next) {
+  return regeneratorRuntime.async(function _callee3$(_context3) {
     while (1) {
-      switch (_context2.prev = _context2.next) {
+      switch (_context3.prev = _context3.next) {
         case 0:
-          if (!(!req.files || !req.files.images)) {
-            _context2.next = 2;
+          console.log("FILESZ:", req.files); // Check if image exists in the request
+
+          if (req.files) {
+            _context3.next = 3;
             break;
           }
 
-          return _context2.abrupt("return", next());
+          return _context3.abrupt("return", next());
 
-        case 2:
+        case 3:
           console.log("the files do exist:", req.files);
           req.body.images = [];
-          _context2.next = 6;
+          req.body.files = [];
+
+          if (!req.files.images) {
+            _context3.next = 9;
+            break;
+          }
+
+          _context3.next = 9;
           return regeneratorRuntime.awrap(Promise.all(req.files.images.map(function _callee(image, idx) {
             var filename;
             return regeneratorRuntime.async(function _callee$(_context) {
@@ -91,21 +100,46 @@ exports.resizeImages = catchAsync(function _callee2(req, res, next) {
             });
           })));
 
-        case 6:
+        case 9:
+          if (req.files.files) {
+            req.files.files.map(function _callee2(file, idx) {
+              var filename, filePath;
+              return regeneratorRuntime.async(function _callee2$(_context2) {
+                while (1) {
+                  switch (_context2.prev = _context2.next) {
+                    case 0:
+                      // Rename the file
+                      filename = "file-".concat(req.user.id, "-").concat(Date.now(), "-").concat(idx, "-").concat(file.originalname);
+                      filePath = "public/files/sentFiles/".concat(filename);
+                      fs.writeFileSync(filePath, file.buffer);
+                      req.body.files.push({
+                        originalname: file.originalname,
+                        storagename: filename
+                      });
+
+                    case 4:
+                    case "end":
+                      return _context2.stop();
+                  }
+                }
+              });
+            });
+          }
+
           next();
 
-        case 7:
+        case 11:
         case "end":
-          return _context2.stop();
+          return _context3.stop();
       }
     }
   });
 });
-exports.reactToMessage = catchAsync(function _callee3(req, res) {
+exports.reactToMessage = catchAsync(function _callee4(req, res) {
   var reactionData, message, existingReaction;
-  return regeneratorRuntime.async(function _callee3$(_context3) {
+  return regeneratorRuntime.async(function _callee4$(_context4) {
     while (1) {
-      switch (_context3.prev = _context3.next) {
+      switch (_context4.prev = _context4.next) {
         case 0:
           console.log("REACTING TO MESSAGE!");
           console.log("THE MESSAGE ID:", req.params.messageId);
@@ -115,19 +149,19 @@ exports.reactToMessage = catchAsync(function _callee3(req, res) {
             user: req.user._id
           }; // find the message
 
-          _context3.next = 6;
+          _context4.next = 6;
           return regeneratorRuntime.awrap(Message.findById(req.params.messageId));
 
         case 6:
-          message = _context3.sent;
+          message = _context4.sent;
 
           if (message) {
-            _context3.next = 10;
+            _context4.next = 10;
             break;
           }
 
           console.log("MESSAGE DOES NOT EXIST!");
-          return _context3.abrupt("return", next(new AppError("Message does not exist", 400)));
+          return _context4.abrupt("return", next(new AppError("Message does not exist", 400)));
 
         case 10:
           // find the existing reaction in the message
@@ -141,7 +175,7 @@ exports.reactToMessage = catchAsync(function _callee3(req, res) {
           message.reactions = message.reactions.filter(function (reaction) {
             return reaction.user._id.toString() != req.user._id.toString();
           });
-          _context3.next = 17;
+          _context4.next = 17;
           return regeneratorRuntime.awrap(message.save());
 
         case 17:
@@ -159,7 +193,7 @@ exports.reactToMessage = catchAsync(function _callee3(req, res) {
             message.reactions.push(reactionData);
           }
 
-          _context3.next = 20;
+          _context4.next = 20;
           return regeneratorRuntime.awrap(message.save());
 
         case 20:
@@ -171,22 +205,22 @@ exports.reactToMessage = catchAsync(function _callee3(req, res) {
 
         case 21:
         case "end":
-          return _context3.stop();
+          return _context4.stop();
       }
     }
   });
 });
-exports.unreactToMessage = catchAsync(function _callee4(req, res) {
+exports.unreactToMessage = catchAsync(function _callee5(req, res) {
   var reactionData, updatedMessage;
-  return regeneratorRuntime.async(function _callee4$(_context4) {
+  return regeneratorRuntime.async(function _callee5$(_context5) {
     while (1) {
-      switch (_context4.prev = _context4.next) {
+      switch (_context5.prev = _context5.next) {
         case 0:
           reactionData = {
             unified: req.body.unified,
             user: req.user.id
           };
-          _context4.next = 3;
+          _context5.next = 3;
           return regeneratorRuntime.awrap(Message.findByIdAndUpdate(req.params.messageId, {
             $pull: {
               reactions: {
@@ -198,7 +232,7 @@ exports.unreactToMessage = catchAsync(function _callee4(req, res) {
           }));
 
         case 3:
-          updatedMessage = _context4.sent;
+          updatedMessage = _context5.sent;
           res.status(204).json({
             status: "success",
             message: "Successfully unreacted to message."
@@ -206,29 +240,29 @@ exports.unreactToMessage = catchAsync(function _callee4(req, res) {
 
         case 5:
         case "end":
-          return _context4.stop();
+          return _context5.stop();
       }
     }
   });
 });
-exports.getTopMessageEmojis = catchAsync(function _callee5(req, res) {
+exports.getTopMessageEmojis = catchAsync(function _callee6(req, res) {
   var message, reactionsCount, topReactions;
-  return regeneratorRuntime.async(function _callee5$(_context5) {
+  return regeneratorRuntime.async(function _callee6$(_context6) {
     while (1) {
-      switch (_context5.prev = _context5.next) {
+      switch (_context6.prev = _context6.next) {
         case 0:
-          _context5.next = 2;
+          _context6.next = 2;
           return regeneratorRuntime.awrap(Message.findById(req.params.messageId));
 
         case 2:
-          message = _context5.sent;
+          message = _context6.sent;
 
           if (message) {
-            _context5.next = 5;
+            _context6.next = 5;
             break;
           }
 
-          return _context5.abrupt("return", res.status(404).json({
+          return _context6.abrupt("return", res.status(404).json({
             status: "failed",
             message: "message does not exist!"
           }));
@@ -259,29 +293,29 @@ exports.getTopMessageEmojis = catchAsync(function _callee5(req, res) {
 
         case 10:
         case "end":
-          return _context5.stop();
+          return _context6.stop();
       }
     }
   });
 });
-exports.getAllReactions = catchAsync(function _callee6(req, res) {
+exports.getAllReactions = catchAsync(function _callee7(req, res) {
   var message, reactions, sortedReactions;
-  return regeneratorRuntime.async(function _callee6$(_context6) {
+  return regeneratorRuntime.async(function _callee7$(_context7) {
     while (1) {
-      switch (_context6.prev = _context6.next) {
+      switch (_context7.prev = _context7.next) {
         case 0:
-          _context6.next = 2;
+          _context7.next = 2;
           return regeneratorRuntime.awrap(Message.findById(req.params.messageId));
 
         case 2:
-          message = _context6.sent;
+          message = _context7.sent;
 
           if (message) {
-            _context6.next = 5;
+            _context7.next = 5;
             break;
           }
 
-          return _context6.abrupt("return", res.status(404).json({
+          return _context7.abrupt("return", res.status(404).json({
             status: "failed",
             message: "The message does not exist!"
           }));
@@ -311,7 +345,7 @@ exports.getAllReactions = catchAsync(function _callee6(req, res) {
             return arr2.length - arr1.length;
           })); // 4. Return a nested object emoji : [users]
 
-          return _context6.abrupt("return", res.status(200).json({
+          return _context7.abrupt("return", res.status(200).json({
             status: "success",
             message: "Sucessfully retrieved all message reactions",
             reactions: sortedReactions
@@ -319,7 +353,7 @@ exports.getAllReactions = catchAsync(function _callee6(req, res) {
 
         case 11:
         case "end":
-          return _context6.stop();
+          return _context7.stop();
       }
     }
   });

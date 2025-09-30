@@ -59,7 +59,12 @@ const messageSchema = new mongoose.Schema(
     },
 
     images: [String],
-    files: [String],
+    files: [
+      {
+        originalname: { type: String, required: true },
+        storagename: { type: String, required: true },
+      },
+    ],
     conversation: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Conversation",
@@ -88,6 +93,23 @@ messageSchema.virtual("imageUrls").get(function () {
   });
 
   return imageUrls;
+});
+messageSchema.virtual("fileUrls").get(function () {
+  // Check if there is no images property
+  if (!this.files) return null;
+
+  const fileUrls = this.files.map((file) => {
+    if (file.storagename.startsWith("files/sentFiles")) {
+      return file;
+    } else {
+      return {
+        originalname: file.originalname,
+        storagename: `files/sentFiles/${file.storagename}`,
+      };
+    }
+  });
+
+  return fileUrls;
 });
 
 // Document Middlewares

@@ -25,7 +25,7 @@ import {
   leaveConversation,
 } from "../api/conversation";
 import Overlay from "../components/Overlay";
-import { toggleMediaPanel } from "../redux/media";
+import { setMediaFiles, toggleMediaPanel } from "../redux/media";
 import { addNotification } from "../redux/notification";
 import { setEmojiPickerIsOpen } from "../redux/chat";
 import ChangeEmojiOverlay from "../components/ChangeEmojiOverlay";
@@ -114,7 +114,7 @@ export default function Chat() {
 
   // USE STATES
   const { user } = useContext(UserContext);
-  const [fileInputKey, setFileInputKey] = useState(Date.now()); // Unique key for input reset
+  const [imageInputKey, setImageInputKey] = useState(Date.now()); // Unique key for input reset
   const [displayEmoji, setDisplayEmoji] = useState(false);
 
   const { notifActive } = useSelector((state) => state.notification);
@@ -127,8 +127,10 @@ export default function Chat() {
   // This will store the images to be sent by the user
   const [imageBuffers, setImageBuffers] = useState([]);
   const [images, setImages] = useState([]);
+  const [files, setFiles] = useState([]);
 
   const uiChatRef = useRef(null);
+  const imageInputRef = useRef(null);
   const fileInputRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -290,8 +292,9 @@ export default function Chat() {
           dispatch(updateDisplayedMessages(data.messageData));
         }
         setImages([]);
+        setFiles([]);
         setImageBuffers([]);
-        setFileInputKey(Date.now());
+        setImageInputKey(Date.now());
       }
     };
 
@@ -312,8 +315,9 @@ export default function Chat() {
       }
 
       setImages([]);
+      setFiles([]);
       setImageBuffers([]);
-      setFileInputKey(Date.now());
+      setImageInputKey(Date.now());
     };
     socket.on("create message", (data) => handleCreateMessage(data));
 
@@ -421,8 +425,9 @@ export default function Chat() {
       }
 
       setImages([]);
+      setFiles([]);
       setImageBuffers([]);
-      setFileInputKey(Date.now());
+      setImageInputKey(Date.now());
 
       // This should scroll down the chat ui if the user is the sender (NEEDS TO BE FIXED)
 
@@ -457,6 +462,7 @@ export default function Chat() {
     }
 
     setImages([]);
+    setFiles([]);
     setImageBuffers([]);
   }, [displayedMessages]);
 
@@ -519,6 +525,7 @@ export default function Chat() {
       mentions: toMention,
       latestMessage: latestMessage,
       images: images,
+      files: files,
     });
 
     socket.emit("chat message", {
@@ -548,6 +555,9 @@ export default function Chat() {
   }
 
   // This will activate the event of the file picker
+  function handleImageInputClick() {
+    imageInputRef.current.click();
+  }
   function handleFileInputClick() {
     fileInputRef.current.click();
   }
@@ -597,11 +607,14 @@ export default function Chat() {
     // Join a channel for users in the same conversation
     const messages = await getAllUserMessages(convoId);
     let allImages = [];
+    let allFiles = [];
     messages.forEach((messageData) => {
       allImages = [...allImages, ...messageData.imageUrls];
+      allFiles = [...allFiles, ...messageData.fileUrls];
     });
 
     dispatch(setMediaImages(allImages));
+    dispatch(setMediaFiles(allFiles));
 
     dispatch(setActiveConversation([convoName, convoId, userConvoId]));
     dispatch(initDisplayedMessages(messages));
@@ -614,26 +627,45 @@ export default function Chat() {
     const selectedFiles = Array.from(e.target.files);
 
     e.target.value = "";
-    if ([...images, selectedFiles].length > 10) {
-      alert("You can only send up to 10 images at a time!");
+    if ([...images, ...files, selectedFiles].length > 10) {
+      alert("You can only send up to 10 items at a time!");
 
       return;
     }
     // Resets the value of the input files (This way, you can add the image you previously selected);
 
     // const blobUrls = selectedFiles.map((file) => URL.createObjectURL(file));
+
+    console.log("all selected files:", selectedFiles);
     const selectedFilesBuffer = await Promise.all(
       selectedFiles.map((image) => {
-        return new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.readAsArrayBuffer(image);
-          reader.onload = () => resolve(reader.result);
-        });
+        if (image.type.startsWith("image/")) {
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsArrayBuffer(image);
+            reader.onload = () => resolve(reader.result);
+          });
+        }
+        return;
       })
     );
 
     setImages((prev) => [...prev, ...selectedFiles]);
     setImageBuffers((prev) => [...prev, ...selectedFilesBuffer]);
+  }
+  async function handleFilesChange(e) {
+    // Get the array of files selected by the user
+    const selectedFiles = Array.from(e.target.files);
+
+    e.target.value = "";
+    if ([...images, ...files, selectedFiles].length > 10) {
+      alert("You can only send up to 10 items at a time!");
+
+      return;
+    }
+
+    console.log("all files:", selectedFiles);
+    setFiles((prev) => [...prev, ...selectedFiles]);
   }
 
   function getElementBeforeCursor(range) {
@@ -700,6 +732,9 @@ export default function Chat() {
   function removeImage(idx) {
     setImageBuffers((prev) => prev.filter((_, index) => index !== idx));
     setImages((prev) => prev.filter((_, index) => index !== idx));
+  }
+  function removeFile(idx) {
+    setFiles((prev) => prev.filter((_, index) => index !== idx));
   }
 
   return (
@@ -823,7 +858,9 @@ export default function Chat() {
             <div>
               <div
                 className={`p-2 flex gap-3 overflow-x-scroll ${
-                  imageBuffers.length === 0 ? "hidden" : "visible"
+                  imageBuffers.length == 0 && files.length == 0
+                    ? "hidden"
+                    : "visible"
                 }`}
               >
                 {imageBuffers.map((img, idx) => (
@@ -845,6 +882,35 @@ export default function Chat() {
                       className="w-full h-full rounded-md"
                       alt={`Preview ${idx}`}
                     />
+                  </div>
+                ))}
+                {files.map((file, idx) => (
+                  <div
+                    key={idx}
+                    className="relative h-20 gap-1 rounded-md bg-gray-100 flex-shrink-0 flex items-center"
+                  >
+                    <button
+                      onClick={() => {
+                        removeFile(idx);
+                      }}
+                      id={idx}
+                      className="absolute backdrop-blur-2xl bg-white -right-1 -top-1 rounded-full border-white w-4 h-4 flex items-center justify-center cursor-pointer text-xs"
+                    >
+                      x
+                    </button>
+                    <p>{file.name}</p>
+
+                    <div className="bg-gray-300 rounded-full p-0.5">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 -960 960 960"
+                        width="25"
+                        height="25"
+                        fill="black"
+                      >
+                        <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h440l200 200v440q0 33-23.5 56.5T760-120H200Zm0-80h560v-400H600v-160H200v560Zm80-80h400v-80H280v80Zm0-320h200v-80H280v80Zm0 160h400v-80H280v80Zm-80-320v160-160 560-560Z" />
+                      </svg>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -899,16 +965,51 @@ export default function Chat() {
                 <>
                   <div>
                     <input
-                      key={fileInputKey}
+                      key={imageInputKey}
                       type="file"
-                      ref={fileInputRef}
+                      ref={imageInputRef}
                       accept="image/*"
                       onChange={handleImagesChange}
                       multiple
                       hidden
                     />
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      accept=".pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .txt"
+                      onChange={handleFilesChange}
+                      multiple
+                      hidden
+                    />
                   </div>
-                  {/* File input button */}
+                  {/* Image input button */}
+                  <button
+                    type="button"
+                    className={"cursor-pointer"}
+                    disabled={conversationStatus == "archived"}
+                    onClick={handleImageInputClick}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 -960 960 960"
+                      width="30"
+                      height="30"
+                      fill="black"
+                    >
+                      <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm40-80h480L570-480 450-320l-90-120-120 160Zm-40 80v-560 560Z" />
+                    </svg>
+                    {/* <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 -960 960 960"
+                      width="30"
+                      height="30"
+                      fill="black"
+                    >
+                      <path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-370h80v370q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-390h80v390Z" />
+                    </svg> */}
+                  </button>
+
+                  {/* File Input Button */}
                   <button
                     type="button"
                     className={"cursor-pointer"}

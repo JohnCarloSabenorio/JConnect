@@ -4,6 +4,7 @@ const mediaSlice = createSlice({
   name: "media",
   initialState: {
     mediaImages: [],
+    mediaFiles: [],
     displayMediaPanel: true,
     activeMemberMenuId: "",
   },
@@ -11,9 +12,15 @@ const mediaSlice = createSlice({
     setMediaImages: (state, action) => {
       state.mediaImages = action.payload;
     },
+    setMediaFiles: (state, action) => {
+      state.mediaFiles = action.payload;
+    },
 
     addToMediaImages: (state, action) => {
       state.mediaImages = [...state.mediaImages, ...action.payload];
+    },
+    addToMediaFiles: (state, action) => {
+      state.mediaFiles = [...state.mediaFiles, ...action.payload];
     },
 
     toggleMediaPanel: (state, action) => {
@@ -26,7 +33,11 @@ const mediaSlice = createSlice({
   },
 });
 
-export const { setMediaImages, toggleMediaPanel, setActiveMemberMenuId } =
-  mediaSlice.actions;
+export const {
+  setMediaImages,
+  setMediaFiles,
+  toggleMediaPanel,
+  setActiveMemberMenuId,
+} = mediaSlice.actions;
 
 export default mediaSlice.reducer;

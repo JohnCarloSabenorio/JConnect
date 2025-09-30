@@ -5,15 +5,11 @@ const handlerFactory = require("./handlerFactory");
 const multer = require("multer"); // For handling form data
 const sharp = require("sharp"); // For saving and manipulating images
 const multerstorage = multer.memoryStorage();
+const fs = require("fs");
 
 // For now, messages wil only accept images as file inputs
 const multerFilter = (req, file, cb) => {
-  console.log("FILE:", file);
-  if (file.mimetype.startsWith("image")) {
-    cb(null, true);
-  } else {
-    cb(new AppError("Not an image! Please try again.", 400), false);
-  }
+  cb(null, true);
 };
 
 const upload = multer({
@@ -28,27 +24,52 @@ exports.initSenderConvo = (req, res, next) => {
 };
 
 // Upload images
-exports.uploadImages = upload.fields([{ name: "images", maxCount: 10 }]);
+exports.uploadImages = upload.fields([
+  { name: "images", maxCount: 10 },
+  { name: "files", maxCount: 5 },
+]);
 
 // Resize images (try to refcator it so that the resolution of the iamge remains the same)
 exports.resizeImages = catchAsync(async (req, res, next) => {
+  console.log("FILESZ:", req.files);
+
   // Check if image exists in the request
-  if (!req.files || !req.files.images) return next();
+  if (!req.files) return next();
   console.log("the files do exist:", req.files);
   req.body.images = [];
-  await Promise.all(
-    req.files.images.map(async (image, idx) => {
+  req.body.files = [];
+  if (req.files.images) {
+    await Promise.all(
+      req.files.images.map(async (image, idx) => {
+        // Rename the file
+        const filename = `image-${req.user.id}-${Date.now()}-${idx}.jpeg`;
+
+        await sharp(image.buffer)
+          .toFormat("jpeg")
+          .jpeg({ quality: 90 })
+          .toFile(`public/img/sentImages/${filename}`);
+
+        req.body.images.push(filename);
+      })
+    );
+  }
+
+  if (req.files.files) {
+    req.files.files.map(async (file, idx) => {
       // Rename the file
-      const filename = `image-${req.user.id}-${Date.now()}-${idx}.jpeg`;
+      const filename = `file-${req.user.id}-${Date.now()}-${idx}-${
+        file.originalname
+      }`;
+      const filePath = `public/files/sentFiles/${filename}`;
 
-      await sharp(image.buffer)
-        .toFormat("jpeg")
-        .jpeg({ quality: 90 })
-        .toFile(`public/img/sentImages/${filename}`);
+      fs.writeFileSync(filePath, file.buffer);
 
-      req.body.images.push(filename);
-    })
-  );
+      req.body.files.push({
+        originalname: file.originalname,
+        storagename: filename,
+      });
+    });
+  }
 
   next();
 });

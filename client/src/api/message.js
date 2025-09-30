@@ -60,6 +60,11 @@ export async function createMessage(data) {
         formData.append("images", img);
       });
     }
+    if (data.files) {
+      data.files.forEach((file) => {
+        formData.append("files", file);
+      });
+    }
 
     const response = await axios.post("jconnect/api/v1/message", formData, {
       withCredentials: true,

@@ -26,7 +26,7 @@ import { setNamesAndNicknames } from "../redux/nicknamesOverlay";
 import { setEmojiPickerIsOpen } from "../redux/chat";
 
 import { UserContext } from "../App";
-import { setMediaImages } from "../redux/media";
+import { setMediaFiles, setMediaImages } from "../redux/media";
 export default function ConversationCard({
   userConversation,
   isArchived,
@@ -90,11 +90,15 @@ export default function ConversationCard({
     console.log("all the user messages:", messages);
 
     let allImages = [];
+    let allFiles = [];
     messages.forEach((messageData) => {
       allImages = [...allImages, ...messageData.imageUrls];
+      allFiles = [...allFiles, ...messageData.fileUrls];
     });
 
+    console.log("all the freaking files:", allFiles);
     dispatch(setMediaImages(allImages));
+    dispatch(setMediaFiles([allFiles]));
     dispatch(initDisplayedMessages(messages));
     dispatch(setMessageIsLoading(false));
   }

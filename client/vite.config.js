@@ -7,6 +7,7 @@ export default defineConfig({
     proxy: {
       "/jconnect": "http://localhost:3000",
       "/img": "http://localhost:3000",
+      "/files": "http://localhost:3000",
     },
   },
   plugins: [tailwindcss(), react()],

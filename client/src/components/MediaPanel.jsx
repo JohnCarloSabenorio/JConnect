@@ -31,7 +31,7 @@ export default function MediaPanel({ getUserConversations }) {
   } = useSelector((state) => state.conversation);
   const { user } = useContext(UserContext);
   const dispatch = useDispatch();
-  const { mediaImages, displayMediaPanel } = useSelector(
+  const { mediaImages, mediaFiles, displayMediaPanel } = useSelector(
     (state) => state.media
   );
 
@@ -403,6 +403,28 @@ export default function MediaPanel({ getUserConversations }) {
             >
               <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
             </svg>
+          </div>
+
+          <div
+            className={`flex flex-col gap-2 rounded-md overflow-hidden transition-all duration-500 ${
+              filesActive ? "block" : "hidden"
+            }`}
+          >
+            {mediaFiles.map((file, idx) => (
+              <a
+                className="group"
+                href={file.storagename}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <div
+                  className="bg-gray-100 p-3 rounded-md cursor-pointer"
+                  key={idx}
+                >
+                  <p className="group-hover:underline">{file.originalname}</p>
+                </div>
+              </a>
+            ))}
           </div>
 
           {/* Div for toggling list of images */}
