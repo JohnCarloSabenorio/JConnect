@@ -500,6 +500,38 @@ export const Message = React.memo(function Message({
             </PhotoProvider>
           </div>
         </div>
+        {messageData.fileUrls.map((file, idx) => {
+          return (
+            <div
+              key={idx}
+              className={`flex flex-col mt-2 ${
+                isCurrentUser ? "ml-auto mr-0" : "ml-0"
+              }`}
+            >
+              <div className={`max-w-100 flex flex-col gap-2`}>
+                <a
+                  className="group"
+                  href={file.storagename}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="bg-gray-100 p-3 rounded-md items-center cursor-pointer flex flex-wrap justify-end">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="25"
+                      viewBox="0 -960 960 960"
+                      width="25"
+                      fill="black"
+                    >
+                      <path d="M320-440h320v-80H320v80Zm0 120h320v-80H320v80Zm0 120h200v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z" />
+                    </svg>
+                    <p className="group-hover:underline">{file.originalname}</p>
+                  </div>
+                </a>
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
   } else {

@@ -314,6 +314,8 @@ export default function Chat() {
         dispatch(updateDisplayedMessages(data.messageData));
       }
 
+      console.log("message data:", data.messageData);
+
       setImages([]);
       setFiles([]);
       setImageBuffers([]);
@@ -416,6 +418,7 @@ export default function Chat() {
     socket.on("chat message", (data) => {
       // Messages will be updated if the sent messages is for the current conversation
 
+      console.log("chatted:", data.msg);
       if (data.msg.sender._id === user._id) {
         dispatch(setInitialMessageRender(true));
       }
@@ -516,7 +519,8 @@ export default function Chat() {
     inputRef.current.innerHTML = null;
     // IN THE IOCONTROLLER, CHECK IF THE CONVERSATION IS ARCHIVED, IF SO, MOVE IT TO ACTIVE AGAIN
 
-    if (messageToSend == "" && imageBuffers.length == 0) return;
+    if (messageToSend == "" && imageBuffers.length == 0 && files.length == 0)
+      return;
 
     const newMessage = await createMessage({
       message: messageToSend,
@@ -627,7 +631,8 @@ export default function Chat() {
     const selectedFiles = Array.from(e.target.files);
 
     e.target.value = "";
-    if ([...images, ...files, selectedFiles].length > 10) {
+    console.log("fuck shit?:", [...images, ...files, ...selectedFiles].length);
+    if ([...images, ...files, ...selectedFiles].length > 10) {
       alert("You can only send up to 10 items at a time!");
 
       return;
@@ -658,7 +663,7 @@ export default function Chat() {
     const selectedFiles = Array.from(e.target.files);
 
     e.target.value = "";
-    if ([...images, ...files, selectedFiles].length > 10) {
+    if ([...images, ...files, ...selectedFiles].length > 10) {
       alert("You can only send up to 10 items at a time!");
 
       return;
@@ -1275,7 +1280,9 @@ export default function Chat() {
                           </svg>
                         </button>
 
-                        {inputMessage == "" && images.length == 0 ? (
+                        {inputMessage == "" &&
+                        images.length == 0 &&
+                        files.length == 0 ? (
                           <span
                             className="cursor-pointer"
                             onClick={(e) => {

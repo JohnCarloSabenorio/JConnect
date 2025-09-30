@@ -416,11 +416,9 @@ export default function MediaPanel({ getUserConversations }) {
                 href={file.storagename}
                 target="_blank"
                 rel="noopener noreferrer"
+                key={idx}
               >
-                <div
-                  className="bg-gray-100 p-3 rounded-md cursor-pointer"
-                  key={idx}
-                >
+                <div className="bg-gray-100 p-3 rounded-md cursor-pointer">
                   <p className="group-hover:underline">{file.originalname}</p>
                 </div>
               </a>
