@@ -24,6 +24,7 @@ exports.sendFriendRequest = catchAsync(async (req, res, next) => {
     data: friendRequest,
   });
 });
+
 exports.cancelFriendRequest = catchAsync(async (req, res, next) => {
   // 1. Delete friend
   const friendRequest = await Friend.findOneAndDelete({
