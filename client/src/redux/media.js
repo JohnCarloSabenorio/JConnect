@@ -35,6 +35,8 @@ const mediaSlice = createSlice({
 
 export const {
   setMediaImages,
+  addToMediaFiles,
+  addToMediaImages,
   setMediaFiles,
   toggleMediaPanel,
   setActiveMemberMenuId,

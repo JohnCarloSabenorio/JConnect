@@ -25,7 +25,12 @@ import {
   leaveConversation,
 } from "../api/conversation";
 import Overlay from "../components/Overlay";
-import { setMediaFiles, toggleMediaPanel } from "../redux/media";
+import {
+  addToMediaFiles,
+  addToMediaImages,
+  setMediaFiles,
+  toggleMediaPanel,
+} from "../redux/media";
 import { addNotification } from "../redux/notification";
 import { setEmojiPickerIsOpen } from "../redux/chat";
 import ChangeEmojiOverlay from "../components/ChangeEmojiOverlay";
@@ -425,6 +430,8 @@ export default function Chat() {
 
       if (activeConvo == data.convo._id) {
         dispatch(updateDisplayedMessages(data.msg));
+        dispatch(addToMediaFiles(data.msg.fileUrls));
+        dispatch(addToMediaImages(data.msg.imageUrls));
       }
 
       setImages([]);
