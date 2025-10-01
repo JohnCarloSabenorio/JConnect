@@ -23,12 +23,9 @@ export default function OverlayModal() {
 
   // Archive the user conversation record of the current user
   function archiveConvo(convoId) {
-    console.log("active convo is archived:", activeConvoIsArchived);
-    console.log("all direct convo:", allDirectConversation);
-    console.log("ARCHIVING CONVERSATION:", convoId);
     dispatch(filterArchivedConvo(convoId));
     dispatch(setActiveConvoIsArchived(true));
-    setConversationStatus("archived");
+    dispatch(setConversationStatus("archived"));
     archiveConversation(convoId);
     dispatch(setConvoViewMode(activeConvoIsGroup ? 1 : 0));
 
@@ -45,7 +42,7 @@ export default function OverlayModal() {
   function unarchiveConvo(convoId) {
     dispatch(filterRestoredConvo(convoId));
     dispatch(setActiveConvoIsArchived(false));
-    setConversationStatus("active");
+    dispatch(setConversationStatus("active"));
     unarchiveConversation(convoId);
     dispatch(setConvoViewMode(activeConvoIsGroup ? 1 : 0));
 

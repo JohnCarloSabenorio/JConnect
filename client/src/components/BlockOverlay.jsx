@@ -26,12 +26,16 @@ export default function BlockOverlay() {
   const { displayBlockOverlay } = useSelector((state) => state.overlay);
 
   // Archive the user conversation record of the current user
-  function blockConvo(convoId) {
+  async function blockConvo(convoId) {
+    const response = await blockConversation(convoId);
+    dispatch(setConversationStatus("blocked"));
     dispatch(setDisplayBlockOverlay(false));
   }
 
   // Unarchive the user conversation record of the current user
-  function unblockConvo(convoId) {
+  async function unblockConvo(convoId) {
+    const response = await unblockConversation(convoId);
+    dispatch(setConversationStatus("active"));
     dispatch(setDisplayBlockOverlay(false));
   }
 

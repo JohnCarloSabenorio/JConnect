@@ -220,7 +220,7 @@ export async function blockConversation(convoId) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    const responseData = response.data;
+    return response.data;
   } catch (err) {
     // console.log("Failed to check if conversation is archived: ", err);
   }
@@ -251,7 +251,7 @@ export async function unblockConversation(convoId) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    const responseData = response.data;
+    return response.data;
   } catch (err) {
     // console.log("Failed to check if conversation is archived: ", err);
   }
