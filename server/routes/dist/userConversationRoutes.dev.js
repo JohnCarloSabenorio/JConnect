@@ -20,7 +20,7 @@ router.get("/get-names-nicknames/:convoId", controller.getUserNamesAndNicknames)
 router.get("/get-convo-with-user/:userId", controller.getConversationWithUser);
 router.patch("/archive/:id", controller.archiveConversation);
 router.patch("/unarchive/:id", controller.unarchiveConversation);
-router.patch("/archive/:id", controller.blockConversation);
-router.patch("/unarchive/:id", controller.unblockConversation);
+router.patch("/block/:id", controller.blockConversation);
+router.patch("/unblock/:id", controller.unblockConversation);
 router.patch("/activate/:userConvoId", controller.activateUserConversation);
 module.exports = router;

@@ -98,7 +98,7 @@ export default function ConversationCard({
 
     console.log("all the freaking files:", allFiles);
     dispatch(setMediaImages(allImages));
-    dispatch(setMediaFiles([allFiles]));
+    dispatch(setMediaFiles(allFiles));
     dispatch(initDisplayedMessages(messages));
     dispatch(setMessageIsLoading(false));
   }
