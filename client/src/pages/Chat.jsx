@@ -78,6 +78,7 @@ import CreateGroupChatOverlay from "../components/CreateGroupChatOverlay";
 import ChangeChatNameOverlay from "../components/ChangeChatNameOverlay";
 import MessagesContainer from "../components/MessagesContainer";
 import NicknamesOverlay from "../components/NicknamesOverlay";
+import BlockOverlay from "../components/BlockOverlay";
 import { setNamesAndNicknames } from "../redux/nicknamesOverlay";
 import { getNamesAndNicknames } from "../api/conversation";
 import { updateFriendStatus, setAllFriends } from "../redux/friend";
@@ -754,6 +755,7 @@ export default function Chat() {
       <div className="flex flex-col h-screen overflow-hidden">
         {/* Overlays */}
 
+        <BlockOverlay />
         <NicknamesOverlay />
         <ChangeEmojiOverlay />
         <ChangeChatNameOverlay />

@@ -11,6 +11,7 @@ import { updateConversation } from "../api/conversation";
 import { socket } from "../socket";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import { updateUserConversation } from "../api/conversation";
+import { setDisplayBlockOverlay } from "../redux/overlay";
 import "react-photo-view/dist/react-photo-view.css";
 import {
   setConversationStatus,
@@ -153,6 +154,9 @@ export default function MediaPanel({ getUserConversations }) {
             className={`${
               activeConvoIsGroup ? "hidden" : "block"
             } cursor-pointer shadow-lg p-2 text-sm flex justify-center items-center rounded-full`}
+            onClick={(e) => {
+              dispatch(setDisplayBlockOverlay(true));
+            }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
