@@ -11,6 +11,8 @@ import {
   setConversationStatus,
 } from "../redux/conversation";
 
+import { blockConversation } from "../api/conversation";
+import { unblockConversation } from "../api/conversation";
 import { setConvoViewMode, updateSidebar } from "../redux/sidebar";
 export default function BlockOverlay() {
   const {

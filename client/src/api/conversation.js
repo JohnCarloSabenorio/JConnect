@@ -210,12 +210,41 @@ export async function archiveConversation(convoId) {
     // console.log("Failed to check if conversation is archived: ", err);
   }
 }
+export async function blockConversation(convoId) {
+  try {
+    const response = await axios.patch(
+      `jconnect/api/v1/conversation/userConvo/block/${convoId}`
+    );
 
+    if (!response.status === 200) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const responseData = response.data;
+  } catch (err) {
+    // console.log("Failed to check if conversation is archived: ", err);
+  }
+}
 
 export async function unarchiveConversation(convoId) {
   try {
     const response = await axios.patch(
       `jconnect/api/v1/user-conversation/unarchive/${convoId}`
+    );
+
+    if (!response.status === 200) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const responseData = response.data;
+  } catch (err) {
+    // console.log("Failed to check if conversation is archived: ", err);
+  }
+}
+export async function unblockConversation(convoId) {
+  try {
+    const response = await axios.patch(
+      `jconnect/api/v1/user-conversation/unblock/${convoId}`
     );
 
     if (!response.status === 200) {
