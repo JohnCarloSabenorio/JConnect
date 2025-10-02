@@ -158,7 +158,7 @@ export default function SettingsOverlay() {
             </div>
             {/* Notifications Form */}
           </div>
-          <div className="bg-[url(/img/backgrounds/settings-bg.jpg)] relative px-10 bg-fit bg-no-repeat flex-1 flex items-center justify-center">
+          <div className="bg-[url(/images/backgrounds/settings-bg.jpg)] relative px-10 bg-fit bg-no-repeat flex-1 flex items-center justify-center">
             {/* Exit Button */}
             <svg
               xmlns="http://www.w3.org/2000/svg"

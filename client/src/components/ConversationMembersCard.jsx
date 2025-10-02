@@ -195,7 +195,7 @@ export default function ConversationMembersCard({ member }) {
         <div
           className={`${
             activeMemberMenuId === member._id ? "flex" : "hidden"
-          } absolute z-50 top-full mt-3 right-0 rounded-sm w-50 bg-gray-50 shadow-lg origin-top duration-100 flex-col justify-start`}
+          } absolute z-1 top-full mt-3 right-0 rounded-sm w-50 bg-gray-50 shadow-lg origin-top duration-100 flex-col justify-start`}
         >
           <a
             className={`${

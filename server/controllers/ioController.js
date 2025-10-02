@@ -216,6 +216,27 @@ exports.chatAUser = async (io, socket, data) => {
   });
 };
 
+exports.leaveConversation = async (io, socket, data) => {
+  let userConversation = await UserConversation.findOne({
+    user: data.user,
+    conversation: data.conversation,
+  });
+
+  let userConvoId = userConversation._id;
+
+  if (!userConversation) {
+    console.log("there is no existing user conversation!");
+    return;
+  }
+
+  await userConversation.deleteOne();
+
+  io.to(`${data.conversation}`).emit("remove member", {
+    userConvoId,
+    user: data.user,
+  });
+};
+
 exports.inviteToGroupChat = async (io, socket, data) => {
   let userConversation = await UserConversation.findOne({
     user: data.user,
