@@ -1,9 +1,44 @@
 import { socket } from "../socket";
-import { removeMemberFromGroup } from "../api/conversation";
+import {
+  createConversation,
+  findConvoWithUser,
+  getAllUserMessages,
+  removeMemberFromGroup,
+} from "../api/conversation";
 import { useState, useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { UserContext } from "../App";
-import { setActiveMemberMenuId } from "../redux/media";
+import {
+  setActiveMemberMenuId,
+  setMediaFiles,
+  setMediaImages,
+} from "../redux/media";
+import { getUser } from "../api/user";
+import {
+  hideProfileOverlay,
+  setDisplayedUser,
+  showProfileOverlay,
+} from "../redux/profileOverlay";
+import {
+  initDisplayedMessages,
+  setInitialMessageRender,
+} from "../redux/message";
+import {
+  addANewConvo,
+  setActiveConversation,
+  setActiveConvoIsGroup,
+  setActiveDirectUser,
+  setConversationRole,
+  setCurrentConvoImage,
+  setUnifiedEmojiBtn,
+  setUserIsFriend,
+} from "../redux/conversation";
+import {
+  changeActiveInbox,
+  setConvoViewMode,
+  updateSidebar,
+} from "../redux/sidebar";
+import { isFriend } from "../api/friends";
 export default function ConversationMembersCard({ member }) {
   const { user } = useContext(UserContext);
   const { activeMemberMenuId } = useSelector((state) => state.media);
@@ -15,7 +50,7 @@ export default function ConversationMembersCard({ member }) {
   const dispatch = useDispatch();
   async function removeMember(conversationId, member) {
     // remove member in real-time
-    setActiveMemberMenuId("");
+    dispatch(setActiveMemberMenuId(""));
     setDisplayMemberCard(false);
 
     socket.emit("create message", {
@@ -28,13 +63,113 @@ export default function ConversationMembersCard({ member }) {
     socket.emit("remove member", { conversationId, member });
   }
 
+  async function handleDisplayProfile() {
+    const userData = await getUser(member._id);
+
+    dispatch(showProfileOverlay());
+    dispatch(setDisplayedUser(userData));
+    dispatch(setActiveMemberMenuId(""));
+  }
+
+  const handleChat = async () => {
+    console.log("chatting...");
+
+    try {
+      dispatch(setInitialMessageRender(true));
+
+      // find user conversation
+
+      let userConversation = await findConvoWithUser(member._id);
+
+      // create a new user if there's no existing user conversation data
+      if (!userConversation) {
+        userConversation = await createConversation(
+          [user._id, member._id],
+          false,
+          "direct"
+        );
+
+        console.log("created a new direct conversation:", userConversation);
+        dispatch(addANewConvo(userConversation));
+      }
+
+      const { conversation, conversationName, status } = userConversation;
+
+      socket.emit("join rooms", userConversation.conversation._id);
+
+      await getMessages(
+        conversation._id,
+        conversationName,
+        userConversation._id
+      );
+
+      socket.emit("chat user", {
+        user: member._id,
+        conversation: userConversation.conversation._id,
+      });
+
+      dispatch(setActiveMemberMenuId(""));
+      dispatch(setCurrentConvoImage(member.profilePictureUrl));
+
+      dispatch(setUnifiedEmojiBtn(userConversation.conversation.unifiedEmoji));
+
+      dispatch(
+        updateSidebar({
+          sidebarTitle: status === "archived" ? "archived" : "inbox",
+          sidebarContent: status === "archived" ? "archived" : "inbox",
+          sidebarBtn: status === "archived" ? "archived-btn" : "inbox-btn",
+        })
+      );
+
+      dispatch(setConversationRole(userConversation.role));
+      dispatch(setActiveDirectUser(member._id));
+      dispatch(setActiveConvoIsGroup(false));
+      dispatch(changeActiveInbox("direct"));
+      dispatch(hideProfileOverlay());
+
+      const friendState = await chatmateIsFriend(member._id);
+      dispatch(setUserIsFriend(friendState == "friend"));
+      dispatch(setConvoViewMode(0));
+    } catch (error) {
+      console.error("Failed to handle conversation click:", error);
+    }
+  };
+
+  async function chatmateIsFriend(chatmateId) {
+    try {
+      const isAFriend = await isFriend(chatmateId);
+      return isAFriend;
+    } catch (error) {
+      console.error("Error checking friend status:", error);
+    }
+  }
+
+  const getMessages = async (convoId, convoName, userConvoId) => {
+    const messages = await getAllUserMessages(convoId);
+
+    let allImages = [];
+    let allFiles = [];
+    messages.forEach((messageData) => {
+      allImages = [...allImages, ...messageData.imageUrls];
+      allFiles = [...allFiles, ...messageData.fileUrls];
+    });
+
+    dispatch(setMediaImages(allFiles));
+    dispatch(setMediaFiles([]));
+    dispatch(setActiveConversation([convoName, convoId, userConvoId]));
+    dispatch(initDisplayedMessages(messages));
+  };
+
   return (
     <div
       className={`flex justify-between p-1 cursor-pointer items-center gap-5 w-full`}
     >
       <div className="flex items-center gap-5">
         {/* Profile Image */}
-        <img src={member.profilePictureUrl} className="w-13 h-13 rounded-full border-1"></img>
+        <img
+          src={member.profilePictureUrl}
+          className="w-13 h-13 rounded-full border-1"
+        ></img>
 
         {/* Text */}
         <p>{member.username}</p>
@@ -62,8 +197,31 @@ export default function ConversationMembersCard({ member }) {
             activeMemberMenuId === member._id ? "flex" : "hidden"
           } absolute z-50 top-full mt-3 right-0 rounded-sm w-50 bg-gray-50 shadow-lg origin-top duration-100 flex-col justify-start`}
         >
-          <a className="hover:bg-blue-200 rounded-sm p-2">Message</a>
-          <a className="hover:bg-blue-200 rounded-sm p-2">View Profile</a>
+          <a
+            className={`${
+              member._id == user._id ? "hidden" : "block"
+            } hover:bg-blue-200 rounded-sm p-2`}
+            onClick={(e) => handleChat()}
+          >
+            Chat
+          </a>
+          <a
+            className={`${
+              member._id == user._id ? "hidden" : "block"
+            } hover:bg-blue-200 rounded-sm p-2`}
+            onClick={(e) => handleDisplayProfile()}
+          >
+            View Profile
+          </a>
+
+          <a
+            className={`${
+              member._id == user._id ? "block" : "hidden"
+            } hover:bg-blue-200 rounded-sm p-2`}
+            onClick={(e) => {}}
+          >
+            Leave Group
+          </a>
 
           {member._id != user._id &&
             (conversationRole == "admin" || conversationRole == "owner") && (
