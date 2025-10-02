@@ -67,17 +67,18 @@ exports.blockConversation = catchAsync(async (req, res, next) => {
     },
     {
       status: "blocked",
-    }
+    },
+    { new: true }
   );
 
-  if (!archivedConvo) {
+  if (!blockedConvo) {
     return next(new AppError("Failed to archive conversation!", 400));
   }
-  console.log("BLOCKED CONVERASTION");
+  console.log("BLOCKED CONVERASTION:", blockedConvo);
 
   res.status(200).json({
     status: "success",
-    blockedConvo,
+    blockedConvo: blockedConvo.toObject({ virtuals: true }),
   });
 });
 
@@ -104,6 +105,7 @@ exports.unarchiveConversation = catchASync(async (req, res, next) => {
 });
 
 exports.unblockConversation = catchAsync(async (req, res, next) => {
+  console.log("unblocking conversation...");
   const unblockedConvo = await UserConversation.findOneAndUpdate(
     {
       user: req.user.id,
@@ -111,7 +113,8 @@ exports.unblockConversation = catchAsync(async (req, res, next) => {
     },
     {
       status: "active",
-    }
+    },
+    { new: true }
   );
 
   if (!unblockedConvo) {

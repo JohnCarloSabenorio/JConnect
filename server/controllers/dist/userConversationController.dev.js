@@ -120,12 +120,14 @@ exports.blockConversation = catchAsync(function _callee4(req, res, next) {
             conversation: req.params.id
           }, {
             status: "blocked"
+          }, {
+            "new": true
           }));
 
         case 2:
           blockedConvo = _context4.sent;
 
-          if (archivedConvo) {
+          if (blockedConvo) {
             _context4.next = 5;
             break;
           }
@@ -133,10 +135,12 @@ exports.blockConversation = catchAsync(function _callee4(req, res, next) {
           return _context4.abrupt("return", next(new AppError("Failed to archive conversation!", 400)));
 
         case 5:
-          console.log("BLOCKED CONVERASTION");
+          console.log("BLOCKED CONVERASTION:", blockedConvo);
           res.status(200).json({
             status: "success",
-            blockedConvo: blockedConvo
+            blockedConvo: blockedConvo.toObject({
+              virtuals: true
+            })
           });
 
         case 7:
@@ -190,31 +194,34 @@ exports.unblockConversation = catchAsync(function _callee6(req, res, next) {
     while (1) {
       switch (_context6.prev = _context6.next) {
         case 0:
-          _context6.next = 2;
+          console.log("unblocking conversation...");
+          _context6.next = 3;
           return regeneratorRuntime.awrap(UserConversation.findOneAndUpdate({
             user: req.user.id,
             conversation: req.params.id
           }, {
             status: "active"
+          }, {
+            "new": true
           }));
 
-        case 2:
+        case 3:
           unblockedConvo = _context6.sent;
 
           if (unblockedConvo) {
-            _context6.next = 5;
+            _context6.next = 6;
             break;
           }
 
           return _context6.abrupt("return", next(new AppError("Failed to restore archived conversation!", 400)));
 
-        case 5:
+        case 6:
           res.status(200).json({
             status: "success",
             unblockedConvo: unblockedConvo
           });
 
-        case 6:
+        case 7:
         case "end":
           return _context6.stop();
       }

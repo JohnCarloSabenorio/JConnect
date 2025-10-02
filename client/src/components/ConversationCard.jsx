@@ -148,6 +148,7 @@ export default function ConversationCard({
             : "hidden"
         }`}
         onClick={() => {
+          console.log("the user convo chuchuness:", userConversation);
           dispatch(setInitialMessageRender(true));
           inputRef.current.innerHTML = "";
           dispatch(setEmojiPickerIsOpen(false));
@@ -212,7 +213,9 @@ export default function ConversationCard({
             />
             <div
               className={`${
-                userConversation.conversation.isGroup || !isAFriend
+                userConversation.conversation.isGroup ||
+                !isAFriend ||
+                conversationStatus == "blocked"
                   ? "hidden"
                   : "block"
               } absolute right-0.5 border-1 bottom-1 ${
@@ -227,15 +230,24 @@ export default function ConversationCard({
                   ? userConversation.conversation.conversationName
                   : userConversation.conversationName}
               </p>
-              <p>
+              <p
+                className={`${
+                  conversationStatus == "blocked" ? "hidden" : "block"
+                }`}
+              >
                 {displayedLatestMessage.length > 10
                   ? displayedLatestMessage.slice(0, 19) + "..."
                   : displayedLatestMessage}
               </p>
             </div>
             <div className="ml-auto">
-              <p>{formatTime(userConversation.conversation.updatedAt)}</p>
-              <p className="text-right font-bold">#</p>
+              <p
+                className={`${
+                  conversationStatus == "blocked" ? "hidden" : "block"
+                }`}
+              >
+                {formatTime(userConversation.conversation.updatedAt)}
+              </p>
             </div>
           </div>
         </div>

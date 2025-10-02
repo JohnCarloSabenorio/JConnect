@@ -9,6 +9,9 @@ import {
   filterRestoredConvo,
   setActiveConvoIsArchived,
   setConversationStatus,
+  updateAConvo,
+  updateConvoStatus,
+  updateConvoStatusGroup,
 } from "../redux/conversation";
 
 import { blockConversation } from "../api/conversation";
@@ -28,6 +31,25 @@ export default function BlockOverlay() {
   // Archive the user conversation record of the current user
   async function blockConvo(convoId) {
     const response = await blockConversation(convoId);
+
+    console.log("blocked response:", response);
+
+    if (response.blockedConvo.isGroup) {
+      dispatch(
+        updateConvoStatusGroup([
+          response.blockedConvo._id,
+          response.blockedConvo.status,
+        ])
+      );
+    } else {
+      dispatch(
+        updateConvoStatus([
+          response.blockedConvo._id,
+          response.blockedConvo.status,
+        ])
+      );
+    }
+
     dispatch(setConversationStatus("blocked"));
     dispatch(setDisplayBlockOverlay(false));
   }
@@ -35,6 +57,23 @@ export default function BlockOverlay() {
   // Unarchive the user conversation record of the current user
   async function unblockConvo(convoId) {
     const response = await unblockConversation(convoId);
+
+    if (response.blockedConvo.isGroup) {
+      dispatch(
+        updateConvoStatusGroup([
+          response.blockedConvo._id,
+          response.blockedConvo.status,
+        ])
+      );
+    } else {
+      dispatch(
+        updateConvoStatus([
+          response.blockedConvo._id,
+          ,
+          response.blockedConvo.status,
+        ])
+      );
+    }
     dispatch(setConversationStatus("active"));
     dispatch(setDisplayBlockOverlay(false));
   }
@@ -58,7 +97,7 @@ export default function BlockOverlay() {
               Yes
             </button>
             <button
-              onClick={() => unblockConvo(activeConvo)}
+              onClick={() => dispatch(setDisplayBlockOverlay(false))}
               className="bg-red-500 rounded-md p-1 px-4 text-white cursor-pointer"
             >
               No

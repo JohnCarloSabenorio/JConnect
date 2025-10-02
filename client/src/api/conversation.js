@@ -3,7 +3,7 @@ import axios from "axios";
 export async function getAllConversations() {
   try {
     const response = await axios.get(
-      "/jconnect/api/v1/user-conversation?isGroup=false&status=active&status=pending&status=muted&sort=updatedAt",
+      "/jconnect/api/v1/user-conversation?isGroup=false&status=active&status=pending&status=muted&status=blocked&sort=updatedAt",
       { withCredentials: true }
     );
 
@@ -212,8 +212,9 @@ export async function archiveConversation(convoId) {
 }
 export async function blockConversation(convoId) {
   try {
+    console.log("convo id to block:", convoId);
     const response = await axios.patch(
-      `jconnect/api/v1/conversation/userConvo/block/${convoId}`
+      `jconnect/api/v1/user-conversation/block/${convoId}`
     );
 
     if (!response.status === 200) {

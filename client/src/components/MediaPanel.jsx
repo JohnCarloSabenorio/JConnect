@@ -123,7 +123,9 @@ export default function MediaPanel({ getUserConversations }) {
           <button
             onClick={(e) => handleUpdateNotification()}
             className={`${
-              activeConvoIsArchived ? "hidden" : "flex"
+              activeConvoIsArchived || conversationStatus == "blocked"
+                ? "hidden"
+                : "flex"
             } cursor-pointer shadow-lg p-2 text-sm justify-center items-center rounded-full`}
           >
             {isMuted ? (
@@ -150,9 +152,14 @@ export default function MediaPanel({ getUserConversations }) {
           </button>
 
           {/* Block button */}
+
           <button
             className={`${
-              activeConvoIsGroup ? "hidden" : "block"
+              activeConvoIsGroup ||
+              conversationStatus == "blocked" ||
+              conversationStatus == "archived"
+                ? "hidden"
+                : "block"
             } cursor-pointer shadow-lg p-2 text-sm flex justify-center items-center rounded-full`}
             onClick={(e) => {
               dispatch(setDisplayBlockOverlay(true));
@@ -172,7 +179,9 @@ export default function MediaPanel({ getUserConversations }) {
           {/* Archive Button */}
           <button
             onClick={() => dispatch(setIsHidden())}
-            className="cursor-pointer shadow-lg p-2 text-sm flex justify-center items-center rounded-full"
+            className={`${
+              conversationStatus == "blocked" ? "hidden" : "block"
+            } cursor-pointer shadow-lg p-2 text-sm flex justify-center items-center rounded-full`}
           >
             {activeConvoIsArchived ? (
               <svg
@@ -250,7 +259,9 @@ export default function MediaPanel({ getUserConversations }) {
 
           <div
             className={`p-3 flex flex-col ${
-              customizeActive ? "block" : "hidden"
+              !customizeActive || conversationStatus == "blocked"
+                ? "hidden"
+                : "block"
             }`}
           >
             {/* Change Chat Name */}
@@ -411,7 +422,9 @@ export default function MediaPanel({ getUserConversations }) {
 
           <div
             className={`flex flex-col gap-2 rounded-md overflow-hidden transition-all duration-500 ${
-              filesActive ? "block" : "hidden"
+              !filesActive || conversationStatus == "blocked"
+                ? "hidden"
+                : "block"
             }`}
           >
             {mediaFiles.map((file, idx) => (
@@ -452,7 +465,9 @@ export default function MediaPanel({ getUserConversations }) {
           </div>
           <div
             className={`grid grid-cols-3 rounded-md overflow-hidden transition-all duration-500 ${
-              imagesActive ? "block" : "hidden"
+              !imagesActive || conversationStatus == "blocked"
+                ? "hidden"
+                : "block"
             }`}
           >
             <PhotoProvider>

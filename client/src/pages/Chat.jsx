@@ -23,6 +23,7 @@ import {
   createConversation,
   findConvoWithUser,
   leaveConversation,
+  unblockConversation,
 } from "../api/conversation";
 import Overlay from "../components/Overlay";
 import {
@@ -58,6 +59,8 @@ import {
   setUnifiedEmojiBtn,
   setCurrentConvoImage,
   updateAConvoConvoName,
+  updateConvoStatusGroup,
+  updateConvoStatus,
 } from "../redux/conversation";
 import {
   activateUserConversation,
@@ -83,6 +86,7 @@ import { setNamesAndNicknames } from "../redux/nicknamesOverlay";
 import { getNamesAndNicknames } from "../api/conversation";
 import { updateFriendStatus, setAllFriends } from "../redux/friend";
 import { getFriends } from "../api/friends";
+import { setDisplayBlockOverlay } from "../redux/overlay";
 export default function Chat() {
   const dispatch = useDispatch();
   // REDUX STATES
@@ -424,7 +428,7 @@ export default function Chat() {
     socket.on("chat message", (data) => {
       // Messages will be updated if the sent messages is for the current conversation
 
-      console.log("chatted:", data.msg);
+      console.log("chatted:", data);
       if (data.msg.sender._id === user._id) {
         dispatch(setInitialMessageRender(true));
       }
@@ -486,6 +490,7 @@ export default function Chat() {
   // }
 
   async function sendEmojiMessage(unifiedEmoji) {
+    if (conversationStatus == "archived") return;
     inputRef.current.innerHTML = null;
 
     const emojiMessage = unifiedToEmoji(unifiedEmoji);
@@ -681,6 +686,30 @@ export default function Chat() {
     setFiles((prev) => [...prev, ...selectedFiles]);
   }
 
+  async function unblockConvo(convoId) {
+    const response = await unblockConversation(convoId);
+
+    console.log("unblock response:", response);
+    if (response.unblockedConvo.isGroup) {
+      dispatch(
+        updateConvoStatusGroup([
+          response.unblockedConvo._id,
+          response.unblockedConvo.status,
+        ])
+      );
+    } else {
+      dispatch(
+        updateConvoStatus([
+          response.unblockedConvo._id,
+          ,
+          response.unblockedConvo.status,
+        ])
+      );
+    }
+    dispatch(setConversationStatus("active"));
+    dispatch(setDisplayBlockOverlay(false));
+  }
+
   function getElementBeforeCursor(range) {
     const { startContainer, startOffset } = range;
 
@@ -801,7 +830,13 @@ export default function Chat() {
                       : "text-gray-400"
                   }`}
                 >
-                  {isOnline(activeDirectUser) ? "Online" : "Offline"}
+                  <span
+                    className={`${
+                      conversationStatus == "blocked" ? "hidden" : "block"
+                    }`}
+                  >
+                    {isOnline(activeDirectUser) ? "Online" : "Offline"}
+                  </span>
                 </p>
               </div>
               <div className="flex gap-5 ml-auto items-center justify-center">
@@ -865,7 +900,13 @@ export default function Chat() {
                   </h1>
                 </div>
               ) : (
-                <MessagesContainer uiChatRef={uiChatRef} />
+                <div
+                  className={`${
+                    conversationStatus == "blocked" ? "hidden" : "block"
+                  }`}
+                >
+                  <MessagesContainer uiChatRef={uiChatRef} />
+                </div>
               )}
             </div>
 
@@ -972,9 +1013,32 @@ export default function Chat() {
                 </div>
               )}
 
+              {/* Unblock conversation div */}
+              <div
+                className={`${
+                  conversationStatus == "blocked" ? "block" : "hidden"
+                } mt-auto p-3 border-t-0.5 border-gray-500 bg-gray-50`}
+              >
+                <p className="text-center font-semibold">
+                  You blocked this conversation. You can’t send or view
+                  messages, images, or files.
+                </p>
+
+                <div className="flex justify-center gap-2 mt-2">
+                  <button
+                    onClick={(e) => unblockConvo(activeConvo)}
+                    className="rounded-md bg-blue-300 text-white py-1 px-3 cursor-pointer uppercase"
+                  >
+                    unblock
+                  </button>
+                </div>
+              </div>
+
               <form
                 onSubmit={(e) => sendMessage(e)}
-                className="flex mt-auto p-3 bg-white border-t-0.5 border-gray-500"
+                className={`${
+                  conversationStatus == "blocked" ? "hidden" : "flex"
+                } mt-auto p-3 bg-white border-t-0.5 border-gray-500`}
               >
                 <>
                   <div>
