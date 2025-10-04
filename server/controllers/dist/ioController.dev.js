@@ -413,12 +413,14 @@ exports.leaveConversation = function _callee7(io, socket, data) {
             virtuals: true
           });
           console.log("leaving the group success!");
-          io.to("".concat(convoObject._id.toString())).emit("leave group", {
-            updatedConversation: convoObject,
-            removedUserId: data.user._id,
-            messageData: populatedMessage.toObject({
-              virtuals: true
-            })
+          convoObject.users.forEach(function (user) {
+            io.to("user_".concat(user._id.toString())).emit("leave group", {
+              updatedConversation: convoObject,
+              removedUserId: data.user._id,
+              messageData: populatedMessage.toObject({
+                virtuals: true
+              })
+            });
           });
 
         case 21:

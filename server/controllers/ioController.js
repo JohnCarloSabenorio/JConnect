@@ -247,10 +247,13 @@ exports.leaveConversation = async (io, socket, data) => {
 
   convoObject = conversation.toObject({ virtuals: true });
   console.log("leaving the group success!");
-  io.to(`${convoObject._id.toString()}`).emit("leave group", {
-    updatedConversation: convoObject,
-    removedUserId: data.user._id,
-    messageData: populatedMessage.toObject({ virtuals: true }),
+
+  convoObject.users.forEach((user) => {
+    io.to(`user_${user._id.toString()}`).emit("leave group", {
+      updatedConversation: convoObject,
+      removedUserId: data.user._id,
+      messageData: populatedMessage.toObject({ virtuals: true }),
+    });
   });
 };
 

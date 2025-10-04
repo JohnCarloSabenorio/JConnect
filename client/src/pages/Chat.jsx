@@ -147,29 +147,18 @@ export default function Chat() {
   useEffect(() => {
     const handleLeaveGroup = (data) => {
       console.log("leave group data:", data);
+      dispatch(updateAGroupConvo(data.convo));
 
-      if (data.messageData) {
-        if (data.messageData.sender._id === user._id) {
-          dispatch(setInitialMessageRender(true));
-        }
-
-        console.log("the active convo:", activeConvo);
-        console.log("the active convo:", data.updatedConversation._id);
-        console.log(
-          "the active convo:",
-          activeConvo == data.updatedConversation._id
-        );
-        if (activeConvo == data.updatedConversation._id) {
-          dispatch(updateDisplayedMessages(data.messageData));
-        }
+      if (activeConvo == data.updatedConversation._id) {
+        dispatch(updateDisplayedMessages(data.messageData));
         setImages([]);
         setFiles([]);
         setImageBuffers([]);
         setImageInputKey(Date.now());
+        dispatch(removeConvoMember(data.removedUserId));
       }
 
-      dispatch(removeConvoMember(data.removedUserId));
-      dispatch(updateAGroupConvo(data.convo));
+      console.log("someone left the group broooo!!!");
     };
 
     socket.on("leave group", (data) => {
@@ -530,7 +519,8 @@ export default function Chat() {
   // }
 
   async function sendEmojiMessage(unifiedEmoji) {
-    if (conversationStatus == "archived") return;
+    if (conversationStatus == "archived" || conversationStatus == "pending")
+      return;
     inputRef.current.innerHTML = null;
 
     const emojiMessage = unifiedToEmoji(unifiedEmoji);
@@ -636,10 +626,15 @@ export default function Chat() {
     // set the conversation to loading (for now)
     dispatch(setMessageIsLoading(true));
 
-    // set the conversation as active by default for now
-    dispatch(setConversationStatus("active"));
     // Delete the user conversation in the db
     leaveConversation(activeUserConvo);
+
+    // set the conversation as active by default for now
+    dispatch(setConversationStatus(""));
+
+    dispatch(setActiveConversation(["", null, null]));
+
+    dispatch(setActiveConvoMembers([]));
   }
 
   async function chatAFriend(friendId) {
@@ -1109,7 +1104,10 @@ export default function Chat() {
                   <button
                     type="button"
                     className={"cursor-pointer"}
-                    disabled={conversationStatus == "archived"}
+                    disabled={
+                      conversationStatus == "archived" ||
+                      conversationStatus == "pending"
+                    }
                     onClick={handleImageInputClick}
                   >
                     <svg
@@ -1136,7 +1134,10 @@ export default function Chat() {
                   <button
                     type="button"
                     className={"cursor-pointer"}
-                    disabled={conversationStatus == "archived"}
+                    disabled={
+                      conversationStatus == "archived" ||
+                      conversationStatus == "pending"
+                    }
                     onClick={handleFileInputClick}
                   >
                     <svg
@@ -1359,7 +1360,10 @@ export default function Chat() {
                       }
                     }}
                     onInput={(e) => setInputMessage(e.target.textContent)}
-                    contentEditable={conversationStatus != "archived"}
+                    contentEditable={
+                      conversationStatus != "archived" &&
+                      conversationStatus != "pending"
+                    }
                     suppressContentEditableWarning={true}
                   ></div>
 
@@ -1385,7 +1389,10 @@ export default function Chat() {
                             dispatch(setEmojiPickerIsOpen(!emojiPickerIsOpen));
                           }}
                           className="cursor-pointer"
-                          disabled={conversationStatus == "archived"}
+                          disabled={
+                            conversationStatus == "archived" ||
+                            conversationStatus == "pending"
+                          }
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
