@@ -337,18 +337,17 @@ const conversationSlice = createSlice({
     },
 
     removeAConvo: (state, action) => {
-      const [isGroup, conversationId] = action.payload;
-      if (!isGroup) {
+      if (!action.payload.isGroup) {
         state.allDirectConversation = [
           ...state.allDirectConversation.filter((convo) => {
-            convo._id === conversationId;
+            convo._id === action.payload.conversationId;
           }),
         ];
       } else {
         state.allGroupConversation = [
-          ...state.allGroupConversation.filter((convo) => {
-            convo._id === conversationId;
-          }),
+          ...state.allGroupConversation.filter(
+            (convo) => convo._id != action.payload.conversationId
+          ),
         ];
       }
     },

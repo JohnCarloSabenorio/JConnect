@@ -18,7 +18,6 @@ export default function ChangeChatNameOverlay() {
   const { activeConvo } = useSelector((state) => state.conversation);
 
   function handleClick() {
-    console.log("the new convo name:", newConversationName);
     dispatch(setChangeChatNameOverlayIsOpen(false));
     socket.emit("update conversation", {
       conversationId: activeConvo,

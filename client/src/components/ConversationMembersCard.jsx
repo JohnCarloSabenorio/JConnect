@@ -3,6 +3,7 @@ import {
   createConversation,
   findConvoWithUser,
   getAllUserMessages,
+  leaveConversation,
   removeMemberFromGroup,
 } from "../api/conversation";
 import { useState, useEffect, useContext } from "react";
@@ -22,13 +23,16 @@ import {
 import {
   initDisplayedMessages,
   setInitialMessageRender,
+  setMessageIsLoading,
 } from "../redux/message";
 import {
   addANewConvo,
+  removeAConvo,
   setActiveConversation,
   setActiveConvoIsGroup,
   setActiveDirectUser,
   setConversationRole,
+  setConversationStatus,
   setCurrentConvoImage,
   setUnifiedEmojiBtn,
   setUserIsFriend,
@@ -43,7 +47,7 @@ export default function ConversationMembersCard({ member }) {
   const { user } = useContext(UserContext);
   const { activeMemberMenuId } = useSelector((state) => state.media);
   const [displayMemberCard, setDisplayMemberCard] = useState(true);
-  const { activeConvo, conversationRole } = useSelector(
+  const { activeConvo, activeUserConvo, conversationRole } = useSelector(
     (state) => state.conversation
   );
 
@@ -144,6 +148,21 @@ export default function ConversationMembersCard({ member }) {
     }
   }
 
+  const handleLeaveGroup = () => {
+    console.log("leaving group...");
+
+    // Delete the user conversation in the redux array
+    dispatch(removeAConvo({ isGroup: true, conversationId: activeUserConvo }));
+    // set the conversation to loading (for now)
+    dispatch(setMessageIsLoading(true));
+    // set the conversation as active by default for now
+    dispatch(setConversationStatus(""));
+
+    dispatch(setActiveConversation(["", null, null]));
+    // Delete the user conversation in the db
+    // leaveConversation(activeUserConvo);
+  };
+
   const getMessages = async (convoId, convoName, userConvoId) => {
     const messages = await getAllUserMessages(convoId);
 
@@ -218,7 +237,7 @@ export default function ConversationMembersCard({ member }) {
             className={`${
               member._id == user._id ? "block" : "hidden"
             } hover:bg-blue-200 rounded-sm p-2`}
-            onClick={(e) => {}}
+            onClick={handleLeaveGroup}
           >
             Leave Group
           </a>

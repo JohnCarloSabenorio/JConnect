@@ -587,7 +587,12 @@ export default function Chat() {
 
   async function leaveGroup() {
     // Delete the user conversation in the redux array
-    dispatch(removeAConvo(activeUserConvo));
+    dispatch(
+      removeAConvo({
+        isGroup: activeConvoIsGroup,
+        conversationId: activeUserConvo,
+      })
+    );
     // set the conversation to loading (for now)
     dispatch(setMessageIsLoading(true));
 
