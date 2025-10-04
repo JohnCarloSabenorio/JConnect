@@ -145,6 +145,42 @@ export default function Chat() {
   const inputRef = useRef(null);
 
   useEffect(() => {
+    const handleLeaveGroup = (data) => {
+      console.log("leave group data:", data);
+
+      if (data.messageData) {
+        if (data.messageData.sender._id === user._id) {
+          dispatch(setInitialMessageRender(true));
+        }
+
+        console.log("the active convo:", activeConvo);
+        console.log("the active convo:", data.updatedConversation._id);
+        console.log(
+          "the active convo:",
+          activeConvo == data.updatedConversation._id
+        );
+        if (activeConvo == data.updatedConversation._id) {
+          dispatch(updateDisplayedMessages(data.messageData));
+        }
+        setImages([]);
+        setFiles([]);
+        setImageBuffers([]);
+        setImageInputKey(Date.now());
+      }
+
+      dispatch(removeConvoMember(data.removedUserId));
+      dispatch(updateAGroupConvo(data.convo));
+    };
+
+    socket.on("leave group", (data) => {
+      handleLeaveGroup(data);
+    });
+
+    return () => {
+      socket.off("leave group", handleLeaveGroup);
+    };
+  }, [activeConvo]);
+  useEffect(() => {
     async function getUserFriends() {
       const friends = await getFriends();
       dispatch(setAllFriends(friends));
@@ -152,6 +188,10 @@ export default function Chat() {
 
     getUserFriends();
   }, []);
+
+  useEffect(() => {
+    console.log("the active conversation:", activeConvo);
+  }, activeConvo);
 
   useEffect(() => {
     const handleChangeStatus = (data) => {

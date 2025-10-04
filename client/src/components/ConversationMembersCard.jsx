@@ -30,6 +30,7 @@ import {
   removeAConvo,
   setActiveConversation,
   setActiveConvoIsGroup,
+  setActiveConvoMembers,
   setActiveDirectUser,
   setConversationRole,
   setConversationStatus,
@@ -159,7 +160,10 @@ export default function ConversationMembersCard({ member }) {
     dispatch(setConversationStatus(""));
 
     dispatch(setActiveConversation(["", null, null]));
+    dispatch(setActiveConvoMembers([]));
     // Delete the user conversation in the db
+
+    socket.emit("leave group", { userConvoId: activeUserConvo, user });
     // leaveConversation(activeUserConvo);
   };
 

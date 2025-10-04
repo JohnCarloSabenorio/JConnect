@@ -146,6 +146,10 @@ io.on("connection", function (socket) {
     data["actor"] = socket.handshake.auth.userId;
     ioController.updateNickname(io, socket, data);
   });
+  socket.on("leave group", function (data) {
+    data["actor"] = socket.handshake.auth.userId;
+    ioController.leaveConversation(io, socket, data);
+  });
 }); // RUN SERVER
 
 server.listen(port, function () {

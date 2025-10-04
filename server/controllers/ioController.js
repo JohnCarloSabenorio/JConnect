@@ -126,7 +126,7 @@ exports.updateConversation = async (io, socket, data) => {
 
     const populatedMessage = await newMessage.populate("sender");
 
-    resultData.messageData = populatedMessage;
+    resultData.messageData = populatedMessage.toObject({ virtuals: true });
   }
 
   io.to(data.conversationId.toString()).emit("update conversation", resultData);
@@ -217,12 +217,16 @@ exports.chatAUser = async (io, socket, data) => {
 };
 
 exports.leaveConversation = async (io, socket, data) => {
-  let userConversation = await UserConversation.findOne({
-    user: data.user,
-    conversation: data.conversation,
-  });
+  // Find the conversation
+  let userConversation = await UserConversation.findById(data.userConvoId);
 
-  let userConvoId = userConversation._id;
+  console.log("the user convo to be deleted:", userConversation);
+
+  let conversation = await Conversation.findByIdAndUpdate(
+    userConversation.conversation,
+    { $pull: { users: data.user._id } },
+    { new: true }
+  );
 
   if (!userConversation) {
     console.log("there is no existing user conversation!");
@@ -231,9 +235,22 @@ exports.leaveConversation = async (io, socket, data) => {
 
   await userConversation.deleteOne();
 
-  io.to(`${data.conversation}`).emit("remove member", {
-    userConvoId,
-    user: data.user,
+  // Create a message that says the user left the group
+  const newMessage = await Message.create({
+    message: `${data.user.username} left the group.`,
+    conversation: conversation._id,
+    sender: data.actor,
+    action: "remove_member",
+  });
+
+  const populatedMessage = await newMessage.populate("sender");
+
+  convoObject = conversation.toObject({ virtuals: true });
+  console.log("leaving the group success!");
+  io.to(`${convoObject._id.toString()}`).emit("leave group", {
+    updatedConversation: convoObject,
+    removedUserId: data.user._id,
+    messageData: populatedMessage.toObject({ virtuals: true }),
   });
 };
 

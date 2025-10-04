@@ -209,7 +209,9 @@ exports.updateConversation = function _callee3(io, socket, data) {
 
         case 16:
           populatedMessage = _context3.sent;
-          resultData.messageData = populatedMessage;
+          resultData.messageData = populatedMessage.toObject({
+            virtuals: true
+          });
 
         case 18:
           io.to(data.conversationId.toString()).emit("update conversation", resultData);
@@ -356,40 +358,70 @@ exports.chatAUser = function _callee6(io, socket, data) {
 };
 
 exports.leaveConversation = function _callee7(io, socket, data) {
-  var userConversation, userConvoId;
+  var userConversation, conversation, newMessage, populatedMessage;
   return regeneratorRuntime.async(function _callee7$(_context7) {
     while (1) {
       switch (_context7.prev = _context7.next) {
         case 0:
           _context7.next = 2;
-          return regeneratorRuntime.awrap(UserConversation.findOne({
-            user: data.user,
-            conversation: data.conversation
-          }));
+          return regeneratorRuntime.awrap(UserConversation.findById(data.userConvoId));
 
         case 2:
           userConversation = _context7.sent;
-          userConvoId = userConversation._id;
+          console.log("the user convo to be deleted:", userConversation);
+          _context7.next = 6;
+          return regeneratorRuntime.awrap(Conversation.findByIdAndUpdate(userConversation.conversation, {
+            $pull: {
+              users: data.user._id
+            }
+          }, {
+            "new": true
+          }));
+
+        case 6:
+          conversation = _context7.sent;
 
           if (userConversation) {
-            _context7.next = 7;
+            _context7.next = 10;
             break;
           }
 
           console.log("there is no existing user conversation!");
           return _context7.abrupt("return");
 
-        case 7:
-          _context7.next = 9;
+        case 10:
+          _context7.next = 12;
           return regeneratorRuntime.awrap(userConversation.deleteOne());
 
-        case 9:
-          io.to("".concat(data.conversation)).emit("remove member", {
-            userConvoId: userConvoId,
-            user: data.user
+        case 12:
+          _context7.next = 14;
+          return regeneratorRuntime.awrap(Message.create({
+            message: "".concat(data.user.username, " left the group."),
+            conversation: conversation._id,
+            sender: data.actor,
+            action: "remove_member"
+          }));
+
+        case 14:
+          newMessage = _context7.sent;
+          _context7.next = 17;
+          return regeneratorRuntime.awrap(newMessage.populate("sender"));
+
+        case 17:
+          populatedMessage = _context7.sent;
+          convoObject = conversation.toObject({
+            virtuals: true
+          });
+          console.log("leaving the group success!");
+          io.to("".concat(convoObject._id.toString())).emit("leave group", {
+            updatedConversation: convoObject,
+            removedUserId: data.user._id,
+            messageData: populatedMessage.toObject({
+              virtuals: true
+            })
           });
 
-        case 10:
+        case 21:
         case "end":
           return _context7.stop();
       }

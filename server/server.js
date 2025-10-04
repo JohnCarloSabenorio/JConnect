@@ -164,6 +164,11 @@ io.on("connection", (socket) => {
     data["actor"] = socket.handshake.auth.userId;
     ioController.updateNickname(io, socket, data);
   });
+
+  socket.on("leave group", (data) => {
+    data["actor"] = socket.handshake.auth.userId;
+    ioController.leaveConversation(io, socket, data);
+  });
 });
 
 // RUN SERVER
