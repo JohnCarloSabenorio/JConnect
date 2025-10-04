@@ -123,7 +123,9 @@ export default function MediaPanel({ getUserConversations }) {
           <button
             onClick={(e) => handleUpdateNotification()}
             className={`${
-              activeConvoIsArchived || conversationStatus == "blocked"
+              activeConvoIsArchived ||
+              conversationStatus == "blocked" ||
+              activeConvo == null
                 ? "hidden"
                 : "flex"
             } cursor-pointer shadow-lg p-2 text-sm justify-center items-center rounded-full`}
@@ -155,6 +157,7 @@ export default function MediaPanel({ getUserConversations }) {
 
           <button
             className={`${
+              activeConvo == null ||
               activeConvoIsGroup ||
               conversationStatus == "blocked" ||
               conversationStatus == "archived"
@@ -180,7 +183,9 @@ export default function MediaPanel({ getUserConversations }) {
           <button
             onClick={() => dispatch(setIsHidden())}
             className={`${
-              conversationStatus == "blocked" ? "hidden" : "block"
+              activeConvo == null || conversationStatus == "blocked"
+                ? "hidden"
+                : "block"
             } cursor-pointer shadow-lg p-2 text-sm flex justify-center items-center rounded-full`}
           >
             {activeConvoIsArchived ? (
@@ -211,7 +216,9 @@ export default function MediaPanel({ getUserConversations }) {
           {activeConvoIsGroup && (
             <button
               onClick={(e) => dispatch(setHideAddMemberOverlay(false))}
-              className="cursor-pointer shadow-lg p-2 text-sm flex justify-center items-center rounded-full"
+              className={`${
+                activeConvo == null ? "hidden" : "flex"
+              } cursor-pointer shadow-lg p-2 text-sm justify-center items-center rounded-full`}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -267,6 +274,7 @@ export default function MediaPanel({ getUserConversations }) {
             {/* Change Chat Name */}
             <div
               onClick={(e) => {
+                if (activeConvo == null) return;
                 dispatch(setChangeChatNameOverlayIsOpen(true));
               }}
               className={`${
@@ -300,6 +308,7 @@ export default function MediaPanel({ getUserConversations }) {
             />
             <div
               onClick={(e) => {
+                if (activeConvo == null) return;
                 handleChangePhotoClick();
               }}
               className={`group ${
@@ -324,7 +333,10 @@ export default function MediaPanel({ getUserConversations }) {
 
             {/* Change Emoji */}
             <div
-              onClick={(e) => dispatch(setDisplayChangeEmojiOverlay(true))}
+              onClick={(e) => {
+                if (activeConvo == null) return;
+                dispatch(setDisplayChangeEmojiOverlay(true));
+              }}
               className={`group ${
                 activeConvoIsGroup ? "flex" : "hidden"
               } gap-2 p-1 cursor-pointer hover:bg-gray-500 rounded-md hover:text-white`}
@@ -347,7 +359,10 @@ export default function MediaPanel({ getUserConversations }) {
 
             {/* Change Nickname */}
             <div
-              onClick={(e) => dispatch(setDisplayNicknamesOverlay(true))}
+              onClick={(e) => {
+                if (activeConvo == null) return;
+                dispatch(setDisplayNicknamesOverlay(true));
+              }}
               className="group flex gap-2 p-1 cursor-pointer hover:bg-gray-500 rounded-md hover:text-white"
             >
               {/* Icon */}

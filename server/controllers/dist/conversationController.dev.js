@@ -190,7 +190,7 @@ exports.addMultipleMembers = catchAsync(function _callee3(req, res, next) {
               conversation: convo._id,
               conversationName: newGroupName,
               isGroup: true,
-              status: "pending",
+              status: "active",
               role: "member"
             };
           }); // Create new user conversation documents
@@ -356,7 +356,7 @@ exports.createConversation = catchAsync(function _callee7(req, res) {
 
           newGroupUserConversationData = usersFromDB.map(function (user) {
             var userRole = req.user.id == user._id.toString() ? "owner" : "member";
-            var userStatus = req.user.id == user._id.toString() ? "active" : "pending";
+            var userStatus = "active";
             return {
               user: user._id,
               nickname: "",

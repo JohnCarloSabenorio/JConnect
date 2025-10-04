@@ -117,7 +117,7 @@ exports.addMultipleMembers = catchAsync(async (req, res, next) => {
       conversation: convo._id,
       conversationName: newGroupName,
       isGroup: true,
-      status: "pending",
+      status: "active",
       role: "member",
     };
   });
@@ -218,8 +218,7 @@ exports.createConversation = catchAsync(async (req, res) => {
     // Create an array containing objects of new group conversations
     const newGroupUserConversationData = usersFromDB.map((user) => {
       const userRole = req.user.id == user._id.toString() ? "owner" : "member";
-      const userStatus =
-        req.user.id == user._id.toString() ? "active" : "pending";
+      const userStatus = "active";
 
       return {
         user: user._id,

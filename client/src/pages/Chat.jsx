@@ -519,8 +519,7 @@ export default function Chat() {
   // }
 
   async function sendEmojiMessage(unifiedEmoji) {
-    if (conversationStatus == "archived" || conversationStatus == "pending")
-      return;
+    if (conversationStatus == "archived" || activeConvo == null) return;
     inputRef.current.innerHTML = null;
 
     const emojiMessage = unifiedToEmoji(unifiedEmoji);
@@ -1031,27 +1030,6 @@ export default function Chat() {
               </div>
 
               {/* Prompt to join group if user is pending */}
-              {conversationStatus == "pending" && (
-                <div className="flex justify-center mb-5">
-                  <div className="shadow-xl bg-blue-50 p-3 rounded-lg">
-                    <div className="flex gap-2 items-center">
-                      <p>Join Group?</p>
-                      <button
-                        className="bg-blue-300 px-3 py-2 rounded-lg cursor-pointer"
-                        onClick={(e) => joinGroup()}
-                      >
-                        Yes
-                      </button>
-                      <button
-                        className="bg-red-300 px-3 py-2 rounded-lg cursor-pointer"
-                        onClick={(e) => leaveGroup()}
-                      >
-                        No
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* Unblock conversation div */}
               <div
@@ -1105,8 +1083,7 @@ export default function Chat() {
                     type="button"
                     className={"cursor-pointer"}
                     disabled={
-                      conversationStatus == "archived" ||
-                      conversationStatus == "pending"
+                      conversationStatus == "archived" || activeConvo == null
                     }
                     onClick={handleImageInputClick}
                   >
@@ -1135,8 +1112,7 @@ export default function Chat() {
                     type="button"
                     className={"cursor-pointer"}
                     disabled={
-                      conversationStatus == "archived" ||
-                      conversationStatus == "pending"
+                      conversationStatus == "archived" || activeConvo == null
                     }
                     onClick={handleFileInputClick}
                   >
@@ -1361,8 +1337,7 @@ export default function Chat() {
                     }}
                     onInput={(e) => setInputMessage(e.target.textContent)}
                     contentEditable={
-                      conversationStatus != "archived" &&
-                      conversationStatus != "pending"
+                      conversationStatus != "archived" && activeConvo != null
                     }
                     suppressContentEditableWarning={true}
                   ></div>
@@ -1391,7 +1366,7 @@ export default function Chat() {
                           className="cursor-pointer"
                           disabled={
                             conversationStatus == "archived" ||
-                            conversationStatus == "pending"
+                            activeConvo == null
                           }
                         >
                           <svg

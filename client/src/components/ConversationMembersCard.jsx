@@ -161,6 +161,8 @@ export default function ConversationMembersCard({ member }) {
 
     dispatch(setActiveConversation(["", null, null]));
     dispatch(setActiveConvoMembers([]));
+    dispatch(setMediaFiles([]));
+    dispatch(setMediaImages([]));
     // Delete the user conversation in the db
 
     socket.emit("leave group", { userConvoId: activeUserConvo, user });
