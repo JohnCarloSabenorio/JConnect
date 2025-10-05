@@ -156,17 +156,23 @@ export default function Chat() {
 
   useEffect(() => {
     function handleResize() {
-      if (window.innerWidth < 1000) {
+      // For sidebar
+      if (window.innerWidth < 1500) {
         dispatch(setDisplaySidebar(false));
-        dispatch(setDisplayCloseMediaBtn(true));
         dispatch(setDisplayOpenSideBar(true));
-
         dispatch(setDisplayCloseSideBar(true));
-      } else if (window.innerWidth > 1000) {
+      } else if (window.innerWidth > 1500) {
         dispatch(setDisplaySidebar(true));
-        dispatch(setDisplayCloseMediaBtn(false));
         dispatch(setDisplayOpenSideBar(false));
         dispatch(setDisplayCloseSideBar(false));
+      }
+
+      // For media panel
+      if (window.innerWidth < 1000) {
+        dispatch(setDisplayCloseMediaBtn(true));
+        // dispatch(setDisplayMediaPanel(false));
+      } else if (window.innerWidth > 1000) {
+        dispatch(setDisplayCloseMediaBtn(false));
       }
     }
 

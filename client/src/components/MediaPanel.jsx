@@ -103,7 +103,7 @@ export default function MediaPanel({ getUserConversations }) {
 
   return (
     <div
-      className={`bg-white absolute border-0.5 w-full h-full overflow-y-scroll md:relative md:w-100 ${
+      className={`bg-white absolute border-0.5 w-full h-full overflow-y-scroll lg:relative lg:w-120 ${
         displayMediaPanel ? "block" : "hidden"
       }`}
     >
