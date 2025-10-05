@@ -29,6 +29,8 @@ import Overlay from "../components/Overlay";
 import {
   addToMediaFiles,
   addToMediaImages,
+  setDisplayCloseMediaBtn,
+  setDisplayMediaPanel,
   setMediaFiles,
   toggleMediaPanel,
 } from "../redux/media";
@@ -87,6 +89,12 @@ import { getNamesAndNicknames } from "../api/conversation";
 import { updateFriendStatus, setAllFriends } from "../redux/friend";
 import { getFriends } from "../api/friends";
 import { setDisplayBlockOverlay } from "../redux/overlay";
+import {
+  setDisplayCloseSideBar,
+  setDisplayOpenSideBar,
+  setDisplaySidebar,
+  toggleDisplaySidebar,
+} from "../redux/sidebar";
 export default function Chat() {
   const dispatch = useDispatch();
   // REDUX STATES
@@ -107,6 +115,8 @@ export default function Chat() {
     unifiedEmojiBtn,
   } = useSelector((state) => state.conversation);
   const { allFriends } = useSelector((state) => state.friends);
+
+  const { displayOpenSidebarBtn } = useSelector((state) => state.sidebar);
 
   // This will get the messages to be displayed from the message slice
   const { namesAndNicknames } = useSelector((state) => state.nicknamesOverlay);
@@ -143,6 +153,26 @@ export default function Chat() {
   const imageInputRef = useRef(null);
   const fileInputRef = useRef(null);
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    function handleResize() {
+      if (window.innerWidth < 1000) {
+        dispatch(setDisplaySidebar(false));
+        dispatch(setDisplayCloseMediaBtn(true));
+        dispatch(setDisplayOpenSideBar(true));
+
+        dispatch(setDisplayCloseSideBar(true));
+      } else if (window.innerWidth > 1000) {
+        dispatch(setDisplaySidebar(true));
+        dispatch(setDisplayCloseMediaBtn(false));
+        dispatch(setDisplayOpenSideBar(false));
+        dispatch(setDisplayCloseSideBar(false));
+      }
+    }
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const handleLeaveGroup = (data) => {
@@ -849,6 +879,17 @@ export default function Chat() {
           {/* Chat Interface */}
           <div className="flex flex-grow flex-col w-4xl bg-gray-50 h-full">
             <div className="border-b-8-gray-800 flex p-3 items-center gap-5 px-10 bg-white">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 -960 960 960"
+                className={`${
+                  displayOpenSidebarBtn ? "block" : "hidden"
+                } w-8 h-8 fill-gray-700 cursor-pointer`}
+                onClick={(e) => dispatch(toggleDisplaySidebar())}
+              >
+                <path d="M400-240 160-480l240-240 56 58-142 142h486v80H314l142 142-56 58Z" />
+              </svg>
+
               {currentConvoImage != "" && (
                 <img
                   src={currentConvoImage ? currentConvoImage : ""}

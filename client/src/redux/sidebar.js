@@ -12,6 +12,9 @@ const sidebarSlice = createSlice({
     sidebarSearch: "",
     activeInbox: "inbox",
     convoViewMode: 0, // 0 for directs, 1 for groups
+    displaySidebar: true,
+    displayOpenSidebarBtn: false,
+    displayCloseSidebarBtn: false,
   },
 
   reducers: {
@@ -36,6 +39,20 @@ const sidebarSlice = createSlice({
       state.sidebarSearch = action.payload;
     },
 
+    setDisplaySidebar: (state, action) => {
+      state.displaySidebar = action.payload;
+    },
+    toggleDisplaySidebar: (state, action) => {
+      state.displaySidebar = !state.displaySidebar;
+    },
+
+    setDisplayOpenSideBar: (state, action) => {
+      state.displayOpenSidebarBtn = action.payload;
+    },
+    setDisplayCloseSideBar: (state, action) => {
+      state.displayCloseSidebarBtn = action.payload;
+    },
+
     updateSidebar: (state, action) => {
       const { sidebarTitle, sidebarContent, sidebarBtn } = action.payload;
 
@@ -47,6 +64,10 @@ const sidebarSlice = createSlice({
 });
 
 export const {
+  setDisplayOpenSideBar,
+  setDisplayCloseSideBar,
+  toggleDisplaySidebar,
+  setDisplaySidebar,
   updateSidebar,
   changeSidebarTitle,
   changeSidebarContent,

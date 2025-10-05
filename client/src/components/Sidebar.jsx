@@ -35,6 +35,7 @@ import {
   updateSidebar,
   changeSidebarSearch,
   setConvoViewMode,
+  setDisplaySidebar,
 } from "../redux/sidebar";
 
 import { toggleDarkMode } from "../redux/isDarkMode";
@@ -51,6 +52,8 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
     activeInbox,
     sidebarSearch,
     convoViewMode,
+    displaySidebar,
+    displayCloseSidebarBtn,
   } = useSelector((state) => state.sidebar);
 
   const {
@@ -181,7 +184,11 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
   }
 
   return (
-    <div className="flex bg-white shadow-md mr-0.3">
+    <div
+      className={`bg-white absolute w-full h-full z-100 shadow-md mr-0.3 md:relative md:w-120 md:z-5 ${
+        displaySidebar ? "flex" : "hidden"
+      }`}
+    >
       <div className="flex flex-col pt-4 gap-5 px-3 bg-white shadow-md">
         {/* Inbox conversation button */}
         <button
@@ -338,10 +345,24 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
           </svg>
         </button>
       </div>
-      <div className="flex flex-col p-5 pt-2 min-w-50 w-100 overflow-y-scroll">
-        <h1 className="text-4xl font-bold mt-3">
-          {sidebarTitle[0].toUpperCase() + sidebarTitle.slice(1)}
-        </h1>
+      <div className="flex flex-col p-5 pt-2 min-w-50 w-full relative overflow-y-scroll">
+        <div className="flex justify-between items-center">
+          <h1 className="text-4xl font-bold mt-3">
+            {sidebarTitle[0].toUpperCase() + sidebarTitle.slice(1)}
+          </h1>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 -960 960 960"
+            className={`w-9 h-9 fill-gray-800 cursor-pointer ${
+              displayCloseSidebarBtn ? "block" : "hidden"
+            }`}
+            onClick={(e) => {
+              dispatch(setDisplaySidebar(false));
+            }}
+          >
+            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
+          </svg>
+        </div>
 
         <div
           className={`flex ${

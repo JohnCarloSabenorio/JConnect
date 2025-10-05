@@ -18,6 +18,7 @@ import {
   updateConvoStatus,
   updateConvoStatusGroup,
 } from "../redux/conversation";
+import { setDisplayMediaPanel } from "../redux/media";
 export default function MediaPanel({ getUserConversations }) {
   const {
     currentConvoName,
@@ -32,9 +33,8 @@ export default function MediaPanel({ getUserConversations }) {
   } = useSelector((state) => state.conversation);
   const { user } = useContext(UserContext);
   const dispatch = useDispatch();
-  const { mediaImages, mediaFiles, displayMediaPanel } = useSelector(
-    (state) => state.media
-  );
+  const { mediaImages, mediaFiles, displayMediaPanel, displayCloseMediaBtn } =
+    useSelector((state) => state.media);
 
   const [imagesActive, setImagesActive] = useState(false);
   const [filesActive, setFilesActive] = useState(false);
@@ -103,10 +103,22 @@ export default function MediaPanel({ getUserConversations }) {
 
   return (
     <div
-      className={`border-0.5 w-100 h-full overflow-y-scroll ${
+      className={`bg-white absolute border-0.5 w-full h-full overflow-y-scroll md:relative md:w-100 ${
         displayMediaPanel ? "block" : "hidden"
       }`}
     >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 -960 960 960"
+        className={`w-9 h-9 fill-gray-800 absolute left-5 top-5 cursor-pointer ${
+          displayCloseMediaBtn ? "block" : "hidden"
+        }`}
+        onClick={(e) => {
+          dispatch(setDisplayMediaPanel(false));
+        }}
+      >
+        <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
+      </svg>
       <div className="flex flex-col items-center justify-center p-10 pb-5">
         {currentConvoImage && (
           <img
@@ -490,7 +502,7 @@ export default function MediaPanel({ getUserConversations }) {
                 <PhotoView src={imageBlob} key={idx}>
                   <img
                     src={imageBlob}
-                    className="w-30 h-30 object-cover cursor-pointer"
+                    className="aspect-square object-cover cursor-pointer"
                   ></img>
                 </PhotoView>
               ))}
