@@ -50,6 +50,8 @@ export default function App() {
           status: "online",
         });
         console.log("THE USER:", response.data.currentUser);
+
+        console.log("the user:", response.data.currentUser);
         setUser(response.data.currentUser);
         setLoggedInStatus(true);
       } else {
@@ -71,7 +73,7 @@ export default function App() {
       <UserContext.Provider
         value={{
           loggedInStatus: loggedInStatus,
-          user,
+          user: user,
           setUser,
         }}
       >

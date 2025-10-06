@@ -4,9 +4,13 @@ export default function MessagesContainer({ uiChatRef }) {
   const { displayedMessages, messageIsLoading } = useSelector(
     (state) => state.message
   );
+
+  const { isDarkMode } = useSelector((state) => state.isDarkMode);
   return messageIsLoading ? (
     <div
-      className={`w-full h-full bg-gray-50 flex justify-center items-center`}
+      className={`w-full h-full ${
+        isDarkMode ? "bg-gray-600" : "bg-gray-50"
+      } bg-gray-50 flex justify-center items-center`}
     >
       <img src="images/loading.gif" className="w-20 h-20"></img>
     </div>

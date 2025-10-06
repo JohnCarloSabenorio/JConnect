@@ -19,6 +19,8 @@ export default function Navbar() {
   const { allNotifications, unreadCount, notifActive } = useSelector(
     (state) => state.notification
   );
+
+  const { isDarkMode } = useSelector((state) => state.isDarkMode);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -49,7 +51,11 @@ export default function Navbar() {
     }
   }
   return (
-    <div className="bg-blue-800 flex justify-between p-2">
+    <div
+      className={`${
+        isDarkMode ? "bg-gray-800" : "bg-blue-800"
+      } transition-colors flex justify-between p-2`}
+    >
       <div className="flex items-center">
         <h1 className="align-middle text-3xl text-gray-50 font-bold">
           JConnect

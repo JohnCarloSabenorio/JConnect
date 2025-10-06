@@ -96,6 +96,8 @@ import {
   toggleDisplaySidebar,
 } from "../redux/sidebar";
 export default function Chat() {
+  const { user } = useContext(UserContext);
+
   const dispatch = useDispatch();
   // REDUX STATES
   const {
@@ -116,6 +118,8 @@ export default function Chat() {
   } = useSelector((state) => state.conversation);
   const { allFriends } = useSelector((state) => state.friends);
 
+  const { isDarkMode } = useSelector((state) => state.isDarkMode);
+
   const { displayOpenSidebarBtn } = useSelector((state) => state.sidebar);
 
   // This will get the messages to be displayed from the message slice
@@ -133,7 +137,6 @@ export default function Chat() {
   const { mediaImages } = useSelector((state) => state.media);
 
   // USE STATES
-  const { user } = useContext(UserContext);
   const [imageInputKey, setImageInputKey] = useState(Date.now()); // Unique key for input reset
   const [displayEmoji, setDisplayEmoji] = useState(false);
 
@@ -213,10 +216,6 @@ export default function Chat() {
 
     getUserFriends();
   }, []);
-
-  useEffect(() => {
-    console.log("the active conversation:", activeConvo);
-  }, activeConvo);
 
   useEffect(() => {
     const handleChangeStatus = (data) => {
@@ -884,7 +883,11 @@ export default function Chat() {
 
           {/* Chat Interface */}
           <div className="flex flex-grow flex-col w-4xl bg-gray-50 h-full">
-            <div className="border-b-8-gray-800 flex p-3 items-center gap-5 px-10 bg-white">
+            <div
+              className={`border-b-8-gray-800 flex p-3 items-center gap-5 px-10 transition-colors ${
+                isDarkMode ? "bg-gray-700" : "bg-white"
+              }`}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 -960 960 960"
@@ -899,12 +902,18 @@ export default function Chat() {
               {currentConvoImage != "" && (
                 <img
                   src={currentConvoImage ? currentConvoImage : ""}
-                  className="rounded-full w-12 h-12 border-1"
+                  className="rounded-full w-12 h-12 border-1 bg-white"
                 />
               )}
 
               <div>
-                <p className="font-bold text-md">{currentConvoName}</p>
+                <p
+                  className={`font-bold text-md transition-colors ${
+                    isDarkMode ? "text-gray-50" : "text-black"
+                  }`}
+                >
+                  {currentConvoName}
+                </p>
                 <p
                   className={`${
                     !activeConvoIsGroup && activeConvo && userIsFriend
@@ -962,7 +971,9 @@ export default function Chat() {
                     viewBox="0 -960 960 960"
                     width="25"
                     height="25"
-                    fill="black"
+                    className={`transition-colors ${
+                      isDarkMode ? "fill-white" : "fill-black"
+                    }`}
                   >
                     <path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
                   </svg>
@@ -975,7 +986,9 @@ export default function Chat() {
             <div
               ref={uiChatRef}
               id="chat-ui"
-              className="bg-gray-50 flex-grow overflow-y-scroll overflow-x-hidden [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-800 [&::-webkit-scrollbar-thumb]:rounded-md"
+              className={`${
+                isDarkMode ? "bg-gray-600" : "bg-gray-50"
+              } flex-grow overflow-y-scroll overflow-x-hidden [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-800 [&::-webkit-scrollbar-thumb]:rounded-md`}
             >
               {activeConvo == null ? (
                 <div
@@ -987,7 +1000,7 @@ export default function Chat() {
                 </div>
               ) : (
                 <div
-                  className={`${
+                  className={`w-full h-full ${
                     conversationStatus == "blocked" ? "hidden" : "block"
                   }`}
                 >
@@ -1103,10 +1116,12 @@ export default function Chat() {
                 onSubmit={(e) => sendMessage(e)}
                 className={`${
                   conversationStatus == "blocked" ? "hidden" : "flex"
-                } mt-auto p-3 bg-white border-t-0.5 border-gray-500`}
+                } mt-auto p-3 ${
+                  isDarkMode ? "bg-gray-700" : "bg-gray-50"
+                } border-t-0.5 border-gray-500`}
               >
                 <>
-                  <div>
+                  <div className={``}>
                     <input
                       key={imageInputKey}
                       type="file"
@@ -1139,7 +1154,9 @@ export default function Chat() {
                       viewBox="0 -960 960 960"
                       width="30"
                       height="30"
-                      fill="black"
+                      className={`transition-colors ${
+                        isDarkMode ? "fill-gray-50" : "fill-gray-800"
+                      }`}
                     >
                       <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm40-80h480L570-480 450-320l-90-120-120 160Zm-40 80v-560 560Z" />
                     </svg>
@@ -1169,13 +1186,20 @@ export default function Chat() {
                       width="30"
                       height="30"
                       fill="black"
+                      className={`transition-colors ${
+                        isDarkMode ? "fill-gray-50" : "fill-gray-800"
+                      }`}
                     >
                       <path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-370h80v370q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-390h80v390Z" />
                     </svg>
                   </button>
                   <div
                     ref={inputRef}
-                    className={`flex-1 max-h-50 overflow-y-scroll mx-4 p-2 ml-0
+                    className={`transition-colors ${
+                      isDarkMode
+                        ? "bg-gray-500 text-white"
+                        : "bg-white text-black"
+                    } rounded-md flex-1 max-h-50 overflow-y-scroll [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-800 [&::-webkit-scrollbar-thumb]:rounded-md mx-4 p-2 ml-0
                       text-black
                     `}
                     // if user presses space, check if it is mentioning, it is.. then create a new span and move the caret
@@ -1421,7 +1445,9 @@ export default function Chat() {
                             viewBox="0 -960 960 960"
                             width="30"
                             height="30"
-                            fill="black"
+                            className={`${
+                              isDarkMode ? "fill-gray-50" : "fill-gray-800"
+                            }`}
                           >
                             <path d="M620-520q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Zm-280 0q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm140 260q68 0 123.5-38.5T684-400h-66q-22 37-58.5 58.5T480-320q-43 0-79.5-21.5T342-400h-66q25 63 80.5 101.5T480-260Zm0 180q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 320q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Z" />
                           </svg>
@@ -1449,7 +1475,9 @@ export default function Chat() {
                               viewBox="0 -960 960 960"
                               width="30"
                               height="30"
-                              fill="black"
+                              className={`${
+                                isDarkMode ? "fill-gray-50" : "fill-gray-800"
+                              }`}
                             >
                               <path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z" />
                             </svg>

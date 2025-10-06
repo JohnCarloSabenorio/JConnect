@@ -32,7 +32,15 @@ export default function ConversationCard({
   isArchived,
   inputRef,
 }) {
-  const { user } = useContext(UserContext);
+  const context = useContext(UserContext);
+
+  if (!context) {
+    return;
+  }
+  
+  const { user } = context;
+
+  const { isDarkMode } = useSelector((state) => state.isDarkMode);
   const { activeConvoMembers, activeConvo, conversationStatus } = useSelector(
     (state) => state.conversation
   );
@@ -199,7 +207,7 @@ export default function ConversationCard({
       >
         <div
           className={`${
-            isActive ? "bg-green-200" : "bg-white"
+            isActive ? "bg-green-200" : isDarkMode ? "bg-gray-200" : "bg-white"
           } rounded-md flex p-5 shadow-md cursor-pointer`}
         >
           <div className="relative">
@@ -209,7 +217,7 @@ export default function ConversationCard({
                   ? userConversation.conversation.gcImageUrl
                   : chatmate?.profilePictureUrl
               }
-              className="rounded-full w-12 h-12 border-1"
+              className="rounded-full w-12 h-12 border-1 bg-white"
             />
             <div
               className={`${

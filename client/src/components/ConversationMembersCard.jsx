@@ -46,6 +46,7 @@ import {
 import { isFriend } from "../api/friends";
 export default function ConversationMembersCard({ member }) {
   const { user } = useContext(UserContext);
+  const { isDarkMode } = useSelector((state) => state.isDarkMode);
   const { activeMemberMenuId } = useSelector((state) => state.media);
   const [displayMemberCard, setDisplayMemberCard] = useState(true);
   const { activeConvo, activeUserConvo, conversationRole } = useSelector(
@@ -193,7 +194,7 @@ export default function ConversationMembersCard({ member }) {
         {/* Profile Image */}
         <img
           src={member.profilePictureUrl}
-          className="w-13 h-13 rounded-full border-1"
+          className="w-13 h-13 rounded-full border-1 bg-white"
         ></img>
 
         {/* Text */}
@@ -201,7 +202,7 @@ export default function ConversationMembersCard({ member }) {
       </div>
       <div className="relative">
         <button
-          className="cursor-pointer rounded-full hover:bg-gray-200 p-2"
+          className="cursor-pointer rounded-full group p-2"
           onClick={(e) => {
             dispatch(
               setActiveMemberMenuId(activeMemberMenuId == "" ? member._id : "")
@@ -211,8 +212,9 @@ export default function ConversationMembersCard({ member }) {
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 -960 960 960"
-            fill="gray"
-            className="w-7 h-7"
+            className={`w-7 h-7 group-hover:w-10 group-hover:h-10 ${
+              isDarkMode ? "fill-gray-50" : "fill-gray-700"
+            }`}
           >
             <path d="M240-400q-33 0-56.5-23.5T160-480q0-33 23.5-56.5T240-560q33 0 56.5 23.5T320-480q0 33-23.5 56.5T240-400Zm240 0q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm240 0q-33 0-56.5-23.5T640-480q0-33 23.5-56.5T720-560q33 0 56.5 23.5T800-480q0 33-23.5 56.5T720-400Z" />
           </svg>

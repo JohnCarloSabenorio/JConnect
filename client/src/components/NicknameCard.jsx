@@ -4,7 +4,13 @@ import { socket } from "../socket";
 import { UserContext } from "../App";
 import { useContext } from "react";
 export default function NicknameCard({ userData }) {
-  const { user } = useContext(UserContext);
+  const context = useContext(UserContext);
+
+  if (!context) {
+    return;
+  }
+
+  const { user } = context;
   const dispatch = useDispatch();
   const [displayedNickname, setDisplayedNickname] = useState("");
 

@@ -42,6 +42,7 @@ import { toggleDarkMode } from "../redux/isDarkMode";
 import { setAllUsers } from "../redux/user";
 
 export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
+  const { user } = useContext(UserContext);
   const dispatch = useDispatch();
 
   // STATES
@@ -67,7 +68,6 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
 
   const { allUsers } = useSelector((state) => state.user);
 
-  const { user } = useContext(UserContext);
   const sideOptionStyle = " p-3 rounded-full cursor-pointer ";
   const activeColor = "bg-blue-800";
 
@@ -185,11 +185,17 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
 
   return (
     <div
-      className={`bg-white absolute w-full h-full z-100 shadow-md mr-0.3 md:relative md:w-120 md:z-5 ${
+      className={`${
+        isDarkMode ? "bg-gray-700" : "bg-white"
+      } transition-colors absolute w-full h-full z-100 shadow-md mr-0.3 md:relative md:w-120 md:z-5 ${
         displaySidebar ? "flex" : "hidden"
       }`}
     >
-      <div className="flex flex-col pt-4 gap-5 px-3 bg-white shadow-md">
+      <div
+        className={`flex flex-col pt-4 gap-5 px-3 transition-colors ${
+          isDarkMode ? "bg-gray-800" : "bg-white"
+        } shadow-md`}
+      >
         {/* Inbox conversation button */}
         <button
           onClick={() => {
@@ -323,8 +329,7 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
             viewBox="0 0 512 512"
             width="25"
             height="25"
-            fill="#53575e"
-            className={`absolute transition-opacity duration-300 ${
+            className={`absolute transition-opacity duration-300 fill-white ${
               isDarkMode ? "opacity-100" : "opacity-0"
             }`}
           >
@@ -347,15 +352,19 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
       </div>
       <div className="flex flex-col p-5 pt-2 min-w-50 w-full relative overflow-y-scroll [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-800 [&::-webkit-scrollbar-thumb]:rounded-md">
         <div className="flex justify-between items-center">
-          <h1 className="text-4xl font-bold mt-3">
+          <h1
+            className={`text-4xl font-bold mt-3 transition-colors ${
+              isDarkMode ? "text-gray-50" : "text-black"
+            }`}
+          >
             {sidebarTitle[0].toUpperCase() + sidebarTitle.slice(1)}
           </h1>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 -960 960 960"
-            className={`w-9 h-9 fill-gray-800 cursor-pointer ${
-              displayCloseSidebarBtn ? "block" : "hidden"
-            }`}
+            className={`w-9 h-9 transition-colors ${
+              isDarkMode ? "fill-gray-50" : "fill-gray-800"
+            } cursor-pointer ${displayCloseSidebarBtn ? "block" : "hidden"}`}
             onClick={(e) => {
               dispatch(setDisplaySidebar(false));
             }}
@@ -365,7 +374,7 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
         </div>
 
         <div
-          className={`flex ${
+          className={`flex gap-1 ${
             sidebarContent === "inbox" || sidebarContent === "archived"
               ? "block"
               : "hidden"
@@ -375,7 +384,7 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
             onClick={() => {
               dispatch(setConvoViewMode(0));
             }}
-            className={`cursor-pointer flex-grow text-center p-2 shadow-md ${
+            className={`rounded-md cursor-pointer flex-grow text-center p-2 shadow-md ${
               convoViewMode == 0 ? "bg-gray-200" : "bg-white"
             }`}
           >
@@ -385,7 +394,7 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
             onClick={() => {
               dispatch(setConvoViewMode(1));
             }}
-            className={`cursor-pointer flex-grow text-center p-2 shadow-md ${
+            className={`rounded-md cursor-pointer flex-grow text-center p-2 shadow-md ${
               convoViewMode == 1 ? "bg-gray-200" : "bg-white"
             }`}
           >
@@ -394,7 +403,7 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
         </div>
         <input
           type="text"
-          className="mt-3 rounded-full p-2 px-5 bg-white shadow-md"
+          className="mt-3 rounded-md p-2 px-5 bg-white shadow-md"
           placeholder="Search..."
           onInput={(e) => {
             dispatch(changeSidebarSearch(e.target.value));
@@ -403,7 +412,7 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
         />
         {convoViewMode === 1 && (
           <button
-            className="mt-3 p-3 shadow-md rounded-md cursor-pointer hover:bg-gray-50 font-semibold"
+            className="mt-3 p-3 shadow-md rounded-md cursor-pointer hover:bg-gray-50 font-semibold bg-gray-50"
             onClick={(e) => dispatch(setDisplayGroupChatOverlay(true))}
           >
             Create Group Conversation
