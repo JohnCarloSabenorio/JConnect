@@ -174,7 +174,7 @@ export default function EditProfileOverlay() {
             )}
           </div>
 
-          <div className="bg-blue-200 rounded-b-md flex p-3">
+          <div className="shadow-sm rounded-b-md flex p-3">
             <div className="w-40 relative ml-0">
               {/* Profile Picture */}
               <div className=" absolute w-30 h-30 rounded-full bottom-1 overflow-hidden">
