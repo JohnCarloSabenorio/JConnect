@@ -337,7 +337,7 @@ export default function ProfileOverlay() {
 
   return (
     <div
-      className={`absolute w-full h-full z-50 bg-black/70 justify-center items-center flex-col ${
+      className={`absolute w-full h-full z-[9999] p-5 bg-black/70 justify-center items-center flex-col ${
         isDisplayed ? "flex" : "hidden"
       }`}
     >
@@ -354,8 +354,9 @@ export default function ProfileOverlay() {
       >
         <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
       </svg>
-
-      <div className="bg-white rounded-md overflow-hidden w-5xl flex p-3 gap-2">
+      <div
+        className={`bg-white mt-10 rounded-md overflow-hidden w-full h-full flex flex-col p-3 gap-2 lg:mt-0 lg:flex-row lg:w-5xl lg:h-auto`}
+      >
         <div className="rounded-md overflow-hidden shadow-md">
           <div className="w-full h-60 bg-red-400"></div>
 

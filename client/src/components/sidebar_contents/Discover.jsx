@@ -7,9 +7,7 @@ export default function Discover() {
 
   const { user } = useContext(UserContext);
 
-  const filteredUsers = useMemo(() => {
-    return allUsers.filter((u) => u._id != user._id);
-  }, user);
+  const filteredUsers = allUsers.filter((u) => u._id != user._id);
 
   return (
     <>

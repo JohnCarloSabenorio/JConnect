@@ -26,29 +26,8 @@ export default function Login() {
   return (
     <>
       <div className="bg-[url(/images/backgrounds/auth-bg.jpg)] bg-no-repeat bg-cover bg-right-bottom flex flex-col items-center justify-center h-screen">
-        <div className="flex bg-gray-50 w-4xl rounded-lg overflow-hidden border-black shadow-2xl">
-          <div className="w-4xl bg-[url(/images/backgrounds/blue-bg.png)] bg-center bg-cover flex flex-col items-center justify-center">
-            <h1 className="text-5xl font-bold text-green-400">JConnect</h1>
-            <p className="text-green-400 text-xl mt-3 text-center px-12">
-              Welcome back! Reconnect, chat, and share moments with your friends
-              online
-            </p>
-
-            <p className="text-green-400 italic text-xl mt-20">
-              Don't have an account?
-            </p>
-            <button
-              className="bg-green-400 cursor-pointer uppercase font-semibold tracking-wider border-black rounded-md py-2 px-10 text-xl mt-5 shadow-md"
-              type="button"
-              onClick={() => {
-                window.location.assign("/register");
-              }}
-            >
-              Sign Up Here
-            </button>
-          </div>
-
-          <div className="flex flex-col w-full p-20 py-20 px-10">
+        <div className="flex flex-col w-full bg-gray-50 md:w-xl lg:flex-row rounded-lg overflow-hidden border-black shadow-2xl">
+          <div className="flex flex-col w-full p-10">
             <h1 className="text-5xl font-bold text-green-500">Sign In</h1>
 
             <form
@@ -66,7 +45,7 @@ export default function Login() {
 
               <label htmlFor="email">Email</label>
               <input
-                className="border-black border-1 rounded-sm text-md p-2 bg-gray-50 shadow-md"
+                className="border-black border-1 rounded-sm text-md p-2 bg-gray-50"
                 type="email"
                 name="email"
                 id="email"
@@ -79,7 +58,7 @@ export default function Login() {
                 Password
               </label>
               <input
-                className="border-black border-1 rounded-sm text-md p-2 bg-gray-50 shadow-md"
+                className="border-black border-1 rounded-sm text-md p-2 bg-gray-50"
                 type="password"
                 name="password"
                 id="password"
@@ -106,6 +85,13 @@ export default function Login() {
                   Forgot Password?
                 </a>
               </div>
+              <p className="text-center mt-3">
+                Don't have an account?{" "}
+                <a href="/register" className="underline hover:font-semibold">
+                  Sign up
+                </a>
+                .
+              </p>
               <div className="flex flex-col items-center">
                 <button className="cursor-pointer bg-green-400 uppercase font-semibold tracking-wider border-black rounded-md border-1 py-2 px-10 text-xl mt-5 shadow-md">
                   Sign In

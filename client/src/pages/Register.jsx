@@ -37,29 +37,8 @@ export default function Register() {
   return (
     <>
       <div className="bg-[url(/images/backgrounds/auth-bg.jpg)] bg-no-repeat bg-cover bg-right-bottom flex flex-col items-center justify-center h-screen">
-        <div className="flex bg-gray-50 w-4xl rounded-lg overflow-hidden border-black shadow-2xl">
-          <div className="w-4xl bg-[url(/images/backgrounds/blue-bg.png)] bg-center bg-cover flex flex-col items-center justify-center">
-            <h1 className="text-5xl font-bold text-green-400">JConnect</h1>
-            <p className="text-green-400 text-xl mt-3 text-center px-12">
-              Welcome back! Reconnect, chat, and share moments with your friends
-              online
-            </p>
-
-            <p className="text-green-400 italic text-xl mt-20">
-              Already have an account?
-            </p>
-            <button
-              className="bg-green-400 cursor-pointer uppercase font-semibold tracking-wider border-black rounded-md border-1 py-2 px-10 text-xl mt-5 shadow-md"
-              type="button"
-              onClick={() => {
-                window.location.assign("/");
-              }}
-            >
-              Sign In Here
-            </button>
-          </div>
-
-          <div className="flex flex-col w-full p-20 px-10">
+        <div className="flex bg-gray-50 w-full md:w-xl rounded-lg overflow-hidden border-black shadow-2xl">
+          <div className="flex flex-col w-full p-10 px-10">
             <h1 className="text-5xl font-bold text-green-500">Sign up</h1>
 
             {/* Errors div */}
@@ -79,7 +58,7 @@ export default function Register() {
             <form onSubmit={handleSubmit} className="flex flex-col mt-2">
               <label htmlFor="username">Username</label>
               <input
-                className="border-black border-1 rounded-sm text-md p-2 bg-gray-50 shadow-md"
+                className="border-black border-1 rounded-sm text-md p-2 bg-gray-50"
                 required={true}
                 type="text"
                 name="username"
@@ -91,7 +70,7 @@ export default function Register() {
               />
               <label htmlFor="email">Email</label>
               <input
-                className="border-black border-1 rounded-sm text-md p-2 bg-gray-50 shadow-md"
+                className="border-black border-1 rounded-sm text-md p-2 bg-gray-50"
                 required={true}
                 type="email"
                 name="email"
@@ -105,7 +84,7 @@ export default function Register() {
                 Password
               </label>
               <input
-                className="border-black border-1 rounded-sm text-md p-2 bg-gray-50 shadow-md"
+                className="border-black border-1 rounded-sm text-md p-2 bg-gray-50"
                 required={true}
                 type="password"
                 name="password"
@@ -119,7 +98,7 @@ export default function Register() {
                 Confirm Password
               </label>
               <input
-                className="border-black border-1 rounded-sm text-md p-2 bg-gray-50 shadow-md"
+                className="border-black border-1 rounded-sm text-md p-2 bg-gray-50"
                 required={true}
                 type="password"
                 name="passwordConfirm"
@@ -130,6 +109,13 @@ export default function Register() {
                 }}
               />
               <div className="flex flex-col items-center mt-5">
+                <p className="text-center mt-3">
+                  Already have an account?{" "}
+                  <a href="/" className="underline hover:font-semibold">
+                    Sign in
+                  </a>
+                  .
+                </p>
                 <button className="cursor-pointer bg-green-400 uppercase font-semibold tracking-wider border-black rounded-md border-1 py-2 px-10 text-xl mt-5 shadow-md">
                   Sign Up
                 </button>
