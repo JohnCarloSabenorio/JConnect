@@ -345,7 +345,7 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
           </svg>
         </button>
       </div>
-      <div className="flex flex-col p-5 pt-2 min-w-50 w-full relative overflow-y-scroll">
+      <div className="flex flex-col p-5 pt-2 min-w-50 w-full relative overflow-y-scroll [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-800 [&::-webkit-scrollbar-thumb]:rounded-md">
         <div className="flex justify-between items-center">
           <h1 className="text-4xl font-bold mt-3">
             {sidebarTitle[0].toUpperCase() + sidebarTitle.slice(1)}

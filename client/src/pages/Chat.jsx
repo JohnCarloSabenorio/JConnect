@@ -975,7 +975,7 @@ export default function Chat() {
             <div
               ref={uiChatRef}
               id="chat-ui"
-              className="bg-gray-50 flex-grow overflow-y-scroll overflow-x-hidden"
+              className="bg-gray-50 flex-grow overflow-y-scroll overflow-x-hidden [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-800 [&::-webkit-scrollbar-thumb]:rounded-md"
             >
               {activeConvo == null ? (
                 <div
