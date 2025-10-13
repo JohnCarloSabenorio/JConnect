@@ -74,13 +74,15 @@
 **Frontend:**  
 - React  
 - TailwindCSS  
-- Axios  
-- Socket.io Client  
+- Axios
+- Redux
+- Socket.io Client
 
 **Backend:**  
 - Node.js  
 - Express  
-- Socket.io  
+- Socket.io
+- Postman
 
 **Database:**  
 - MongoDB (Mongoose)
@@ -89,7 +91,9 @@
 - JWT Authentication  
 - Multer (for file uploads)
 - Sharp (for image resizing and format conversion)  
-- ESLint + Prettier (for code formatting)  
+- ESLint + Prettier (for code formatting)
+- React Photo View (Lightbox component for interacting with images)
+- Emoji Picker React (Customizable emoji picker component)
 
 ---
 
