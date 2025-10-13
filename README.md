@@ -11,7 +11,6 @@
 - [Screenshots](#-screenshots)
 - [Tech Stack](#-tech-stack)
 - [Installation](#-installation)
-- [Usage](#-usage)
 
 ---
 
