@@ -63,6 +63,7 @@ export default function Register() {
                 type="text"
                 name="username"
                 id="username"
+                placeholder="Username"
                 value={username}
                 onChange={(e) => {
                   setUsername(e.target.value);
@@ -75,6 +76,7 @@ export default function Register() {
                 type="email"
                 name="email"
                 id="email"
+                placeholder="Email"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
@@ -89,6 +91,7 @@ export default function Register() {
                 type="password"
                 name="password"
                 id="password"
+                placeholder="Password"
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
@@ -102,6 +105,7 @@ export default function Register() {
                 required={true}
                 type="password"
                 name="passwordConfirm"
+                placeholder="Confirm Password"
                 id="passwordConfirm"
                 value={passwordConfirm}
                 onChange={(e) => {

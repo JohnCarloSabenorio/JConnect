@@ -102,7 +102,7 @@ export default function Navbar() {
           <div
             className={`${
               notifActive ? "flex" : "hidden"
-            } absolute top-full mt-5 right-0 max-h-200 w-100 pb-2 bg-gray-50 shadow-lg origin-top duration-100 flex-col overflow-hidden overflow-y-scroll rounded-sm`}
+            } absolute top-full mt-5 right-0 max-h-200 w-100 pb-2 bg-gray-50 shadow-lg origin-top duration-100 flex-col overflow-hidden  overflow-y-scroll [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-800 [&::-webkit-scrollbar-thumb]:rounded-md rounded-sm`}
           >
             <h1 className="font-bold text-4xl text-left ml-4 mb-3 mt-3">
               Notifications

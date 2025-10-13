@@ -49,6 +49,7 @@ export default function Login() {
                 type="email"
                 name="email"
                 id="email"
+                placeholder="Email"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
@@ -61,6 +62,7 @@ export default function Login() {
                 className="border-black border-1 rounded-sm text-md p-2 bg-gray-50"
                 type="password"
                 name="password"
+                placeholder="Password"
                 id="password"
                 value={password}
                 onChange={(e) => {

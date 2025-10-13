@@ -44,7 +44,7 @@ export default function ReactionsOverlay() {
       </svg>
 
       <div
-        className={`bg-white p-4 rounded-md w-3xl flex flex-col items-center overflow-y-scroll`}
+        className={`bg-white p-4 rounded-md w-3xl flex flex-col items-center  overflow-y-scroll [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-800 [&::-webkit-scrollbar-thumb]:rounded-md`}
       >
         <h1 className="text-4xl text-center mt-5 font-semibold">
           Message Reactions

@@ -358,14 +358,19 @@ export default function ProfileOverlay() {
         className={`bg-white mt-10 rounded-md overflow-hidden w-full h-full flex flex-col p-3 gap-2 lg:mt-0 lg:flex-row lg:w-5xl lg:h-auto`}
       >
         <div className="rounded-md overflow-hidden shadow-md">
-          <div className="w-full h-60 bg-red-400"></div>
+          <div
+            className="w-full h-60 bg-red-400"
+            style={{
+              backgroundImage: `url(${displayedUser?.profileBannerUrl})`,
+            }}
+          ></div>
 
           <div className="bg-white flex gap-5 p-5">
             <div className="w-40 relative ml-5">
               <div className="bg-white border-1 absolute rounded-full bottom-1">
                 <img
                   src={displayedUser?.profilePictureUrl}
-                  className="w-30"
+                  className="w-30 rounded-full"
                   alt="profile-img"
                 />
               </div>
@@ -394,7 +399,7 @@ export default function ProfileOverlay() {
             </p>
           </div>
         </div>
-        <div className=" flex-1 flex flex-col px-3 rounded-md shadow-md">
+        <div className="min-w-80 flex-1 flex flex-col px-3 rounded-md shadow-md">
           <div className="flex justify-center gap-3 mt-5">
             <a
               className={`${
@@ -415,7 +420,7 @@ export default function ProfileOverlay() {
           </div>
           <hr />
           {/* Mutual Friends list */}
-          <div className="mt-3 flex-1 flex flex-col gap-3 overflow-y-scroll">
+          <div className="mt-3 flex-1 flex flex-col gap-3  overflow-y-scroll [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-800 [&::-webkit-scrollbar-thumb]:rounded-md">
             {/* MOVE THESE CARDS TO A SEPARATE COMPONENT FILE */}
             {mutualSection == 0
               ? mutualFriends.map((data, idx) => {

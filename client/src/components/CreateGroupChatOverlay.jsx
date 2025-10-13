@@ -320,7 +320,7 @@ export default function CreateGroupChatOverlay() {
 
           {/* Select Users Div */}
 
-          <div className="flex flex-col mt-5 h-60 overflow-y-scroll mb-5">
+          <div className="flex flex-col mt-5 h-60  overflow-y-scroll [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-800 [&::-webkit-scrollbar-thumb]:rounded-md mb-5">
             {/* Select User Cards  */}
             {filteredUsers.map((user, idx) => {
               return <FilteredUserCard key={idx} user={user} />;
