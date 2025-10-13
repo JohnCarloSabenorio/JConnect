@@ -1,39 +1,96 @@
+# 💬 JConnect
+
+> **JConnect** is a real-time chat application powered by **Socket.io**, inspired by **Messenger** and **Discord**. It enables users to connect, send messages, share files, create group conversations, and experience seamless real-time communication — all in a modern, responsive interface.
 
 ---
 
-# JConnect
+## 📑 Table of Contents
 
-**JConnect** is a real-time chat application designed to support **private messaging, group conversations, and live user presence**. Built with **WebSockets**, the system ensures fast, seamless communication between users.
-
-The project demonstrates modern full-stack development concepts, emphasizing real-time interactions and scalability for social and team communication platforms.
-
----
-
-## 🎯 Objectives
-- To provide a scalable chat system for real-time communication.  
-- To support both private and group chats with live updates.  
-- To showcase frontend state management and responsive UI design.  
-
----
-
-## ✨ Key Features
-- **Private & Group Messaging**: Secure one-on-one and group conversations.  
-- **Live Presence**: Display online/offline status in real time.  
-- **WebSocket Integration**: Ensure instant message delivery.  
-- **Modern UI**: TailwindCSS and Redux for responsive, state-managed frontend.  
+- [About](#-about)
+- [Features](#-features)
+- [Screenshots](#-screenshots)
+- [Tech Stack](#-tech-stack)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [Configuration](#-configuration)
+- [Contributing](#-contributing)
+- [Roadmap](#-roadmap)
+- [License](#-license)
+- [Acknowledgements](#-acknowledgements)
 
 ---
 
-## 🛠 Technologies Used
-- **Frontend**: HTML, CSS, JavaScript, React.js, TailwindCSS, Redux  
-- **Backend**: Node.js, Express.js  
-- **Database**: MongoDB  
-- **Testing**: Postman  
-- **Communication**: WebSockets  
+## 📝 About
+
+**JConnect** was developed as a personal full-stack learning project to explore **real-time web communication** using **Socket.io** and modern JavaScript frameworks.
+
+### 🎯 Objectives
+- To provide a **real-time chat platform** where users can interact dynamically.
+- To simulate the **modern messaging experience** similar to Messenger or Discord.
+- To explore **WebSockets**, **user authentication**, and **file sharing** integration.
+
+### 👥 Who is it for?
+- Developers exploring **Socket.io** or **real-time communication**.
+- Users looking for a lightweight, modern chat experience.
+- Students or enthusiasts building **portfolio projects** with full-stack technologies.
 
 ---
 
-## 🚀 Installation & Setup
-1. Clone the repository:  
-   ```bash
-   git clone https://github.com/yourusername/jconnect.git
+## 🚀 Features
+
+| Category | Description |
+|-----------|-------------|
+| 💬 **Messaging** | Send and receive real-time messages instantly. |
+| 👤 **User Authentication** | Secure login and registration system. |
+| 🧑‍🤝‍🧑 **Group Conversations** | Create and manage group chats effortlessly. |
+| 📁 **File & Image Sharing** | Upload and send images or documents. |
+| 🔔 **Real-Time Notifications** | Get notified when new messages arrive. |
+| 🕵️ **User Profiles** | Check user profiles, status, mutual friends and GCs |
+| 💡 **Reactions** | React to messages with emojis. |
+| 🌓 **Light & Dark Mode** | Switch between light and dark themes. |
+| 📦 **Archived Conversations** | Archive chats for better organization. |
+| 📦 **Friends** | Send or receive friend requests from other users. |
+| 📦 **Chat Customization** | Edit nicknames, Group chat conversation, etc... |
+
+---
+
+## 🖼️ Screenshots
+
+| Homepage | Chat Room |
+|-----------|------------|
+| ![Homepage](./screenshots/homepage.png) | ![Chat Room](./screenshots/chatroom.png) |
+
+> *Showcase real user interactions or UI features in screenshots.*
+
+---
+
+## 🧠 Tech Stack
+
+**Frontend:**  
+- React  
+- TailwindCSS  
+- Axios  
+- Socket.io Client  
+
+**Backend:**  
+- Node.js  
+- Express  
+- Socket.io  
+
+**Database:**  
+- MongoDB (Mongoose)
+
+**Tools & Others:**  
+- JWT Authentication  
+- Cloudinary / Multer (for file uploads)
+- Sharp (for image resizing and format conversion)  
+- ESLint + Prettier (for code formatting)  
+
+---
+
+## ⚙️ Installation
+
+### 1️⃣ Clone the Repository
+```bash
+git clone https://github.com/yourusername/jconnect.git
+cd jconnect
