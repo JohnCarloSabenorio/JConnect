@@ -14,23 +14,23 @@
 
 ---
 
-## 📝 About
+## About
 
 **JConnect** was developed as a personal full-stack learning project to explore **real-time web communication** using **Socket.io** and modern JavaScript frameworks.
 
-### 🎯 Objectives
+### Objectives
 - To provide a **real-time chat platform** where users can interact dynamically.
 - To simulate the **modern messaging experience** similar to Messenger or Discord.
 - To explore **WebSockets**, **user authentication**, and **file sharing** integration.
 
-### 👥 Who is it for?
+### Who is it for?
 - Developers exploring **Socket.io** or **real-time communication**.
 - Users looking for a lightweight, modern chat experience.
 - Students or enthusiasts building **portfolio projects** with full-stack technologies.
 
 ---
 
-## 🚀 Features
+## Features
 
 | Category | Description |
 |-----------|-------------|
@@ -63,7 +63,7 @@
 
 ---
 
-## 🧠 Tech Stack
+## Tech Stack
 
 **Frontend:**  
 - React  
@@ -91,7 +91,7 @@
 
 ---
 
-## ⚙️ Installation
+## Installation
 
 ### 1️⃣ Clone the Repository
 ```bash
