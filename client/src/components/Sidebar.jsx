@@ -410,7 +410,7 @@ export default function Sidebar({ inputRef, getMessages, chatAFriend }) {
           }}
           // style={{ fontFamily: "Arial", "FontAwesome" }}
         />
-        {convoViewMode === 1 && (
+        {convoViewMode === 1 && sidebarContent == "inbox" && (
           <button
             className="mt-3 p-3 shadow-md rounded-md cursor-pointer hover:bg-gray-50 font-semibold bg-gray-50"
             onClick={(e) => dispatch(setDisplayGroupChatOverlay(true))}
