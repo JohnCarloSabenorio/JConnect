@@ -67,10 +67,6 @@
 | **View Profile** | **Dark Mode** |
 | ![Profile](./screenshots/view-profile.png) | ![Dark Mode](./screenshots/dark-mode.png) |
 
-
-
-> *Showcase real user interactions or UI features in screenshots.*
-
 ---
 
 ## 🧠 Tech Stack
@@ -91,7 +87,7 @@
 
 **Tools & Others:**  
 - JWT Authentication  
-- Cloudinary / Multer (for file uploads)
+- Multer (for file uploads)
 - Sharp (for image resizing and format conversion)  
 - ESLint + Prettier (for code formatting)  
 
