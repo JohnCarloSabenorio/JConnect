@@ -49,7 +49,7 @@
 | 🔁 **Remember User** | Stay logged in on the same device securely. |
 ---
 
-## 🖼️ Screenshots
+## Screenshots
 
 | **Sign In** | **Sign Up** |
 |:-----------:|:------------:|
