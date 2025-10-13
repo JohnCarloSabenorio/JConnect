@@ -299,7 +299,7 @@ export default function MediaPanel({ getUserConversations }) {
                 activeConvoIsGroup ? "flex" : "hidden"
               } group  gap-2 p-1 cursor-pointer hover:bg-gray-500 rounded-md hover:text-white`}
             >
-              {/* Icon */}  
+              {/* Icon */}
               <div>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -433,7 +433,7 @@ export default function MediaPanel({ getUserConversations }) {
 
           <div
             className={`p-3 flex flex-col gap-3 ${
-              membersActive ? "block" : "hidden"
+              membersActive && activeConvoIsGroup ? "block" : "hidden"
             }`}
           >
             {activeConvoMembers &&

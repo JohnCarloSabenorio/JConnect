@@ -194,7 +194,7 @@ export default function ConversationCard({
           );
 
           // Checks if the conversation is a group chat or not
-
+          console.log("user convo:", userConversation);
           dispatch(setActiveConvoIsGroup(userConversation.isGroup));
 
           if (chatmate._id) {
