@@ -107,7 +107,7 @@ export default function MediaPanel({ getUserConversations }) {
     <div
       className={`transition-colors ${
         isDarkMode ? "bg-gray-700 text-white" : "bg-white text-gray-800"
-      } absolute border-0.5 w-full h-full overflow-y-scroll  [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-800 [&::-webkit-scrollbar-thumb]:rounded-md" lg:relative lg:w-120 ${
+      } shadow-md absolute border-0.5 w-full h-full overflow-y-scroll  [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-800 [&::-webkit-scrollbar-thumb]:rounded-md" lg:relative lg:w-120 ${
         displayMediaPanel ? "block" : "hidden"
       }`}
     >
