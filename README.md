@@ -12,11 +12,6 @@
 - [Tech Stack](#-tech-stack)
 - [Installation](#-installation)
 - [Usage](#-usage)
-- [Configuration](#-configuration)
-- [Contributing](#-contributing)
-- [Roadmap](#-roadmap)
-- [License](#-license)
-- [Acknowledgements](#-acknowledgements)
 
 ---
 
