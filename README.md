@@ -56,11 +56,17 @@
 
 ## 🖼️ Screenshots
 
-| Homepage | Chat Room |
+| Sign In | Sign Up |
 |-----------|------------|
 | ![Sign in](./screenshots/signin.png) | ![Sign Up](./screenshots/signup.png) |
-| ![Create Group Chat](./screenshots/create-gc.png) | ![Sign Up](./screenshots/signup.png) |
+| Create Group Chat | Edit Profile |
+|-----------|------------|
+| ![Create Group Chat](./screenshots/create-gc.png) | ![Sign Up](./screenshots/edit-profile.png) |
+| Direct Conversation | Group Chat Conversation |
+|-----------|------------|
 | ![User Conversation](./screenshots/direct.png) | ![Group Chat Conversation](./screenshots/gc.png) |
+| View Profile | Dark Mode |
+|-----------|------------|
 | ![Profile](./screenshots/view-profile.png)  | ![Dark Mode](./screenshots/dark-mode.png) |
 
 > *Showcase real user interactions or UI features in screenshots.*
