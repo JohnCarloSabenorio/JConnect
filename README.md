@@ -1,6 +1,6 @@
 # 💬 JConnect
 
-> **JConnect** is a real-time chat application powered by **Socket.io**, inspired by **Messenger** and **Discord**. It enables users to connect, send messages, share files, create group conversations, and experience seamless real-time communication — all in a modern, responsive interface.
+**JConnect** is a real-time chat application powered by **Socket.io**, inspired by **Messenger** and **Discord**. It enables users to connect, send messages, share files, create group conversations, and experience seamless real-time communication — all in a modern, responsive interface.
 
 ---
 
