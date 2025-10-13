@@ -58,7 +58,10 @@
 
 | Homepage | Chat Room |
 |-----------|------------|
-| ![Homepage](./screenshots/homepage.png) | ![Chat Room](./screenshots/chatroom.png) |
+| ![Sign in](./screenshots/signin.png) | ![Sign Up](./screenshots/signup.png) |
+| ![Create Group Chat](./screenshots/create-gc.png) | ![Sign Up](./screenshots/signup.png) |
+| ![User Conversation](./screenshots/direct.png) | ![Group Chat Conversation](./screenshots/gc.png) |
+| ![Profile](./screenshots/view-profile.png)  | ![Dark Mode](./screenshots/dark-mode.png) |
 
 > *Showcase real user interactions or UI features in screenshots.*
 
