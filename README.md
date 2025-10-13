@@ -41,17 +41,18 @@
 | Category | Description |
 |-----------|-------------|
 | 💬 **Messaging** | Send and receive real-time messages instantly. |
-| 👤 **User Authentication** | Secure login and registration system. |
-| 🧑‍🤝‍🧑 **Group Conversations** | Create and manage group chats effortlessly. |
-| 📁 **File & Image Sharing** | Upload and send images or documents. |
+| 🔐 **User Authentication** | Secure login and registration system. |
+| 👥 **Group Conversations** | Create and manage group chats effortlessly. |
+| 📎 **File & Image Sharing** | Upload and send images or documents. |
 | 🔔 **Real-Time Notifications** | Get notified when new messages arrive. |
-| 🕵️ **User Profiles** | Check user profiles, status, mutual friends and GCs |
-| 💡 **Reactions** | React to messages with emojis. |
-| 🌓 **Light & Dark Mode** | Switch between light and dark themes. |
-| 📦 **Archived Conversations** | Archive chats for better organization. |
-| 📦 **Friends** | Send or receive friend requests from other users. |
-| 📦 **Chat Customization** | Edit nicknames, Group chat conversation, etc... |
-
+| 👤 **User Profiles** | Check user profiles, status, mutual friends, and group chats. |
+| 😄 **Reactions** | React to messages with emojis. |
+| 🌗 **Light & Dark Mode** | Switch between light and dark themes. |
+| 🗂️ **Archived Conversations** | Archive chats for better organization. |
+| 🤝 **Friends** | Send or receive friend requests from other users. |
+| 🎨 **Chat Customization** | Edit nicknames, group chat names, and more. |
+| ✉️ **Forgot Password** | Reset your password by receiving a verification link via email. |
+| 🔁 **Remember User** | Stay logged in on the same device securely. |
 ---
 
 ## 🖼️ Screenshots
