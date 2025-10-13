@@ -58,7 +58,7 @@
 
 | Homepage | Chat Room |
 |-----------|------------|
-| ![Homepage](./screenshots/homepage.png) | ![Chat Room](./screenshots/chatroom.png) |
+| ![Sign in](./screenshots/signin.png) | ![Sign Up](./screenshots/signup.png) |
 
 > *Showcase real user interactions or UI features in screenshots.*
 
