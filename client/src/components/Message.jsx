@@ -515,17 +515,19 @@ export const Message = React.memo(function Message({
             <div
               key={idx}
               className={`flex flex-col mt-2 ${
-                isCurrentUser ? "ml-auto mr-0" : "ml-0"
+                isCurrentUser ? "ml-auto mr-0" : "mr-auto ml-0"
               }`}
             >
-              <div className={`max-w-100 flex flex-col gap-2`}>
+              <div className={`max-w-100 flex flex-col gap-2 ml-0`}>
                 <a
                   className="group"
                   href={file.storagename}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <div className="bg-gray-100 p-3 rounded-md items-center cursor-pointer flex flex-wrap justify-end">
+                  <div
+                    className={`bg-gray-100 p-3 rounded-md items-center cursor-pointer flex flex-wrap justify-start`}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       height="25"

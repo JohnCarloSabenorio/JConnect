@@ -37,7 +37,7 @@ export default function ConversationCard({
   if (!context) {
     return;
   }
-  
+
   const { user } = context;
 
   const { isDarkMode } = useSelector((state) => state.isDarkMode);
@@ -210,7 +210,7 @@ export default function ConversationCard({
             isActive ? "bg-green-200" : isDarkMode ? "bg-gray-200" : "bg-white"
           } rounded-md flex p-5 shadow-md cursor-pointer`}
         >
-          <div className="relative">
+          <div className="relative flex-shrink-0">
             <img
               src={
                 userConversation.conversation.isGroup
@@ -232,7 +232,7 @@ export default function ConversationCard({
             ></div>
           </div>
           <div className="flex flex-grow">
-            <div className="px-3  flex-grow">
+            <div className="px-3 flex-grow">
               <p className="font-bold">
                 {userConversation.conversation.isGroup
                   ? userConversation.conversation.conversationName
