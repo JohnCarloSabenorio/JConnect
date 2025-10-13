@@ -68,7 +68,10 @@ export const Message = React.memo(function Message({
   useEffect(() => {
     function getNickname() {
       if (!namesAndNicknames) return;
-      const data = namesAndNicknames.find((data) => data.user._id == user._id);
+
+      const data = namesAndNicknames.find(
+        (data) => data.user._id == sender._id
+      );
 
       if (!data) {
         return;
