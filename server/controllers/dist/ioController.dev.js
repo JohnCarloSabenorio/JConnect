@@ -514,7 +514,7 @@ exports.sendMessage = function _callee9(io, socket, data) {
 };
 
 exports.reactToMesage = function _callee10(io, socket, data) {
-  var message, messageReactions, existingUserReaction, reactionIdx, theReceiver, deleteNotif, existingNotification;
+  var message, messageReactions, existingUserReaction, reactionIdx, theReceiver, deleteNotif, existingNotification, messageObj;
   return regeneratorRuntime.async(function _callee10$(_context10) {
     while (1) {
       switch (_context10.prev = _context10.next) {
@@ -628,12 +628,15 @@ exports.reactToMesage = function _callee10(io, socket, data) {
           return regeneratorRuntime.awrap(message.save());
 
         case 38:
+          messageObj = message.toObject({
+            virtuals: true
+          });
           io.to(message.conversation._id.toString()).emit("message react", {
             reactions: messageReactions,
-            message: message
+            message: messageObj
           });
 
-        case 39:
+        case 40:
         case "end":
           return _context10.stop();
       }

@@ -390,9 +390,10 @@ exports.reactToMesage = async (io, socket, data) => {
 
   await message.save();
 
+  let messageObj = message.toObject({ virtuals: true });
   io.to(message.conversation._id.toString()).emit("message react", {
     reactions: messageReactions,
-    message: message,
+    message: messageObj,
   });
 };
 
