@@ -6,92 +6,92 @@
 
 ## 📑 Table of Contents
 
-- [About](#-about)
-- [Features](#-features)
-- [Screenshots](#-screenshots)
-- [Tech Stack](#-tech-stack)
-- [Installation](#-installation)
-- [Usage](#-usage)
-- [Configuration](#-configuration)
-- [Contributing](#-contributing)
-- [Roadmap](#-roadmap)
-- [License](#-license)
-- [Acknowledgements](#-acknowledgements)
+- [About](#about)
+- [Features](#features)
+- [Screenshots](#sample-screenshots)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
 
 ---
 
-## 📝 About
+## About
 
 **JConnect** was developed as a personal full-stack learning project to explore **real-time web communication** using **Socket.io** and modern JavaScript frameworks.
 
-### 🎯 Objectives
+### Objectives
 - To provide a **real-time chat platform** where users can interact dynamically.
 - To simulate the **modern messaging experience** similar to Messenger or Discord.
 - To explore **WebSockets**, **user authentication**, and **file sharing** integration.
 
-### 👥 Who is it for?
+### Who is it for?
 - Developers exploring **Socket.io** or **real-time communication**.
 - Users looking for a lightweight, modern chat experience.
 - Students or enthusiasts building **portfolio projects** with full-stack technologies.
 
 ---
 
-## 🚀 Features
+## Features
 
 | Category | Description |
 |-----------|-------------|
 | 💬 **Messaging** | Send and receive real-time messages instantly. |
-| 👤 **User Authentication** | Secure login and registration system. |
-| 🧑‍🤝‍🧑 **Group Conversations** | Create and manage group chats effortlessly. |
-| 📁 **File & Image Sharing** | Upload and send images or documents. |
-| 🔔 **Real-Time Notifications** | Get notified when new messages arrive. |
-| 🕵️ **User Profiles** | Check user profiles, status, mutual friends and GCs |
-| 💡 **Reactions** | React to messages with emojis. |
-| 🌓 **Light & Dark Mode** | Switch between light and dark themes. |
-| 📦 **Archived Conversations** | Archive chats for better organization. |
-| 📦 **Friends** | Send or receive friend requests from other users. |
-| 📦 **Chat Customization** | Edit nicknames, Group chat conversation, etc... |
-
+| 🔐 **User Authentication** | Secure login and registration system. |
+| 👥 **Group Conversations** | Create and manage group chats effortlessly. |
+| 📎 **File & Image Sharing** | Upload and send images or documents. |
+| 🔔 **Real-Time Notifications** | Get notified about new messages, friend requests, mentions, etc... |
+| 👤 **User Profiles** | Check user profiles, status, mutual friends, and group chats. |
+| 😄 **Reactions** | React to messages with emojis. |
+| 🌗 **Light & Dark Mode** | Switch between light and dark themes. |
+| 🗂️ **Archived Conversations** | Archive chats for better organization. |
+| 🤝 **Friends** | Send or receive friend requests from other users. |
+| 🎨 **Chat Customization** | Edit nicknames, group chat names, and more. |
+| ✉️ **Forgot Password** | Reset your password by receiving a verification link via email. |
+| 🔁 **Remember User** | Stay logged in on the same device securely. |
 ---
 
-## 🖼️ Screenshots
+## Sample Screenshots
 
-| Homepage | Chat Room |
-|-----------|------------|
+| **Sign In** | **Sign Up** |
+|:-----------:|:------------:|
 | ![Sign in](./screenshots/signin.png) | ![Sign Up](./screenshots/signup.png) |
-| ![Create Group Chat](./screenshots/create-gc.png) | ![Sign Up](./screenshots/signup.png) |
+| **Create Group Chat** | **Edit Profile** |
+| ![Create Group Chat](./screenshots/create-gc.png) | ![Edit Profile](./screenshots/edit-profile.png) |
+| **Direct Conversation** | **Group Chat Conversation** |
 | ![User Conversation](./screenshots/direct.png) | ![Group Chat Conversation](./screenshots/gc.png) |
-| ![Profile](./screenshots/view-profile.png)  | ![Dark Mode](./screenshots/dark-mode.png) |
-
-> *Showcase real user interactions or UI features in screenshots.*
+| **View Profile** | **Dark Mode** |
+| ![Profile](./screenshots/view-profile.png) | ![Dark Mode](./screenshots/dark-mode.png) |
 
 ---
 
-## 🧠 Tech Stack
+## Tech Stack
 
 **Frontend:**  
 - React  
 - TailwindCSS  
-- Axios  
-- Socket.io Client  
+- Axios
+- Redux
+- Socket.io Client
 
 **Backend:**  
 - Node.js  
 - Express  
-- Socket.io  
+- Socket.io
+- Postman
 
 **Database:**  
 - MongoDB (Mongoose)
 
 **Tools & Others:**  
 - JWT Authentication  
-- Cloudinary / Multer (for file uploads)
+- Multer (for file uploads)
 - Sharp (for image resizing and format conversion)  
-- ESLint + Prettier (for code formatting)  
+- ESLint + Prettier (for code formatting)
+- React Photo View (Lightbox component for interacting with images)
+- Emoji Picker React (Customizable emoji picker component)
 
 ---
 
-## ⚙️ Installation
+## Installation
 
 ### 1️⃣ Clone the Repository
 ```bash
