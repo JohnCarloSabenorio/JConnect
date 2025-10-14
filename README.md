@@ -8,7 +8,7 @@
 
 - [About](#about)
 - [Features](#features)
-- [Screenshots](#screenshots)
+- [Screenshots](#sample-screenshots)
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
 
@@ -49,7 +49,7 @@
 | 🔁 **Remember User** | Stay logged in on the same device securely. |
 ---
 
-## Screenshots
+## Sample Screenshots
 
 | **Sign In** | **Sign Up** |
 |:-----------:|:------------:|
