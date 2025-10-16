@@ -35,6 +35,7 @@
 | Category | Description |
 |-----------|-------------|
 | 💬 **Messaging** | Send and receive real-time messages instantly. |
+| 💬 **User Mentions** | Mention users in a group conversation. |
 | 🔐 **User Authentication** | Secure login and registration system. |
 | 👥 **Group Conversations** | Create and manage group chats effortlessly. |
 | 📎 **File & Image Sharing** | Upload and send images or documents. |
@@ -47,7 +48,6 @@
 | 🎨 **Chat Customization** | Edit nicknames, group chat names, and more. |
 | ✉️ **Forgot Password** | Reset your password by receiving a verification link via email. |
 | 🔁 **Remember User** | Stay logged in on the same device securely. |
-| 🔁 **User Mentions** | Mention users in a group conversation. |
 ---
 
 ## Sample Screenshots
