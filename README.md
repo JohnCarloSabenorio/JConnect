@@ -47,6 +47,7 @@
 | 🎨 **Chat Customization** | Edit nicknames, group chat names, and more. |
 | ✉️ **Forgot Password** | Reset your password by receiving a verification link via email. |
 | 🔁 **Remember User** | Stay logged in on the same device securely. |
+| 🔁 **User Mentions** | Mention users in a group conversation. |
 ---
 
 ## Sample Screenshots
