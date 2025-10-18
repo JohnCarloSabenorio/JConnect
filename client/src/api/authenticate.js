@@ -5,9 +5,6 @@ const viteEnv = import.meta.env.VITE_ENV;
 
 export async function login(email, password, isRemembered) {
   try {
-    console.log(
-      `${viteEnv === "production" ? serverHost : localHost}/api/v1/users/login`
-    );
     const response = await axios.post(
       `${viteEnv === "production" ? serverHost : localHost}/api/v1/users/login`,
       {

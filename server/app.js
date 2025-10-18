@@ -29,6 +29,7 @@ const corsOptions = {
       ? process.env.LIVEHOST
       : process.env.LOCALHOST,
   credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 // GLOBAL MIDDLEWARES

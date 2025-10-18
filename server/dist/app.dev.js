@@ -43,7 +43,8 @@ var path = require("path");
 
 var corsOptions = {
   origin: process.env.NODE_ENV === "production" ? process.env.LIVEHOST : process.env.LOCALHOST,
-  credentials: true
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"]
 }; // GLOBAL MIDDLEWARES
 
 app.use(cors(corsOptions)); // Provides protection for common web vulnerabilities (XSS, clickjacking, sniffing attacks, etc...)
