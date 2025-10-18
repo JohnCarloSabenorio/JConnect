@@ -34,7 +34,8 @@ app.use(cors(corsOptions));
 // Provides protection for common web vulnerabilities (XSS, clickjacking, sniffing attacks, etc...)
 app.use(helmet());
 
-app.use(express.static(`${__dirname}/public`));
+app.use("/img", express.static(path.join(__dirname, "public/img")));
+app.use("/files", express.static(path.join(__dirname, "public/files")));
 
 const limiter = rateLimit.rateLimit({
   windowMs: 60 * 60 * 1000, // Number of requests will be counted per hour
