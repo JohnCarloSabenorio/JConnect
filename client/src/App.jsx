@@ -82,19 +82,16 @@ export default function App() {
           <Routes>
             <Route element={<ProtectedFormRoutes />}>
               <Route index element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route
-                path="/reset-password/:token"
-                element={<ResetPassword />}
-              />
+              <Route path="register" element={<Register />} />
+              <Route path="forgot-password" element={<ForgotPassword />} />
+              <Route path="reset-password/:token" element={<ResetPassword />} />
             </Route>
 
             <Route element={<ProtectedRoutes />}>
-              <Route path="/chat" element={<Chat />} />
+              <Route path="chat" element={<Chat />} />
             </Route>
 
-            <Route path="*" element={<NoPage />} />
+            <Route path="*" element={<NoPage q />} />
           </Routes>
         </BrowserRouter>
       </UserContext.Provider>
