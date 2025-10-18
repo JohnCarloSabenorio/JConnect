@@ -28,14 +28,22 @@ export async function unreactToMessage(messageId) {
 
 export async function getTopEmojis(messageId) {
   const response = await axios.get(
-    `https://jconnect-server.onrender.com/api/v1/message/get-top-emojis/${messageId}`
+    `https://jconnect-server.onrender.com/api/v1/message/get-top-emojis/${messageId}`,
+    {
+      withCredentials: true,
+      headers: { "Content-Type": "multipart/form-data" },
+    }
   );
   return response.data.reactions;
 }
 export async function getAllMessageReactions(messageId) {
   try {
     const response = await axios.get(
-      `https://jconnect-server.onrender.com/api/v1/message/get-all-reactions/${messageId}`
+      `https://jconnect-server.onrender.com/api/v1/message/get-all-reactions/${messageId}`,
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+      }
     );
 
     return response.data.reactions;
