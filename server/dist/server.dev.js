@@ -18,7 +18,9 @@ var port = process.env.PORT || 4000;
 var server = http.createServer(app);
 
 var io = require("socket.io")(server, {
-  cors: "*"
+  cors: {
+    origin: process.env.CLIENT_HOST
+  }
 });
 
 var ioController = require("./controllers/ioController"); // CATCHES SYNCHRONOUS ERRORS
