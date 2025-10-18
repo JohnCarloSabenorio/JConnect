@@ -78,20 +78,23 @@ export default function App() {
           setUser,
         }}
       >
-        <BrowserRouter basename="/">
+        <BrowserRouter>
           <Routes>
             <Route element={<ProtectedFormRoutes />}>
               <Route index element={<Login />} />
-              <Route path="register" element={<Register />} />
-              <Route path="forgot-password" element={<ForgotPassword />} />
-              <Route path="reset-password/:token" element={<ResetPassword />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route
+                path="/reset-password/:token"
+                element={<ResetPassword />}
+              />
             </Route>
 
             <Route element={<ProtectedRoutes />}>
-              <Route path="chat" element={<Chat />} />
+              <Route path="/chat" element={<Chat />} />
             </Route>
 
-            <Route path="*" element={<NoPage q />} />
+            <Route path="*" element={<NoPage />} />
           </Routes>
         </BrowserRouter>
       </UserContext.Provider>
