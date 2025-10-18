@@ -45,8 +45,6 @@ export default function App() {
         }
       );
 
-      console.log("response:", response);
-
       // IMPROVE LOGIN HANDLING
       if (response.data.currentUser) {
         socket.auth = { userId: response.data.currentUser._id };
@@ -61,7 +59,6 @@ export default function App() {
         setLoggedInStatus(false);
       }
     } catch (err) {
-      console.log(err);
       console.log(err?.response?.data?.message || "Login check failed");
       socket.disconnect();
       setUser({});
@@ -81,7 +78,7 @@ export default function App() {
           setUser,
         }}
       >
-        <BrowserRouter>
+        <BrowserRouter basename="/index.html">
           <Routes>
             <Route path="/*" element={<NoPage />} />
             <Route element={<ProtectedFormRoutes />}>
