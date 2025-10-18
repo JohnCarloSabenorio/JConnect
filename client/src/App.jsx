@@ -38,9 +38,12 @@ export default function App() {
 
   async function checkLoginStatus() {
     try {
-      const response = await axios.get("/jconnect/api/v1/users/isLoggedIn", {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        "https://jconnect-server.onrender.com/api/v1/users/isLoggedIn",
+        {
+          withCredentials: true,
+        }
+      );
 
       console.log("response:", response);
 

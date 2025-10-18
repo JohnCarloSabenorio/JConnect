@@ -3,7 +3,7 @@ import axios from "axios";
 export async function getAllConversations() {
   try {
     const response = await axios.get(
-      "/jconnect/api/v1/user-conversation?isGroup=false&status=active&status=pending&status=muted&status=blocked&sort=updatedAt",
+      "https://jconnect-server.onrender.com/api/v1/user-conversation?isGroup=false&status=active&status=pending&status=muted&status=blocked&sort=updatedAt",
       { withCredentials: true }
     );
 
@@ -18,7 +18,7 @@ export async function getAllConversations() {
 export async function getArchivedConversations() {
   try {
     const response = await axios.get(
-      "/jconnect/api/v1/user-conversation?status=archived",
+      "https://jconnect-server.onrender.com/api/v1/user-conversation?status=archived",
       { withCredentials: true }
     );
 
@@ -33,7 +33,7 @@ export async function getArchivedConversations() {
 export async function getAllGroupConversation() {
   try {
     const response = await axios.get(
-      "/jconnect/api/v1/user-conversation?isGroup=true&status=active&status=pending&status=muted",
+      "https://jconnect-server.onrender.com/api/v1/user-conversation?isGroup=true&status=active&status=pending&status=muted",
       { withCredentials: true }
     );
 
@@ -48,7 +48,7 @@ export async function getFriendsConversation() {
   try {
     // Create an api to get friend conversations
     const response = await axios.get(
-      "/jconnect/api/v1/friends/currentUser/allFriends",
+      "https://jconnect-server.onrender.com/api/v1/friends/currentUser/allFriends",
       { withCredentials: true }
     );
 
@@ -63,7 +63,7 @@ export async function getAllUserMessages(convoId) {
   try {
     // Gets the conversation of the user
     const response = await axios.get(
-      `/jconnect/api/v1/conversation/${convoId}/message?sort=createdAt`,
+      `https://jconnect-server.onrender.com/api/v1/conversation/${convoId}/message?sort=createdAt`,
       { withCredentials: true }
     );
 
@@ -76,7 +76,7 @@ export async function getAllUserMessages(convoId) {
 export async function updateConversation(convoId, formData) {
   try {
     const response = await axios.patch(
-      `jconnect/api/v1/conversation/${convoId}`,
+      `https://jconnect-server.onrender.com/api/v1/conversation/${convoId}`,
       formData,
       {
         withCredentials: true,
@@ -110,7 +110,7 @@ export async function createConversation(
     }
 
     const response = await axios.post(
-      `/jconnect/api/v1/conversation`,
+      `https://jconnect-server.onrender.com/api/v1/conversation`,
       formData,
       {
         withCredentials: true,
@@ -130,7 +130,7 @@ export async function findConvoWithUser(userId) {
   // riend
   try {
     const response = await axios.get(
-      `jconnect/api/v1/user-conversation/get-convo-with-user/${userId}`,
+      `https://jconnect-server.onrender.com/api/v1/user-conversation/get-convo-with-user/${userId}`,
       {
         withCredentials: true,
       }
@@ -145,7 +145,7 @@ export async function findConvoWithUser(userId) {
 export async function convoIsArchived(convoId) {
   try {
     const response = await axios.get(
-      `jconnect/api/v1/conversation/userConvo/isArchived/${convoId}`
+      `https://jconnect-server.onrender.com/api/v1/conversation/userConvo/isArchived/${convoId}`
     );
 
     const responseData = response.data;
@@ -159,7 +159,7 @@ export async function convoIsArchived(convoId) {
 export async function getUserConversation(convoId) {
   try {
     const response = await axios.get(
-      `jconnect/api/v1/user-conversation/${convoId}`
+      `https://jconnect-server.onrender.com/api/v1/user-conversation/${convoId}`
     );
 
     const responseData = response.data;
@@ -171,7 +171,7 @@ export async function getUserConversation(convoId) {
 export async function updateUserConversation(userConvoId, newData) {
   try {
     const response = await axios.patch(
-      `jconnect/api/v1/user-conversation/${userConvoId}`,
+      `https://jconnect-server.onrender.com/api/v1/user-conversation/${userConvoId}`,
       newData,
       {
         withCredentials: true,
@@ -193,7 +193,7 @@ export async function updateUserConversation(userConvoId, newData) {
 export async function archiveConversation(convoId) {
   try {
     const response = await axios.patch(
-      `jconnect/api/v1/conversation/userConvo/archive/${convoId}`
+      `https://jconnect-server.onrender.com/api/v1/conversation/userConvo/archive/${convoId}`
     );
 
     if (!response.status === 200) {
@@ -208,7 +208,7 @@ export async function archiveConversation(convoId) {
 export async function blockConversation(convoId) {
   try {
     const response = await axios.patch(
-      `jconnect/api/v1/user-conversation/block/${convoId}`
+      `https://jconnect-server.onrender.com/api/v1/user-conversation/block/${convoId}`
     );
 
     if (!response.status === 200) {
@@ -224,7 +224,7 @@ export async function blockConversation(convoId) {
 export async function unarchiveConversation(convoId) {
   try {
     const response = await axios.patch(
-      `jconnect/api/v1/user-conversation/unarchive/${convoId}`
+      `https://jconnect-server.onrender.com/api/v1/user-conversation/unarchive/${convoId}`
     );
 
     if (!response.status === 200) {
@@ -239,7 +239,7 @@ export async function unarchiveConversation(convoId) {
 export async function unblockConversation(convoId) {
   try {
     const response = await axios.patch(
-      `jconnect/api/v1/user-conversation/unblock/${convoId}`
+      `https://jconnect-server.onrender.com/api/v1/user-conversation/unblock/${convoId}`
     );
 
     if (!response.status === 200) {
@@ -255,7 +255,7 @@ export async function unblockConversation(convoId) {
 export async function activateUserConversation(userConvoId) {
   try {
     const response = await axios.patch(
-      `jconnect/api/v1/user-conversation/activate/${userConvoId}`
+      `https://jconnect-server.onrender.com/api/v1/user-conversation/activate/${userConvoId}`
     );
 
     if (!response.status === 200) {
@@ -271,7 +271,7 @@ export async function activateUserConversation(userConvoId) {
 export async function leaveConversation(userConvoId) {
   try {
     const response = await axios.delete(
-      `jconnect/api/v1/user-conversation/${userConvoId}`
+      `https://jconnect-server.onrender.com/api/v1/user-conversation/${userConvoId}`
     );
 
     if (!response.status === 204) {
@@ -285,7 +285,7 @@ export async function leaveConversation(userConvoId) {
 export async function addNewMembersToGroup(conversationId, newMembersId) {
   try {
     const response = await axios.post(
-      `jconnect/api/v1/conversation/add-many/${conversationId}`,
+      `https://jconnect-server.onrender.com/api/v1/conversation/add-many/${conversationId}`,
       { newUsers: newMembersId },
       { withCredentials: true }
     );
@@ -299,7 +299,7 @@ export async function addNewMembersToGroup(conversationId, newMembersId) {
 export async function removeMemberFromGroup(conversationId, userId) {
   try {
     const response = await axios.delete(`
-      jconnect/api/v1/users/${userId}/conversation/member/${conversationId}`);
+      https://jconnect-server.onrender.com/api/v1/users/${userId}/conversation/member/${conversationId}`);
   } catch (err) {
     console.log("Failed to remove user from conversation:", err);
   }
@@ -308,7 +308,7 @@ export async function removeMemberFromGroup(conversationId, userId) {
 export async function getNamesAndNicknames(convoId) {
   try {
     const response = await axios.get(
-      `jconnect/api/v1/user-conversation/get-names-nicknames/${convoId}`
+      `https://jconnect-server.onrender.com/api/v1/user-conversation/get-names-nicknames/${convoId}`
     );
 
     const responseData = response.data;
@@ -321,7 +321,7 @@ export async function getNamesAndNicknames(convoId) {
 export async function findMutualGroupChats(userId) {
   try {
     const response = await axios.get(
-      `jconnect/api/v1/conversation/mutual-gc/${userId}`
+      `https://jconnect-server.onrender.com/api/v1/conversation/mutual-gc/${userId}`
     );
 
     return response.data.mutualConversations;

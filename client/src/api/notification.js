@@ -1,9 +1,13 @@
 import axios from "axios";
 export async function createNotification(body) {
   try {
-    const response = await axios.post("jconnect/api/v1/notification", body, {
-      withCredentials: true,
-    });
+    const response = await axios.post(
+      "https://jconnect-server.onrender.com/api/v1/notification",
+      body,
+      {
+        withCredentials: true,
+      }
+    );
 
     return response.data.data;
   } catch (err) {
@@ -14,7 +18,7 @@ export async function createNotification(body) {
 export async function getAllNotifications() {
   try {
     const response = await axios.get(
-      "jconnect/api/v1/notification?sort=-createdAt",
+      "https://jconnect-server.onrender.com/api/v1/notification?sort=-createdAt",
       {
         withCredentials: true,
       }
@@ -27,9 +31,12 @@ export async function getAllNotifications() {
 }
 export async function deleteNotification(notificationId) {
   try {
-    await axios.delete(`jconnect/api/v1/notification/${notificationId}`, {
-      withCredentials: true,
-    });
+    await axios.delete(
+      `https://jconnect-server.onrender.com/api/v1/notification/${notificationId}`,
+      {
+        withCredentials: true,
+      }
+    );
   } catch (err) {
     console.log("Error ");
   }
@@ -38,11 +45,10 @@ export async function deleteNotification(notificationId) {
 export async function updateAllUserNotifications(newData) {
   try {
     const response = await axios.patch(
-      `jconnect/api/v1/notification/update-user-notifs`,
+      `https://jconnect-server.onrender.com/api/v1/notification/update-user-notifs`,
       newData,
       { withCredentials: true }
     );
-
   } catch (err) {
     console.log("Error updating all notifications:", err);
   }

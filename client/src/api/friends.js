@@ -3,7 +3,7 @@ export async function getFriends() {
   try {
     // Get friends
     const response = await axios.get(
-      "jconnect/api/v1/friends/currentUser/allFriends",
+      "https://jconnect-server.onrender.com/api/v1/friends/currentUser/allFriends",
       {
         withCredentials: true,
       }
@@ -17,9 +17,12 @@ export async function getFriends() {
 
 export async function getNonUserFriends() {
   try {
-    const response = await axios.get("jconnect/api/v1/friends/non-friends", {
-      withCredentials: true,
-    });
+    const response = await axios.get(
+      "https://jconnect-server.onrender.com/api/v1/friends/non-friends",
+      {
+        withCredentials: true,
+      }
+    );
 
     return response.data.nonFriends;
   } catch (err) {
@@ -31,7 +34,7 @@ export async function getFriend() {
   try {
     // Get friends
     const response = await axios.get(
-      "jconnect/api/v1/friends/currentUser/allFriends",
+      "https://jconnect-server.onrender.com/api/v1/friends/currentUser/allFriends",
       {
         withCredentials: true,
       }
@@ -47,7 +50,7 @@ export async function isFriend(userId) {
   try {
     // Check if the user is a friend
     const response = await axios.get(
-      `jconnect/api/v1/friends/isFriend/${userId}`
+      `https://jconnect-server.onrender.com/api/v1/friends/isFriend/${userId}`
     );
 
     return response.data.isFriend;
@@ -59,7 +62,7 @@ export async function isFriend(userId) {
 export async function sendFriendRequest(userId) {
   try {
     const response = await axios.post(
-      `jconnect/api/v1/friends/friendRequest/${userId}`
+      `https://jconnect-server.onrender.com/api/v1/friends/friendRequest/${userId}`
     );
   } catch (err) {
     console.log("Error sending friend request:", err);
@@ -68,7 +71,7 @@ export async function sendFriendRequest(userId) {
 export async function cancelFriendRequest(userId) {
   try {
     const response = await axios.delete(
-      `jconnect/api/v1/friends/cancelRequest/${userId}`
+      `https://jconnect-server.onrender.com/api/v1/friends/cancelRequest/${userId}`
     );
   } catch (err) {
     console.log("Error sending friend request:", err);
@@ -77,7 +80,7 @@ export async function cancelFriendRequest(userId) {
 export async function rejectFriendRequest(userId) {
   try {
     const response = await axios.delete(
-      `jconnect/api/v1/friends/rejectRequest/${userId}`
+      `https://jconnect-server.onrender.com/api/v1/friends/rejectRequest/${userId}`
     );
   } catch (err) {
     console.log("Error sending friend request:", err);
@@ -85,7 +88,9 @@ export async function rejectFriendRequest(userId) {
 }
 export async function removeFriend(userId) {
   try {
-    const response = await axios.delete(`jconnect/api/v1/friends/${userId}`);
+    const response = await axios.delete(
+      `https://jconnect-server.onrender.com/api/v1/friends/${userId}`
+    );
   } catch (err) {
     console.log("Error sending friend request:", err);
   }
@@ -94,7 +99,7 @@ export async function removeFriend(userId) {
 export async function acceptFriendRequest(userId) {
   try {
     const response = await axios.patch(
-      `jconnect/api/v1/friends/acceptRequest/${userId}`
+      `https://jconnect-server.onrender.com/api/v1/friends/acceptRequest/${userId}`
     );
 
     return response.data.data;
@@ -106,7 +111,7 @@ export async function acceptFriendRequest(userId) {
 export async function isRequestSentToUser(userId) {
   try {
     const response = await axios.get(
-      `jconnect/api/v1/friends/isRequestSent/${userId}`
+      `https://jconnect-server.onrender.com/api/v1/friends/isRequestSent/${userId}`
     );
 
     return response.data.isRequestSent;
@@ -117,7 +122,7 @@ export async function isRequestSentToUser(userId) {
 export async function isRequestReceived(userId) {
   try {
     const response = await axios.get(
-      `jconnect/api/v1/friends/isRequestReceived/${userId}`
+      `https://jconnect-server.onrender.com/api/v1/friends/isRequestReceived/${userId}`
     );
 
     return response.data.isRequestReceived;
@@ -129,7 +134,7 @@ export async function isRequestReceived(userId) {
 export async function findMutualFriends(userId) {
   try {
     const response = await axios.get(
-      `jconnect/api/v1/friends/mutual-friends/${userId}`
+      `https://jconnect-server.onrender.com/api/v1/friends/mutual-friends/${userId}`
     );
 
     return response.data.mutualFriends;

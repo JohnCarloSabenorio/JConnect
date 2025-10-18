@@ -2,9 +2,12 @@ import axios from "axios";
 
 export async function getAllUsers() {
   try {
-    const response = await axios.get("jconnect/api/v1/users", {
-      withCredentials: true,
-    });
+    const response = await axios.get(
+      "https://jconnect-server.onrender.com/api/v1/users",
+      {
+        withCredentials: true,
+      }
+    );
 
     return response.data.data;
   } catch (error) {
@@ -14,9 +17,12 @@ export async function getAllUsers() {
 
 export async function getUser(userId) {
   try {
-    const response = await axios.get(`jconnect/api/v1/users/${userId}`, {
-      withCredentials: true,
-    });
+    const response = await axios.get(
+      `https://jconnect-server.onrender.com/api/v1/users/${userId}`,
+      {
+        withCredentials: true,
+      }
+    );
 
     return response.data.data;
   } catch (error) {
@@ -26,10 +32,14 @@ export async function getUser(userId) {
 
 export async function updateCurrentUser(data) {
   try {
-    const response = await axios.patch(`jconnect/api/v1/users/updateMe`, data, {
-      withCredentials: true,
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const response = await axios.patch(
+      `https://jconnect-server.onrender.com/api/v1/users/updateMe`,
+      data,
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
 
     const responseData = response.data;
     return responseData.data;
@@ -45,7 +55,7 @@ export async function changePassword(
 ) {
   try {
     const response = await axios.patch(
-      `jconnect/api/v1/users/updatePassword`,
+      `https://jconnect-server.onrender.com/api/v1/users/updatePassword`,
       {
         currentPassword,
         newPassword,
@@ -65,7 +75,7 @@ export async function changePassword(
 export async function resetPassword(newPassword, confirmNewPassword, token) {
   try {
     const response = await axios.patch(
-      `/jconnect/api/v1/users/resetPassword/${token}`,
+      `https://jconnect-server.onrender.com/api/v1/users/resetPassword/${token}`,
       {
         newPassword,
         confirmNewPassword,
@@ -84,7 +94,7 @@ export async function resetPassword(newPassword, confirmNewPassword, token) {
 export async function isTokenValid(token) {
   try {
     const response = await axios.get(
-      `/jconnect/api/v1/users/isTokenValid/${token}`,
+      `https://jconnect-server.onrender.com/api/v1/users/isTokenValid/${token}`,
       {
         withCredentials: true,
       }

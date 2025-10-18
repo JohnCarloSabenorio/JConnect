@@ -2,7 +2,7 @@ import axios from "axios";
 export async function login(email, password, isRemembered) {
   try {
     const response = await axios.post(
-      "/jconnect/api/v1/users/login",
+      "https://jconnect-server.onrender.com/api/v1/users/login",
       {
         email,
         password,
@@ -22,7 +22,7 @@ export async function login(email, password, isRemembered) {
 export async function register(username, email, password, passwordConfirm) {
   try {
     const response = await axios.post(
-      "/jconnect/api/v1/users/signup",
+      "https://jconnect-server.onrender.com/api/v1/users/signup",
       { username, email, password, passwordConfirm },
       {
         withCredentials: true,
@@ -37,9 +37,12 @@ export async function register(username, email, password, passwordConfirm) {
 
 export async function logout() {
   try {
-    const response = await axios.get("/jconnect/api/v1/users/logout", {
-      withCredentials: true,
-    });
+    const response = await axios.get(
+      "https://jconnect-server.onrender.com/api/v1/users/logout",
+      {
+        withCredentials: true,
+      }
+    );
   } catch (err) {
     console.log(err);
   }
@@ -47,9 +50,12 @@ export async function logout() {
 
 export async function isLoggedIn() {
   try {
-    const response = await axios.get("/jconnect/api/v1/users/isLoggedIn", {
-      withCredentials: true,
-    });
+    const response = await axios.get(
+      "https://jconnect-server.onrender.com/api/v1/users/isLoggedIn",
+      {
+        withCredentials: true,
+      }
+    );
 
     return response;
   } catch (err) {
@@ -60,7 +66,7 @@ export async function isLoggedIn() {
 export async function forgotPassword(email) {
   try {
     const response = await axios.post(
-      "/jconnect/api/v1/users/forgotPassword",
+      "https://jconnect-server.onrender.com/api/v1/users/forgotPassword",
       {
         email,
       },
