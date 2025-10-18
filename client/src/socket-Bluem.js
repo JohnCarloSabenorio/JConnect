@@ -1,5 +1,4 @@
-const URL =
-  process.env.NODE_ENV === "production" ? undefined : "http://localhost:3000";
+const URL = "https://jconnect-server.onrender.com";
 
 export const socket = io(URL, {
   autoConnect: false,
