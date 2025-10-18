@@ -58,6 +58,7 @@ export default function App() {
         setLoggedInStatus(false);
       }
     } catch (err) {
+      console.log(err);
       console.log(err?.response?.data?.message || "Login check failed");
       socket.disconnect();
       setUser({});
