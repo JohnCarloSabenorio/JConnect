@@ -42,6 +42,8 @@ export default function App() {
         withCredentials: true,
       });
 
+      console.log("response:", response);
+
       // IMPROVE LOGIN HANDLING
       if (response.data.currentUser) {
         socket.auth = { userId: response.data.currentUser._id };
