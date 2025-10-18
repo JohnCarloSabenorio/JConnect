@@ -19,9 +19,9 @@ const createSignToken = (isRemembered, user, statusCode, res) => {
   // Create options for the cookie
   const cookieOptions = {
     httpOnly: true,
-    // sameSite: "None",
-    // domain: "localhost",
-    // path: "/",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
+    maxAge: isRemembered ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000, // optional
   };
 
   if (isRemembered) {

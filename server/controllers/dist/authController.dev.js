@@ -30,9 +30,10 @@ var createSignToken = function createSignToken(isRemembered, user, statusCode, r
   var token = signToken(user._id); // Create options for the cookie
 
   var cookieOptions = {
-    httpOnly: true // sameSite: "None",
-    // domain: "localhost",
-    // path: "/",
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
+    maxAge: isRemembered ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000 // optional
 
   };
 
