@@ -80,7 +80,6 @@ export default function App() {
       >
         <BrowserRouter basename="/">
           <Routes>
-            <Route path="/*" element={<NoPage />} />
             <Route element={<ProtectedFormRoutes />}>
               <Route index element={<Login />} />
               <Route path="/register" element={<Register />} />
@@ -90,9 +89,12 @@ export default function App() {
                 element={<ResetPassword />}
               />
             </Route>
+
             <Route element={<ProtectedRoutes />}>
               <Route path="/chat" element={<Chat />} />
             </Route>
+
+            <Route path="*" element={<NoPage />} />
           </Routes>
         </BrowserRouter>
       </UserContext.Provider>
