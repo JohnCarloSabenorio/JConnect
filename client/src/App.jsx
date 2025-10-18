@@ -16,6 +16,9 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState({});
   const [isConnected, setIsConnected] = useState(socket.connected);
+  const serverHost = import.meta.env.VITE_SERVER_HOST;
+  const viteEnv = import.meta.env.VITE_ENV;
+  const localHost = import.meta.env.VITE_LOCAL_SERVER;
 
   useEffect(() => {
     const onConnect = () => {
@@ -39,7 +42,9 @@ export default function App() {
   async function checkLoginStatus() {
     try {
       const response = await axios.get(
-        "https://jconnect-server.onrender.com/api/v1/users/isLoggedIn",
+        `${
+          viteEnv === "production" ? serverHost : localHost
+        }/api/v1/users/isLoggedIn`,
         {
           withCredentials: true,
         }

@@ -11,6 +11,9 @@ export default function EditProfileOverlay() {
     (state) => state.editProfileOverlay
   );
 
+  useEffect(() => {
+    console.log("the user:", user);
+  }, [user]);
   const profilePictureRef = useRef();
   const profileBannerRef = useRef();
   async function updateMyUsername(data) {

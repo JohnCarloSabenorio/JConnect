@@ -5,11 +5,10 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   server: {
     proxy: {
-      "/jconnect": "https://jconnect-server.onrender.com",
-      "/img": "https://jconnect-server.onrender.com",
-      "/files": "https://jconnect-server.onrender.com",
+      "/jconnect": "http://localhost:3000",
+      "/img": "http://localhost:3000",
+      "/files": "http://localhost:3000",
     },
   },
   plugins: [tailwindcss(), react()],
-  base: "/",
 });

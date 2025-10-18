@@ -19,7 +19,7 @@ var server = http.createServer(app);
 
 var io = require("socket.io")(server, {
   cors: {
-    origin: process.env.NODE_ENV === "production" ? process.env.LIVE_HOST : process.env.LOCAL_HOST
+    origin: process.env.NODE_ENV === "production" ? process.env.LIVEHOST : process.env.LOCALHOST
   }
 });
 

@@ -26,8 +26,8 @@ const path = require("path");
 const corsOptions = {
   origin:
     process.env.NODE_ENV === "production"
-      ? process.env.LIVE_HOST
-      : process.env.LOCAL_HOST,
+      ? process.env.LIVEHOST
+      : process.env.LOCALHOST,
   credentials: true, // Allows cookies, HTTP auth, or client-side SSL certificates
 };
 
@@ -44,8 +44,8 @@ app.use(
       res.setHeader(
         "Access-Control-Allow-Origin",
         process.env.NODE_ENV === "production"
-          ? process.env.LIVE_HOST
-          : process.env.LOCAL_HOST
+          ? process.env.LIVEHOST
+          : process.env.LOCALHOST
       );
     },
   })
@@ -57,8 +57,8 @@ app.use(
       res.setHeader(
         "Access-Control-Allow-Origin",
         process.env.NODE_ENV === "production"
-          ? process.env.LIVE_HOST
-          : process.env.LOCAL_HOST
+          ? process.env.LIVEHOST
+          : process.env.LOCALHOST
       );
     },
   })

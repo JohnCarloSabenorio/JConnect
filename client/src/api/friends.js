@@ -1,9 +1,14 @@
 import axios from "axios";
+const serverHost = import.meta.env.VITE_SERVER_HOST;
+const localServer = import.meta.env.VITE_LOCAL_SERVER;
+const viteEnv = import.meta.env.VITE_ENV;
 export async function getFriends() {
   try {
     // Get friends
     const response = await axios.get(
-      "https://jconnect-server.onrender.com/api/v1/friends/currentUser/allFriends",
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/friends/currentUser/allFriends`,
       {
         withCredentials: true,
       }
@@ -18,7 +23,9 @@ export async function getFriends() {
 export async function getNonUserFriends() {
   try {
     const response = await axios.get(
-      "https://jconnect-server.onrender.com/api/v1/friends/non-friends",
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/friends/non-friends`,
       {
         withCredentials: true,
       }
@@ -34,7 +41,9 @@ export async function getFriend() {
   try {
     // Get friends
     const response = await axios.get(
-      "https://jconnect-server.onrender.com/api/v1/friends/currentUser/allFriends",
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/friends/currentUser/allFriends`,
       {
         withCredentials: true,
       }
@@ -50,7 +59,9 @@ export async function isFriend(userId) {
   try {
     // Check if the user is a friend
     const response = await axios.get(
-      `https://jconnect-server.onrender.com/api/v1/friends/isFriend/${userId}`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/friends/isFriend/${userId}`,
       {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
@@ -66,7 +77,9 @@ export async function isFriend(userId) {
 export async function sendFriendRequest(userId) {
   try {
     const response = await axios.post(
-      `https://jconnect-server.onrender.com/api/v1/friends/friendRequest/${userId}`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/friends/friendRequest/${userId}`,
       {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
@@ -79,7 +92,9 @@ export async function sendFriendRequest(userId) {
 export async function cancelFriendRequest(userId) {
   try {
     const response = await axios.delete(
-      `https://jconnect-server.onrender.com/api/v1/friends/cancelRequest/${userId}`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/friends/cancelRequest/${userId}`,
       {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
@@ -92,7 +107,9 @@ export async function cancelFriendRequest(userId) {
 export async function rejectFriendRequest(userId) {
   try {
     const response = await axios.delete(
-      `https://jconnect-server.onrender.com/api/v1/friends/rejectRequest/${userId}`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/friends/rejectRequest/${userId}`,
       {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
@@ -105,7 +122,9 @@ export async function rejectFriendRequest(userId) {
 export async function removeFriend(userId) {
   try {
     const response = await axios.delete(
-      `https://jconnect-server.onrender.com/api/v1/friends/${userId}`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/friends/${userId}`,
       {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
@@ -119,7 +138,9 @@ export async function removeFriend(userId) {
 export async function acceptFriendRequest(userId) {
   try {
     const response = await axios.patch(
-      `https://jconnect-server.onrender.com/api/v1/friends/acceptRequest/${userId}`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/friends/acceptRequest/${userId}`,
       {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
@@ -135,7 +156,9 @@ export async function acceptFriendRequest(userId) {
 export async function isRequestSentToUser(userId) {
   try {
     const response = await axios.get(
-      `https://jconnect-server.onrender.com/api/v1/friends/isRequestSent/${userId}`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/friends/isRequestSent/${userId}`,
       {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
@@ -150,7 +173,9 @@ export async function isRequestSentToUser(userId) {
 export async function isRequestReceived(userId) {
   try {
     const response = await axios.get(
-      `https://jconnect-server.onrender.com/api/v1/friends/isRequestReceived/${userId}`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/friends/isRequestReceived/${userId}`,
       {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
@@ -166,7 +191,9 @@ export async function isRequestReceived(userId) {
 export async function findMutualFriends(userId) {
   try {
     const response = await axios.get(
-      `https://jconnect-server.onrender.com/api/v1/friends/mutual-friends/${userId}`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/friends/mutual-friends/${userId}`,
       {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },

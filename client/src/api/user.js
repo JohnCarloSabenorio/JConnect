@@ -1,9 +1,12 @@
 import axios from "axios";
+const serverHost = import.meta.env.VITE_SERVER_HOST;
+const localServer = import.meta.env.VITE_LOCAL_SERVER;
+const viteEnv = import.meta.env.VITE_ENV;
 
 export async function getAllUsers() {
   try {
     const response = await axios.get(
-      "https://jconnect-server.onrender.com/api/v1/users",
+      `${viteEnv === "production" ? serverHost : localServer}/api/v1/users`,
       {
         withCredentials: true,
       }
@@ -18,7 +21,9 @@ export async function getAllUsers() {
 export async function getUser(userId) {
   try {
     const response = await axios.get(
-      `https://jconnect-server.onrender.com/api/v1/users/${userId}`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/users/${userId}`,
       {
         withCredentials: true,
       }
@@ -33,7 +38,9 @@ export async function getUser(userId) {
 export async function updateCurrentUser(data) {
   try {
     const response = await axios.patch(
-      `https://jconnect-server.onrender.com/api/v1/users/updateMe`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/users/updateMe`,
       data,
       {
         withCredentials: true,
@@ -55,7 +62,9 @@ export async function changePassword(
 ) {
   try {
     const response = await axios.patch(
-      `https://jconnect-server.onrender.com/api/v1/users/updatePassword`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/users/updatePassword`,
       {
         currentPassword,
         newPassword,
@@ -75,7 +84,9 @@ export async function changePassword(
 export async function resetPassword(newPassword, confirmNewPassword, token) {
   try {
     const response = await axios.patch(
-      `https://jconnect-server.onrender.com/api/v1/users/resetPassword/${token}`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/users/resetPassword/${token}`,
       {
         newPassword,
         confirmNewPassword,
@@ -94,7 +105,9 @@ export async function resetPassword(newPassword, confirmNewPassword, token) {
 export async function isTokenValid(token) {
   try {
     const response = await axios.get(
-      `https://jconnect-server.onrender.com/api/v1/users/isTokenValid/${token}`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/users/isTokenValid/${token}`,
       {
         withCredentials: true,
       }

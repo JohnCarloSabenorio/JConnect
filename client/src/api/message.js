@@ -1,13 +1,19 @@
 import axios from "axios";
+const serverHost = import.meta.env.VITE_SERVER_HOST;
+const localServer = import.meta.env.VITE_LOCAL_SERVER;
+const viteEnv = import.meta.env.VITE_ENV;
 
 export async function reactToMessage(messageId, emojiUnified) {
   try {
     const response = await axios.post(
-      `https://jconnect-server.onrender.com/api/v1/message/react-to-message/${messageId}`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/message/react-to-message/${messageId}`,
       { unified: emojiUnified },
       { withCredentials: true }
     );
-
+    console.log("MESSAGE ID:", messageId);
+    console.log("UNIFIED EMOJI:", emojiUnified);
     return response.data.reactions;
   } catch (err) {
     console.log("Failed to react to message:", err);
@@ -17,10 +23,14 @@ export async function reactToMessage(messageId, emojiUnified) {
 export async function unreactToMessage(messageId) {
   try {
     const response = axios.post(
-      `https://jconnect-server.onrender.com/api/v1/message/unreact-to-message/${messageId}`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/message/unreact-to-message/${messageId}`,
       { unified: emojiUnified },
       { withCredentials: true }
     );
+
+    console.log("REACTED TO MESSAGE:", response);
   } catch (err) {
     console.log("Failed to react to message:", err);
   }
@@ -28,22 +38,18 @@ export async function unreactToMessage(messageId) {
 
 export async function getTopEmojis(messageId) {
   const response = await axios.get(
-    `https://jconnect-server.onrender.com/api/v1/message/get-top-emojis/${messageId}`,
-    {
-      withCredentials: true,
-      headers: { "Content-Type": "multipart/form-data" },
-    }
+    `${
+      viteEnv === "production" ? serverHost : localServer
+    }/api/v1/message/get-top-emojis/${messageId}`
   );
   return response.data.reactions;
 }
 export async function getAllMessageReactions(messageId) {
   try {
     const response = await axios.get(
-      `https://jconnect-server.onrender.com/api/v1/message/get-all-reactions/${messageId}`,
-      {
-        withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
-      }
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/message/get-all-reactions/${messageId}`
     );
 
     return response.data.reactions;
@@ -72,7 +78,7 @@ export async function createMessage(data) {
     }
 
     const response = await axios.post(
-      "https://jconnect-server.onrender.com/api/v1/message",
+      `${viteEnv === "production" ? serverHost : localServer}/api/v1/message`,
       formData,
       {
         withCredentials: true,

@@ -102,7 +102,7 @@ userSchema.virtual("profilePictureUrl").get(function () {
 userSchema.virtual("profileBannerUrl").get(function () {
   if (!this.profileBanner) return null;
   if (this.profileBanner.startsWith("img/profileBanners")) return this.profileBanner;
-  return process.env.NODE_ENV === "production" ? "https://jconnect-server.onrender.com/img/profileImages/".concat(this.profilePicture) : "img/profileImages/".concat(this.profileBanner);
+  return process.env.NODE_ENV === "production" ? "https://jconnect-server.onrender.com/img/profileImages/".concat(this.profilePicture) : "img/profileBanners/".concat(this.profileBanner);
 }); // DOCUMENT MIDDLEWARES
 // Removes unnecessary fields when creating a user
 

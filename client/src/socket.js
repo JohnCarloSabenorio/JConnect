@@ -1,4 +1,8 @@
-const URL = "https://jconnect-server.onrender.com";
+const serverHost = import.meta.env.VITE_SERVER_HOST;
+const localServer = import.meta.env.VITE_LOCAL_SERVER;
+const viteEnv = import.meta.env.VITE_ENV;
+
+const URL = viteEnv === "production" ? serverHost : localServer;
 
 export const socket = io(URL, {
   autoConnect: false,

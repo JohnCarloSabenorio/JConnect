@@ -22,8 +22,7 @@ router.use("/:userId/conversation", convoRouter);
 router.use(authController.protect);
 router.route("/logout").get(authController.logout);
 router.use("/allConvo", convoRouter);
-router.route("/convo/:userId"); // This is for
-
+router.route("/convo/:userId");
 router.route("/updatePassword").patch(authController.updatePassword);
 router.route("/").get(controller.getAllUsers).post(controller.createUser);
 router.route("/updateMe").patch(controller.uploadImage, controller.resizeImage, controller.updateMe);

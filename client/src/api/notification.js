@@ -1,8 +1,14 @@
 import axios from "axios";
+const serverHost = import.meta.env.VITE_SERVER_HOST;
+const localServer = import.meta.env.VITE_LOCAL_SERVER;
+const viteEnv = import.meta.env.VITE_ENV;
+
 export async function createNotification(body) {
   try {
     const response = await axios.post(
-      "https://jconnect-server.onrender.com/api/v1/notification",
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/notification`,
       body,
       {
         withCredentials: true,
@@ -18,7 +24,9 @@ export async function createNotification(body) {
 export async function getAllNotifications() {
   try {
     const response = await axios.get(
-      "https://jconnect-server.onrender.com/api/v1/notification?sort=-createdAt",
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/notification?sort=-createdAt`,
       {
         withCredentials: true,
       }
@@ -32,7 +40,9 @@ export async function getAllNotifications() {
 export async function deleteNotification(notificationId) {
   try {
     await axios.delete(
-      `https://jconnect-server.onrender.com/api/v1/notification/${notificationId}`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/notification/${notificationId}`,
       {
         withCredentials: true,
       }
@@ -45,7 +55,9 @@ export async function deleteNotification(notificationId) {
 export async function updateAllUserNotifications(newData) {
   try {
     const response = await axios.patch(
-      `https://jconnect-server.onrender.com/api/v1/notification/update-user-notifs`,
+      `${
+        viteEnv === "production" ? serverHost : localServer
+      }/api/v1/notification/update-user-notifs`,
       newData,
       { withCredentials: true }
     );

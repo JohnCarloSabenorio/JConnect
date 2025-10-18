@@ -42,7 +42,7 @@ var cors = require("cors");
 var path = require("path");
 
 var corsOptions = {
-  origin: process.env.NODE_ENV === "production" ? process.env.LIVE_HOST : process.env.LOCAL_HOST,
+  origin: process.env.NODE_ENV === "production" ? process.env.LIVEHOST : process.env.LOCALHOST,
   credentials: true // Allows cookies, HTTP auth, or client-side SSL certificates
 
 }; // GLOBAL MIDDLEWARES
@@ -52,12 +52,12 @@ app.use(cors(corsOptions)); // Provides protection for common web vulnerabilitie
 app.use(helmet());
 app.use("/img", express["static"](path.join(__dirname, "public/img"), {
   setHeaders: function setHeaders(res) {
-    res.setHeader("Access-Control-Allow-Origin", process.env.NODE_ENV === "production" ? process.env.LIVE_HOST : process.env.LOCAL_HOST);
+    res.setHeader("Access-Control-Allow-Origin", process.env.NODE_ENV === "production" ? process.env.LIVEHOST : process.env.LOCALHOST);
   }
 }));
 app.use("/files", express["static"](path.join(__dirname, "public/files"), {
   setHeaders: function setHeaders(res) {
-    res.setHeader("Access-Control-Allow-Origin", process.env.NODE_ENV === "production" ? process.env.LIVE_HOST : process.env.LOCAL_HOST);
+    res.setHeader("Access-Control-Allow-Origin", process.env.NODE_ENV === "production" ? process.env.LIVEHOST : process.env.LOCALHOST);
   }
 }));
 var limiter = rateLimit.rateLimit({

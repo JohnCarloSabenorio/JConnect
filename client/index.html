@@ -17,6 +17,19 @@
     <div id="root"></div>
 
     <!-- Scripts/Modules -->
+    <script type="module">
+      const serverHost = import.meta.env.VITE_SERVER_HOST;
+      const localServer = import.meta.env.VITE_LOCAL_SERVER;
+      const viteEnv = import.meta.env.VITE_ENV;
+      const scriptUrl = `${
+        viteEnv === "production" ? serverHost : localServer
+      }/socket.io/socket.io.js`;
+
+      const script = document.createElement("script");
+      script.src = scriptUrl;
+      document.body.appendChild(script);
+    </script>
+
     <script src="https://jconnect-server.onrender.com/socket.io/socket.io.js"></script>
     <script src="https://code.iconify.design/1/1.0.4/iconify.min.js"></script>
     <script

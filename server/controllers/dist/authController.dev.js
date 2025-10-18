@@ -32,7 +32,7 @@ var createSignToken = function createSignToken(isRemembered, user, statusCode, r
   var cookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "none",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: isRemembered ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000 // optional
 
   };
@@ -216,7 +216,7 @@ exports.logout = function _callee3(req, res) {
             expires: new Date(Date.now() + 10 * 1000),
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "none"
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
           });
           res.status(200).json({
             status: "success"

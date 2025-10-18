@@ -101,7 +101,7 @@ userSchema.virtual("profileBannerUrl").get(function () {
 
   return process.env.NODE_ENV === "production"
     ? `https://jconnect-server.onrender.com/img/profileImages/${this.profilePicture}`
-    : `img/profileImages/${this.profileBanner}`;
+    : `img/profileBanners/${this.profileBanner}`;
 });
 // DOCUMENT MIDDLEWARES
 

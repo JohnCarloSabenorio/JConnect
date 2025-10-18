@@ -1,9 +1,14 @@
 import axios from "axios";
+const serverHost = import.meta.env.VITE_SERVER_HOST;
+const localHost = import.meta.env.VITE_LOCAL_SERVER;
+const viteEnv = import.meta.env.VITE_ENV;
 
 export async function getAllConversations() {
   try {
     const response = await axios.get(
-      "https://jconnect-server.onrender.com/api/v1/user-conversation?isGroup=false&status=active&status=pending&status=muted&status=blocked&sort=updatedAt",
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/user-conversation?isGroup=false&status=active&status=pending&status=muted&status=blocked&sort=updatedAt`,
       { withCredentials: true }
     );
 
@@ -18,7 +23,9 @@ export async function getAllConversations() {
 export async function getArchivedConversations() {
   try {
     const response = await axios.get(
-      "https://jconnect-server.onrender.com/api/v1/user-conversation?status=archived",
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/user-conversation?status=archived`,
       { withCredentials: true }
     );
 
@@ -33,7 +40,9 @@ export async function getArchivedConversations() {
 export async function getAllGroupConversation() {
   try {
     const response = await axios.get(
-      "https://jconnect-server.onrender.com/api/v1/user-conversation?isGroup=true&status=active&status=pending&status=muted",
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/user-conversation?isGroup=true&status=active&status=pending&status=muted`,
       { withCredentials: true }
     );
 
@@ -48,7 +57,9 @@ export async function getFriendsConversation() {
   try {
     // Create an api to get friend conversations
     const response = await axios.get(
-      "https://jconnect-server.onrender.com/api/v1/friends/currentUser/allFriends",
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/friends/currentUser/allFriends`,
       { withCredentials: true }
     );
 
@@ -63,7 +74,9 @@ export async function getAllUserMessages(convoId) {
   try {
     // Gets the conversation of the user
     const response = await axios.get(
-      `https://jconnect-server.onrender.com/api/v1/conversation/${convoId}/message?sort=createdAt`,
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/conversation/${convoId}/message?sort=createdAt`,
       { withCredentials: true }
     );
 
@@ -76,7 +89,9 @@ export async function getAllUserMessages(convoId) {
 export async function updateConversation(convoId, formData) {
   try {
     const response = await axios.patch(
-      `https://jconnect-server.onrender.com/api/v1/conversation/${convoId}`,
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/conversation/${convoId}`,
       formData,
       {
         withCredentials: true,
@@ -110,7 +125,9 @@ export async function createConversation(
     }
 
     const response = await axios.post(
-      `https://jconnect-server.onrender.com/api/v1/conversation`,
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/conversation`,
       formData,
       {
         withCredentials: true,
@@ -130,7 +147,9 @@ export async function findConvoWithUser(userId) {
   // riend
   try {
     const response = await axios.get(
-      `https://jconnect-server.onrender.com/api/v1/user-conversation/get-convo-with-user/${userId}`,
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/user-conversation/get-convo-with-user/${userId}`,
       {
         withCredentials: true,
       }
@@ -145,7 +164,9 @@ export async function findConvoWithUser(userId) {
 export async function convoIsArchived(convoId) {
   try {
     const response = await axios.get(
-      `https://jconnect-server.onrender.com/api/v1/conversation/userConvo/isArchived/${convoId}`,
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/conversation/userConvo/isArchived/${convoId}`,
       {
         withCredentials: true,
       }
@@ -162,7 +183,9 @@ export async function convoIsArchived(convoId) {
 export async function getUserConversation(convoId) {
   try {
     const response = await axios.get(
-      `https://jconnect-server.onrender.com/api/v1/user-conversation/${convoId}`,
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/user-conversation/${convoId}`,
       {
         withCredentials: true,
       }
@@ -177,7 +200,9 @@ export async function getUserConversation(convoId) {
 export async function updateUserConversation(userConvoId, newData) {
   try {
     const response = await axios.patch(
-      `https://jconnect-server.onrender.com/api/v1/user-conversation/${userConvoId}`,
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/user-conversation/${userConvoId}`,
       newData,
       {
         withCredentials: true,
@@ -199,7 +224,9 @@ export async function updateUserConversation(userConvoId, newData) {
 export async function archiveConversation(convoId) {
   try {
     const response = await axios.patch(
-      `https://jconnect-server.onrender.com/api/v1/conversation/userConvo/archive/${convoId}`,
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/conversation/userConvo/archive/${convoId}`,
       {
         withCredentials: true,
       }
@@ -217,7 +244,9 @@ export async function archiveConversation(convoId) {
 export async function blockConversation(convoId) {
   try {
     const response = await axios.patch(
-      `https://jconnect-server.onrender.com/api/v1/user-conversation/block/${convoId}`,
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/user-conversation/block/${convoId}`,
       {
         withCredentials: true,
       }
@@ -236,7 +265,9 @@ export async function blockConversation(convoId) {
 export async function unarchiveConversation(convoId) {
   try {
     const response = await axios.patch(
-      `https://jconnect-server.onrender.com/api/v1/user-conversation/unarchive/${convoId}`,
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/user-conversation/unarchive/${convoId}`,
       {
         withCredentials: true,
       }
@@ -254,7 +285,9 @@ export async function unarchiveConversation(convoId) {
 export async function unblockConversation(convoId) {
   try {
     const response = await axios.patch(
-      `https://jconnect-server.onrender.com/api/v1/user-conversation/unblock/${convoId}`,
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/user-conversation/unblock/${convoId}`,
       {
         withCredentials: true,
       }
@@ -273,7 +306,9 @@ export async function unblockConversation(convoId) {
 export async function activateUserConversation(userConvoId) {
   try {
     const response = await axios.patch(
-      `https://jconnect-server.onrender.com/api/v1/user-conversation/activate/${userConvoId}`,
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/user-conversation/activate/${userConvoId}`,
       {
         withCredentials: true,
       }
@@ -292,7 +327,9 @@ export async function activateUserConversation(userConvoId) {
 export async function leaveConversation(userConvoId) {
   try {
     const response = await axios.delete(
-      `https://jconnect-server.onrender.com/api/v1/user-conversation/${userConvoId}`,
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/user-conversation/${userConvoId}`,
       {
         withCredentials: true,
       }
@@ -309,7 +346,9 @@ export async function leaveConversation(userConvoId) {
 export async function addNewMembersToGroup(conversationId, newMembersId) {
   try {
     const response = await axios.post(
-      `https://jconnect-server.onrender.com/api/v1/conversation/add-many/${conversationId}`,
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/conversation/add-many/${conversationId}`,
       { newUsers: newMembersId },
       { withCredentials: true }
     );
@@ -324,7 +363,9 @@ export async function removeMemberFromGroup(conversationId, userId) {
   try {
     const response = await axios.delete(
       `
-      https://jconnect-server.onrender.com/api/v1/users/${userId}/conversation/member/${conversationId}`,
+      ${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/users/${userId}/conversation/member/${conversationId}`,
       {
         withCredentials: true,
       }
@@ -337,7 +378,9 @@ export async function removeMemberFromGroup(conversationId, userId) {
 export async function getNamesAndNicknames(convoId) {
   try {
     const response = await axios.get(
-      `https://jconnect-server.onrender.com/api/v1/user-conversation/get-names-nicknames/${convoId}`,
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/user-conversation/get-names-nicknames/${convoId}`,
       {
         withCredentials: true,
       }
@@ -353,7 +396,9 @@ export async function getNamesAndNicknames(convoId) {
 export async function findMutualGroupChats(userId) {
   try {
     const response = await axios.get(
-      `https://jconnect-server.onrender.com/api/v1/conversation/mutual-gc/${userId}`,
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/conversation/mutual-gc/${userId}`,
       {
         withCredentials: true,
       }

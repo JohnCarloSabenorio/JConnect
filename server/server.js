@@ -15,8 +15,8 @@ const io = require("socket.io")(server, {
   cors: {
     origin:
       process.env.NODE_ENV === "production"
-        ? process.env.LIVE_HOST
-        : process.env.LOCAL_HOST,
+        ? process.env.LIVEHOST
+        : process.env.LOCALHOST,
   },
 });
 

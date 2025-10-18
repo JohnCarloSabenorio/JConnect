@@ -1,8 +1,12 @@
 import axios from "axios";
+const serverHost = import.meta.env.VITE_SERVER_HOST;
+const localHost = import.meta.env.VITE_LOCAL_SERVER;
+const viteEnv = import.meta.env.VITE_ENV;
+
 export async function login(email, password, isRemembered) {
   try {
     const response = await axios.post(
-      "https://jconnect-server.onrender.com/api/v1/users/login",
+      `${viteEnv === "production" ? serverHost : localHost}/api/v1/users/login`,
       {
         email,
         password,
@@ -22,7 +26,9 @@ export async function login(email, password, isRemembered) {
 export async function register(username, email, password, passwordConfirm) {
   try {
     const response = await axios.post(
-      "https://jconnect-server.onrender.com/api/v1/users/signup",
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/users/signup`,
       { username, email, password, passwordConfirm },
       {
         withCredentials: true,
@@ -38,7 +44,9 @@ export async function register(username, email, password, passwordConfirm) {
 export async function logout() {
   try {
     const response = await axios.get(
-      "https://jconnect-server.onrender.com/api/v1/users/logout",
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/users/logout`,
       {
         withCredentials: true,
       }
@@ -51,7 +59,9 @@ export async function logout() {
 export async function isLoggedIn() {
   try {
     const response = await axios.get(
-      "https://jconnect-server.onrender.com/api/v1/users/isLoggedIn",
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/users/isLoggedIn`,
       {
         withCredentials: true,
       }
@@ -66,7 +76,9 @@ export async function isLoggedIn() {
 export async function forgotPassword(email) {
   try {
     const response = await axios.post(
-      "https://jconnect-server.onrender.com/api/v1/users/forgotPassword",
+      `${
+        viteEnv === "production" ? serverHost : localHost
+      }/api/v1/users/forgotPassword`,
       {
         email,
       },
