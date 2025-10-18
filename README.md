@@ -35,6 +35,7 @@
 | Category | Description |
 |-----------|-------------|
 | 💬 **Messaging** | Send and receive real-time messages instantly. |
+| 💬 **User Mentions** | Mention users in a group conversation. |
 | 🔐 **User Authentication** | Secure login and registration system. |
 | 👥 **Group Conversations** | Create and manage group chats effortlessly. |
 | 📎 **File & Image Sharing** | Upload and send images or documents. |
