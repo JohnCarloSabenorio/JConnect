@@ -12,9 +12,7 @@ const port = process.env.PORT || 4000;
 const server = http.createServer(app);
 
 const io = require("socket.io")(server, {
-  cors: {
-    origin: process.env.CLIENT_HOST,
-  },
+  cors: "*",
 });
 
 const ioController = require("./controllers/ioController");
