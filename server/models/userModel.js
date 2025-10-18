@@ -99,7 +99,9 @@ userSchema.virtual("profileBannerUrl").get(function () {
   if (this.profileBanner.startsWith("img/profileBanners"))
     return this.profileBanner;
 
-  return `img/profileBanners/${this.profileBanner}`;
+  return process.env.NODE_ENV === "production"
+    ? `https://jconnect-server.onrender.com/img/profileImages/${this.profilePicture}`
+    : `img/profileImages/${this.profileBanner}`;
 });
 // DOCUMENT MIDDLEWARES
 

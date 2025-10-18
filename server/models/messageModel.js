@@ -88,7 +88,9 @@ messageSchema.virtual("imageUrls").get(function () {
     if (img.startsWith("img/sentImages")) {
       return img;
     } else {
-      return `img/sentImages/${img}`;
+      return process.env.NODE_ENV === "production"
+        ? `https://jconnect-server.onrender.com/img/sentImages/${img}`
+        : `img/sentImages/${img}`;
     }
   });
 
@@ -104,7 +106,10 @@ messageSchema.virtual("fileUrls").get(function () {
     } else {
       return {
         originalname: file.originalname,
-        storagename: `files/sentFiles/${file.storagename}`,
+        storagename:
+          process.env.NODE_ENV === "production"
+            ? `https://jconnect-server.onrender.com/files/sentFiles/${file.storagename}`
+            : `files/sentFiles/${file.storagename}`,
       };
     }
   });
