@@ -78,7 +78,7 @@ export default function App() {
           setUser,
         }}
       >
-        <BrowserRouter basename="/index.html">
+        <BrowserRouter basename="/">
           <Routes>
             <Route path="/*" element={<NoPage />} />
             <Route element={<ProtectedFormRoutes />}>
