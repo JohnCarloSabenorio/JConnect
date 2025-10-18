@@ -67,7 +67,6 @@ export async function getAllUserMessages(convoId) {
       { withCredentials: true }
     );
 
-    console.log("ALL MESSAGES:", response.data.data);
     return response.data.data;
   } catch (err) {
     console.log(err);
@@ -101,13 +100,11 @@ export async function createConversation(
 ) {
   try {
     const formData = new FormData();
-    console.log("users:", users);
 
     users.forEach((user) => formData.append("users", user));
     formData.append("isGroup", String(isGroup));
     formData.append("conversationName", conversationName);
 
-    console.log("the convo image:", convoImage);
     if (convoImage) {
       formData.append("convoImage", convoImage);
     }
@@ -120,8 +117,6 @@ export async function createConversation(
         headers: { "Content-Type": "multipart/form-data" },
       }
     );
-
-    console.log("the response for creating a convo:", response.data);
 
     return response.data.data;
   } catch (err) {
@@ -212,7 +207,6 @@ export async function archiveConversation(convoId) {
 }
 export async function blockConversation(convoId) {
   try {
-    console.log("convo id to block:", convoId);
     const response = await axios.patch(
       `jconnect/api/v1/user-conversation/block/${convoId}`
     );
@@ -271,7 +265,6 @@ export async function activateUserConversation(userConvoId) {
     const responseData = response.data;
   } catch (err) {
     console.log("Error activating user conversation:", err);
-    p;
   }
 }
 

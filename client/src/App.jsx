@@ -49,9 +49,7 @@ export default function App() {
         socket.emit("change status", {
           status: "online",
         });
-        console.log("THE USER:", response.data.currentUser);
 
-        console.log("the user:", response.data.currentUser);
         setUser(response.data.currentUser);
         setLoggedInStatus(true);
       } else {

@@ -147,7 +147,6 @@ const conversationSlice = createSlice({
     },
 
     setActiveDirectUser: (state, action) => {
-      console.log("changing direct user id to:", action.payload);
       state.activeDirectUser = action.payload;
     },
 
@@ -209,8 +208,6 @@ const conversationSlice = createSlice({
     },
     updateAGroupConvo: (state, action) => {
       const updatedConversation = action.payload;
-
-      console.log("Updated group conversation:", updatedConversation);
 
       if (updatedConversation) {
         state.allGroupConversation = [
@@ -317,7 +314,6 @@ const conversationSlice = createSlice({
       // this will find the existing conversation and update it with the new one
 
       const updatedConversation = action.payload;
-      console.log("updated direct conversation:", updatedConversation);
       state.allDirectConversation = [
         ...state.allDirectConversation.map((userConversation) => {
           if (userConversation.conversation._id === updatedConversation._id) {

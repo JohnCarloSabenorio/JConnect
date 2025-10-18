@@ -7,10 +7,6 @@ export default function Groups({ getMessages }) {
   return (
     <>
       {allGroupConversation.map((data, id) => {
-        // console.log("THE CONVORATION:", convo);
-
-        console.log(" THE GROUP CONVO:", data);
-
         return (
           <ConversationCard
             key={id}

@@ -1,4 +1,4 @@
-import "./style.css";
+import "./styles.css";
 import javascriptLogo from "./javascript.svg";
 import viteLogo from "/vite.svg";
 import { createRoot } from "react-dom/client";

@@ -32,7 +32,6 @@ export default function ForgotPassword() {
     }
 
     setButtonLabel("Send email");
-    console.log("submit email response:", response);
   }
 
   return (

@@ -144,7 +144,6 @@ exports.getConversationName = catchASync(async (req, res, next) => {
 exports.getConversationWithUser = catchAsync(async (req, res, next) => {
   console.log("GETTING user conversation record...");
 
-  console.log("THE FCKIN USER:", req.params.userId);
   // Check if conversation exists using id of two users
   const convo = await Conversation.findOne({
     users: { $all: [req.params.userId, req.user.id] },

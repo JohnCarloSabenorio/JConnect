@@ -185,7 +185,6 @@ export default function Chat() {
 
   useEffect(() => {
     const handleLeaveGroup = (data) => {
-      console.log("leave group data:", data);
       dispatch(updateAGroupConvo(data.convo));
 
       if (activeConvo == data.updatedConversation._id) {
@@ -196,8 +195,6 @@ export default function Chat() {
         setImageInputKey(Date.now());
         dispatch(removeConvoMember(data.removedUserId));
       }
-
-      console.log("someone left the group broooo!!!");
     };
 
     socket.on("leave group", (data) => {
@@ -329,13 +326,6 @@ export default function Chat() {
     return matchedFriend?.friend.status === "online";
   }
 
-  // useEffect(() => {
-  //   if (!activeDirectUser) return;
-
-  //   checkStatus(activeDirectUser);
-  //   console.log("the active direct user id:", activeDirectUser);
-  // }, [activeConvo, activeDirectUser, allFriends]);
-
   useEffect(() => {
     const handleUpdateConversation = (data) => {
       if (data.updatedConversation.isGroup) {
@@ -350,7 +340,6 @@ export default function Chat() {
           dispatch(setUnifiedEmojiBtn(data.updatedConversation.unifiedEmoji));
         }
       } else {
-        console.log("the updated conversation chu:", data.updatedConversation);
         dispatch(updateAConvo(data.updatedConversation));
 
         if (activeConvo == data.updatedConversation._id) {
@@ -388,8 +377,6 @@ export default function Chat() {
         dispatch(updateDisplayedMessages(data.messageData));
       }
 
-      console.log("message data:", data.messageData);
-
       setImages([]);
       setFiles([]);
       setImageBuffers([]);
@@ -425,7 +412,6 @@ export default function Chat() {
   // This will handle notification emits
   useEffect(() => {
     const handleReceiveNotification = (data) => {
-      console.log("the notification data:", data);
       dispatch(addNotification(data));
 
       if (!data.isMuted) {
@@ -463,7 +449,6 @@ export default function Chat() {
   // This will add a chat conversation for the other party
   useEffect(() => {
     const handleChatAUser = (data) => {
-      console.log("chatting with user:", data);
       dispatch(addANewConvo(data.userConversation));
     };
     socket.on("chat user", handleChatAUser);
@@ -492,7 +477,6 @@ export default function Chat() {
     socket.on("chat message", (data) => {
       // Messages will be updated if the sent messages is for the current conversation
 
-      console.log("chatted:", data);
       if (data.msg.sender._id === user._id) {
         dispatch(setInitialMessageRender(true));
       }
@@ -565,8 +549,6 @@ export default function Chat() {
       mentions: toMention,
       latestMessage: emojiMessage,
     });
-
-    console.log("the new message created:", newMessage);
 
     socket.emit("chat message", {
       messageId: newMessage._id,
@@ -718,7 +700,6 @@ export default function Chat() {
     const selectedFiles = Array.from(e.target.files);
 
     e.target.value = "";
-    console.log("fuck shit?:", [...images, ...files, ...selectedFiles].length);
     if ([...images, ...files, ...selectedFiles].length > 10) {
       alert("You can only send up to 10 items at a time!");
 
@@ -728,7 +709,6 @@ export default function Chat() {
 
     // const blobUrls = selectedFiles.map((file) => URL.createObjectURL(file));
 
-    console.log("all selected files:", selectedFiles);
     const selectedFilesBuffer = await Promise.all(
       selectedFiles.map((image) => {
         if (image.type.startsWith("image/")) {
@@ -756,14 +736,12 @@ export default function Chat() {
       return;
     }
 
-    console.log("all files:", selectedFiles);
     setFiles((prev) => [...prev, ...selectedFiles]);
   }
 
   async function unblockConvo(convoId) {
     const response = await unblockConversation(convoId);
 
-    console.log("unblock response:", response);
     if (response.unblockedConvo.isGroup) {
       dispatch(
         updateConvoStatusGroup([
@@ -1225,10 +1203,7 @@ export default function Chat() {
                           const range = selection.getRangeAt(0);
                           const nodeBeforeCursor =
                             getElementBeforeCursor(range);
-                          console.log(
-                            "the node before the cursor:",
-                            nodeBeforeCursor
-                          );
+
                           if (
                             nodeBeforeCursor.classList?.contains("mention-span")
                           ) {
@@ -1255,10 +1230,7 @@ export default function Chat() {
                           const range = selection.getRangeAt(0);
                           const nodeBeforeCursor =
                             getElementBeforeCursor(range);
-                          console.log(
-                            "the node before the cursor:",
-                            nodeBeforeCursor
-                          );
+
                           if (
                             nodeBeforeCursor.classList?.contains("mention-span")
                           ) {
@@ -1298,14 +1270,7 @@ export default function Chat() {
                           } else {
                             const lastChar =
                               inputRef.current.textContent.slice(-1);
-                            console.log(
-                              "Last char:",
-                              JSON.stringify(lastChar),
-                              "Char code:",
-                              lastChar?.charCodeAt(0)
-                            );
 
-                            console.log("THE LAST CHARACTER:", lastChar);
                             if (
                               lastChar === " " ||
                               lastChar === "\u00A0" ||
@@ -1327,10 +1292,7 @@ export default function Chat() {
                         const selection = window.getSelection();
                         const range = selection.getRangeAt(0);
                         const nodeBeforeCursor = getElementBeforeCursor(range);
-                        console.log(
-                          "the node before the cursor:",
-                          nodeBeforeCursor
-                        );
+
                         if (
                           nodeBeforeCursor.classList?.contains(
                             "mention-span"
@@ -1364,8 +1326,6 @@ export default function Chat() {
                             .slice(indexOfAtSign + 1)
                             .split(" ")[0];
 
-                          console.log("THE FILTER:", filter);
-
                           dispatch(
                             setFilteredConvoMembers(filter.toLowerCase())
                           );
@@ -1380,15 +1340,7 @@ export default function Chat() {
                           const range = selection.getRangeAt(0);
                           const nodeBeforeCursor =
                             getElementBeforeCursor(range);
-                          console.log(
-                            "the node before the cursor:",
-                            nodeBeforeCursor
-                          );
 
-                          console.log(
-                            "current input length:",
-                            inputRef.current.textContent.length
-                          );
                           // if the text content is blank
                           if (inputRef.current.textContent.length == 0) {
                             return;
@@ -1465,7 +1417,7 @@ export default function Chat() {
                             <Emoji
                               unified={unifiedEmojiBtn}
                               size="30"
-                              onClick={(e) => console.log("AHHHH")}
+                              onClick={(e) => {}}
                             />
                           </span>
                         ) : (

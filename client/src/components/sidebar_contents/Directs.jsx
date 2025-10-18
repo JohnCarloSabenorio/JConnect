@@ -7,8 +7,6 @@ export default function Directs({ getMessages }) {
   const { loggedInStatus, user, isConnected } = useContext(UserContext);
   const { allDirectConversation } = useSelector((state) => state.conversation);
 
-  console.log("all direct conversation:", allDirectConversation);
-
   return (
     <>
       {allDirectConversation.map((data, id) => {

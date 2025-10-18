@@ -26,13 +26,11 @@ export default function ChangeEmojiOverlay() {
   const [selectedEmoji, setSelectedEmoji] = useState("");
 
   function handleEmojiClick(emoji) {
-    console.log(emoji);
     setSelectedEmojiUnified(emoji.unified);
     setSelectedEmoji(emoji.emoji);
   }
 
   function handleConfirm() {
-    console.log("change emoji confirmed!");
     dispatch(setUnifiedEmojiBtn(selectedEmojiUnified));
     dispatch(setDisplayChangeEmojiOverlay(false));
 

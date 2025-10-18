@@ -8,7 +8,6 @@ const path = require("path");
 
 exports.changeUserStatus = async (io, socket, data) => {
   console.log("changing user status...");
-  console.log("the dater:", data);
   const updatedUser = await User.findByIdAndUpdate(
     data.actor,
     {
@@ -182,8 +181,6 @@ exports.removeMember = async (io, socket, data) => {
     conversation: data.conversationId,
     user: data.member._id,
   });
-
-  console.log("the freaknig convo data:", convo);
 
   // Turn the convo to an object to include virtual data
 

@@ -16,8 +16,6 @@ const profileOverlaySlice = createSlice({
 
     setDisplayedUser: (state, action) => {
       state.displayedUser = action.payload;
-
-      console.log("THE DISPLAYED USER:", action.payload);
     },
   },
 });

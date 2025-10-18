@@ -40,8 +40,6 @@ export async function logout() {
     const response = await axios.get("/jconnect/api/v1/users/logout", {
       withCredentials: true,
     });
-
-    console.log(response);
   } catch (err) {
     console.log(err);
   }
@@ -70,8 +68,6 @@ export async function forgotPassword(email) {
         withCredentials: true,
       }
     );
-
-    console.log("response data:", response);
 
     return response;
   } catch (err) {

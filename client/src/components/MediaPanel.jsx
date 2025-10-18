@@ -56,12 +56,10 @@ export default function MediaPanel({ getUserConversations }) {
     dispatch(setConversationStatus(isMuted ? "active" : "muted"));
 
     if (activeConvoIsGroup) {
-      console.log("updating chuchu:");
       dispatch(
         updateConvoStatusGroup([activeUserConvo, isMuted ? "active" : "muted"])
       );
     } else {
-      console.log("updating direct:", isMuted ? "active" : "muted");
       dispatch(
         updateConvoStatus([activeUserConvo, isMuted ? "active" : "muted"])
       );
@@ -73,18 +71,14 @@ export default function MediaPanel({ getUserConversations }) {
     );
 
     setIsMuted((prev) => !prev);
-
-    console.log("updated user conversation status:", updatedUserConversation);
   }
 
   async function handleChangePhotoUpdate(file) {
-    console.log("new group photo file:", file);
+    if (!file) return;
     const formData = new FormData();
     formData.append("convoImage", file);
 
     const updatedConversation = await updateConversation(activeConvo, formData);
-
-    console.log("changed group photo:", updatedConversation);
 
     socket.emit("update conversation", {
       conversationId: updatedConversation._id,
@@ -99,7 +93,6 @@ export default function MediaPanel({ getUserConversations }) {
   }
 
   useEffect(() => {
-    console.log("conversation status changed:", conversationStatus);
     setIsMuted(conversationStatus == "muted");
   }, [activeUserConvo]);
 

@@ -56,26 +56,24 @@ exports.resizeImages = catchAsync(function _callee3(req, res, next) {
     while (1) {
       switch (_context3.prev = _context3.next) {
         case 0:
-          console.log("FILESZ:", req.files); // Check if image exists in the request
-
           if (req.files) {
-            _context3.next = 3;
+            _context3.next = 2;
             break;
           }
 
           return _context3.abrupt("return", next());
 
-        case 3:
+        case 2:
           console.log("the files do exist:", req.files);
           req.body.images = [];
           req.body.files = [];
 
           if (!req.files.images) {
-            _context3.next = 9;
+            _context3.next = 8;
             break;
           }
 
-          _context3.next = 9;
+          _context3.next = 8;
           return regeneratorRuntime.awrap(Promise.all(req.files.images.map(function _callee(image, idx) {
             var filename;
             return regeneratorRuntime.async(function _callee$(_context) {
@@ -100,7 +98,7 @@ exports.resizeImages = catchAsync(function _callee3(req, res, next) {
             });
           })));
 
-        case 9:
+        case 8:
           if (req.files.files) {
             req.files.files.map(function _callee2(file, idx) {
               var filename, filePath;
@@ -128,7 +126,7 @@ exports.resizeImages = catchAsync(function _callee3(req, res, next) {
 
           next();
 
-        case 11:
+        case 10:
         case "end":
           return _context3.stop();
       }

@@ -10,7 +10,6 @@ export default function Login() {
     event.preventDefault();
     try {
       const response = await login(email, password, isRemembered);
-      console.log("response data login:", response);
 
       if (response.status == 200) {
         setIsInvalid(false);

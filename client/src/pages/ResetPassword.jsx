@@ -14,7 +14,6 @@ export default function ResetPassword() {
     // Check if the token is valid
     async function validatePasswordResetToken() {
       const isValid = await isTokenValid(token);
-      console.log(`is the token valid? ${isValid}`);
 
       if (!isValid) {
         window.location.assign("/");
@@ -27,15 +26,11 @@ export default function ResetPassword() {
   }, []);
 
   async function submitResetPassword() {
-    console.log("new password:", newPassword);
-    console.log("confirm password:", confirmNewPassword);
     const response = await resetPassword(
       newPassword,
       confirmNewPassword,
       token
     );
-
-    console.log("the response in resetting pass:", response);
 
     if (response.status == 200) {
       resetPasswordInputs();

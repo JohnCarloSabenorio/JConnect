@@ -28,7 +28,6 @@ export default function EditProfileOverlay() {
   async function updateMyProfilePicture() {
     const formData = new FormData();
 
-    console.log("the new profile picture file:", newProfilePictureFile);
     formData.append("profilePicture", newProfilePictureFile);
     const newData = await updateCurrentUser(formData);
 
@@ -42,7 +41,6 @@ export default function EditProfileOverlay() {
     setIsUpdatingImage(false);
   }
   async function updateMyProfileBanner() {
-    console.log("updating my banner:", newProfileBannerFile);
     const formData = new FormData();
     formData.append("profileBanner", newProfileBannerFile);
     const newData = await updateCurrentUser(formData);
@@ -229,7 +227,6 @@ export default function EditProfileOverlay() {
                   className="shadow-md max-w-50 rounded-md"
                   onInput={(e) => {
                     setUsername(e.target.value);
-                    console.log("the username:", username);
                   }}
                 />
               ) : (

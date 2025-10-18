@@ -40,7 +40,6 @@ const messageSlice = createSlice({
     },
 
     updateDisplayedMessages: (state, action) => {
-      console.log("updating displayed messages");
       state.displayedMessages = [...state.displayedMessages, action.payload];
     },
 

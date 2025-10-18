@@ -261,10 +261,9 @@ exports.getConversationWithUser = catchAsync(function _callee8(req, res, next) {
     while (1) {
       switch (_context8.prev = _context8.next) {
         case 0:
-          console.log("GETTING user conversation record...");
-          console.log("THE FCKIN USER:", req.params.userId); // Check if conversation exists using id of two users
+          console.log("GETTING user conversation record..."); // Check if conversation exists using id of two users
 
-          _context8.next = 4;
+          _context8.next = 3;
           return regeneratorRuntime.awrap(Conversation.findOne({
             users: {
               $all: [req.params.userId, req.user.id]
@@ -276,25 +275,25 @@ exports.getConversationWithUser = catchAsync(function _callee8(req, res, next) {
             }
           }));
 
-        case 4:
+        case 3:
           convo = _context8.sent;
           userConversation = null; // Get the user conversation record that matches the current user and conversation
 
           if (!convo) {
-            _context8.next = 10;
+            _context8.next = 9;
             break;
           }
 
-          _context8.next = 9;
+          _context8.next = 8;
           return regeneratorRuntime.awrap(UserConversation.findOne({
             user: req.user.id,
             conversation: convo._id
           }).populate("conversation"));
 
-        case 9:
+        case 8:
           userConversation = _context8.sent;
 
-        case 10:
+        case 9:
           console.log("THE USER CONVERSATION:", userConversation);
           res.status(200).json({
             status: "success",
@@ -302,7 +301,7 @@ exports.getConversationWithUser = catchAsync(function _callee8(req, res, next) {
             data: userConversation
           });
 
-        case 12:
+        case 11:
         case "end":
           return _context8.stop();
       }

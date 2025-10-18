@@ -1,9 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
-import {
-  addSelectedUser,
-  removeSelectedUser,
-} from "../redux/addMemberOverlay";
+import { addSelectedUser, removeSelectedUser } from "../redux/addMemberOverlay";
 
 import { useRef } from "react";
 export default function FilteredUserCard({ user }) {
@@ -21,7 +18,6 @@ export default function FilteredUserCard({ user }) {
           if (e.target.checked) {
             dispatch(addSelectedUser(user));
           } else {
-            console.log("REMOVE THIS USER:", user._id);
             dispatch(removeSelectedUser(user._id));
           }
         }}

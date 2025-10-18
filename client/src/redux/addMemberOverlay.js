@@ -9,7 +9,6 @@ const addMemberOverlaySlice = createSlice({
 
   reducers: {
     setHideAddMemberOverlay: (state, action) => {
-      console.log("HIDE ADDMEMBER OVERLAY?", action.payload);
       state.hideAddMemberOverlay = action.payload;
       state.selectedUsers = [];
     },
@@ -18,11 +17,6 @@ const addMemberOverlaySlice = createSlice({
       updatedSelectedUsers.push(action.payload);
 
       state.selectedUsers = updatedSelectedUsers;
-
-      console.log(
-        "Selected users updated:",
-        JSON.parse(JSON.stringify(updatedSelectedUsers))
-      );
     },
 
     setSelectedUsers: (state, action) => {
@@ -39,7 +33,6 @@ const addMemberOverlaySlice = createSlice({
       );
 
       state.selectedUsers = updatedSelectedUsers;
-      console.log("Selected users updated:", updatedSelectedUsers);
     },
   },
 });

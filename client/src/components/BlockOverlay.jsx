@@ -32,8 +32,6 @@ export default function BlockOverlay() {
   async function blockConvo(convoId) {
     const response = await blockConversation(convoId);
 
-    console.log("blocked response:", response);
-
     if (response.blockedConvo.isGroup) {
       dispatch(
         updateConvoStatusGroup([
@@ -77,8 +75,6 @@ export default function BlockOverlay() {
     dispatch(setConversationStatus("active"));
     dispatch(setDisplayBlockOverlay(false));
   }
-
-  console.log("the fucking active convo:", activeConvo);
 
   return (
     <>

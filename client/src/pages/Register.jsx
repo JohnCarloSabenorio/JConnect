@@ -27,8 +27,6 @@ export default function Register() {
         setSignupErrors([]);
         window.location.assign("/chat");
       }
-
-      console.log("registration response:", response);
     } catch (err) {
       console.log(err);
     }

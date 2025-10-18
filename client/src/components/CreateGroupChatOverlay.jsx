@@ -97,8 +97,6 @@ export default function CreateGroupChatOverlay() {
         gcPhotoFile
       );
 
-      console.log("the new conversation data:", newConversationData);
-
       dispatch(setMessageIsLoading(false));
       dispatch(setInitialMessageRender(true));
       dispatch(setEmojiPickerIsOpen(false));
@@ -116,10 +114,6 @@ export default function CreateGroupChatOverlay() {
         ])
       );
 
-      console.log(
-        "created conversation data:",
-        newConversationData.currentUserNewConversation
-      );
       dispatch(
         setCurrentConvoImage(
           newConversationData.currentUserNewConversation.conversation.gcImageUrl
@@ -173,8 +167,6 @@ export default function CreateGroupChatOverlay() {
         setConversationRole(newConversationData.currentUserNewConversation.role)
       );
 
-      console.log("the new conversation data:", newConversationData);
-      console.log("all group conversation:", allGroupConversation);
       dispatch(
         addGroupConversation(newConversationData.currentUserNewConversation)
       );
@@ -211,7 +203,6 @@ export default function CreateGroupChatOverlay() {
     const pictureURL = URL.createObjectURL(file);
     setGCPhotoPreviewUrl(pictureURL);
     setGCPhotoFile(file);
-    console.log("the gc photo file:", file);
   }
 
   function clearGCPhoto() {

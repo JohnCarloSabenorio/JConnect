@@ -83,7 +83,6 @@ export async function resetPassword(newPassword, confirmNewPassword, token) {
 
 export async function isTokenValid(token) {
   try {
-    console.log("using the token:", token);
     const response = await axios.get(
       `/jconnect/api/v1/users/isTokenValid/${token}`,
       {

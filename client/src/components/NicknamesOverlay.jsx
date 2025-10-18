@@ -18,8 +18,6 @@ export default function NicknamesOverlay() {
     async function getConvoNamesAndNicknames(convoId) {
       const namesAndNicknamesData = await getNamesAndNicknames(convoId);
 
-      console.log("NAMES AND NICKNAMES:", namesAndNicknames);
-
       dispatch(setNamesAndNicknames(namesAndNicknamesData));
     }
     if (displayNicknamesOverlay) {

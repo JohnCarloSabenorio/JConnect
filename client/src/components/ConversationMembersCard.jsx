@@ -78,8 +78,6 @@ export default function ConversationMembersCard({ member }) {
   }
 
   const handleChat = async () => {
-    console.log("chatting...");
-
     try {
       dispatch(setInitialMessageRender(true));
 
@@ -95,7 +93,6 @@ export default function ConversationMembersCard({ member }) {
           "direct"
         );
 
-        console.log("created a new direct conversation:", userConversation);
         dispatch(addANewConvo(userConversation));
       }
 
@@ -151,8 +148,6 @@ export default function ConversationMembersCard({ member }) {
   }
 
   const handleLeaveGroup = () => {
-    console.log("leaving group...");
-
     // Delete the user conversation in the redux array
     dispatch(removeAConvo({ isGroup: true, conversationId: activeUserConvo }));
     // set the conversation to loading (for now)

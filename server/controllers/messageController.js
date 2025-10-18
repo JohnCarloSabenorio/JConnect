@@ -31,8 +31,6 @@ exports.uploadImages = upload.fields([
 
 // Resize images (try to refcator it so that the resolution of the iamge remains the same)
 exports.resizeImages = catchAsync(async (req, res, next) => {
-  console.log("FILESZ:", req.files);
-
   // Check if image exists in the request
   if (!req.files) return next();
   console.log("the files do exist:", req.files);

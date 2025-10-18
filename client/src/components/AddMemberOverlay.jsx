@@ -35,8 +35,6 @@ export default function AddMemberOverlay() {
   const filteredUsers = useMemo(() => {
     if (allUsers.length == 0) return [];
 
-    console.log("ALL THE USERS:", allUsers);
-    console.log("ACTIVE CONVO MEMBERS:", activeConvoMembers);
     return allUsers.filter(
       (u) =>
         u.username
@@ -61,7 +59,6 @@ export default function AddMemberOverlay() {
       const newMembers = await addNewMembersToGroup(activeConvo, newMemberIds);
 
       // UPDATE SENDING PROGRESS BASED ON THE UPDATED NOTIF MODEL
-      console.log("ADDING MEMBERS TO THE GROUP CHAT!");
 
       newMemberIds.forEach((u) => {
         socket.emit("create message", {

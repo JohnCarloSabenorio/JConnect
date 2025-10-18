@@ -1,7 +1,6 @@
 // REQUIRE PACKAGES
 const express = require("express");
 const morgan = require("morgan");
-const path = require("path");
 // The main application
 const app = express();
 const AppError = require("./utils/appError");
@@ -22,6 +21,8 @@ const hpp = require("hpp");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
+const path = require("path");
+
 const corsOptions = {
   origin: "http://localhost:5173",
   credentials: true, // Allows cookies, HTTP auth, or client-side SSL certificates
@@ -33,9 +34,7 @@ app.use(cors(corsOptions));
 // Provides protection for common web vulnerabilities (XSS, clickjacking, sniffing attacks, etc...)
 app.use(helmet());
 
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev")); // This will log http request information
-}
+app.use(express.static(`${__dirname}\\public`));
 
 const limiter = rateLimit.rateLimit({
   windowMs: 60 * 60 * 1000, // Number of requests will be counted per hour
@@ -59,12 +58,8 @@ app.use(cookieParser());
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  console.log("Server request time: " + req.requestTime);
   next();
 });
-
-// This will set the default directory for static files
-app.use(express.static(`${__dirname}/public`));
 
 // ROUTES
 app.use("/jconnect/api/v1/users", userRouter);

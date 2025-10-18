@@ -1,6 +1,9 @@
 // REQUIRE PACKAGES
-const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+// Configures the path for environment variables
+dotenv.config({ path: "./config.env" });
+
+const mongoose = require("mongoose");
 const http = require("http");
 const app = require("./app");
 
@@ -27,9 +30,6 @@ process.on("uncaughtException", (err) => {
   }
   process.exit(1);
 });
-
-// Configures the path for environment variables
-dotenv.config({ path: "./config.env" });
 
 // SETUP MONGOOSE CONNECT
 

@@ -128,7 +128,6 @@ export default function Navbar() {
             </div>
             {allNotifications && allNotifications.length > 0 ? (
               allNotifications.map((data, id) => {
-                console.log("THE DATA:", data);
                 return <NotificationCard key={id} ref={data._id} data={data} />;
               })
             ) : (

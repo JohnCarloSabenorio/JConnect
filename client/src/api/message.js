@@ -7,8 +7,7 @@ export async function reactToMessage(messageId, emojiUnified) {
       { unified: emojiUnified },
       { withCredentials: true }
     );
-    console.log("MESSAGE ID:", messageId);
-    console.log("UNIFIED EMOJI:", emojiUnified);
+
     return response.data.reactions;
   } catch (err) {
     console.log("Failed to react to message:", err);
@@ -23,7 +22,6 @@ export async function unreactToMessage(messageId) {
       { withCredentials: true }
     );
 
-    console.log("REACTED TO MESSAGE:", response);
   } catch (err) {
     console.log("Failed to react to message:", err);
   }

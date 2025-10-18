@@ -1,9 +1,14 @@
 "use strict";
 
 // REQUIRE PACKAGES
-var mongoose = require("mongoose");
+var dotenv = require("dotenv"); // Configures the path for environment variables
 
-var dotenv = require("dotenv");
+
+dotenv.config({
+  path: "./config.env"
+});
+
+var mongoose = require("mongoose");
 
 var http = require("http");
 
@@ -31,10 +36,6 @@ process.on("uncaughtException", function (err) {
   }
 
   process.exit(1);
-}); // Configures the path for environment variables
-
-dotenv.config({
-  path: "./config.env"
 }); // SETUP MONGOOSE CONNECT
 // Adds password in the database connection string
 

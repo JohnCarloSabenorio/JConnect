@@ -25,8 +25,6 @@ export default function NicknameCard({ userData }) {
   const [newNickname, setNewNickname] = useState("");
 
   useEffect(() => {
-    console.log("the user data:", userData);
-    console.log("the active user convo:", activeUserConvo);
     setDisplayedNickname(userData.nickname);
   }, [userData]);
 

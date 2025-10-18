@@ -27,31 +27,30 @@ exports.changeUserStatus = function _callee(io, socket, data) {
       switch (_context.prev = _context.next) {
         case 0:
           console.log("changing user status...");
-          console.log("the dater:", data);
-          _context.next = 4;
+          _context.next = 3;
           return regeneratorRuntime.awrap(User.findByIdAndUpdate(data.actor, {
             status: data.status
           }, {
             "new": true
           }));
 
-        case 4:
+        case 3:
           updatedUser = _context.sent;
 
           if (updatedUser) {
-            _context.next = 7;
+            _context.next = 6;
             break;
           }
 
           return _context.abrupt("return");
 
-        case 7:
+        case 6:
           console.log("after status update:", updatedUser);
           io.emit("change status", {
             updatedUser: updatedUser
           });
 
-        case 9:
+        case 8:
         case "end":
           return _context.stop();
       }
@@ -296,8 +295,7 @@ exports.removeMember = function _callee5(io, socket, data) {
           }));
 
         case 5:
-          console.log("the freaknig convo data:", convo); // Turn the convo to an object to include virtual data
-
+          // Turn the convo to an object to include virtual data
           convo = convo.toObject({
             virtuals: true
           }); // Emit remove member to the conversation
@@ -307,7 +305,7 @@ exports.removeMember = function _callee5(io, socket, data) {
             conversationData: convo
           });
 
-        case 8:
+        case 7:
         case "end":
           return _context5.stop();
       }

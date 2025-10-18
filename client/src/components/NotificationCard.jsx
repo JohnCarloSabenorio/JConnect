@@ -27,7 +27,6 @@ export default function NotificationCard({ data }) {
   const dispatch = useDispatch();
 
   const { targetScrollMessageId } = useSelector((state) => state.message);
-  console.log("notification data:", data);
 
   async function acceptRequest(actor_id) {
     const response = await acceptFriendRequest(actor_id);
@@ -74,7 +73,6 @@ export default function NotificationCard({ data }) {
       if (!userConversation.isGroup) {
         dispatch(setActiveDirectUser(data.actor._id));
       }
-      console.log("users:", userConversation.conversation.users);
       dispatch(setToMention([]));
       dispatch(setActiveConvoMembers(userConversation.conversation.users));
       dispatch(setConversationStatus(userConversation.status));
@@ -88,7 +86,6 @@ export default function NotificationCard({ data }) {
           userConversation._id,
         ])
       );
-      console.log("the user convo in notif:", userConversation);
 
       getMessages(userConversation.conversation._id);
       dispatch(setActiveConvoIsArchived(userConversation.status == "archived"));

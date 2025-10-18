@@ -95,7 +95,6 @@ export default function ConversationCard({
     // Join a channel for users in the same conversation
     dispatch(setMessageIsLoading(true));
     const messages = await getAllUserMessages(convoId);
-    console.log("all the user messages:", messages);
 
     let allImages = [];
     let allFiles = [];
@@ -104,7 +103,6 @@ export default function ConversationCard({
       allFiles = [...allFiles, ...messageData.fileUrls];
     });
 
-    console.log("all the freaking files:", allFiles);
     dispatch(setMediaImages(allImages));
     dispatch(setMediaFiles(allFiles));
     dispatch(initDisplayedMessages(messages));
@@ -156,7 +154,6 @@ export default function ConversationCard({
             : "hidden"
         }`}
         onClick={() => {
-          console.log("the user convo chuchuness:", userConversation);
           dispatch(setInitialMessageRender(true));
           inputRef.current.innerHTML = "";
           dispatch(setEmojiPickerIsOpen(false));
@@ -194,7 +191,6 @@ export default function ConversationCard({
           );
 
           // Checks if the conversation is a group chat or not
-          console.log("user convo:", userConversation);
           dispatch(setActiveConvoIsGroup(userConversation.isGroup));
 
           if (chatmate._id) {
