@@ -62,12 +62,12 @@ app.use((req, res, next) => {
 });
 
 // ROUTES
-app.use("/jconnect/api/v1/users", userRouter);
-app.use("/jconnect/api/v1/message", messageRouter);
-app.use("/jconnect/api/v1/friends", friendRouter);
-app.use("/jconnect/api/v1/conversation", convoRouter);
-app.use("/jconnect/api/v1/user-conversation", userConvoRouter);
-app.use("/jconnect/api/v1/notification", notificationRouter);
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/message", messageRouter);
+app.use("/api/v1/friends", friendRouter);
+app.use("/api/v1/conversation", convoRouter);
+app.use("/api/v1/user-conversation", userConvoRouter);
+app.use("/api/v1/notification", notificationRouter);
 
 // This will handle undefined routes
 app.all("*", (req, res, next) => {

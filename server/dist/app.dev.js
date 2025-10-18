@@ -76,12 +76,12 @@ app.use(function (req, res, next) {
   next();
 }); // ROUTES
 
-app.use("/jconnect/api/v1/users", userRouter);
-app.use("/jconnect/api/v1/message", messageRouter);
-app.use("/jconnect/api/v1/friends", friendRouter);
-app.use("/jconnect/api/v1/conversation", convoRouter);
-app.use("/jconnect/api/v1/user-conversation", userConvoRouter);
-app.use("/jconnect/api/v1/notification", notificationRouter); // This will handle undefined routes
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/message", messageRouter);
+app.use("/api/v1/friends", friendRouter);
+app.use("/api/v1/conversation", convoRouter);
+app.use("/api/v1/user-conversation", userConvoRouter);
+app.use("/api/v1/notification", notificationRouter); // This will handle undefined routes
 
 app.all("*", function (req, res, next) {
   next(new AppError("Cannot find ".concat(req.originalUrl, " on the server!"), 404));
