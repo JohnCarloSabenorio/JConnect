@@ -42,7 +42,7 @@ var cors = require("cors");
 var path = require("path");
 
 var corsOptions = {
-  origin: "http://localhost:5173",
+  origin: process.env.CLIENT_HOST,
   credentials: true // Allows cookies, HTTP auth, or client-side SSL certificates
 
 }; // GLOBAL MIDDLEWARES

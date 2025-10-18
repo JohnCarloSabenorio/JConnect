@@ -24,7 +24,7 @@ const cors = require("cors");
 const path = require("path");
 
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: process.env.CLIENT_HOST,
   credentials: true, // Allows cookies, HTTP auth, or client-side SSL certificates
 };
 

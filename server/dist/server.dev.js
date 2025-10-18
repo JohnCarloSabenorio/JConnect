@@ -19,7 +19,7 @@ var server = http.createServer(app);
 
 var io = require("socket.io")(server, {
   cors: {
-    origin: "http://localhost:5173"
+    origin: process.env.CLIENT_HOST
   }
 });
 
