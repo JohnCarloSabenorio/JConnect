@@ -558,18 +558,4 @@ export const Message = React.memo(function Message({
   }
 });
 
-/* 
-              <div className="flex flex-col p-5">
-                <div className="ml-auto flex gap-2">
-                  <div className="max-w-max bg-blue-400 p-2 rounded-sm">
-                    <p className="break-all">This is a sample user message!</p>
-                  </div>
-                  <img
-                    src="/img/icons/male-default.jpg"
-                    className="rounded-full w-12 h-12"
-                  />
-                </div>
-              </div>
-*/
-
 export default Message;

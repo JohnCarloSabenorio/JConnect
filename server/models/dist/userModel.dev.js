@@ -97,7 +97,7 @@ userSchema.virtual("profilePictureUrl").get(function () {
     return this.profilePicture;
   }
 
-  return "img/profileImages/".concat(this.profilePicture);
+  return process.env.NODE_ENV === "production" ? "https://jconnect-server.onrender.com/img/profileImages/".concat(this.profilePicture) : "img/profileImages/".concat(this.profilePicture);
 });
 userSchema.virtual("profileBannerUrl").get(function () {
   if (!this.profileBanner) return null;
