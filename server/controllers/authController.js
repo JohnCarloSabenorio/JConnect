@@ -131,8 +131,6 @@ exports.login = async (req, res, next) => {
 };
 
 exports.logout = async (req, res) => {
-  console.log("the req user:", req.user);
-  console.log("user logged out...");
   const user = await User.findOneAndUpdate(
     { email: req.user.email },
     {
@@ -143,6 +141,8 @@ exports.logout = async (req, res) => {
   res.cookie("jwt", "loggedout", {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
   });
 
   res.status(200).json({
