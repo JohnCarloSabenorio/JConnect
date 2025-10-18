@@ -4,7 +4,6 @@ import { setDisplaySettingsOverlay } from "../redux/settingsOverlay";
 import { setEditDisplayProfileOverlay } from "../redux/editProfileOverlay";
 import { updateCurrentUser } from "../api/user";
 import { UserContext } from "../App";
-import AvatarEditor from "react-avatar-editor";
 export default function EditProfileOverlay() {
   const { user, setUser } = useContext(UserContext);
   const dispatch = useDispatch();
