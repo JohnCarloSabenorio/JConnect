@@ -58,7 +58,7 @@ var convoSchema = new mongoose.Schema({
 convoSchema.virtual("gcImageUrl").get(function () {
   if (!this.convoImage) return null;
   if (this.convoImage.startsWith("img/convoImages")) return this.convoImage;
-  return "img/gcImages/".concat(this.convoImage);
+  return process.env.NODE_ENV === "production" ? "https://jconnect-server.onrender.com/img/gcImages/".concat(this.convoImage) : "img/gcImages/".concat(this.convoImage);
 }); // DOCUMENT MIDDLEWARES
 
 convoSchema.pre(["findOneAndUpdate", "updateOne", "updateMany"], function (next) {

@@ -340,7 +340,7 @@ exports.forgotPassword = catchAsync(function _callee5(req, res, next) {
 
         case 8:
           // 3. Compose message
-          resetURL = "".concat(req.protocol, "://").concat(process.env.CLIENT_HOST, "/reset-password/").concat(resetToken);
+          resetURL = "".concat(req.protocol, "://").concat(process.env.NODE_ENV === "production" ? process.env.LIVE_CLIENT : process.env.LOCAL_CLIENT, "/reset-password/").concat(resetToken);
           message = "\nYou are receiving this email because a password reset request was made for your account.\n\nTo reset your password, please click the link below or copy and paste it into your browser:\n".concat(resetURL, "\n\nThis link will expire in 10 minutes. If you did not request a password reset, you can safely ignore this email and no changes will be made to your account.\n\nThank you,\nThe JConnect Team\n"); // 4. send email
 
           _context5.prev = 10;

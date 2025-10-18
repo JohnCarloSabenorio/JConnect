@@ -13,7 +13,10 @@ const server = http.createServer(app);
 
 const io = require("socket.io")(server, {
   cors: {
-    origin: "https://jconnect.onrender.com",
+    origin:
+      process.env.NODE_ENV === "production"
+        ? process.env.LIVE_HOST
+        : process.env.LOCAL_HOST,
   },
 });
 

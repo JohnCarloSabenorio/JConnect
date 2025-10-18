@@ -223,7 +223,11 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   // 3. Compose message
-  const resetURL = `${req.protocol}://${process.env.CLIENT_HOST}/reset-password/${resetToken}`;
+  const resetURL = `${req.protocol}://${
+    process.env.NODE_ENV === "production"
+      ? process.env.LIVE_CLIENT
+      : process.env.LOCAL_CLIENT
+  }/reset-password/${resetToken}`;
   const message = `
 You are receiving this email because a password reset request was made for your account.
 

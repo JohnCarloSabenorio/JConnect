@@ -24,7 +24,10 @@ const cors = require("cors");
 const path = require("path");
 
 const corsOptions = {
-  origin: "https://jconnect.onrender.com",
+  origin:
+    process.env.NODE_ENV === "production"
+      ? process.env.LIVE_HOST
+      : process.env.LOCAL_HOST,
   credentials: true, // Allows cookies, HTTP auth, or client-side SSL certificates
 };
 
@@ -40,7 +43,9 @@ app.use(
     setHeaders: (res) => {
       res.setHeader(
         "Access-Control-Allow-Origin",
-        "https://jconnect.onrender.com"
+        process.env.NODE_ENV === "production"
+          ? process.env.LIVE_HOST
+          : process.env.LOCAL_HOST
       );
     },
   })
@@ -51,7 +56,9 @@ app.use(
     setHeaders: (res) => {
       res.setHeader(
         "Access-Control-Allow-Origin",
-        "https://jconnect.onrender.com"
+        process.env.NODE_ENV === "production"
+          ? process.env.LIVE_HOST
+          : process.env.LOCAL_HOST
       );
     },
   })
