@@ -34,8 +34,28 @@ app.use(cors(corsOptions));
 // Provides protection for common web vulnerabilities (XSS, clickjacking, sniffing attacks, etc...)
 app.use(helmet());
 
-app.use("/img", express.static(path.join(__dirname, "public/img")));
-app.use("/files", express.static(path.join(__dirname, "public/files")));
+app.use(
+  "/img",
+  express.static(path.join(__dirname, "public/img"), {
+    setHeaders: (res) => {
+      res.setHeader(
+        "Access-Control-Allow-Origin",
+        "https://jconnect.onrender.com"
+      );
+    },
+  })
+);
+app.use(
+  "/files",
+  express.static(path.join(__dirname, "public/files"), {
+    setHeaders: (res) => {
+      res.setHeader(
+        "Access-Control-Allow-Origin",
+        "https://jconnect.onrender.com"
+      );
+    },
+  })
+);
 
 const limiter = rateLimit.rateLimit({
   windowMs: 60 * 60 * 1000, // Number of requests will be counted per hour
