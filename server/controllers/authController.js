@@ -27,6 +27,9 @@ const createSignToken = (isRemembered, user, statusCode, res) => {
     cookieOptions.expires = new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     );
+  } else {
+    delete cookieOptions.expires;
+    delete cookieOptions.maxAge;
   }
 
   // If environment is in production, use https
@@ -412,13 +415,14 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
   // 1. Get the decoded cookie
+
   try {
     const decoded = await promisify(jwt.verify)(
       req.cookies.jwt,
       process.env.JWT_SECRET
     );
   } catch (err) {
-    next(new AppError("JWT is expired."));
+    return next(new AppError("JWT is expired."));
   }
 
   // 2. Check if the user still exists
@@ -426,12 +430,12 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
   currentUser.profilePicture = `img/profileImages/${currentUser.profilePicture}`;
 
   if (!currentUser) {
-    next(new AppError("User no longer exists!", 404));
+    return next(new AppError("User no longer exists!", 404));
   }
 
   // 3. Check if the user changed his/her password
   if (currentUser.passwordChangedAfter(decoded.iat)) {
-    next(new AppError("User changed his/her password!", 404));
+    return next(new AppError("User changed his/her password!", 404));
   }
 
   // 4. set req.locals.user equal to the currentUser
@@ -442,6 +446,7 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
 
 exports.isLoggedInBool = catchAsync(async (req, res, next) => {
   // 1. Get the decoded cookie
+
   if (!req.cookies.jwt) {
     return res.status(404).json({
       status: "failed",

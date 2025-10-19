@@ -37,6 +37,9 @@ var createSignToken = function createSignToken(isRemembered, user, statusCode, r
 
   if (isRemembered) {
     cookieOptions.expires = new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000);
+  } else {
+    delete cookieOptions.expires;
+    delete cookieOptions.maxAge;
   } // If environment is in production, use https
 
 
@@ -609,7 +612,7 @@ exports.isLoggedIn = catchAsync(function _callee9(req, res, next) {
         case 6:
           _context9.prev = 6;
           _context9.t0 = _context9["catch"](0);
-          next(new AppError("JWT is expired."));
+          return _context9.abrupt("return", next(new AppError("JWT is expired.")));
 
         case 9:
           _context9.next = 11;
@@ -619,21 +622,28 @@ exports.isLoggedIn = catchAsync(function _callee9(req, res, next) {
           currentUser = _context9.sent;
           currentUser.profilePicture = "img/profileImages/".concat(currentUser.profilePicture);
 
-          if (!currentUser) {
-            next(new AppError("User no longer exists!", 404));
-          } // 3. Check if the user changed his/her password
+          if (currentUser) {
+            _context9.next = 15;
+            break;
+          }
 
+          return _context9.abrupt("return", next(new AppError("User no longer exists!", 404)));
 
-          if (currentUser.passwordChangedAfter(decoded.iat)) {
-            next(new AppError("User changed his/her password!", 404));
-          } // 4. set req.locals.user equal to the currentUser
+        case 15:
+          if (!currentUser.passwordChangedAfter(decoded.iat)) {
+            _context9.next = 17;
+            break;
+          }
 
+          return _context9.abrupt("return", next(new AppError("User changed his/her password!", 404)));
 
+        case 17:
+          // 4. set req.locals.user equal to the currentUser
           res.locals.user = currentUser; // 5. go to the next middleware
 
           next();
 
-        case 17:
+        case 19:
         case "end":
           return _context9.stop();
       }
