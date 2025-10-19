@@ -53,6 +53,12 @@ app.use(helmet());
 app.use("/img", express["static"](path.join(__dirname, "public/img"), {
   setHeaders: function setHeaders(res) {
     res.setHeader("Access-Control-Allow-Origin", process.env.NODE_ENV === "production" ? process.env.LIVEHOST : process.env.LOCALHOST);
+
+    if (process.env.NODE_ENV === "production") {
+      res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+      res.setHeader("Cross-Origin-Embedder-Policy", "unsafe-none");
+    }
   }
 }));
 app.use("/files", express["static"](path.join(__dirname, "public/files"), {
