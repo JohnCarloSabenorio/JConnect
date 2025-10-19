@@ -21,12 +21,11 @@ const createSignToken = (isRemembered, user, statusCode, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    maxAge: isRemembered ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000, // optional
   };
 
   if (isRemembered) {
     cookieOptions.expires = new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 // 24 Hours
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     );
   }
 

@@ -32,14 +32,11 @@ var createSignToken = function createSignToken(isRemembered, user, statusCode, r
   var cookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    maxAge: isRemembered ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000 // optional
-
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
   };
 
   if (isRemembered) {
-    cookieOptions.expires = new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 // 24 Hours
-    );
+    cookieOptions.expires = new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000);
   } // If environment is in production, use https
 
 
