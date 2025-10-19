@@ -100,7 +100,7 @@ userSchema.virtual("profileBannerUrl").get(function () {
     return this.profileBanner;
 
   return process.env.NODE_ENV === "production"
-    ? `https://jconnect-server.onrender.com/img/profileImages/${this.profilePicture}`
+    ? `https://jconnect-server.onrender.com/img/profileBanners/${this.profileBanner}`
     : `img/profileBanners/${this.profileBanner}`;
 });
 // DOCUMENT MIDDLEWARES
