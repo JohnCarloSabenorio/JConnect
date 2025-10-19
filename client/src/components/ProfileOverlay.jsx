@@ -361,12 +361,13 @@ export default function ProfileOverlay() {
         className={`bg-white mt-10 rounded-md overflow-hidden w-full h-full flex flex-col p-3 gap-2 lg:mt-0 lg:flex-row lg:w-5xl lg:h-auto`}
       >
         <div className="rounded-md overflow-hidden shadow-md">
-          <div
-            className="w-full h-60 bg-red-400"
-            style={{
-              backgroundImage: `url(${displayedUser?.profileBannerUrl})`,
-            }}
-          ></div>
+          <div className="w-full h-60 bg-red-400 relative">
+            <img
+              className="w-full h-full absolute"
+              crossOrigin="anonymous"
+              src={displayedUser?.profileBannerUrl}
+            />
+          </div>
 
           <div className="bg-white flex gap-5 p-5">
             <div className="w-40 relative ml-5">

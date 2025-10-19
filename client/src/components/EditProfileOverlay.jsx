@@ -137,14 +137,12 @@ export default function EditProfileOverlay() {
         {/* Profile Div */}
         <div className="rounded-md overflow-hidden shadow-md mt-3">
           {/* USE BANNER URL INSTEAD */}
-          <div
-            className={`w-full h-40 bg-cover bg-center relative`}
-            style={{
-              backgroundImage: `url(${
-                bannerPreviewUrl != "" ? bannerPreviewUrl : profileBannerUrl
-              })`,
-            }}
-          >
+          <div className={`w-full h-40 bg-cover bg-center relative`}>
+            <img
+              className="w-full h-full absolute"
+              crossOrigin="anonymous"
+              src={bannerPreviewUrl != "" ? bannerPreviewUrl : profileBannerUrl}
+            />
             <input
               type="file"
               id="profile-banner"
