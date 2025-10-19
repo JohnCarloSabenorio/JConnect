@@ -121,6 +121,7 @@ export default function MediaPanel({ getUserConversations }) {
       <div className="flex flex-col items-center justify-center p-10 pb-5">
         {currentConvoImage && (
           <img
+            crossOrigin="anonymous"
             src={currentConvoImage}
             className="bg-white rounded-full w-30 h-30 border-1"
             alt="conversation image"
@@ -511,6 +512,7 @@ export default function MediaPanel({ getUserConversations }) {
               {mediaImages.map((imageBlob, idx) => (
                 <PhotoView src={imageBlob} key={idx}>
                   <img
+                    crossOrigin="anonymous"
                     src={imageBlob}
                     className="aspect-square object-cover cursor-pointer"
                   ></img>

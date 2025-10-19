@@ -105,6 +105,7 @@ export default function NotificationCard({ data }) {
       >
         {data.actor && (
           <img
+            crossOrigin="anonymous"
             src={data.actor.profilePictureUrl}
             className="w-10 h-10 border-1 rounded-full"
           ></img>

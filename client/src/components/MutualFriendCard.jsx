@@ -14,6 +14,7 @@ export default function MutualFriendCard({ userData }) {
       }}
     >
       <img
+        crossOrigin="anonymous"
         src={userData.profilePictureUrl}
         className="w-12 border-1 rounded-full"
         alt="profile-img"

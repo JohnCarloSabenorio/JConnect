@@ -188,6 +188,7 @@ export default function ConversationMembersCard({ member }) {
       <div className="flex items-center gap-5">
         {/* Profile Image */}
         <img
+          crossOrigin="anonymous"
           src={member.profilePictureUrl}
           className="w-13 h-13 rounded-full border-1 bg-white"
         ></img>

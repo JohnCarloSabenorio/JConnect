@@ -210,6 +210,7 @@ export default function EditProfileOverlay() {
 
                 {profilePictureUrl != "" && (
                   <img
+                    crossOrigin="anonymous"
                     src={
                       profilePreviewUrl != ""
                         ? profilePreviewUrl

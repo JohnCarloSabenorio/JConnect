@@ -262,7 +262,12 @@ export default function ProfileOverlay() {
   const renderFriendButtons = () => {
     if (isLoading) {
       return (
-        <img src="/images/loading.gif" className="w-10 h-10" alt="Loading..." />
+        <img
+          crossOrigin="anonymous"
+          src="/images/loading.gif"
+          className="w-10 h-10"
+          alt="Loading..."
+        />
       );
     }
 
@@ -367,6 +372,7 @@ export default function ProfileOverlay() {
             <div className="w-40 relative ml-5">
               <div className="bg-white border-1 absolute rounded-full bottom-1">
                 <img
+                  crossOrigin="anonymous"
                   src={displayedUser?.profilePictureUrl}
                   className="w-30 rounded-full"
                   alt="profile-img"

@@ -19,7 +19,7 @@ export default function SelectedUserBadge({ user }) {
         </svg>
       </div>
       <div className="w-20 h-20 border-1 p-2 rounded-full">
-        <img src={user.profilePictureUrl} />
+        <img crossOrigin="anonymous" src={user.profilePictureUrl} />
       </div>
       <p className="text-center">{user.username}</p>
     </div>

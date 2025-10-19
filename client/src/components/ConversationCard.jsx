@@ -208,6 +208,7 @@ export default function ConversationCard({
         >
           <div className="relative flex-shrink-0">
             <img
+              crossOrigin="anonymous"
               src={
                 userConversation.conversation.isGroup
                   ? userConversation.conversation.gcImageUrl

@@ -879,6 +879,7 @@ export default function Chat() {
 
               {currentConvoImage != "" && (
                 <img
+                  crossOrigin="anonymous"
                   src={currentConvoImage ? currentConvoImage : ""}
                   className="rounded-full w-12 h-12 border-1 bg-white"
                 />
@@ -1010,6 +1011,7 @@ export default function Chat() {
                       x
                     </button>
                     <img
+                      crossOrigin="anonymous"
                       src={bufferToImage(img)} // Display selected image
                       className="w-full h-full rounded-md"
                       alt={`Preview ${idx}`}

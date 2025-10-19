@@ -234,6 +234,7 @@ export default function CreateGroupChatOverlay() {
                 onChange={(e) => handleChangeGCPhoto(e.target.files[0])}
               />
               <img
+                crossOrigin="anonymous"
                 src={
                   gcPhotoPreviewUrl != ""
                     ? gcPhotoPreviewUrl

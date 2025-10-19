@@ -348,6 +348,7 @@ export const Message = React.memo(function Message({
                     </p>
                     <div className="flex gap-1 items-center">
                       <img
+                        crossOrigin="anonymous"
                         src={sender.profilePictureUrl}
                         className="rounded-full w-12 h-12 bg-white"
                         alt="User Image"
@@ -497,6 +498,7 @@ export const Message = React.memo(function Message({
                 return (
                   <PhotoView src={`${imgUrl}`} key={idx}>
                     <img
+                      crossOrigin="anonymous"
                       src={`${imgUrl}`}
                       className={`bg-transparent rounded-sm cursor-pointer ${
                         messageData.imageUrls.length == 1

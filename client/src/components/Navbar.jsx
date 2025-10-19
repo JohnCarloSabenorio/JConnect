@@ -149,6 +149,7 @@ export default function Navbar() {
           }}
         >
           <img
+            crossOrigin="anonymous"
             src={user.profilePictureUrl}
             className="rounded-full w-12 h-12 border-1 bg-white"
           />

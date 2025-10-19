@@ -84,6 +84,7 @@ export default function MutualGroupChatCard({ groupData }) {
       onClick={(e) => openGroupChat()}
     >
       <img
+        crossOrigin="anonymous"
         src={groupData.gcImageUrl}
         className="w-12 rounded-full border-1"
         alt="profile-img"

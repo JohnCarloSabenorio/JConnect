@@ -34,6 +34,7 @@ export default function UserCard({ user, imageUrl }) {
         <div className="bg-white hover:bg-gray-200 rounded-md flex p-5 shadow-md cursor-pointer">
           <div className="relative">
             <img
+              crossOrigin="anonymous"
               src={user.profilePictureUrl}
               className="rounded-full w-12 h-12 border-1"
               alt="bro"
