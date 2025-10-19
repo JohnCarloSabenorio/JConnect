@@ -36,7 +36,11 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Provides protection for common web vulnerabilities (XSS, clickjacking, sniffing attacks, etc...)
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginEmbedderPolicy: false,
+  })
+);
 
 app.use(
   "/img",

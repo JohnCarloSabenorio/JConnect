@@ -49,7 +49,9 @@ var corsOptions = {
 
 app.use(cors(corsOptions)); // Provides protection for common web vulnerabilities (XSS, clickjacking, sniffing attacks, etc...)
 
-app.use(helmet());
+app.use(helmet({
+  crossOriginEmbedderPolicy: false
+}));
 app.use("/img", express["static"](path.join(__dirname, "public/img"), {
   setHeaders: function setHeaders(res) {
     res.setHeader("Access-Control-Allow-Origin", process.env.NODE_ENV === "production" ? process.env.LIVEHOST : process.env.LOCALHOST);
