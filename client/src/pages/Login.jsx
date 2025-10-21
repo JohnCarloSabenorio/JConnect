@@ -6,8 +6,10 @@ export default function Login() {
   let [password, setPassword] = useState("");
   let [isInvalid, setIsInvalid] = useState(false);
   let [isRemembered, setIsRemembered] = useState(false);
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   async function handleSubmit(event) {
     event.preventDefault();
+    setIsFormSubmitted(true);
     try {
       const response = await login(email, password, isRemembered);
 
@@ -20,6 +22,7 @@ export default function Login() {
     } catch (err) {
       console.log(err);
     }
+    setIsFormSubmitted(false);
   }
 
   return (
@@ -95,7 +98,7 @@ export default function Login() {
               </p>
               <div className="flex flex-col items-center">
                 <button className="cursor-pointer bg-green-400 uppercase font-semibold tracking-wider border-black rounded-md border-1 py-2 px-10 text-xl mt-5 shadow-md">
-                  Sign In
+                  {isFormSubmitted ? "Signing up" : "Sign Up"}
                 </button>
               </div>
             </form>

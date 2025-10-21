@@ -6,13 +6,12 @@ export default function Register() {
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
   let [passwordConfirm, setPasswordConfirm] = useState("");
-
   let [signupErrors, setSignupErrors] = useState([]);
-
+  let [isFormSubmitted, setIsFormSubmitted] = useState(false);
   async function handleSubmit(e) {
     // handle register form submission here using authenticate.js's register
     e.preventDefault();
-
+    setIsFormSubmitted(true);
     try {
       const response = await register(
         username,
@@ -30,6 +29,7 @@ export default function Register() {
     } catch (err) {
       console.log(err);
     }
+    setIsFormSubmitted(false);
   }
 
   return (
@@ -119,7 +119,7 @@ export default function Register() {
                   .
                 </p>
                 <button className="cursor-pointer bg-green-400 uppercase font-semibold tracking-wider border-black rounded-md border-1 py-2 px-10 text-xl mt-5 shadow-md">
-                  Sign Up
+                  {isFormSubmitted ? "Signing up" : "Sign Up"}
                 </button>
               </div>
             </form>
