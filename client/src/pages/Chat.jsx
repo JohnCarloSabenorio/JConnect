@@ -510,23 +510,13 @@ export default function Chat() {
   }, [activeConvo]);
 
   useEffect(() => {
-    const isNearBottom =
-      uiChatRef.current?.scrollHeight -
-        uiChatRef.current?.clientHeight -
-        uiChatRef.current?.scrollTop <
-      50; // 50px tolerance
+    const container = uiChatRef.current;
 
-    if (isNearBottom) {
-      uiChatRef.current?.scrollTo({
-        top: uiChatRef.current.scrollHeight, // Scrolls to the very bottom
-      });
-
-      dispatch(setInitialMessageRender(false));
+    if (container) {
+      container.scrollTop = container.scrollHeight;
     }
 
-    setImages([]);
-    setFiles([]);
-    setImageBuffers([]);
+    dispatch(setInitialMessageRender(false));
   }, [displayedMessages]);
 
   useEffect(() => {}, [mediaImages]);
@@ -608,6 +598,9 @@ export default function Chat() {
     }
 
     dispatch(setToMention([]));
+    setImages([]);
+    setFiles([]);
+    setImageBuffers([]);
   }
 
   // Adds the emoji to the message input
